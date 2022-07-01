@@ -16,6 +16,7 @@ Game::Game()
     // Separate the screen to three windows
     this->mWindows.resize(3);
     initscr();
+    start_color();
     // If there wasn't any key pressed don't wait for keypress
     nodelay(stdscr, true);
     // Turn on keypad control
@@ -58,7 +59,7 @@ void Game::renderInformationBoard() const
     mvwprintw(this->mWindows[0], 1, 1, "Welcome to The Snake Game!");
     mvwprintw(this->mWindows[0], 2, 1, "It is crazily fast in the vertical direction.");
     mvwprintw(this->mWindows[0], 3, 1, "It would be much better if there is a colored snake and food.");
-    mvwprintw(this->mWindows[0], 4, 1, "Complicated windows are my next steps!.");
+    mvwprintw(this->mWindows[0], 4, 1, "Complicated windows are my next steps!");
     wrefresh(this->mWindows[0]);
 }
 
@@ -244,7 +245,10 @@ void Game::createRamdonFood()
 
 void Game::renderFood() const
 {
+    init_pair(1, COLOR_YELLOW, COLOR_BLACK);
+    wattron(mWindows[1], COLOR_PAIR(1));
     mvwaddch(this->mWindows[1], this->mFood.getY(), this->mFood.getX(), this->mFoodSymbol);
+    wattroff(mWindows[1], COLOR_PAIR(1));
     wrefresh(this->mWindows[1]);
 }
 
@@ -252,10 +256,13 @@ void Game::renderSnake() const
 {
     int snakeLength = this->mPtrSnake->getLength();
     std::vector<SnakeBody>& snake = this->mPtrSnake->getSnake();
+    init_pair(2, COLOR_GREEN, COLOR_BLACK);
+    wattron(mWindows[1], COLOR_PAIR(2));
     for (int i = 0; i < snakeLength; i ++)
     {
         mvwaddch(this->mWindows[1], snake[i].getY(), snake[i].getX(), this->mSnakeSymbol);
     }
+    wattroff(mWindows[1], COLOR_PAIR(2));
     wrefresh(this->mWindows[1]);
 }
 
@@ -266,9 +273,9 @@ std::string pauseWord()
     switch (Chika%4)
     {
     case 0: return "This snake goes crazily fast on the up-down side!";    
-    case 1: return "If you are in favor of Lovelive, we are close\n friends then.";
-    case 2: return "There is a really funny joke, but I don't want\n to tell you.";
-    default: return "So many things can be bettered in this little\n game!";
+    case 1: return "What's your best score in this game? Ehh?";
+    case 2: return "I love Watanabe You in Lovelive the most!";
+    default: return "Many things should be improved......";
     }
 }
 
@@ -286,7 +293,7 @@ bool Game::pauseGame() const
 
     int index = 0;
     int offset = 6;
-    mvwprintw(menu, 1, 20, "// PAUSE \\\\");
+    mvwprintw(menu, 1, width/2 - 5, "// PAUSE \\\\");
     mvwprintw(menu, 3, 1, pauseWord().c_str());
     box(menu, 0, 0);
     wattron(menu, A_STANDOUT);
@@ -443,7 +450,7 @@ void Game::runGame()
 		 *  7. render the position of the food and snake in the new frame of window. 
 		 *  8. update other game states and refresh the window
 		 */
-        adjustDelay();
+
         this->controlSnake(pauseContinue);
         if (!pauseContinue) break;
         werase(mWindows[1]);
@@ -462,7 +469,7 @@ void Game::runGame()
         this->renderDifficulty();
         this->renderPoints();
         
-
+        adjustDelay();
 		std::this_thread::sleep_for(std::chrono::milliseconds(this->mDelay));
 
         refresh();
