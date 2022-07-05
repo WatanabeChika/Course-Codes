@@ -441,9 +441,10 @@ void Game::adjustDelay()
     }
 }
 
-void Game::runGame()
+std::vector<SnakeBody> Game::runGame()
 {
     bool moveSuccess, pauseContinue = true;
+    std::vector<SnakeBody> oldSnake = this->mPtrSnake->getSnake();
     while (true)
     {
 		/* TODO 
@@ -471,6 +472,7 @@ void Game::runGame()
             this->mPoints++;
             createRamdonFood();
             this->mPtrSnake->senseFood(this->mFood);
+            oldSnake = this->mPtrSnake->getSnake();
         }
         if (this->mPtrSnake->checkCollision())
             break;
@@ -486,6 +488,7 @@ void Game::runGame()
 
         refresh();
     }
+    return oldSnake;
 }
 
 void Game::startGame()
@@ -498,14 +501,16 @@ void Game::startGame()
         this->renderBoards();
         this->initializeGame();
         while (true) {   
-            this->runGame();
+            std::vector<SnakeBody> oldSnake = this->runGame();
             --mLives;
+            this->renderLives();
             if (mLives <= 0) break;
-            this->mPtrSnake.reset(new Snake(this->mGameBoardWidth, this->mGameBoardHeight, this->mPtrSnake->getLength()));
+            this->mPtrSnake.reset(new Snake(this->mGameBoardWidth, this->mGameBoardHeight, this->mInitialSnakeLength, oldSnake, this->mPtrSnake->getDireciton()));
             createRamdonFood();
             this->mPtrSnake->senseFood(this->mFood);
             renderFood();
             renderSnake();
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         this->updateLeaderBoard();
         this->writeLeaderBoard();

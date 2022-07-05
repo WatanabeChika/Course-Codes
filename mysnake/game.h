@@ -34,7 +34,7 @@ public:
     
 		void initializeGame();
     bool pauseGame() const;
-    void runGame();
+    std::vector<SnakeBody> runGame();
     void renderPoints() const;
     void renderDifficulty() const;
     void renderLives() const;

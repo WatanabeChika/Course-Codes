@@ -41,6 +41,13 @@ mGameBoardWidth(gameBoardWidth), mGameBoardHeight(gameBoardHeight), mInitialSnak
     this->setRandomSeed();
 }
 
+Snake::Snake(int gameBoardWidth, int gameBoardHeight, int initialSnakeLength, std::vector<SnakeBody> Snake, Direction dir):
+mGameBoardWidth(gameBoardWidth), mGameBoardHeight(gameBoardHeight), mInitialSnakeLength(initialSnakeLength),
+mSnake(Snake), mDirection(dir)
+{
+    this->setRandomSeed();
+}
+
 void Snake::setRandomSeed()
 {
     // use current time as seed for random generator
@@ -126,6 +133,11 @@ void Snake::senseFood(SnakeBody food)
 std::vector<SnakeBody>& Snake::getSnake()
 {
     return this->mSnake;
+}
+
+Direction Snake::getDireciton()
+{
+    return mDirection;
 }
 
 bool Snake::changeDirection(Direction newDirection)

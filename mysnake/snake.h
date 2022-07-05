@@ -30,6 +30,7 @@ class Snake
 public:
     //Snake();
     Snake(int gameBoardWidth, int gameBoardHeight, int initialSnakeLength);
+    Snake(int gameBoardWidth, int gameBoardHeight, int initialSnakeLength, std::vector<SnakeBody> Snake, Direction dir);
     // Set random seed
     void setRandomSeed();
     // Initialize snake
@@ -47,6 +48,7 @@ public:
     bool changeDirection(Direction newDirection);
     std::vector<SnakeBody>& getSnake();
     int getLength();
+    Direction getDireciton();
     SnakeBody createNewHead();
     bool moveFoward();
 
