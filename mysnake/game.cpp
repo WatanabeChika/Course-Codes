@@ -58,7 +58,7 @@ void Game::renderInformationBoard() const
 {
     mvwprintw(this->mWindows[0], 1, 1, "Welcome to The Snake Game!");
     mvwprintw(this->mWindows[0], 2, 1, "It is crazily fast in the vertical direction.");
-    mvwprintw(this->mWindows[0], 3, 1, "It would be much better if there is a colored snake and food.");
+    mvwprintw(this->mWindows[0], 3, 1, "It would be much better if there are more lives and foods for the snake.");
     mvwprintw(this->mWindows[0], 4, 1, "Complicated windows are my next steps!");
     wrefresh(this->mWindows[0]);
 }
@@ -94,6 +94,7 @@ void Game::renderInstructionBoard() const
 
     mvwprintw(this->mWindows[2], 9, 1, "Difficulty");
     mvwprintw(this->mWindows[2], 12, 1, "Points");
+    mvwprintw(this->mWindows[2], 15, 1, "Lives");
 
     wrefresh(this->mWindows[2]);
 }
@@ -106,15 +107,15 @@ void Game::renderLeaderBoard() const
     {
         return;
     }
-    mvwprintw(this->mWindows[2], 15, 1, "Leader Board");
+    mvwprintw(this->mWindows[2], 18, 1, "Leader Board");
     std::string pointString;
     std::string rank;
     for (int i = 0; i < std::min(this->mNumLeaders, this->mScreenHeight - this->mInformationHeight - 14 - 2); i ++)
     {
         pointString = std::to_string(this->mLeaderBoard[i]);
         rank = "#" + std::to_string(i + 1) + ":";
-        mvwprintw(this->mWindows[2], 15 + (i + 1), 1, rank.c_str());
-        mvwprintw(this->mWindows[2], 15 + (i + 1), 5, pointString.c_str());
+        mvwprintw(this->mWindows[2], 18 + (i + 1), 1, rank.c_str());
+        mvwprintw(this->mWindows[2], 18 + (i + 1), 5, pointString.c_str());
     }
     wrefresh(this->mWindows[2]);
 }
@@ -205,6 +206,13 @@ void Game::renderDifficulty() const
 {
     std::string difficultyString = std::to_string(this->mDifficulty);
     mvwprintw(this->mWindows[2], 10, 1, difficultyString.c_str());
+    wrefresh(this->mWindows[2]);
+}
+
+void Game::renderLives() const
+{
+    std::string livesString = std::to_string(this->mLives);
+    mvwprintw(this->mWindows[2], 16, 1, livesString.c_str());
     wrefresh(this->mWindows[2]);
 }
 
@@ -452,7 +460,10 @@ void Game::runGame()
 		 */
 
         this->controlSnake(pauseContinue);
-        if (!pauseContinue) break;
+        if (!pauseContinue) {
+            mLives = 0;
+            break;
+        }
         werase(mWindows[1]);
         box(mWindows[1],0,0);
         moveSuccess = this->mPtrSnake->moveFoward();
@@ -468,8 +479,9 @@ void Game::runGame()
 		this->renderSnake();
         this->renderDifficulty();
         this->renderPoints();
+        this->renderLives();
         
-        adjustDelay();
+        this->adjustDelay();
 		std::this_thread::sleep_for(std::chrono::milliseconds(this->mDelay));
 
         refresh();
@@ -484,15 +496,22 @@ void Game::startGame()
     {
         this->readLeaderBoard();
         this->renderBoards();
-        this->initializeGame();       
-        this->runGame();
+        this->initializeGame();
+        while (true) {   
+            this->runGame();
+            --mLives;
+            if (mLives <= 0) break;
+            this->mPtrSnake.reset(new Snake(this->mGameBoardWidth, this->mGameBoardHeight, this->mPtrSnake->getLength()));
+            createRamdonFood();
+            this->mPtrSnake->senseFood(this->mFood);
+            renderFood();
+            renderSnake();
+        }
         this->updateLeaderBoard();
         this->writeLeaderBoard();
         choice = this->renderRestartMenu();
-        if (choice == false)
-        {
-            break;
-        }
+        if (choice) mLives = 3;
+        else break;
     }
 }
 

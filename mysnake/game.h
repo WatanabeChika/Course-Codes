@@ -37,6 +37,7 @@ public:
     void runGame();
     void renderPoints() const;
     void renderDifficulty() const;
+    void renderLives() const;
     
 		void createRamdonFood();
     void renderFood() const;
@@ -70,6 +71,7 @@ private:
     int mDifficulty = 0;
     int mBaseDelay = 100;
     int mDelay;
+    int mLives = 3;
     const std::string mRecordBoardFilePath = "record.dat";
     std::vector<int> mLeaderBoard;
     const int mNumLeaders = 3;
