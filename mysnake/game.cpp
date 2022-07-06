@@ -265,8 +265,12 @@ void Game::renderSnake() const
     int snakeLength = this->mPtrSnake->getLength();
     std::vector<SnakeBody>& snake = this->mPtrSnake->getSnake();
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
+    init_pair(3, COLOR_RED, COLOR_BLACK);
+    wattron(mWindows[1], COLOR_PAIR(3));
+    mvwaddch(this->mWindows[1], snake[0].getY(), snake[0].getX(), this->mSnakeSymbol);
+    wattroff(mWindows[1], COLOR_PAIR(3));
     wattron(mWindows[1], COLOR_PAIR(2));
-    for (int i = 0; i < snakeLength; i ++)
+    for (int i = 1; i < snakeLength; i ++)
     {
         mvwaddch(this->mWindows[1], snake[i].getY(), snake[i].getX(), this->mSnakeSymbol);
     }
