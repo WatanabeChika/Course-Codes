@@ -3,5 +3,5 @@
 int main(int argc, char** argv)
 {
     Game game;
-    game.startGame();
+    game.mainMenu();
 }
