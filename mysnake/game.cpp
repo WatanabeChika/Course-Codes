@@ -497,7 +497,8 @@ bool Game::pauseGame() const
     delwin(menu);
 
     if (index == 0)
-    {
+    {   
+        this->returnGame();
         return true;
     }
     else
@@ -505,6 +506,48 @@ bool Game::pauseGame() const
         return false;
     }
     
+}
+
+void Game::returnGame() const
+{
+    WINDOW * menu;
+    int width = this->mGameBoardWidth * 0.25;
+    int height = this->mGameBoardHeight * 0.25 + 3;
+    int startX = this->mGameBoardWidth * 0.375;
+    int startY = this->mGameBoardHeight * 0.375 + this->mInformationHeight - 2;
+
+    menu = newwin(height, width, startY, startX);
+    box(menu, 0, 0);
+
+    std::string dot = "*";
+    std::string space = " ";
+    //std::string One = "1";
+    mvwprintw(menu, 1, width/2 - 5, "// WARNING \\\\");
+    for (int i = 0; i < 3; i++)
+        mvwprintw(menu, 3, width/2 + i, dot.c_str());
+    mvwprintw(menu, 4, width/2 + 2, dot.c_str());
+    for (int i = 0; i < 3; i++)
+        mvwprintw(menu, 5, width/2 + i, dot.c_str());
+    mvwprintw(menu, 6, width/2, dot.c_str());
+    for (int i = 0; i < 3; i++)
+        mvwprintw(menu, 7, width/2 + i, dot.c_str());
+
+    wrefresh(menu);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+
+    for (int j = 0; j < 5; j++){
+        for (int i = 0; i < 3; i++)
+            mvwprintw(menu, 3+j, width/2 + i, space.c_str());
+    }
+
+    for (int i = 0; i < 5; i++)
+        mvwprintw(menu, 3 + i, width/2 + 2, dot.c_str());
+    wrefresh(menu);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+    delwin(menu);
+
 }
 
 void Game::controlSnake(bool& con) 
@@ -583,7 +626,7 @@ void Game::adjustDelay() //need to change
     this->mSpeed = this->mPoints / 5;
     if (mPoints % 5 == 0)
     {
-        this->mDelay = this->mBaseDelay * pow(0.97-0.02*this->mDifficulty, this->mSpeed) * (1-this->mDifficulty * 0.1);
+        this->mDelay = this->mBaseDelay * pow(0.95-0.1*this->mDifficulty, this->mSpeed) * (1-this->mDifficulty * 0.2);
     }
 }
 
@@ -617,7 +660,7 @@ std::pair<std::vector<SnakeBody>, Direction> Game::runGame()
         moveSuccess = this->mPtrSnake->moveFoward();
         if (moveSuccess) {
             this->mPoints++;
-            createRamdonFood();
+            this->createRamdonFood();
             this->mPtrSnake->senseFood(this->mFood);
             oldData.first = this->mPtrSnake->getSnake();
             oldData.second = this->mPtrSnake->getDireciton();
@@ -654,11 +697,12 @@ void Game::startGame()
             this->renderLives();
             if (mLives <= 0) break;
             this->mPtrSnake.reset(new Snake(this->mGameBoardWidth, this->mGameBoardHeight, this->mInitialSnakeLength, oldSnake.first, oldSnake.second));
-            createRamdonFood();
+            this->createRamdonFood();
             this->mPtrSnake->senseFood(this->mFood);
-            renderFood();
-            renderSnake();
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            this->renderFood();
+            this->renderSnake();
+            this->returnGame();
+            //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         this->updateLeaderBoard();
         this->writeLeaderBoard();

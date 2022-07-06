@@ -1,7 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include <curses.h>
+#include "curses.h"
 #include <string>
 #include <vector>
 #include <memory>
@@ -14,46 +14,46 @@ class Game
 public:
     Game();
     ~Game();
-    
+
 		void createInformationBoard();
     void renderInformationBoard() const;
 
     void createGameBoard();
     void renderGameBoard() const;
-    
+
 		void createInstructionBoard();
     void renderInstructionBoard() const;
-		
+
 		void loadLeadBoard();
     void updateLeadBoard();
     bool readLeaderBoard();
     bool updateLeaderBoard();
     bool writeLeaderBoard();
     void renderLeaderBoard() const;
-    
+
 		void renderBoards() const;
-    
+
 		void initializeGame();
-    bool pauseGame() const;
-    std::pair<std::vector<SnakeBody>, Direction> runGame();
-    void returnGame() const;
+    void runGame();
     void renderPoints() const;
-    void renderSpeed() const;
-    void renderLives() const;
-    void renderCoins() const;
-    
+    void renderDifficulty() const;
+
 		void createRamdonFood();
     void renderFood() const;
     void renderSnake() const;
-    void controlSnake(bool& con);
-    
+    void controlSnake() const;
+
 		void startGame();
-    void mainMenu();
-    int renderStartMenu();
-    int renderDifficultySetting();
     bool renderRestartMenu() const;
     void adjustDelay();
-    
+
+    bool readCoins();
+    bool writeCoins();
+    void renderCoins();
+    int RenderStartMenu();
+    void MainMenu();
+    int renderDifficultySetting();
+
 
 private:
     // We need to have two windows
@@ -74,16 +74,13 @@ private:
     SnakeBody mFood;
     const char mFoodSymbol = '#';
     int mPoints = 0;
-    int mSpeed = 0;
-    int mDifficulty = 1;
+    int mDifficulty = 0;
     int mBaseDelay = 100;
     int mDelay;
-    int mLives = 3;
     int total_coins;
-    const std::string mRecordBoardFilePath = "recordpoints.dat";
-    const std::string mRecordBoardFilePath2 = "recorddifficuly.dat";
+    const std::string mRecordBoardFilePath = "record.dat";
+    const std::string mCoinsFilePath = "coins.dat";
     std::vector<int> mLeaderBoard;
-    std::vector<int> mLeaderBoardDifficulty;
     const int mNumLeaders = 3;
 };
 
