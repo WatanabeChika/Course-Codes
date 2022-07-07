@@ -37,6 +37,8 @@ public:
     bool pauseGame() const;
     std::pair<std::vector<SnakeBody>, Direction> runGame();
     void returnGame() const;
+    void renderCursor(WINDOW* win, int x, int y);
+    void renderTitle(WINDOW* win, int x, int y);
     void renderPoints() const;
     void renderSpeed() const;
     void renderLives() const;

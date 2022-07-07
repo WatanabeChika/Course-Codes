@@ -17,6 +17,9 @@ Game::Game()
     this->mWindows.resize(3);
     initscr();
     start_color();
+    init_pair(1, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(2, COLOR_GREEN, COLOR_BLACK);
+    init_pair(3, COLOR_RED, COLOR_BLACK);
     // If there wasn't any key pressed don't wait for keypress
     nodelay(stdscr, true);
     // Turn on keypad control
@@ -93,9 +96,9 @@ void Game::renderInstructionBoard() const
     mvwprintw(this->mWindows[2], 6, 1, "Right: D");
     mvwprintw(this->mWindows[2], 7, 1, "Pause: SPACE");
 
-    mvwprintw(this->mWindows[2], 9, 1, "Speed");
-    mvwprintw(this->mWindows[2], 12, 1, "Points");
-    mvwprintw(this->mWindows[2], 15, 1, "Lives");
+    mvwprintw(this->mWindows[2], 9, 1, "Speed:");
+    mvwprintw(this->mWindows[2], 11, 1, "Points:");
+    mvwprintw(this->mWindows[2], 13, 1, "Lives:");
 
     wrefresh(this->mWindows[2]);
 }
@@ -133,10 +136,72 @@ void Game::renderLeaderBoard() const
 void Game::renderCoins() const // Many things need improving
 {
     std::string coinsString = std::to_string(this->total_coins);
-    mvwprintw(this->mWindows[2], 23, 1, coinsString.c_str());
+    mvwprintw(this->mWindows[2], 15, 1, coinsString.c_str());
 
     wrefresh(this->mWindows[2]);
 
+}
+
+void Game::renderCursor(WINDOW* win, int x, int y)
+{   
+    wattron(win, COLOR_PAIR(3));
+    mvwaddch(win, x, y, this->mSnakeSymbol);
+    wattroff(win, COLOR_PAIR(3));
+    wattron(win, COLOR_PAIR(2));
+    mvwaddch(win, x, y-1, this->mSnakeSymbol);
+    mvwaddch(win, x, y-2, this->mSnakeSymbol);
+    wattroff(win, COLOR_PAIR(2));
+}
+
+void Game::renderTitle(WINDOW* win, int y, int x)
+{
+    mvwprintw(win,y+0,x,"*     *     * ");
+    mvwprintw(win,y+1,x," *   * *   *  ");
+    mvwprintw(win,y+2,x,"  * *   * *   ");
+    mvwprintw(win,y+3,x,"  * *   * *   ");
+    mvwprintw(win,y+4,x,"   *     *    ");
+    wattron(win,COLOR_PAIR(1));
+    mvwprintw(win,y+0,x+15,"   #####   ");
+    mvwprintw(win,y+1,x+15,"  #     #  "); 
+    mvwprintw(win,y+2,x+15," #       # ");
+    mvwprintw(win,y+3,x+15,"  #     #  ");
+    mvwprintw(win,y+4,x+15,"   #####   "); 
+    wattroff(win,COLOR_PAIR(1)); 
+    mvwprintw(win,y+0,x+27,"  ********   ");
+    mvwprintw(win,y+1,x+27,"  *      *   "); 
+    mvwprintw(win,y+2,x+27,"  ********   ");
+    mvwprintw(win,y+3,x+27,"  *   **     ");
+    mvwprintw(win,y+4,x+27,"  *     **   ");
+    mvwprintw(win,y+0,x+41,"   *     *   ");
+    mvwprintw(win,y+1,x+41,"  * *   * *  ");
+    mvwprintw(win,y+2,x+41,"  * *   * *  ");
+    mvwprintw(win,y+3,x+41," *   * *   * ");
+    mvwprintw(win,y+4,x+41,"*     *     *");
+    wattron(win,COLOR_PAIR(3));
+    mvwprintw(win,y+0,x+60,"@");
+    wattroff(win,COLOR_PAIR(3));
+    wattron(win,COLOR_PAIR(2));
+    mvwprintw(win,y+0,x+61,"@@@@@@@@@");
+    mvwprintw(win,y+1,x+60,"      @@@ ");
+    mvwprintw(win,y+2,x+60,"    @@@   ");
+    mvwprintw(win,y+3,x+60,"  @@@     ");
+    mvwprintw(win,y+4,x+60,"@@@@@@@@@@");
+    wattroff(win,COLOR_PAIR(2));
+    mvwprintw(win,y+0,x+72,"   *****   ");
+    mvwprintw(win,y+1,x+72,"  *     *  "); 
+    mvwprintw(win,y+2,x+72," *       * ");
+    mvwprintw(win,y+3,x+72,"  *     *  ");
+    mvwprintw(win,y+4,x+72,"   *****   "); 
+    mvwprintw(win,y+0,x+85," **       * ");
+    mvwprintw(win,y+1,x+85," * **     * "); 
+    mvwprintw(win,y+2,x+85," *   **   * ");
+    mvwprintw(win,y+3,x+85," *     ** * ");
+    mvwprintw(win,y+4,x+85," *       ** "); 
+    mvwprintw(win,y+0,x+99," ******** ");
+    mvwprintw(win,y+1,x+99," **       "); 
+    mvwprintw(win,y+2,x+99," *****    ");
+    mvwprintw(win,y+3,x+99," **       ");
+    mvwprintw(win,y+4,x+99," ******** ");
 }
 
 int Game::renderStartMenu() // need improving
@@ -144,15 +209,17 @@ int Game::renderStartMenu() // need improving
     WINDOW * menu;
     menu = newwin(this->mScreenHeight, this->mScreenWidth, 0, 0);
     box(menu, 0, 0);
-    std::vector<std::string> menuItems = {"Start", "Difficulty (default medium)", "Store", "Quit"};
+    std::vector<std::string> menuItems = {"Start", "Difficulty", "Store", "Quit"};
 
-    mvwprintw(menu, this->mScreenHeight/5*2-2, this->mScreenWidth/2-6, "WormZone");
+
+    this->renderTitle(menu,this->mScreenHeight/7,this->mScreenWidth/2-54);
+    this->renderCursor(menu, this->mScreenHeight/5*2+2, this->mScreenWidth/2-11);
     wattron(menu, A_STANDOUT);
-    mvwprintw(menu, this->mScreenHeight/5*2+2, this->mScreenWidth/2-6, menuItems[0].c_str());
+    mvwprintw(menu, this->mScreenHeight/5*2+2, this->mScreenWidth/2-9, menuItems[0].c_str());
     wattroff(menu, A_STANDOUT);
-    mvwprintw(menu, this->mScreenHeight/5*2+4, this->mScreenWidth/2-6, menuItems[1].c_str());
-    mvwprintw(menu, this->mScreenHeight/5*2+6, this->mScreenWidth/2-6, menuItems[2].c_str());
-    mvwprintw(menu, this->mScreenHeight/5*2+8, this->mScreenWidth/2-6, menuItems[3].c_str());
+    mvwprintw(menu, this->mScreenHeight/5*2+4, this->mScreenWidth/2-9, menuItems[1].c_str());
+    mvwprintw(menu, this->mScreenHeight/5*2+6, this->mScreenWidth/2-9, menuItems[2].c_str());
+    mvwprintw(menu, this->mScreenHeight/5*2+8, this->mScreenWidth/2-9, menuItems[3].c_str());
 
     wrefresh(menu);
 
@@ -167,11 +234,13 @@ int Game::renderStartMenu() // need improving
             case 'w':
             case KEY_UP:
             {
-                mvwprintw(menu, index*2+this->mScreenHeight/5*2+2, this->mScreenWidth/2-6, menuItems[index].c_str());
+                mvwprintw(menu, index*2+this->mScreenHeight/5*2+2, this->mScreenWidth/2-9, menuItems[index].c_str());
+                mvwprintw(menu, index*2+this->mScreenHeight/5*2+2, this->mScreenWidth/2-13, "   ");
                 index --;
                 index = (index < 0) ? menuItems.size() - 1 : index;
+                this->renderCursor(menu, index*2+this->mScreenHeight/5*2+2, this->mScreenWidth/2-11);
                 wattron(menu, A_STANDOUT);
-                mvwprintw(menu, index*2+this->mScreenHeight/5*2+2, this->mScreenWidth/2-6, menuItems[index].c_str());
+                mvwprintw(menu, index*2+this->mScreenHeight/5*2+2, this->mScreenWidth/2-9, menuItems[index].c_str());
                 wattroff(menu, A_STANDOUT);
                 break;
             }
@@ -179,11 +248,13 @@ int Game::renderStartMenu() // need improving
             case 's':
             case KEY_DOWN:
             {
-                mvwprintw(menu, index*2+this->mScreenHeight/5*2+2, this->mScreenWidth/2-6, menuItems[index].c_str());
+                mvwprintw(menu, index*2+this->mScreenHeight/5*2+2, this->mScreenWidth/2-9, menuItems[index].c_str());
+                mvwprintw(menu, index*2+this->mScreenHeight/5*2+2, this->mScreenWidth/2-13, "   ");
                 index ++;
                 index = (index > menuItems.size() - 1) ? 0 : index;
+                this->renderCursor(menu, index*2+this->mScreenHeight/5*2+2, this->mScreenWidth/2-11);
                 wattron(menu, A_STANDOUT);
-                mvwprintw(menu, index*2+this->mScreenHeight/5*2+2, this->mScreenWidth/2-6, menuItems[index].c_str());
+                mvwprintw(menu, index*2+this->mScreenHeight/5*2+2, this->mScreenWidth/2-9, menuItems[index].c_str());
                 wattroff(menu, A_STANDOUT);
                 break;
             }
@@ -207,19 +278,20 @@ int Game::renderDifficultySetting()
     int startX = this->mGameBoardWidth * 0.25;
     int startY = this->mGameBoardHeight * 0.25 + this->mInformationHeight;
 
-    menu = newwin(10, 40, 10, 40);
+    menu = newwin(height, width, startY, startX);
     box(menu, 0, 0);
-    std::vector<std::string> menuItems = {"Easy", "Medium", "Hard", "Exit"};
+    std::vector<std::string> menuItems = {"Easy", "Medium (default)", "Hard", "Exit"};
 
     int index = 0;
     int offset = 3;
-    mvwprintw(menu, 1, 12, "Difficulty Setting");
+    mvwprintw(menu, 1, width/2-10, "Difficulty Setting");
+    this->renderCursor(menu, 0 + offset, width/2-11);
     wattron(menu, A_STANDOUT);
-    mvwprintw(menu, 0 + offset, 18, menuItems[0].c_str());
+    mvwprintw(menu, 0 + offset, width/2-9, menuItems[0].c_str());
     wattroff(menu, A_STANDOUT);
-    mvwprintw(menu, 1 + offset, 18, menuItems[1].c_str());
-    mvwprintw(menu, 2 + offset, 18, menuItems[2].c_str());
-    mvwprintw(menu, 3 + offset, 18, menuItems[3].c_str());
+    mvwprintw(menu, 1 + offset, width/2-9, menuItems[1].c_str());
+    mvwprintw(menu, 2 + offset, width/2-9, menuItems[2].c_str());
+    mvwprintw(menu, 3 + offset, width/2-9, menuItems[3].c_str());
 
     wrefresh(menu);
 
@@ -233,11 +305,13 @@ int Game::renderDifficultySetting()
             case 'w':
             case KEY_UP:
             {
-                mvwprintw(menu, index + offset, 18, menuItems[index].c_str());
+                mvwprintw(menu, index + offset, width/2-9, menuItems[index].c_str());
+                mvwprintw(menu, index + offset, width/2-13, "   ");
                 index --;
                 index = (index < 0) ? menuItems.size() - 1 : index;
+                this->renderCursor(menu, index + offset, width/2-11);
                 wattron(menu, A_STANDOUT);
-                mvwprintw(menu, index + offset, 18, menuItems[index].c_str());
+                mvwprintw(menu, index + offset, width/2-9, menuItems[index].c_str());
                 wattroff(menu, A_STANDOUT);
                 break;
             }
@@ -245,11 +319,13 @@ int Game::renderDifficultySetting()
             case 's':
             case KEY_DOWN:
             {
-                mvwprintw(menu, index + offset, 18, menuItems[index].c_str());
+                mvwprintw(menu, index + offset, width/2-9, menuItems[index].c_str());
+                mvwprintw(menu, index + offset, width/2-13, "   ");
                 index ++;
                 index = (index > menuItems.size() - 1) ? 0 : index;
+                this->renderCursor(menu, index + offset, width/2-11);
                 wattron(menu, A_STANDOUT);
-                mvwprintw(menu, index + offset, 18, menuItems[index].c_str());
+                mvwprintw(menu, index + offset, width/2-9, menuItems[index].c_str());
                 wattroff(menu, A_STANDOUT);
                 break;
             }
@@ -282,6 +358,7 @@ bool Game::renderRestartMenu() const
     mvwprintw(menu, 1, 1, "Your Final Score:");
     std::string pointString = std::to_string(this->mPoints);
     mvwprintw(menu, 2, 1, pointString.c_str());
+    
     wattron(menu, A_STANDOUT);
     mvwprintw(menu, 0 + offset, 1, menuItems[0].c_str());
     wattroff(menu, A_STANDOUT);
@@ -339,21 +416,21 @@ bool Game::renderRestartMenu() const
 void Game::renderPoints() const
 {
     std::string pointString = std::to_string(this->mPoints);
-    mvwprintw(this->mWindows[2], 13, 1, pointString.c_str());
+    mvwprintw(this->mWindows[2], 11, 9, pointString.c_str());
     wrefresh(this->mWindows[2]);
 }
 
 void Game::renderSpeed() const
 {
     std::string speedString = std::to_string(this->mSpeed);
-    mvwprintw(this->mWindows[2], 10, 1, speedString.c_str());
+    mvwprintw(this->mWindows[2], 9, 8, speedString.c_str());
     wrefresh(this->mWindows[2]);
 }
 
 void Game::renderLives() const
 {
     std::string livesString = std::to_string(this->mLives);
-    mvwprintw(this->mWindows[2], 16, 1, livesString.c_str());
+    mvwprintw(this->mWindows[2], 13, 8, livesString.c_str());
     wrefresh(this->mWindows[2]);
 }
 
@@ -394,7 +471,6 @@ void Game::createRamdonFood()
 
 void Game::renderFood() const
 {
-    init_pair(1, COLOR_YELLOW, COLOR_BLACK);
     wattron(mWindows[1], COLOR_PAIR(1));
     mvwaddch(this->mWindows[1], this->mFood.getY(), this->mFood.getX(), this->mFoodSymbol);
     wattroff(mWindows[1], COLOR_PAIR(1));
@@ -405,8 +481,6 @@ void Game::renderSnake() const
 {
     int snakeLength = this->mPtrSnake->getLength();
     std::vector<SnakeBody>& snake = this->mPtrSnake->getSnake();
-    init_pair(2, COLOR_GREEN, COLOR_BLACK);
-    init_pair(3, COLOR_RED, COLOR_BLACK);
     wattron(mWindows[1], COLOR_PAIR(3));
     mvwaddch(this->mWindows[1], snake[0].getY(), snake[0].getX(), this->mSnakeSymbol);
     wattroff(mWindows[1], COLOR_PAIR(3));
@@ -538,7 +612,7 @@ void Game::returnGame() const
 
     for (int j = 0; j < 5; j++){
         for (int i = 0; i < 3; i++)
-            mvwprintw(menu, 3+j, width/2 + i, space.c_str());
+            mvwprintw(menu, 3 + j, width/2 + i, space.c_str());
     }
 
     for (int i = 0; i < 5; i++)
@@ -634,7 +708,6 @@ std::pair<std::vector<SnakeBody>, Direction> Game::runGame()
 {
     bool moveSuccess, pauseContinue = true;
     std::pair<std::vector<SnakeBody>, Direction> oldData(this->mPtrSnake->getSnake(), this->mPtrSnake->getDireciton());
-    //std::vector<SnakeBody> oldSnake = this->mPtrSnake->getSnake();
     while (true)
     {
 		/* TODO 
@@ -720,11 +793,13 @@ void Game::mainMenu()
     while (true)
     {
         int i = this->renderStartMenu();
+        this->mLives = 5-(this->mDifficulty)*2;
         if (i == 0)
             this->startGame();
         else if (i == 1) {
-            this->mDifficulty = this->renderDifficultySetting();
-            this->mLives = 5-(this->mDifficulty)*2;
+            int diffi_choice = this->renderDifficultySetting();
+            if (diffi_choice < 3)
+                this->mDifficulty = diffi_choice;
         }
         else if (i == 3)
             break;
@@ -766,12 +841,12 @@ bool Game::updateLeaderBoard()
     int newdiff = this->mDifficulty;
     for (int i = 0; i < this->mNumLeaders; i ++)
     {
-        if (this->mLeaderBoard[i] >= this->mPoints)
+        if (this->mLeaderBoard[i] > this->mPoints || (this->mLeaderBoard[i] == this->mPoints && this->mLeaderBoardDifficulty[i] >= this->mDifficulty))
         {
             continue;
         }
         int oldScore = this->mLeaderBoard[i];
-        int olddiff = this->mDifficulty;
+        int olddiff = this->mLeaderBoardDifficulty[i];
         this->mLeaderBoard[i] = newScore;
         this->mLeaderBoardDifficulty[i] = newdiff;
         newScore = oldScore;
