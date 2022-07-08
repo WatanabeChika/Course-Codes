@@ -107,15 +107,15 @@ void Game::renderInstructionBoard() const
 void Game::renderLeaderBoard() const
 {
     // If there is not too much space, skip rendering the leader board 
-    if (this->mScreenHeight - this->mInformationHeight - 14 - 2 < 3 * 2)
+    if (this->mScreenHeight - this->mInformationHeight - 17 - 2 < 3)
     {
         return;
     }
-    mvwprintw(this->mWindows[2], 18, 1, "Leader Board");
+    mvwprintw(this->mWindows[2], 17, 1, "Leader Board");
     std::string pointString;
     std::string rank;
     std::string difficulty;
-    for (int i = 0; i < std::min(this->mNumLeaders, this->mScreenHeight - this->mInformationHeight - 14 - 2); i ++)
+    for (int i = 0; i < std::min(this->mNumLeaders, this->mScreenHeight - this->mInformationHeight - 17 - 2); i ++)
     {
         switch (this->mLeaderBoardDifficulty[i])
         {
@@ -126,9 +126,9 @@ void Game::renderLeaderBoard() const
         }
         pointString = std::to_string(this->mLeaderBoard[i]);
         rank = "#" + std::to_string(i + 1) + ":";
-        mvwprintw(this->mWindows[2], 18 + (i + 1), 1, rank.c_str());
-        mvwprintw(this->mWindows[2], 18 + (i + 1), 5, pointString.c_str());
-        mvwprintw(this->mWindows[2], 18 + (i + 1), 8, difficulty.c_str());
+        mvwprintw(this->mWindows[2], 17 + (i + 1), 1, rank.c_str());
+        mvwprintw(this->mWindows[2], 17 + (i + 1), 5, pointString.c_str());
+        mvwprintw(this->mWindows[2], 17 + (i + 1), 9, difficulty.c_str());
     }
     wrefresh(this->mWindows[2]);
 }
@@ -204,7 +204,7 @@ void Game::renderTitle(WINDOW* win, int y, int x)
     mvwprintw(win,y+4,x+99," ******** ");
 }
 
-int Game::renderStartMenu() // need improving
+int Game::renderStartMenu()
 {
     WINDOW * menu;
     menu = newwin(this->mScreenHeight, this->mScreenWidth, 0, 0);
@@ -695,7 +695,7 @@ void Game::renderBoards() const
 }
 
 
-void Game::adjustDelay() //need to change
+void Game::adjustDelay()
 {
     this->mSpeed = this->mPoints / 5;
     if (mPoints % 5 == 0)

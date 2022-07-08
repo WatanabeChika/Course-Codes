@@ -86,7 +86,7 @@ private:
     const std::string mRecordBoardFilePath2 = "recorddifficuly.dat";
     std::vector<int> mLeaderBoard;
     std::vector<int> mLeaderBoardDifficulty;
-    const int mNumLeaders = 3;
+    const int mNumLeaders = 10;
 };
 
 #endif
