@@ -17,9 +17,13 @@ Game::Game()
     this->mWindows.resize(3);
     initscr();
     start_color();
-    init_pair(1, COLOR_YELLOW, COLOR_BLACK);
-    init_pair(2, COLOR_GREEN, COLOR_BLACK);
-    init_pair(3, COLOR_RED, COLOR_BLACK);
+    init_pair(1, COLOR_BLUE, COLOR_BLACK);
+    init_pair(2, COLOR_CYAN, COLOR_BLACK);
+    init_pair(3, COLOR_GREEN, COLOR_BLACK);
+    init_pair(4, COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(5, COLOR_RED, COLOR_BLACK);
+    init_pair(6, COLOR_WHITE, COLOR_BLACK);
+    init_pair(7, COLOR_YELLOW, COLOR_BLACK);
     // If there wasn't any key pressed don't wait for keypress
     nodelay(stdscr, true);
     // Turn on keypad control
@@ -133,7 +137,7 @@ void Game::renderLeaderBoard() const
     wrefresh(this->mWindows[2]);
 }
 
-void Game::renderCoins() const // Many things need improving
+void Game::renderCoins() const
 {
     std::string coinsString = std::to_string(this->total_coins);
     mvwprintw(this->mWindows[2], 15, 1, coinsString.c_str());
@@ -144,13 +148,13 @@ void Game::renderCoins() const // Many things need improving
 
 void Game::renderCursor(WINDOW* win, int x, int y)
 {   
-    wattron(win, COLOR_PAIR(3));
+    wattron(win, COLOR_PAIR(4));
     mvwaddch(win, x, y, this->mSnakeSymbol);
-    wattroff(win, COLOR_PAIR(3));
-    wattron(win, COLOR_PAIR(2));
+    wattroff(win, COLOR_PAIR(4));
+    wattron(win, COLOR_PAIR(3));
     mvwaddch(win, x, y-1, this->mSnakeSymbol);
     mvwaddch(win, x, y-2, this->mSnakeSymbol);
-    wattroff(win, COLOR_PAIR(2));
+    wattroff(win, COLOR_PAIR(3));
 }
 
 void Game::renderTitle(WINDOW* win, int y, int x)
@@ -160,13 +164,13 @@ void Game::renderTitle(WINDOW* win, int y, int x)
     mvwprintw(win,y+2,x,"  * *   * *   ");
     mvwprintw(win,y+3,x,"  * *   * *   ");
     mvwprintw(win,y+4,x,"   *     *    ");
-    wattron(win,COLOR_PAIR(1));
+    wattron(win,COLOR_PAIR(7));
     mvwprintw(win,y+0,x+15,"   #####   ");
     mvwprintw(win,y+1,x+15,"  #     #  "); 
     mvwprintw(win,y+2,x+15," #       # ");
     mvwprintw(win,y+3,x+15,"  #     #  ");
     mvwprintw(win,y+4,x+15,"   #####   "); 
-    wattroff(win,COLOR_PAIR(1)); 
+    wattroff(win,COLOR_PAIR(7)); 
     mvwprintw(win,y+0,x+27,"  ********   ");
     mvwprintw(win,y+1,x+27,"  *      *   "); 
     mvwprintw(win,y+2,x+27,"  ********   ");
@@ -177,16 +181,16 @@ void Game::renderTitle(WINDOW* win, int y, int x)
     mvwprintw(win,y+2,x+41,"  * *   * *  ");
     mvwprintw(win,y+3,x+41," *   * *   * ");
     mvwprintw(win,y+4,x+41,"*     *     *");
-    wattron(win,COLOR_PAIR(3));
+    wattron(win,COLOR_PAIR(4));
     mvwprintw(win,y+0,x+60,"@");
-    wattroff(win,COLOR_PAIR(3));
-    wattron(win,COLOR_PAIR(2));
+    wattroff(win,COLOR_PAIR(4));
+    wattron(win,COLOR_PAIR(3));
     mvwprintw(win,y+0,x+61,"@@@@@@@@@");
     mvwprintw(win,y+1,x+60,"      @@@ ");
     mvwprintw(win,y+2,x+60,"    @@@   ");
     mvwprintw(win,y+3,x+60,"  @@@     ");
     mvwprintw(win,y+4,x+60,"@@@@@@@@@@");
-    wattroff(win,COLOR_PAIR(2));
+    wattroff(win,COLOR_PAIR(3));
     mvwprintw(win,y+0,x+72,"   *****   ");
     mvwprintw(win,y+1,x+72,"  *     *  "); 
     mvwprintw(win,y+2,x+72," *       * ");
@@ -341,6 +345,383 @@ int Game::renderDifficultySetting()
     return index;
 }
 
+void Game::renderStoreMenu()
+{
+    WINDOW * menu;
+    int width = this->mGameBoardWidth * 0.5;
+    int height = this->mGameBoardHeight * 0.5;
+    int startX = this->mGameBoardWidth * 0.25;
+    int startY = this->mGameBoardHeight * 0.25 + this->mInformationHeight;
+
+    menu = newwin(height, width, startY, startX);
+    box(menu, 0, 0);
+    std::vector<std::string> menuItems = {"Body", "Head", "Exit"};
+
+    int index = 0;
+    int offset = 3;
+    mvwprintw(menu, 1, width/2-6, "Body or Head?");
+    this->renderCursor(menu, 0+offset, width/2-6);
+    wattron(menu, A_STANDOUT);
+    mvwprintw(menu, 0 + offset, width/2-4, menuItems[0].c_str());
+    wattroff(menu, A_STANDOUT);
+    mvwprintw(menu, 1 + offset, width/2-4, menuItems[1].c_str());
+    mvwprintw(menu, 2 + offset, width/2-4, menuItems[2].c_str());
+
+    wrefresh(menu);
+
+    int key;
+    while (true)
+    {
+        key = getch();
+        switch(key)
+        {
+            case 'W':
+            case 'w':
+            case KEY_UP:
+            {
+                mvwprintw(menu, index + offset, width/2-4, menuItems[index].c_str());
+                mvwprintw(menu, index + offset, width/2-8, "   ");
+                index --;
+                index = (index < 0) ? menuItems.size() - 1 : index;
+                this->renderCursor(menu, index+offset, width/2-6);
+                wattron(menu, A_STANDOUT);
+                mvwprintw(menu, index + offset, width/2-4, menuItems[index].c_str());
+                wattroff(menu, A_STANDOUT);
+                break;
+            }
+            case 'S':
+            case 's':
+            case KEY_DOWN:
+            {
+                mvwprintw(menu, index + offset, width/2-4, menuItems[index].c_str());
+                mvwprintw(menu, index + offset, width/2-8, "   ");
+                index ++;
+                index = (index > menuItems.size() - 1) ? 0 : index;
+                this->renderCursor(menu, index+offset, width/2-6);
+                wattron(menu, A_STANDOUT);
+                mvwprintw(menu, index + offset, width/2-4, menuItems[index].c_str());
+                wattroff(menu, A_STANDOUT);
+                break;
+            }
+        }
+        wrefresh(menu);
+        if ((key == ' ' || key == 10) && index != 2)
+        {
+            this->renderStore(index);
+            break;
+        }
+        else if ((key == ' ' || key == 10) && index == 2)
+            break;
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+    delwin(menu);
+}
+
+bool whetherPurchased(const int& k, const int& c)
+{
+    std::ifstream infile;
+    if (k == 0)
+        infile.open("bodyPurchase.txt");
+    else if (k == 1)
+        infile.open("headPurchase.txt");
+    if (!infile)
+    {
+        std::ofstream ifile("bodyPurchase.txt"), ofile("headPurchase.txt");
+        if (ifile) ifile << 5 ;
+        if (ofile) ofile << 5 ;
+        ifile.close();
+        ofile.close();
+        return false;
+    }
+
+    std::string message;
+    getline(infile, message);
+    infile.close();
+    for (int i = 0; i < message.length(); i++)
+    {
+        if (message[i] == (c +'0'))
+            return true;
+    }
+    return false;
+}
+
+void updatePurchase(const int& k, const int& c)
+{
+    std::ifstream ifile;
+    if (k == 0){
+        ifile.open("bodyPurchase.txt");
+        if (!ifile) {
+            //ifile.open("bodyPurchase.txt", std::ios::out);
+            return;
+        }
+    }
+    else if (k == 1){
+        ifile.open("headPurchase.txt");
+        if (!ifile) {
+            //ifile.open("headPurchase.txt", std::ios::out);
+            return;
+        }
+    }
+
+    std::string message;
+    getline(ifile, message);
+    message += std::to_string(c);
+    ifile.close();
+
+    std::ofstream ofile;
+    if (k == 0){
+        ofile.open("bodyPurchase.txt");
+    }
+    else if (k == 1){
+        ofile.open("headPurchase.txt");
+    }
+    if (!ofile)
+    {
+        return;
+    }
+    ofile << message;
+    ofile.close();
+}
+
+void Game::renderStore(const int& k)
+{
+    WINDOW * store;
+    store = newwin(this->mScreenHeight, this->mScreenWidth, 0, 0);
+    box(store, 0, 0);
+
+    for (int i = 2; i < this->mScreenWidth-1; i++)
+        mvwprintw(store, mScreenHeight/3, i, "-");
+    for (int i = 2; i <this->mScreenWidth-1; i++)
+        mvwprintw(store, mScreenHeight/3*2, i, "-");
+
+    std::vector<std::string> storeItems = {"Blue", "Cyan", "Green", "Magenta", "Red", "White", "Yellow", "Quit"};
+    std::vector<std::pair<int, int>> itemsPosition;
+    itemsPosition.push_back(std::make_pair(mScreenHeight/3-1, mScreenWidth/4-4));
+    itemsPosition.push_back(std::make_pair(mScreenHeight/3-1, mScreenWidth/4*3-4));
+    itemsPosition.push_back(std::make_pair(mScreenHeight/3*2-1, mScreenWidth/4-4));
+    itemsPosition.push_back(std::make_pair(mScreenHeight/3*2-1, mScreenWidth/4*3-4));
+    itemsPosition.push_back(std::make_pair(mScreenHeight-2, mScreenWidth/4-4));
+    itemsPosition.push_back(std::make_pair(mScreenHeight-2, mScreenWidth/2-4));
+    itemsPosition.push_back(std::make_pair(mScreenHeight-2, mScreenWidth/4*3-4));
+    itemsPosition.push_back(std::make_pair(1,mScreenWidth-10));
+
+    for (int i = 0; i < storeItems.size(); i++)
+    {
+        if (i == 0)
+        {
+            this->renderCursor(store, itemsPosition[i].first, itemsPosition[i].second-2);
+            wattron(store, A_STANDOUT);
+            mvwprintw(store, itemsPosition[i].first, itemsPosition[i].second, storeItems[i].c_str());
+            wattroff(store, A_STANDOUT);
+        }
+        else
+            mvwprintw(store, itemsPosition[i].first, itemsPosition[i].second, storeItems[i].c_str());
+
+        if (whetherPurchased(k, i))
+            mvwprintw(store, itemsPosition[i].first, itemsPosition[i].second+1+storeItems[i].length(), "(Purchased)");
+    }
+
+    mvwprintw(store, 1, 2, "total coins: ");
+    mvwprintw(store, 1, 15, std::to_string(total_coins).c_str());
+    mvwprintw(store, 2, 2, "100$ per color");
+
+    if (k == 0)
+    {
+        for (int i = 0; i < storeItems.size()-1; i++)
+        {
+            wattron(store, COLOR_PAIR(i+1));
+            for (int j = 0; j < 5; j++)
+            {
+                mvwprintw(store, itemsPosition[i].first-2, itemsPosition[i].second+j, "@");
+            }
+            for (int j = 0; j < 5; j++)
+            {
+                mvwprintw(store, itemsPosition[i].first-2-j, itemsPosition[i].second+4, "@");
+            }
+            wattroff(store, COLOR_PAIR(i+1));
+        }
+    }
+    else if (k == 1)
+    {
+        for (int i = 0; i < storeItems.size()-1; i++)
+        {
+            wattron(store, COLOR_PAIR(i+1));
+            mvwprintw(store, itemsPosition[i].first-2, itemsPosition[i].second, "@");
+            wattroff(store, COLOR_PAIR(i+1));
+            for (int j = 1; j < 5; j++)
+            {
+                mvwprintw(store, itemsPosition[i].first-2, itemsPosition[i].second+j, "@");
+            }
+            for (int j = 0; j < 5; j++)
+            {
+                mvwprintw(store, itemsPosition[i].first-2-j, itemsPosition[i].second+4, "@");
+            }
+
+        }
+    }
+    wrefresh(store);
+
+    int index = 0;
+    int key;
+    while (true)
+    {
+        key = getch();
+        switch(key)
+        {
+            case 'W':
+            case 'w':
+            case KEY_UP:
+            {
+                mvwprintw(store, itemsPosition[index].first, itemsPosition[index].second, storeItems[index].c_str());
+                mvwprintw(store, itemsPosition[index].first, itemsPosition[index].second-4, "   ");
+                if (index == 0)
+                    index = 4;
+                else if (index == 2)
+                    index = 0;
+                else if (index == 4)
+                    index = 2;
+                else if (index == 1)
+                    index = 6;
+                else if (index == 3)
+                    index = 1;
+                else if (index == 5 || index == 6)
+                    index = 3;
+                this->renderCursor(store, itemsPosition[index].first, itemsPosition[index].second-2);
+                wattron(store, A_STANDOUT);
+                mvwprintw(store, itemsPosition[index].first, itemsPosition[index].second, storeItems[index].c_str());
+                wattroff(store, A_STANDOUT);
+                break;
+            }
+            case 'S':
+            case 's':
+            case KEY_DOWN:
+            {
+                mvwprintw(store, itemsPosition[index].first, itemsPosition[index].second, storeItems[index].c_str());
+                mvwprintw(store, itemsPosition[index].first, itemsPosition[index].second-4, "   ");
+                if (index == 0)
+                    index = 2;
+                else if (index == 2)
+                    index = 4;
+                else if (index == 4)
+                    index = 0;
+                else if (index == 1)
+                    index = 3;
+                else if (index == 3)
+                    index = 6;
+                else if (index == 5 || index == 6 || index == 7)
+                    index = 1;
+                this->renderCursor(store, itemsPosition[index].first, itemsPosition[index].second-2);
+                wattron(store, A_STANDOUT);
+                mvwprintw(store, itemsPosition[index].first, itemsPosition[index].second, storeItems[index].c_str());
+                wattroff(store, A_STANDOUT);
+                break;
+            }
+            case 'A':
+            case 'a':
+            case KEY_LEFT:
+            {
+                mvwprintw(store, itemsPosition[index].first, itemsPosition[index].second, storeItems[index].c_str());
+                mvwprintw(store, itemsPosition[index].first, itemsPosition[index].second-4, "   ");
+                if (index == 7) 
+                    index = 1;
+                else if (index == 0)
+                    index = 6;
+                else if (index == 2)
+                    index = 7;
+                else {
+                    index --;
+                    index = (index < 0) ? storeItems.size()-1 : index;
+                }
+                this->renderCursor(store, itemsPosition[index].first, itemsPosition[index].second-2);
+                wattron(store, A_STANDOUT);
+                mvwprintw(store, itemsPosition[index].first, itemsPosition[index].second, storeItems[index].c_str());
+                wattroff(store, A_STANDOUT);
+                break;
+            }
+            case 'D':
+            case 'd':
+            case KEY_RIGHT:
+            {
+                mvwprintw(store, itemsPosition[index].first, itemsPosition[index].second, storeItems[index].c_str());
+                mvwprintw(store, itemsPosition[index].first, itemsPosition[index].second-4, "   ");
+                if (index == 1) 
+                    index = 7;
+                else if (index == 7)
+                    index = 2;
+                else if (index == 6)
+                    index = 0;
+                else {
+                    index ++;
+                    index = (index < 0) ? storeItems.size()-1 : index;
+                }
+                this->renderCursor(store, itemsPosition[index].first, itemsPosition[index].second-2);
+                wattron(store, A_STANDOUT);
+                mvwprintw(store, itemsPosition[index].first, itemsPosition[index].second, storeItems[index].c_str());
+                wattroff(store, A_STANDOUT);
+                break;
+            }
+        }
+        wrefresh(store);
+
+        if ((key == ' ' || key == 10) && index == storeItems.size()-1)
+        {
+            break;
+        }
+        else if ((key == ' ' || key == 10) && index != storeItems.size()-1 && whetherPurchased(k, index))
+        {
+            WINDOW * noteBoard = newwin(8, 40, mScreenHeight/3+2, mScreenWidth/2-17);
+            box(noteBoard, 0, 0);
+            if (k == 0)
+            {
+                snakeBodyColor = index+1;
+                mvwprintw(noteBoard, 3, 3, "The Color of Snakebody has changed!");
+                wrefresh(noteBoard);
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                werase(noteBoard);
+                wrefresh(noteBoard);
+                wrefresh(store);
+            }
+
+            else if (k == 1)
+            {
+                snakeHeadColor = index+1;
+                mvwprintw(noteBoard, 3, 3, "The Color of Snakehead has changed!");
+                wrefresh(noteBoard);
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                werase(noteBoard);
+                wrefresh(noteBoard);
+            }
+
+
+        }
+        else if ((key == ' ' || key == 10) && index != storeItems.size()-1 && !whetherPurchased(k, index))
+        {
+            if (total_coins >= 100)
+            {
+                total_coins -= 100;
+                mvwprintw(store, itemsPosition[index].first, itemsPosition[index].second+1+storeItems[index].length(), "(Purchased)");
+                mvwprintw(store, 1, 15, "      ");
+                mvwprintw(store, 1, 15, std::to_string(total_coins).c_str());
+                this->writeCoins();
+                updatePurchase(k, index);
+            }
+            else
+            {
+                WINDOW * noteBoard = newwin(8, 40, mScreenHeight/3+2, mScreenWidth/2-17);
+                box(noteBoard, 0, 0);
+                mvwprintw(noteBoard, 3, 3, "Sorry, you don't have enough money.");
+                wrefresh(noteBoard);
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                werase(noteBoard);
+                wrefresh(noteBoard);
+
+            }
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+    delwin(store);
+}
+
 bool Game::renderRestartMenu() const
 {
     WINDOW * menu;
@@ -471,9 +852,9 @@ void Game::createRamdonFood()
 
 void Game::renderFood() const
 {
-    wattron(mWindows[1], COLOR_PAIR(1));
+    wattron(mWindows[1], COLOR_PAIR(7));
     mvwaddch(this->mWindows[1], this->mFood.getY(), this->mFood.getX(), this->mFoodSymbol);
-    wattroff(mWindows[1], COLOR_PAIR(1));
+    wattroff(mWindows[1], COLOR_PAIR(7));
     wrefresh(this->mWindows[1]);
 }
 
@@ -481,15 +862,16 @@ void Game::renderSnake() const
 {
     int snakeLength = this->mPtrSnake->getLength();
     std::vector<SnakeBody>& snake = this->mPtrSnake->getSnake();
-    wattron(mWindows[1], COLOR_PAIR(3));
+    
+    wattron(mWindows[1], COLOR_PAIR(this->snakeHeadColor));
     mvwaddch(this->mWindows[1], snake[0].getY(), snake[0].getX(), this->mSnakeSymbol);
-    wattroff(mWindows[1], COLOR_PAIR(3));
-    wattron(mWindows[1], COLOR_PAIR(2));
+    wattroff(mWindows[1], COLOR_PAIR(this->snakeHeadColor));
+    wattron(mWindows[1], COLOR_PAIR(this->snakeBodyColor));
     for (int i = 1; i < snakeLength; i ++)
     {
         mvwaddch(this->mWindows[1], snake[i].getY(), snake[i].getX(), this->mSnakeSymbol);
     }
-    wattroff(mWindows[1], COLOR_PAIR(2));
+    wattroff(mWindows[1], COLOR_PAIR(this->snakeBodyColor));
     wrefresh(this->mWindows[1]);
 }
 
@@ -775,10 +1157,10 @@ void Game::startGame()
             this->renderFood();
             this->renderSnake();
             this->returnGame();
-            //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
         this->updateLeaderBoard();
         this->writeLeaderBoard();
+        this->total_coins += this->mPoints;
         choice = this->renderRestartMenu();
         if (choice) {
             this->mLives = 5-(this->mDifficulty)*2;
@@ -790,17 +1172,22 @@ void Game::startGame()
 void Game::mainMenu()
 {
     refresh();
+    this->readCoins();
     while (true)
     {
         int i = this->renderStartMenu();
         this->mLives = 5-(this->mDifficulty)*2;
-        if (i == 0)
+        if (i == 0) {
             this->startGame();
+            this->writeCoins();
+        }
         else if (i == 1) {
             int diffi_choice = this->renderDifficultySetting();
             if (diffi_choice < 3)
                 this->mDifficulty = diffi_choice;
         }
+        else if (i == 2)
+            this->renderStoreMenu();
         else if (i == 3)
             break;
         else
@@ -875,7 +1262,35 @@ bool Game::writeLeaderBoard()
     return true;
 }
 
+bool Game::readCoins()
+{
+    std::ifstream fhand;
+    fhand.open(mCoinsFilePath.c_str());
+    if (!fhand.is_open())
+    {
+        return false;
+    }
+    std::string coins;
+    getline(fhand, coins);
+    this->total_coins = stoi(coins);
+    fhand.close();
+    return true;
+}
 
+bool Game::writeCoins()
+{
+    // trunc: clear the data file
+    std::ofstream fhand;
+    fhand.open(mCoinsFilePath.c_str());
+    if (!fhand.is_open())
+    {
+        fhand.open(mCoinsFilePath.c_str(), std::ios::out);
+        return false;
+    }
+    fhand << std::to_string(total_coins) << std::endl;
+    fhand.close();
+    return true;
+}
 
 
 

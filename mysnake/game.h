@@ -42,7 +42,6 @@ public:
     void renderPoints() const;
     void renderSpeed() const;
     void renderLives() const;
-    void renderCoins() const;
     
 		void createRamdonFood();
     void renderFood() const;
@@ -55,6 +54,12 @@ public:
     int renderDifficultySetting();
     bool renderRestartMenu() const;
     void adjustDelay();
+
+    void renderCoins() const;
+    bool readCoins();
+    bool writeCoins();
+    void renderStore(const int& i);
+    void renderStoreMenu();
     
 
 private:
@@ -81,9 +86,12 @@ private:
     int mBaseDelay = 100;
     int mDelay;
     int mLives = 3;
-    int total_coins;
+    int total_coins = 0;
+    int snakeBodyColor = 6;
+    int snakeHeadColor = 6;
     const std::string mRecordBoardFilePath = "recordpoints.dat";
     const std::string mRecordBoardFilePath2 = "recorddifficuly.dat";
+    const std::string mCoinsFilePath = "coins.txt";
     std::vector<int> mLeaderBoard;
     std::vector<int> mLeaderBoardDifficulty;
     const int mNumLeaders = 10;
