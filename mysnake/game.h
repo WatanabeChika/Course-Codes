@@ -26,16 +26,16 @@ public:
 		
 		void loadLeadBoard();
     void updateLeadBoard();
-    bool readLeaderBoard();
+    bool readLeaderBoard(const int& k);
     bool updateLeaderBoard();
-    bool writeLeaderBoard();
+    bool writeLeaderBoard(const int& k);
     void renderLeaderBoard() const;
     
-		void renderBoards() const;
+		void renderBoards(const int& k) const;
     
 		void initializeGame();
     bool pauseGame() const;
-    std::pair<std::vector<SnakeBody>, Direction> runGame();
+    std::pair<std::vector<SnakeBody>, Direction> runGame(const int& k);
     void returnGame() const;
     void renderCursor(WINDOW* win, int x, int y);
     void renderTitle(WINDOW* win, int x, int y);
@@ -48,7 +48,7 @@ public:
     void renderSnake() const;
     void controlSnake(bool& con);
     
-		void startGame();
+		void startGame(const int& k);
     void mainMenu();
     int renderStartMenu();
     int renderDifficultySetting();
@@ -60,6 +60,7 @@ public:
     bool writeCoins();
     void renderStore(const int& i);
     void renderStoreMenu();
+    int renderModeSelection();
     
 
 private:
@@ -89,8 +90,10 @@ private:
     int total_coins = 0;
     int snakeBodyColor = 6;
     int snakeHeadColor = 6;
-    const std::string mRecordBoardFilePath = "recordpoints.dat";
-    const std::string mRecordBoardFilePath2 = "recorddifficuly.dat";
+    const std::string mRecordBoardFilePathForInfinite = "recordpoints_infinite.dat";
+    const std::string mRecordBoardFilePathForCounting = "recordpoints_counting.dat";
+    const std::string mRecordBoardFilePathForInfinite2 = "recorddifficuly_infinite.dat";
+    const std::string mRecordBoardFilePathForCounting2 = "recorddifficuly_counting.dat";
     const std::string mCoinsFilePath = "coins.txt";
     std::vector<int> mLeaderBoard;
     std::vector<int> mLeaderBoardDifficulty;

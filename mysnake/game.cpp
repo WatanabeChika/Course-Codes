@@ -103,6 +103,7 @@ void Game::renderInstructionBoard() const
     mvwprintw(this->mWindows[2], 9, 1, "Speed:");
     mvwprintw(this->mWindows[2], 11, 1, "Points:");
     mvwprintw(this->mWindows[2], 13, 1, "Lives:");
+    mvwprintw(this->mWindows[2], 15, 1, "Coins:");
 
     wrefresh(this->mWindows[2]);
 }
@@ -140,7 +141,7 @@ void Game::renderLeaderBoard() const
 void Game::renderCoins() const
 {
     std::string coinsString = std::to_string(this->total_coins);
-    mvwprintw(this->mWindows[2], 15, 1, coinsString.c_str());
+    mvwprintw(this->mWindows[2], 15, 8, coinsString.c_str());
 
     wrefresh(this->mWindows[2]);
 
@@ -1058,7 +1059,7 @@ void Game::controlSnake(bool& con)
     }
 }
 
-void Game::renderBoards() const
+void Game::renderBoards(const int& k) const
 {
     for (int i = 0; i < this->mWindows.size(); i ++)
     {
@@ -1073,7 +1074,7 @@ void Game::renderBoards() const
         wrefresh(this->mWindows[i]);
     }
     this->renderLeaderBoard();
-    //this->renderCoins();
+    if (k == 0) this->renderCoins();
 }
 
 
@@ -1086,10 +1087,84 @@ void Game::adjustDelay()
     }
 }
 
-std::pair<std::vector<SnakeBody>, Direction> Game::runGame()
+int Game::renderModeSelection()
+{
+    WINDOW * menu;
+    int width = this->mGameBoardWidth * 0.5;
+    int height = this->mGameBoardHeight * 0.5;
+    int startX = this->mGameBoardWidth * 0.25;
+    int startY = this->mGameBoardHeight * 0.25 + this->mInformationHeight;
+
+    menu = newwin(height, width, startY, startX);
+    box(menu, 0, 0);
+    std::vector<std::string> menuItems = {"Infinite", "Countdown", "Exit"};
+
+    int index = 0;
+    int offset = 3;
+    mvwprintw(menu, 1, width/2-10, "Mode Selection");
+    this->renderCursor(menu, 0 + offset, width/2-11);
+    wattron(menu, A_STANDOUT);
+    mvwprintw(menu, 0 + offset, width/2-9, menuItems[0].c_str());
+    wattroff(menu, A_STANDOUT);
+    mvwprintw(menu, 1 + offset, width/2-9, menuItems[1].c_str());
+    mvwprintw(menu, 2 + offset, width/2-9, menuItems[2].c_str());
+
+    wrefresh(menu);
+
+    int key;
+    while (true)
+    {
+        key = getch();
+        switch(key)
+        {
+            case 'W':
+            case 'w':
+            case KEY_UP:
+            {
+                mvwprintw(menu, index + offset, width/2-9, menuItems[index].c_str());
+                mvwprintw(menu, index + offset, width/2-13, "   ");
+                index --;
+                index = (index < 0) ? menuItems.size() - 1 : index;
+                this->renderCursor(menu, index + offset, width/2-11);
+                wattron(menu, A_STANDOUT);
+                mvwprintw(menu, index + offset, width/2-9, menuItems[index].c_str());
+                wattroff(menu, A_STANDOUT);
+                break;
+            }
+            case 'S':
+            case 's':
+            case KEY_DOWN:
+            {
+                mvwprintw(menu, index + offset, width/2-9, menuItems[index].c_str());
+                mvwprintw(menu, index + offset, width/2-13, "   ");
+                index ++;
+                index = (index > menuItems.size() - 1) ? 0 : index;
+                this->renderCursor(menu, index + offset, width/2-11);
+                wattron(menu, A_STANDOUT);
+                mvwprintw(menu, index + offset, width/2-9, menuItems[index].c_str());
+                wattroff(menu, A_STANDOUT);
+                break;
+            }
+        }
+        wrefresh(menu);
+        if (key == ' ' || key == 10)
+        {
+            break;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+    delwin(menu);
+    return index;
+}
+
+std::pair<std::vector<SnakeBody>, Direction> Game::runGame(const int& k)
 {
     bool moveSuccess, pauseContinue = true;
     std::pair<std::vector<SnakeBody>, Direction> oldData(this->mPtrSnake->getSnake(), this->mPtrSnake->getDireciton());
+    if (k == 1)
+        mLives = 1;
+    int total_times = 60;
+    int cumulative_time = 0;
     while (true)
     {
 		/* TODO 
@@ -1130,6 +1205,21 @@ std::pair<std::vector<SnakeBody>, Direction> Game::runGame()
         this->renderLives();
         
         this->adjustDelay();
+        if (k == 1)
+        {
+            mvwprintw(this->mWindows[2], 15, 1, "Times:");
+            mvwprintw(this->mWindows[2], 15, 8, "   ");
+            mvwprintw(this->mWindows[2], 15, 8, std::to_string(total_times).c_str());
+            wrefresh(mWindows[2]);
+            cumulative_time += mDelay;
+            if (cumulative_time >= 1000)
+            {
+                total_times--;
+                cumulative_time = 0;
+            }
+            if (total_times == 0)
+                break;
+        }
 		std::this_thread::sleep_for(std::chrono::milliseconds(this->mDelay));
 
         refresh();
@@ -1137,17 +1227,17 @@ std::pair<std::vector<SnakeBody>, Direction> Game::runGame()
     return oldData;
 }
 
-void Game::startGame()
+void Game::startGame(const int& k)
 {
     refresh();
     bool choice;
     while (true)
     {
-        this->readLeaderBoard();
-        this->renderBoards();
+        this->readLeaderBoard(k);
+        this->renderBoards(k);
         this->initializeGame();
         while (true) {   
-            std::pair<std::vector<SnakeBody>, Direction> oldSnake = this->runGame();
+            std::pair<std::vector<SnakeBody>, Direction> oldSnake = this->runGame(k);
             --mLives;
             this->renderLives();
             if (mLives <= 0) break;
@@ -1159,7 +1249,7 @@ void Game::startGame()
             this->returnGame();
         }
         this->updateLeaderBoard();
-        this->writeLeaderBoard();
+        this->writeLeaderBoard(k);
         this->total_coins += this->mPoints;
         choice = this->renderRestartMenu();
         if (choice) {
@@ -1178,8 +1268,11 @@ void Game::mainMenu()
         int i = this->renderStartMenu();
         this->mLives = 5-(this->mDifficulty)*2;
         if (i == 0) {
-            this->startGame();
+            int k = this->renderModeSelection();
+            if (k < 2) {
+            this->startGame(k);
             this->writeCoins();
+            }
         }
         else if (i == 1) {
             int diffi_choice = this->renderDifficultySetting();
@@ -1197,10 +1290,19 @@ void Game::mainMenu()
 
 
 // https://en.cppreference.com/w/cpp/io/basic_fstream
-bool Game::readLeaderBoard()
+bool Game::readLeaderBoard(const int& k)
 {
-    std::fstream fhand(this->mRecordBoardFilePath, fhand.binary | fhand.in);
-    std::fstream fhand2(this->mRecordBoardFilePath2, fhand2.binary | fhand2.in);
+    std::fstream fhand, fhand2;
+    if (k == 0)
+    {
+        fhand.open(this->mRecordBoardFilePathForInfinite, fhand.binary | fhand.in);
+        fhand2.open(this->mRecordBoardFilePathForInfinite2, fhand2.binary | fhand2.in);
+    }
+    else if (k == 1)
+    {
+        fhand.open(this->mRecordBoardFilePathForCounting, fhand.binary | fhand.in);
+        fhand2.open(this->mRecordBoardFilePathForCounting2, fhand2.binary | fhand2.in);
+    }
     if (!fhand.is_open() || !fhand2.is_open())
     {
         return false;
@@ -1243,11 +1345,20 @@ bool Game::updateLeaderBoard()
     return updated;
 }
 
-bool Game::writeLeaderBoard()
+bool Game::writeLeaderBoard(const int& k)
 {
+    std::fstream fhand, fhand2;
+    if (k == 0)
+    {
+        fhand.open(this->mRecordBoardFilePathForInfinite, fhand.binary | fhand.out);
+        fhand2.open(this->mRecordBoardFilePathForInfinite2, fhand2.binary | fhand2.out);
+    }
+    else if (k == 1)
+    {
+        fhand.open(this->mRecordBoardFilePathForCounting, fhand.binary | fhand.out);
+        fhand2.open(this->mRecordBoardFilePathForCounting2, fhand2.binary | fhand2.out);
+    }
     // trunc: clear the data file
-    std::fstream fhand(this->mRecordBoardFilePath, fhand.binary | fhand.trunc | fhand.out);
-    std::fstream fhand2(this->mRecordBoardFilePath2, fhand2.binary | fhand2.trunc | fhand2.out);
     if (!fhand.is_open() || !fhand2.is_open())
     {
         return false;
