@@ -33,9 +33,9 @@ public:
     
 		void renderBoards(const int& k) const;
     
-		void initializeGame();
+		void initializeGame(const bool& handicapmode);
     bool pauseGame() const;
-    std::pair<std::vector<SnakeBody>, Direction> runGame(const int& k);
+    std::pair<std::vector<SnakeBody>, Direction> runGame(const int& k, const bool& handicapmode);
     void returnGame() const;
     void renderCursor(WINDOW* win, int x, int y);
     void renderTitle(WINDOW* win, int x, int y);
@@ -47,8 +47,11 @@ public:
     void renderFood() const;
     void renderSnake() const;
     void controlSnake(bool& con);
+
+    void renderMountain() const;
+    void createRamdonMount();
     
-		void startGame(const int& k);
+		void startGame(const int& k, const bool& handicapMode);
     void mainMenu();
     int renderStartMenu();
     int renderDifficultySetting();
@@ -81,6 +84,10 @@ private:
     // Food information
     SnakeBody mFood;
     const char mFoodSymbol = '#';
+    // Mountain information
+    std::vector<SnakeBody> mountains;
+    const char mountSymbol_1 = '/';
+    const char mountSymbol_2 = '\\';
     int mPoints = 0;
     int mSpeed = 0;
     int mDifficulty = 1;

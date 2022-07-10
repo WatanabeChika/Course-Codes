@@ -87,6 +87,23 @@ bool Snake::isHead(int x, int y)
         return false;
 }
 
+bool Snake::isPartOfMountain(int x, int y)
+{
+	// TODO check if a given point with axis x, y is on the body of the snake.
+    for (int i = 1; i < this->mountains.size(); i++) {
+        SnakeBody point = this->mountains[i];
+        if (point.getX() == x && point.getY() == y)
+            return true;
+
+        else if (point.getX() == x + 1 && point.getY() == y)
+            return true;
+
+        else if (point.getX() == x && point.getY() == y + 1)
+            return true;
+    }
+    return false;
+}
+
 /*
  * Assumption:
  * Only the head would hit wall.
@@ -111,6 +128,17 @@ bool Snake::hitSelf()
     return isPartOfSnake(head.getX(), head.getY());
 }
 
+bool Snake::hitMount()
+{
+    SnakeBody head = this -> mSnake[0];
+    for (int i = 0; i < mountains.size(); i++){
+        if (head.getX() == mountains[i].getX() && head.getY() == mountains[i].getY())
+        return true;
+    else if (head.getX() == mountains[i].getX() + 1 && head.getY() == mountains[i].getY())
+        return true;
+    }
+    return false;
+}
 
 bool Snake::touchFood()
 {
@@ -128,6 +156,11 @@ bool Snake::touchFood()
 void Snake::senseFood(SnakeBody food)
 {
     this->mFood = food;
+}
+
+void Snake::senseMount(std::vector<SnakeBody> mountain)
+{
+    this->mountains = mountain;
 }
 
 std::vector<SnakeBody>& Snake::getSnake()
@@ -253,7 +286,7 @@ bool Snake::moveFoward()
 
 bool Snake::checkCollision()
 {
-    if (this->hitWall() || this->hitSelf())
+    if (this->hitWall() || this->hitSelf() || this-> hitMount())
     {
         return true;
     }

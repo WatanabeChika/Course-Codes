@@ -1,13 +1,13 @@
 #include <string>
 #include <iostream>
-#include <cmath> 
+#include <cmath>
 
 // For terminal delay
 #include <chrono>
 #include <thread>
 
 #include <fstream>
-#include <algorithm> 
+#include <algorithm>
 
 #include "game.h"
 
@@ -64,10 +64,10 @@ void Game::createInformationBoard()
 
 void Game::renderInformationBoard() const
 {
-    mvwprintw(this->mWindows[0], 1, 1, "Welcome to The Snake Game! Enjoy it!");
-    mvwprintw(this->mWindows[0], 2, 1, "There are two gamemodes and six difficulties that you can choose.");
-    mvwprintw(this->mWindows[0], 3, 1, "You can also get coins to buy your favorite skins in the store.");
-    mvwprintw(this->mWindows[0], 4, 1, "This game is made by Watanabe Chika, ");
+    mvwprintw(this->mWindows[0], 1, 1, "Welcome to The Snake Game!");
+    mvwprintw(this->mWindows[0], 2, 1, "It is crazily fast in the vertical direction.");
+    mvwprintw(this->mWindows[0], 3, 1, "It would be much better if there are more lives and foods for the snake.");
+    mvwprintw(this->mWindows[0], 4, 1, "Complicated windows are my next steps!");
     wrefresh(this->mWindows[0]);
 }
 
@@ -111,7 +111,7 @@ void Game::renderInstructionBoard() const
 
 void Game::renderLeaderBoard() const
 {
-    // If there is not too much space, skip rendering the leader board 
+    // If there is not too much space, skip rendering the leader board
     if (this->mScreenHeight - this->mInformationHeight - 17 - 2 < 3)
     {
         return;
@@ -148,7 +148,7 @@ void Game::renderCoins() const
 }
 
 void Game::renderCursor(WINDOW* win, int x, int y)
-{   
+{
     wattron(win, COLOR_PAIR(4));
     mvwaddch(win, x, y, this->mSnakeSymbol);
     wattroff(win, COLOR_PAIR(4));
@@ -167,13 +167,13 @@ void Game::renderTitle(WINDOW* win, int y, int x)
     mvwprintw(win,y+4,x,"   *     *    ");
     wattron(win,COLOR_PAIR(7));
     mvwprintw(win,y+0,x+15,"   #####   ");
-    mvwprintw(win,y+1,x+15,"  #     #  "); 
+    mvwprintw(win,y+1,x+15,"  #     #  ");
     mvwprintw(win,y+2,x+15," #       # ");
     mvwprintw(win,y+3,x+15,"  #     #  ");
-    mvwprintw(win,y+4,x+15,"   #####   "); 
-    wattroff(win,COLOR_PAIR(7)); 
+    mvwprintw(win,y+4,x+15,"   #####   ");
+    wattroff(win,COLOR_PAIR(7));
     mvwprintw(win,y+0,x+27,"  ********   ");
-    mvwprintw(win,y+1,x+27,"  *      *   "); 
+    mvwprintw(win,y+1,x+27,"  *      *   ");
     mvwprintw(win,y+2,x+27,"  ********   ");
     mvwprintw(win,y+3,x+27,"  *   **     ");
     mvwprintw(win,y+4,x+27,"  *     **   ");
@@ -193,17 +193,17 @@ void Game::renderTitle(WINDOW* win, int y, int x)
     mvwprintw(win,y+4,x+60,"@@@@@@@@@@");
     wattroff(win,COLOR_PAIR(3));
     mvwprintw(win,y+0,x+72,"   *****   ");
-    mvwprintw(win,y+1,x+72,"  *     *  "); 
+    mvwprintw(win,y+1,x+72,"  *     *  ");
     mvwprintw(win,y+2,x+72," *       * ");
     mvwprintw(win,y+3,x+72,"  *     *  ");
-    mvwprintw(win,y+4,x+72,"   *****   "); 
+    mvwprintw(win,y+4,x+72,"   *****   ");
     mvwprintw(win,y+0,x+85," **       * ");
-    mvwprintw(win,y+1,x+85," * **     * "); 
+    mvwprintw(win,y+1,x+85," * **     * ");
     mvwprintw(win,y+2,x+85," *   **   * ");
     mvwprintw(win,y+3,x+85," *     ** * ");
-    mvwprintw(win,y+4,x+85," *       ** "); 
+    mvwprintw(win,y+4,x+85," *       ** ");
     mvwprintw(win,y+0,x+99," ******** ");
-    mvwprintw(win,y+1,x+99," **       "); 
+    mvwprintw(win,y+1,x+99," **       ");
     mvwprintw(win,y+2,x+99," *****    ");
     mvwprintw(win,y+3,x+99," **       ");
     mvwprintw(win,y+4,x+99," ******** ");
@@ -265,7 +265,7 @@ int Game::renderStartMenu()
             }
         }
         wrefresh(menu);
-        if (key == ' ' || key == 10) 
+        if (key == ' ' || key == 10)
         {
             break;
         }
@@ -285,7 +285,7 @@ int Game::renderDifficultySetting()
 
     menu = newwin(height, width, startY, startX);
     box(menu, 0, 0);
-    std::vector<std::string> menuItems = {"Easy", "Medium (default)", "Hard", "Easy   /*Handicap Mode*/", "Medium /*Handicap Mode*/", "Hard   /*Handicap Mode*/", "Exit"};
+    std::vector<std::string> menuItems = {"Easy", "Medium (default)", "Hard", "Easy   **Handicap Mode**", "Medium **Handicap Mode**", "Hard   **Handicap Mode**", "Exit"};
 
     int index = 0;
     int offset = 3;
@@ -300,6 +300,7 @@ int Game::renderDifficultySetting()
     mvwprintw(menu, 4 + offset, width/2-9, menuItems[4].c_str());
     mvwprintw(menu, 5 + offset, width/2-9, menuItems[5].c_str());
     mvwprintw(menu, 6 + offset, width/2-9, menuItems[6].c_str());
+
 
     wrefresh(menu);
 
@@ -339,7 +340,7 @@ int Game::renderDifficultySetting()
             }
         }
         wrefresh(menu);
-        if (key == ' ' || key == 10) 
+        if (key == ' ' || key == 10)
         {
             break;
         }
@@ -626,7 +627,7 @@ void Game::renderStore(const int& k)
             {
                 mvwprintw(store, itemsPosition[index].first, itemsPosition[index].second, storeItems[index].c_str());
                 mvwprintw(store, itemsPosition[index].first, itemsPosition[index].second-4, "   ");
-                if (index == 7) 
+                if (index == 7)
                     index = 1;
                 else if (index == 0)
                     index = 6;
@@ -648,7 +649,7 @@ void Game::renderStore(const int& k)
             {
                 mvwprintw(store, itemsPosition[index].first, itemsPosition[index].second, storeItems[index].c_str());
                 mvwprintw(store, itemsPosition[index].first, itemsPosition[index].second-4, "   ");
-                if (index == 1) 
+                if (index == 1)
                     index = 7;
                 else if (index == 7)
                     index = 2;
@@ -743,7 +744,7 @@ bool Game::renderRestartMenu() const
     mvwprintw(menu, 1, 1, "Your Final Score:");
     std::string pointString = std::to_string(this->mPoints);
     mvwprintw(menu, 2, 1, pointString.c_str());
-    
+
     wattron(menu, A_STANDOUT);
     mvwprintw(menu, 0 + offset, 1, menuItems[0].c_str());
     wattroff(menu, A_STANDOUT);
@@ -795,7 +796,7 @@ bool Game::renderRestartMenu() const
         return true;
     else
         return false;
-    
+
 }
 
 void Game::renderPoints() const
@@ -819,12 +820,12 @@ void Game::renderLives() const
     wrefresh(this->mWindows[2]);
 }
 
-void Game::initializeGame(const bool& handicapMode)
+void Game::initializeGame(bool handicapMode)
 {
     // allocate memory for a new snake
 		this->mPtrSnake.reset(new Snake(this->mGameBoardWidth, this->mGameBoardHeight, this->mInitialSnakeLength));
 
-    /* TODO 
+    /* TODO
      * initialize the game pionts as zero
      * create a food at randome place
      * make the snake aware of the food
@@ -838,6 +839,7 @@ void Game::initializeGame(const bool& handicapMode)
         this -> renderMountain();
     }
 
+
     this->mPoints = 0;
     createRamdonFood();
     this->mPtrSnake->senseFood(this->mFood);
@@ -847,7 +849,7 @@ void Game::initializeGame(const bool& handicapMode)
 
 void Game::createRamdonFood()
 {
-    /* TODO 
+    /* TODO
     * create a food at random places
     * make sure that the food doesn't overlap with the snake.
     */
@@ -855,7 +857,7 @@ void Game::createRamdonFood()
     do {
         this->mPtrSnake->setRandomSeed();
         x = int(std::rand() % (this->mGameBoardWidth-2)) +1;
-        y = int(std::rand() % (this->mGameBoardHeight-2))+1; 
+        y = int(std::rand() % (this->mGameBoardHeight-2))+1;
     }
     while (this->mPtrSnake->isPartOfSnake(x,y) || this->mPtrSnake->isHead(x,y) || this -> mPtrSnake -> isPartOfMountain(x, y));
     SnakeBody tempFood(x,y);
@@ -916,7 +918,7 @@ void Game::renderSnake() const
 {
     int snakeLength = this->mPtrSnake->getLength();
     std::vector<SnakeBody>& snake = this->mPtrSnake->getSnake();
-    
+
     wattron(mWindows[1], COLOR_PAIR(this->snakeHeadColor));
     mvwaddch(this->mWindows[1], snake[0].getY(), snake[0].getX(), this->mSnakeSymbol);
     wattroff(mWindows[1], COLOR_PAIR(this->snakeHeadColor));
@@ -935,16 +937,16 @@ std::string pauseWord()
     int Chika = rand();
     switch (Chika%4)
     {
-    case 0: return "This snake goes crazily fast on the up-down side!";    
-    case 1: return "In store you can even change your skin color!";
+    case 0: return "This snake goes crazily fast on the up-down side!";
+    case 1: return "What's your best score in this game? Ehh?";
     case 2: return "I love Watanabe You in Lovelive the most!";
-    default: return "The snake is calling you to watch Spy x Family with him.";
+    default: return "Many things should be improved......";
     }
 }
 
 bool Game::pauseGame() const
 {
-    
+
     WINDOW * menu;
     int width = this->mGameBoardWidth * 0.5;
     int height = this->mGameBoardHeight * 0.5;
@@ -1007,7 +1009,7 @@ bool Game::pauseGame() const
     delwin(menu);
 
     if (index == 0)
-    {   
+    {
         this->returnGame();
         return true;
     }
@@ -1015,7 +1017,7 @@ bool Game::pauseGame() const
     {
         return false;
     }
-    
+
 }
 
 void Game::returnGame() const
@@ -1060,7 +1062,7 @@ void Game::returnGame() const
 
 }
 
-void Game::controlSnake(bool& con) 
+void Game::controlSnake(bool& con)
 {
     int key;
     key = getch();
@@ -1210,7 +1212,7 @@ int Game::renderModeSelection()
     return index;
 }
 
-std::pair<std::vector<SnakeBody>, Direction> Game::runGame(const int& k, const bool& handicapMode)
+std::pair<std::vector<SnakeBody>, Direction> Game::runGame(const int& k, bool handicapMode)
 {
     bool moveSuccess, pauseContinue = true;
     std::pair<std::vector<SnakeBody>, Direction> oldData(this->mPtrSnake->getSnake(), this->mPtrSnake->getDireciton());
@@ -1220,7 +1222,7 @@ std::pair<std::vector<SnakeBody>, Direction> Game::runGame(const int& k, const b
     int cumulative_time = 0;
     while (true)
     {
-		/* TODO 
+		/* TODO
 		 * this is the main control loop of the game.
 		 * it keeps running a while loop, and does the following things:
 		 * 	1. process your keyboard input
@@ -1229,7 +1231,7 @@ std::pair<std::vector<SnakeBody>, Direction> Game::runGame(const int& k, const b
 		 * 	4. check if the snake has eaten the food after movement
 		 * 	5. check if the snake dies after the movement
 		 * 	6. make corresponding steps for the ``if conditions'' in 3 and 4.
-		 *  7. render the position of the food and snake in the new frame of window. 
+		 *  7. render the position of the food and snake in the new frame of window.
 		 *  8. update other game states and refresh the window
 		 */
 
@@ -1250,7 +1252,7 @@ std::pair<std::vector<SnakeBody>, Direction> Game::runGame(const int& k, const b
         }
         if (this->mPtrSnake->checkCollision())
             break;
-        
+
         if (handicapMode){
             this -> renderMountain();
         }
@@ -1259,7 +1261,7 @@ std::pair<std::vector<SnakeBody>, Direction> Game::runGame(const int& k, const b
         this->renderSpeed();
         this->renderPoints();
         this->renderLives();
-        
+
         this->adjustDelay();
         if (k == 1)
         {
@@ -1283,8 +1285,10 @@ std::pair<std::vector<SnakeBody>, Direction> Game::runGame(const int& k, const b
     return oldData;
 }
 
-void Game::startGame(const int& k, const bool& handicapMode)
+void Game::startGame(const int& k, bool handicapMode)
 {
+    // k is used to toggle time mode
+    //
     refresh();
     bool choice;
     while (true)
@@ -1292,7 +1296,7 @@ void Game::startGame(const int& k, const bool& handicapMode)
         this->readLeaderBoard(k);
         this->renderBoards(k);
         this->initializeGame(handicapMode);
-        while (true) {   
+        while (true) {
             std::pair<std::vector<SnakeBody>, Direction> oldSnake = this->runGame(k, handicapMode);
             --mLives;
             this->renderLives();
@@ -1313,6 +1317,7 @@ void Game::startGame(const int& k, const bool& handicapMode)
         this->total_coins += this->mPoints;
         choice = this->renderRestartMenu();
         if (choice) {
+            this -> initializeGame(handicapMode);
             this->mLives = 5-(this->mDifficulty)*2;
         }
         else break;

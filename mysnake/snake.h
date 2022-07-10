@@ -36,13 +36,16 @@ public:
     // Initialize snake
     void initializeSnake();
     // Checking API for generating random food
+    bool isPartOfMountain(int x, int y);
     bool isPartOfSnake(int x, int y);
     bool isHead(int x, int y);
     void senseFood(SnakeBody food);
+    void senseMount(std::vector<SnakeBody> mountain);
     bool touchFood();
     // Check if the snake is dead
     bool hitWall();
     bool hitSelf();
+    bool hitMount();
     bool checkCollision();
 
     bool changeDirection(Direction newDirection);
@@ -59,6 +62,7 @@ private:
     const int mInitialSnakeLength;
     Direction mDirection;
     SnakeBody mFood;
+    std::vector<SnakeBody> mountains;
     std::vector<SnakeBody> mSnake;
 };
 
