@@ -6,6 +6,11 @@
 #include <chrono>
 #include <thread>
 
+/*// Play music
+#include <windows.h>
+#include <mmSystem.h>
+#pragma comment (lib,"winmm.lib")
+*/
 #include <fstream>
 #include <algorithm> 
 
@@ -13,6 +18,9 @@
 
 Game::Game()
 {
+    /*//Play music
+    mciSendString(L"open gameMusic.mp3 alias music",NULL,0,NULL);
+    mciSendString(L"play music repeat",NULL,0,NULL);*/
     // Separate the screen to three windows
     this->mWindows.resize(3);
     initscr();
@@ -53,6 +61,7 @@ Game::~Game()
         delwin(this->mWindows[i]);
     }
     endwin();
+    //mciSendString(L"close music",NULL,0,NULL);
 }
 
 void Game::createInformationBoard()
@@ -67,7 +76,7 @@ void Game::renderInformationBoard() const
     mvwprintw(this->mWindows[0], 1, 1, "Welcome to The Snake Game! Enjoy it!");
     mvwprintw(this->mWindows[0], 2, 1, "There are two gamemodes and six difficulties that you can choose.");
     mvwprintw(this->mWindows[0], 3, 1, "You can also get coins to buy your favorite skins in the store.");
-    mvwprintw(this->mWindows[0], 4, 1, "This game is made by Watanabe Chika, ");
+    mvwprintw(this->mWindows[0], 4, 1, "This game is made by WatanabeChika, bLuePear and Jerry(=·w·=).");
     wrefresh(this->mWindows[0]);
 }
 
@@ -937,8 +946,8 @@ std::string pauseWord()
     {
     case 0: return "This snake goes crazily fast on the up-down side!";    
     case 1: return "In store you can even change your skin color!";
-    case 2: return "I love Watanabe You in Lovelive the most!";
-    default: return "The snake is calling you to watch Spy x Family with him.";
+    case 2: return "In fact bLuePear is a combination of two names.";
+    default: return "The snake is calling you to watch Spy x Family!";
     }
 }
 
