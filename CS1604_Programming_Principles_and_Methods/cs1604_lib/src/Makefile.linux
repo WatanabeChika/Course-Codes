@@ -1,0 +1,52 @@
+# Makefile
+# source object target
+VPATH := collections io system util
+# only find the subdirectory
+SRC	:= $(wildcard */*.cpp)
+OBJS :=	$(SRC:%.cpp=%.o)
+HEADERS := $(wildcard */*.h)
+LIB	:= libCS1604.a 
+
+# compile and lib parameter
+CXX		:= g++
+CXXFLAGS  = -O2 -Wall -std=c++11
+INCLUDE := -I . $(patsubst %,-I %,$(VPATH))
+AR	:= ar -rc
+
+# release directory
+TARGET := cs1604
+TAR_INCLUDE := $(TARGET)/include
+TAR_LIB := $(TARGET)/lib
+
+#file operation command
+COPY := cp
+RM_DIR := rm -rf
+RM_FILE := rm -f
+MK_DIR := mkdir
+
+#release
+install:$(LIB)
+ifeq (,$(wildcard $(TARGET)))
+	@$(MK_DIR) $(TARGET)
+endif
+ifeq (,$(wildcard $(TAR_INCLUDE)))
+	@$(MK_DIR) $(TAR_INCLUDE)
+endif
+ifeq (,$(wildcard $(TAR_LIB)))
+	@$(MK_DIR) $(TAR_LIB)
+endif
+	@$(COPY) $(HEADERS) $(TAR_INCLUDE)
+	@$(COPY) $(LIB) $(TAR_LIB)
+	
+#link
+$(LIB):$(OBJS)
+	$(AR) $@ $^
+
+%.o:%.cpp
+	$(CXX) ${CXXFLAGS} $(INCLUDE) -c $^ -o $@
+
+# clean
+clean:
+	@$(RM_FILE) *.a
+	@$(RM_FILE) $(OBJS)
+	@$(RM_DIR) $(TARGET)
