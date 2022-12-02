@@ -1,7 +1,27 @@
+## 关于此库
+
+记录学习期间写的代码  
+第一学期学习的python相关代码缺失，不做修补  
+其他以C++为主，按课程名将代码进行归类  
+
+**仅做记录用，勿吐槽代码质量**
+
+---
+
 ## CS1604 程序设计原理与方法
 
-Assignment1-Assignment5 是各个阶段的小作业  
-Final Project 是大作业 ~~丐版文明6~~
+Assignment 1-Assignment 5 是各个阶段的小作业  
+> Assignment 1: C++基本语法  
+> Assignment 2: 函数与库  
+> Assignment 3: 字符串  
+> Assignment 4: 抽象数据类型(ADT)  
+> Assignment 5: 设计ADT
+
+Final Project 是大作业  
+> Battlefield ~~丐版文明6~~
+
+cs1604_lib 是课程用到的库
+> StanfordCppLib
 
 ---
 
@@ -9,10 +29,11 @@ Final Project 是大作业 ~~丐版文明6~~
 
 snake_src_mock 是课程给的基础运行代码  
 mysnake 在 snake_src_mock 上做了个性化创新处理
-
-**以上两个文件夹的运行程序需在Linux环境下运行**
+> Snake Game 是一款模拟贪吃蛇游戏  
+> **需在Linux环境下运行**
 
 pets_battle 尚未完成 ~~绝不是因为是其他班的作业才没写呢！~~
+> Pet Battle 是一款模拟宝可梦对战游戏  
 
 ---
 
