@@ -1,7 +1,6 @@
 import random
 import time
 
-
 so = random.seed(time.time)
 
 st = input("start: ")

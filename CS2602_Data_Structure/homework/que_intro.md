@@ -48,4 +48,13 @@
 ## 5.3 字符串哈希
 ![image5.3](/que_intro/que5.3.png "字符串哈希")
 
+---
 
+## 6.1 一道排序题
+![image6.1](/que_intro/que6.1.png "一道排序题")
+
+## 6.2 Ruko Sort
+![image6.2](/que_intro/que6.2.png "Ruko Sort")
+
+## 6.3 在麦当劳配数据
+![image6.3](/que_intro/que6.3.png "在麦当劳配数据")
