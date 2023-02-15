@@ -39,4 +39,13 @@ pets_battle 尚未完成 ~~绝不是因为是其他班的作业才没写呢！~~
 
 ## CS2602 数据结构
 
-**仍在更新中**
+myclasses 是自建数据结构，包括：
+> seqlist: 线性表
+> linklist/dlinklist: 链表/双向链表
+> btree: 二叉树
+> bsearchtree: 二叉查找树
+> sort: 排序函数
+
+奇怪的地方：main是空的、random1是 ~~打随机肉鸽用的~~ 随机整数生成器
+
+homework 是5次作业，题目详见que_intro
