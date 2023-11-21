@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>octree</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p>An <b>octree</b> is a tree data structure in which each internal node has exactly eight children. Octrees are most often used to partition a three-dimensional space by recursively subdividing it into eight octants. Octrees are the three-dimensional analog of quadtrees. The word is derived from <i>oct</i> (Greek root meaning "eight") + <i>tree</i>. Octrees are often used in 3D graphics and 3D game engines.
+</p>
+
+<h2><span class="mw-headline" id="For_spatial_representation">For spatial representation</span><span class="mw-editsection"></span></h2>
+<p>Each node in an octree subdivides the space it represents into eight octants. In a point region (PR) octree, the node stores an explicit three-dimensional point, which is the "center" of the subdivision for that node; the point defines one of the corners for each of the eight children. In a matrix based (MX) octree, the subdivision point is implicitly the center of the space the node represents. The root node of a PR octree can represent infinite space; the root node of an MX octree must represent a finite bounded space so that the implicit centers are well-defined. Note that octrees are not the same as <i>k</i>-d trees: <i>k</i>-d trees split along a dimension and octrees split around a point. Also <i>k</i>-d trees are always binary, which is not the case for octrees.
+By using a depth-first search the nodes are to be traversed and only required surfaces are to be viewed.
+</p>
+<h2><span class="mw-headline" id="History">History</span><span class="mw-editsection"></span></h2>
+<p>The use of octrees for 3D computer graphics was pioneered by Donald Meagher at Rensselaer Polytechnic Institute, described in a 1980 report "Octree Encoding: A New Technique for the Representation, Manipulation and Display of Arbitrary 3-D Objects by Computer",<sup class="reference" id="cite_ref-1">[1]</sup>  for which he holds a 1995 patent (with a 1984 priority date) "High-speed image generation of complex solid objects using octree encoding" <sup class="reference" id="cite_ref-2">[2]</sup>
+</p>
+<h2><span class="mw-headline" id="Common_uses">Common uses</span><span class="mw-editsection"></span></h2>
+<ul><li>Level of detail rendering in 3D computer graphics<sup class="reference" id="cite_ref-Luebke2003_3-0">[3]</sup></li>
+<li>Spatial indexing</li>
+<li>Nearest neighbor search<sup class="reference" id="cite_ref-4">[4]</sup></li>
+<li>Efficient collision detection in three dimensions</li>
+<li>View frustum culling</li>
+<li>Fast multipole method</li>
+<li>Unstructured grid</li>
+<li>Finite element analysis</li>
+<li>Sparse voxel octree<sup class="reference" id="cite_ref-5">[5]</sup></li>
+<li>State estimation<sup class="reference" id="cite_ref-6">[6]</sup></li>
+<li>Set estimation<sup class="reference" id="cite_ref-7">[7]</sup></li></ul>
+<h2><span class="mw-headline" id="Application_to_color_quantization">Application to color quantization</span><span class="mw-editsection"></span></h2>
+<p>The octree color quantization algorithm, invented by Gervautz and Purgathofer in 1988, encodes image color data as an octree up to nine levels deep. Octrees are used because <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{3}=8}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+<mo>=</mo>
+<mn>8</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{3}=8}</annotation>
+</semantics>
+</math></span><img alt="2^{3}=8" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bb2dded8eba905e4a019b70abad935422b198db4" style="vertical-align: -0.338ex; width:6.478ex; height:2.676ex;"/></span> and there are three color components in the RGB system. The node index to branch out from at the top level is determined by a formula that uses the most significant bits of the red, green, and blue color components, e.g. 4r + 2g + b. The next lower level uses the next bit significance, and so on. Less significant bits are sometimes ignored to reduce the tree size.
+</p><p>The algorithm is highly memory efficient because the tree's size can be limited. The bottom level of the octree consists of leaf nodes that accrue color data not represented in the tree; these nodes initially contain single bits. If much more than the desired number of palette colors are entered into the octree, its size can be continually reduced by seeking out a bottom-level node and averaging its bit data up into a leaf node, pruning part of the tree. Once sampling is complete, exploring all routes in the tree down to the leaf nodes, taking note of the bits along the way, will yield approximately the required number of colors.
+</p>
+<h2><span class="mw-headline" id="Implementation_for_point_decomposition">Implementation for point decomposition</span><span class="mw-editsection"></span></h2>
+<p>The example recursive algorithm outline below (MATLAB syntax) decomposes an array of 3-dimensional points into octree style bins. The implementation begins with a single bin surrounding all given points, which then recursively subdivides into its 8 octree regions. Recursion is stopped when a given exit condition is met. Examples of such exit conditions (shown in code below) are:
+</p>
+<ul><li>When a bin contains fewer than a given number of points</li>
+<li>When a bin reaches a minimum size or volume based on the length of its edges</li>
+<li>When recursion has reached a maximum number of subdivisions</li></ul>
+
+<h2><span class="mw-headline" id="Example_color_quantization">Example color quantization</span><span class="mw-editsection"></span></h2>
+<p>Taking the full list of colors of a 24-bit RGB image as point input to the Octree point decomposition implementation outlined above, the following example show the results of octree color quantization. The first image is the original (532818 distinct colors), while the second is the quantized image (184 distinct colors) using octree decomposition, with each pixel assigned the color at the center of the octree bin in which it falls. Alternatively, final colors could be chosen at the centroid of all colors in each octree bin, however this added computation has very little effect on the visual result.<sup class="reference" id="cite_ref-8">[8]</sup>
+</p>
+
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Binary space partitioning</li>
+<li>Bounding interval hierarchy</li>
+<li><i>Cube 2: Sauerbraten</i>, a 3D game engine in which geometry is almost entirely based on octrees</li>
+<li>id Tech 6 is a 3D game engine that utilizes voxels stored in octrees</li>
+<li>Irrlicht Engine, supports octree scene nodes</li>
+<li>Klee's measure problem</li>
+<li>Linear octree</li>
+<li>OGRE, has an octree scene manager implementation</li>
+<li>Subpaving</li>
+<li>Voxel</li>
+<li>Quadtree</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097025294">.mw-parser-output .side-box{margin:4px 0;box-sizing:border-box;border:1px solid #aaa;font-size:88%;line-height:1.25em;background-color:#f9f9f9}.mw-parser-output .side-box-abovebelow,.mw-parser-output .side-box-text{padding:0.25em 0.9em}.mw-parser-output .side-box-image{padding:2px 0 2px 0.9em;text-align:center}.mw-parser-output .side-box-imageright{padding:2px 0.9em 2px 0;text-align:center}@media(min-width:500px){.mw-parser-output .side-box-flex{display:flex;align-items:center}.mw-parser-output .side-box-text{flex:1}}@media(min-width:720px){.mw-parser-output .side-box{width:238px}.mw-parser-output .side-box-right{clear:right;float:right;margin-left:1em}.mw-parser-output .side-box-left{margin-right:1em}}</style>
+<ul><li>Octree Quantization in Microsoft Systems Journal</li>
+<li>Color Quantization using Octrees in Dr. Dobb's</li>
+<li>Color Quantization using Octrees in Dr. Dobb's Source Code<sup class="noprint Inline-Template"><span style="white-space: nowrap;">[<i><span title=" Dead link tagged August 2018">permanent dead link</span></i>]</span></sup></li>
+<li>Octree Color Quantization Overview</li>
+<li>Parallel implementation of octtree generation algorithm, P. Sojan Lal, A Unnikrishnan, K Poulose Jacob, ICIP 1997, IEEE Digital Library</li>
+<li>Generation of Octrees from Raster Scan with Reduced Information Loss, P. Sojan Lal, A Unnikrishnan, K Poulose Jacob, IASTED International conference VIIP 2001 [1]<sup class="noprint Inline-Template"><span style="white-space: nowrap;">[<i><span title=" Dead link tagged February 2018">permanent dead link</span></i>]</span></sup></li>
+<li>Parallel Octrees for Finite Element Applications</li>
+<li>Video: Use of an octree in state estimation</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2270
+Cached time: 20221224010835
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.273 seconds
+Real time usage: 0.415 seconds
+Preprocessor visited node count: 967/1000000
+Post‐expand include size: 27909/2097152 bytes
+Template argument size: 2954/2097152 bytes
+Highest expansion depth: 15/100
+Expensive parser function count: 4/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 34862/5000000 bytes
+Lua time usage: 0.144/10.000 seconds
+Lua memory usage: 4704358/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  311.341      1 -total
+ 36.11%  112.438      1 Template:Reflist
+ 23.80%   74.096      1 Template:Cite_journal
+ 20.88%   64.994      1 Template:Short_description
+ 16.71%   52.028      1 Template:CS-Trees
+ 15.17%   47.245      1 Template:Navbox
+ 13.62%   42.401      1 Template:Commons_category
+ 12.78%   39.776      1 Template:Sister_project
+ 12.07%   37.588      1 Template:Side_box
+ 10.61%   33.032      2 Template:Dead_link
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:675699-0!canonical and timestamp 20221224010834 and revision id 1110569741.
+ -->
+</div></body>
+</html>

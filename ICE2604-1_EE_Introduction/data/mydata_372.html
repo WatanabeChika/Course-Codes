@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>fast_fourier_transform</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p class="mw-empty-elt">
+</p>
+
+
+<p>A <b>fast Fourier transform</b> (<b>FFT</b>) is an algorithm that computes the discrete Fourier transform (DFT) of a sequence, or its inverse (IDFT). Fourier analysis converts a signal from its original domain (often time or space) to a representation in the frequency domain and vice versa. The DFT is obtained by decomposing a sequence of values into components of different frequencies.<sup class="reference" id="cite_ref-Heideman_Johnson_Burrus_1984_1-0">[1]</sup> This operation is useful in many fields, but computing it directly from the definition is often too slow to be practical. An FFT rapidly computes such transformations by factorizing the DFT matrix into a product of sparse (mostly zero) factors.<sup class="reference" id="cite_ref-Loan_1992_2-0">[2]</sup> As a result, it manages to reduce the complexity of computing the DFT from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O\left(N^{2}\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mrow>
+<mo>(</mo>
+<msup>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O\left(N^{2}\right)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O\left(N^{2}\right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0359b3fc2400e8e6ff8b0366a7a6277ffe24dac8" style="vertical-align: -1.005ex; width:7.467ex; height:3.176ex;"/></span>, which arises if one simply applies the definition of DFT, to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O(N\log N)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>N</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O(N\log N)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O(N\log N)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/438fabd48f340dbf8e4325300074495daa0f7e0d" style="vertical-align: -0.838ex; width:11.456ex; height:2.843ex;"/></span>, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle N}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>N</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle N}</annotation>
+</semantics>
+</math></span><img alt="N" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f5e3890c981ae85503089652feb48b191b57aae3" style="vertical-align: -0.338ex; width:2.064ex; height:2.176ex;"/></span> is the data size. The difference in speed can be enormous, especially for long data sets where <i>N</i> may be in the thousands or millions. In the presence of round-off error, many FFT algorithms are much more accurate than evaluating the DFT definition directly or indirectly. There are many different FFT algorithms based on a wide range of published theories, from simple complex-number arithmetic to group theory and number theory.
+</p>
+
+<p>Fast Fourier transforms are widely used for applications in engineering, music, science, and mathematics. The basic ideas were popularized in 1965, but some algorithms had been derived as early as 1805.<sup class="reference" id="cite_ref-Heideman_Johnson_Burrus_1984_1-1">[1]</sup> In 1994, Gilbert Strang described the FFT as "the most important numerical algorithm of our lifetime",<sup class="reference" id="cite_ref-Strang_1994_3-0">[3]</sup><sup class="reference" id="cite_ref-Kent_2002_4-0">[4]</sup> and it was included in Top 10 Algorithms of 20th Century by the IEEE magazine <i>Computing in Science &amp; Engineering</i>.<sup class="reference" id="cite_ref-Dongarra_Sullivan_2000_5-0">[5]</sup>
+</p><p>The best-known FFT algorithms depend upon the factorization of <i>N</i>, but there are FFTs with O(<i>N</i> log <i>N</i>) complexity for all <i>N</i>, even for prime <i>N</i>. Many FFT algorithms depend only on the fact that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle e^{-2\pi i/N}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<msup>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<mi>π<!-- π --></mi>
+<mi>i</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>N</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle e^{-2\pi i/N}}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle e^{-2\pi i/N}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b39b45e0e5990506d0a3e2a5f02160a9502b4536" style="vertical-align: -0.338ex; width:7.207ex; height:2.676ex;"/></span> is an <i>N</i>-th primitive root of unity, and thus can be applied to analogous transforms over any finite field, such as number-theoretic transforms. Since the inverse DFT is the same as the DFT, but with the opposite sign in the exponent and a 1/<i>N</i> factor, any FFT algorithm can easily be adapted for it.
+</p>
+
+<h2><span class="mw-headline" id="History">History</span><span class="mw-editsection"></span></h2>
+<p>The development of fast algorithms for DFT can be traced to Carl Friedrich Gauss's unpublished work in 1805 when he needed it to interpolate the orbit of asteroids Pallas and Juno from sample observations.<sup class="reference" id="cite_ref-Gauss_1866_6-0">[6]</sup><sup class="reference" id="cite_ref-Heideman_Johnson_Burrus_1985_7-0">[7]</sup> His method was very similar to the one published in 1965 by James Cooley and John Tukey, who are generally credited for the invention of the modern generic FFT algorithm. While Gauss's work predated even Joseph Fourier's results in 1822, he did not analyze the computation time and eventually used other methods to achieve his goal.
+</p><p>Between 1805 and 1965, some versions of FFT were published by other authors. Frank Yates in 1932 published his version called <i>interaction algorithm</i>, which provided efficient computation of Hadamard and Walsh transforms.<sup class="reference" id="cite_ref-Yates_1937_8-0">[8]</sup> Yates' algorithm is still used in the field of statistical design and analysis of experiments. In 1942, G. C. Danielson and Cornelius Lanczos published their version to compute DFT for x-ray crystallography, a field where calculation of Fourier transforms presented a formidable bottleneck.<sup class="reference" id="cite_ref-Danielson_Lanczos_1942_9-0">[9]</sup><sup class="reference" id="cite_ref-Lanczos_1956_10-0">[10]</sup> While many methods in the past had focused on reducing the constant factor for <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O\left(N^{2}\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mrow>
+<mo>(</mo>
+<msup>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O\left(N^{2}\right)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O\left(N^{2}\right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0359b3fc2400e8e6ff8b0366a7a6277ffe24dac8" style="vertical-align: -1.005ex; width:7.467ex; height:3.176ex;"/></span> computation by taking advantage of "symmetries", Danielson and Lanczos realized that one could use the "periodicity" and apply a "doubling trick" to "double [N] with only slightly more than double the labor", though like Gauss they did not analyze that this led to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O(N\log N)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>N</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O(N\log N)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O(N\log N)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/438fabd48f340dbf8e4325300074495daa0f7e0d" style="vertical-align: -0.838ex; width:11.456ex; height:2.843ex;"/></span> scaling.<sup class="reference" id="cite_ref-Cooley_Lewis_Welch_1967_11-0">[11]</sup>
+</p><p>James Cooley and John Tukey independently rediscovered these earlier algorithms<sup class="reference" id="cite_ref-Heideman_Johnson_Burrus_1985_7-1">[7]</sup> and published a more general FFT in 1965 that is applicable when <i>N</i> is composite and not necessarily a power of 2, as well as analyzing the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O(N\log N)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>N</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O(N\log N)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O(N\log N)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/438fabd48f340dbf8e4325300074495daa0f7e0d" style="vertical-align: -0.838ex; width:11.456ex; height:2.843ex;"/></span> scaling.<sup class="reference" id="cite_ref-Cooley_Tukey_1965_12-0">[12]</sup> Tukey came up with the idea during a meeting of President Kennedy's Science Advisory Committee where a discussion topic involved detecting nuclear tests by the Soviet Union by setting up sensors to surround the country from outside. To analyze the output of these sensors, an FFT algorithm would be needed. In discussion with Tukey, Richard Garwin recognized the general applicability of the algorithm not just to national security problems, but also to a wide range of problems including one of immediate interest to him, determining the periodicities of the spin orientations in a 3-D crystal of Helium-3.<sup class="reference" id="cite_ref-Cooley_1987_13-0">[13]</sup> Garwin gave Tukey's idea to Cooley (both worked at IBM's Watson labs) for implementation.<sup class="reference" id="cite_ref-Garwin_1969_14-0">[14]</sup> Cooley and Tukey published the paper in a relatively short time of six months.<sup class="reference" id="cite_ref-Rockmore_2000_15-0">[15]</sup> As Tukey did not work at IBM, the patentability of the idea was doubted and the algorithm went into the public domain, which, through the computing revolution of the next decade, made FFT one of the indispensable algorithms in digital signal processing.
+</p>
+<h2><span class="mw-headline" id="Definition">Definition</span><span class="mw-editsection"></span></h2>
+<p>Let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{0}}</annotation>
+</semantics>
+</math></span><img alt="x_{0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/86f21d0e31751534cd6584264ecf864a6aa792cf" style="vertical-align: -0.671ex; width:2.384ex; height:2.009ex;"/></span>, …, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{N-1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>N</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{N-1}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle x_{N-1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7df9ede29e0429afc8d9b7d32c831ab2df6723e6" style="vertical-align: -0.671ex; width:5.122ex; height:2.009ex;"/></span> be complex numbers. The DFT is defined by the formula
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle X_{k}=\sum _{n=0}^{N-1}x_{n}e^{-i2\pi kn/N}\qquad k=0,\ldots ,N-1,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>N</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</munderover>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<msup>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+<mn>2</mn>
+<mi>π<!-- π --></mi>
+<mi>k</mi>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>N</mi>
+</mrow>
+</msup>
+<mspace width="2em"></mspace>
+<mi>k</mi>
+<mo>=</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<mi>N</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle X_{k}=\sum _{n=0}^{N-1}x_{n}e^{-i2\pi kn/N}\qquad k=0,\ldots ,N-1,}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle X_{k}=\sum _{n=0}^{N-1}x_{n}e^{-i2\pi kn/N}\qquad k=0,\ldots ,N-1,}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/393b5c5a5c668495629828600cde4611b0fa2f5a" style="vertical-align: -3.005ex; width:43.665ex; height:7.343ex;"/></span></dd></dl>
+<p>where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle e^{i2\pi /N}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mn>2</mn>
+<mi>π<!-- π --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>N</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle e^{i2\pi /N}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle e^{i2\pi /N}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2752173f3152461027358bccb2ae8833329676d5" style="vertical-align: -0.338ex; width:5.928ex; height:2.843ex;"/></span> is a primitive <span class="texhtml mvar" style="font-style:italic;">N</span>th root of 1.
+</p><p>Evaluating this definition directly requires <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O\left(N^{2}\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mrow>
+<mo>(</mo>
+<msup>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O\left(N^{2}\right)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O\left(N^{2}\right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0359b3fc2400e8e6ff8b0366a7a6277ffe24dac8" style="vertical-align: -1.005ex; width:7.467ex; height:3.176ex;"/></span> operations: there are <i>N</i> outputs <i>X</i><sub><i>k</i></sub>, and each output requires a sum of <i>N</i> terms. An FFT is any method to compute the same results in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O(N\log N)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>N</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O(N\log N)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O(N\log N)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/438fabd48f340dbf8e4325300074495daa0f7e0d" style="vertical-align: -0.838ex; width:11.456ex; height:2.843ex;"/></span> operations. All known FFT algorithms require <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle \Theta (N\log N)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mi>N</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle \Theta (N\log N)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle \Theta (N\log N)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/de9311cec601a359826f7952583bcd6050a1f550" style="vertical-align: -0.838ex; width:11.491ex; height:2.843ex;"/></span> operations, although there is no known proof that lower complexity is impossible.<sup class="reference" id="cite_ref-Frigo_Johnson_2007_16-0">[16]</sup>
+</p><p>To illustrate the savings of an FFT, consider the count of complex multiplications and additions for <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle N=4096}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>N</mi>
+<mo>=</mo>
+<mn>4096</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle N=4096}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle N=4096}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2cbc00adb8109adf671b4de48028a2eb19f337f6" style="vertical-align: -0.338ex; width:9.812ex; height:2.176ex;"/></span> data points. Evaluating the DFT's sums directly involves <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle N^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<msup>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle N^{2}}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle N^{2}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a7ed9723db5be2b003a5906eba1f768fd144c7b4" style="vertical-align: -0.338ex; width:3.177ex; height:2.509ex;"/></span> complex multiplications and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle N(N-1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>N</mi>
+<mo stretchy="false">(</mo>
+<mi>N</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle N(N-1)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle N(N-1)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7de11a9b72c78ffa62e8ec24fe58fbfdb549ee5e" style="vertical-align: -0.838ex; width:9.939ex; height:2.843ex;"/></span> complex additions, of which <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O(N)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O(N)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O(N)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/da8fdbf539b049f345efb09f40e4787da1bcf015" style="vertical-align: -0.838ex; width:5.646ex; height:2.843ex;"/></span> operations can be saved by eliminating trivial operations such as multiplications by 1, leaving about 30 million operations. In contrast, the radix-2 Cooley–Tukey algorithm, for <i>N</i> a power of 2, can compute the same result with only <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle (N/2)\log _{2}(N)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>2</mn>
+<mo stretchy="false">)</mo>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle (N/2)\log _{2}(N)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle (N/2)\log _{2}(N)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bfa85d3e37311c30903e36f1cc5d0fc0c4da8d5a" style="vertical-align: -0.838ex; width:14.484ex; height:2.843ex;"/></span> complex multiplications (again, ignoring simplifications of multiplications by 1 and similar) and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle N\log _{2}(N)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>N</mi>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle N\log _{2}(N)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle N\log _{2}(N)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b3632c28c7030380a5adce9e6bb1d11e8f74c4de" style="vertical-align: -0.838ex; width:10.35ex; height:2.843ex;"/></span> complex additions, in total about 30,000 operations — a thousand times less than with direct evaluation. In practice, actual performance on modern computers is usually dominated by factors other than the speed of arithmetic operations and the analysis is a complicated subject (for example, see Frigo &amp; Johnson, 2005),<sup class="reference" id="cite_ref-Frigo_Johnson_2005_17-0">[17]</sup> but the overall improvement from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O\left(N^{2}\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mrow>
+<mo>(</mo>
+<msup>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O\left(N^{2}\right)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O\left(N^{2}\right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0359b3fc2400e8e6ff8b0366a7a6277ffe24dac8" style="vertical-align: -1.005ex; width:7.467ex; height:3.176ex;"/></span> to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O(N\log N)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>N</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O(N\log N)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O(N\log N)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/438fabd48f340dbf8e4325300074495daa0f7e0d" style="vertical-align: -0.838ex; width:11.456ex; height:2.843ex;"/></span> remains.
+</p>
+<h2><span class="mw-headline" id="Algorithms">Algorithms</span><span class="mw-editsection"></span></h2>
+<h3><span id="Cooley.E2.80.93Tukey_algorithm"></span><span class="mw-headline" id="Cooley–Tukey_algorithm">Cooley–Tukey algorithm</span><span class="mw-editsection"></span></h3>
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p>By far the most commonly used FFT is the Cooley–Tukey algorithm. This is a divide-and-conquer algorithm that recursively breaks down a DFT of any composite size <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle N=N_{1}N_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>N</mi>
+<mo>=</mo>
+<msub>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<msub>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle N=N_{1}N_{2}}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle N=N_{1}N_{2}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0753786eb5e097c64e19707194f41ed95ea2b49d" style="vertical-align: -0.671ex; width:11.003ex; height:2.509ex;"/></span> into many smaller DFTs of sizes <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle N_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<msub>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle N_{1}}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle N_{1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/685d059087f21c82f303b634cdd6f7b39f58612d" style="vertical-align: -0.671ex; width:2.92ex; height:2.509ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle N_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<msub>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle N_{2}}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle N_{2}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5ba9e9d469f3f679c4320abc713ff4728cd6b088" style="vertical-align: -0.671ex; width:2.92ex; height:2.509ex;"/></span>, along with <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(N)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(N)}</annotation>
+</semantics>
+</math></span><img alt="O(N)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/78484c5c26cfc97bb3b915418caa09454421e80b" style="vertical-align: -0.838ex; width:5.646ex; height:2.843ex;"/></span> multiplications by complex roots of unity traditionally called twiddle factors (after Gentleman and Sande, 1966<sup class="reference" id="cite_ref-Gentleman_Sande_1966_18-0">[18]</sup>).
+</p><p>This method (and the general idea of an FFT) was popularized by a publication of Cooley and Tukey in 1965,<sup class="reference" id="cite_ref-Cooley_Tukey_1965_12-1">[12]</sup> but it was later discovered<sup class="reference" id="cite_ref-Heideman_Johnson_Burrus_1984_1-2">[1]</sup> that those two authors had independently re-invented an algorithm known to Carl Friedrich Gauss around 1805<sup class="reference" id="cite_ref-Gauss_1805_19-0">[19]</sup> (and subsequently rediscovered several times in limited forms).
+</p><p>The best known use of the Cooley–Tukey algorithm is to divide the transform into two pieces of size <i>N</i>/2 at each step, and is therefore limited to power-of-two sizes, but any factorization can be used in general (as was known to both Gauss and Cooley/Tukey<sup class="reference" id="cite_ref-Heideman_Johnson_Burrus_1984_1-3">[1]</sup>). These are called the <i>radix-2</i> and <i>mixed-radix</i> cases, respectively (and other variants such as the split-radix FFT have their own names as well).  Although the basic idea is recursive, most traditional implementations rearrange the algorithm to avoid explicit recursion. Also, because the Cooley–Tukey algorithm breaks the DFT into smaller DFTs, it can be combined arbitrarily with any other algorithm for the DFT, such as those described below.
+</p>
+<h3><span class="mw-headline" id="Other_FFT_algorithms">Other FFT algorithms</span><span class="mw-editsection"></span></h3>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>There are FFT algorithms other than Cooley–Tukey.
+</p><p>For <i>N</i> = <i>N</i><sub>1</sub><i>N</i><sub>2</sub> with coprime <i>N</i><sub>1</sub> and <i>N</i><sub>2</sub>, one can use the prime-factor (Good–Thomas) algorithm (PFA), based on the Chinese remainder theorem, to factorize the DFT similarly to Cooley–Tukey but without the twiddle factors. The Rader–Brenner algorithm (1976)<sup class="reference" id="cite_ref-Brenner_Rader_1976_20-0">[20]</sup> is a Cooley–Tukey-like factorization but with purely imaginary twiddle factors, reducing multiplications at the cost of increased additions and reduced numerical stability; it was later superseded by the split-radix variant of Cooley–Tukey (which achieves the same multiplication count but with fewer additions and without sacrificing accuracy). Algorithms that recursively factorize the DFT into smaller operations other than DFTs include the Bruun and QFT algorithms. (The Rader–Brenner<sup class="reference" id="cite_ref-Brenner_Rader_1976_20-1">[20]</sup> and QFT algorithms were proposed for power-of-two sizes, but it is possible that they could be adapted to general composite <i>N</i>. Bruun's algorithm applies to arbitrary even composite sizes.) Bruun's algorithm, in particular, is based on interpreting the FFT as a recursive factorization of the polynomial <i>z</i><sup><i>N</i></sup> − 1, here into real-coefficient polynomials of the form <i>z</i><sup><i>M</i></sup> − 1 and <i>z</i><sup>2<i>M</i></sup> + <i>az</i><sup><i>M</i></sup> + 1.
+</p><p>Another polynomial viewpoint is exploited by the Winograd FFT algorithm,<sup class="reference" id="cite_ref-Winograd_1978_21-0">[21]</sup><sup class="reference" id="cite_ref-Winograd_1979_22-0">[22]</sup> which factorizes <i>z</i><sup><i>N</i></sup> − 1 into cyclotomic polynomials—these often have coefficients of 1, 0, or −1, and therefore require few (if any) multiplications, so Winograd can be used to obtain minimal-multiplication FFTs and is often used to find efficient algorithms for small factors. Indeed, Winograd showed that the DFT can be computed with only O(<i>N</i>) irrational multiplications, leading to a proven achievable lower bound on the number of multiplications for power-of-two sizes; unfortunately, this comes at the cost of many more additions, a tradeoff no longer favorable on modern processors with hardware multipliers. In particular, Winograd also makes use of the PFA as well as an algorithm by Rader for FFTs of <i>prime</i> sizes.
+</p><p>Rader's algorithm, exploiting the existence of a generator for the multiplicative group modulo prime <i>N</i>, expresses a DFT of prime size <i>N</i> as a cyclic convolution of (composite) size <i>N</i> − 1, which can then be computed by a pair of ordinary FFTs via the convolution theorem (although Winograd uses other convolution methods). Another prime-size FFT is due to L. I. Bluestein, and is sometimes called the chirp-z algorithm; it also re-expresses a DFT as a convolution, but this time of the <i>same</i> size (which can be zero-padded to a power of two and evaluated by radix-2 Cooley–Tukey FFTs, for example), via the identity
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle nk=-{\frac {(k-n)^{2}}{2}}+{\frac {n^{2}}{2}}+{\frac {k^{2}}{2}}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>k</mi>
+<mo>=</mo>
+<mo>−<!-- − --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo>−<!-- − --></mo>
+<mi>n</mi>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mrow>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<msup>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle nk=-{\frac {(k-n)^{2}}{2}}+{\frac {n^{2}}{2}}+{\frac {k^{2}}{2}}.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle nk=-{\frac {(k-n)^{2}}{2}}+{\frac {n^{2}}{2}}+{\frac {k^{2}}{2}}.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c83c1e810e60c69381849b80ec2e44b65da291b7" style="vertical-align: -1.838ex; width:29.373ex; height:5.843ex;"/></span></dd></dl>
+<p>Hexagonal fast Fourier transform (HFFT) aims at computing an efficient FFT for the hexagonally-sampled data by using a new addressing scheme for hexagonal grids, called Array Set Addressing (ASA).
+</p>
+<h2><span class="mw-headline" id="FFT_algorithms_specialized_for_real_or_symmetric_data">FFT algorithms specialized for real or symmetric data</span><span class="mw-editsection"></span></h2>
+<p>In many applications, the input data for the DFT are purely real, in which case the outputs satisfy the symmetry
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle X_{N-k}=X_{k}^{*}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>N</mi>
+<mo>−<!-- − --></mo>
+<mi>k</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<msubsup>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msubsup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle X_{N-k}=X_{k}^{*}}</annotation>
+</semantics>
+</math></span><img alt="X_{N-k}=X_{k}^{*}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a0a7c99a879aca71e69191bd98092927fb575415" style="vertical-align: -1.005ex; width:11.9ex; height:2.843ex;"/></span></dd></dl>
+<p>and efficient FFT algorithms have been designed for this situation (see e.g. Sorensen, 1987).<sup class="reference" id="cite_ref-Sorensen_Jones_Heideman_Burrus_1987_1_23-0">[23]</sup><sup class="reference" id="cite_ref-Sorensen_Jones_Heideman_Burrus_1987_2_24-0">[24]</sup> One approach consists of taking an ordinary algorithm (e.g. Cooley–Tukey) and removing the redundant parts of the computation, saving roughly a factor of two in time and memory. Alternatively, it is possible to express an <i>even</i>-length real-input DFT as a complex DFT of half the length (whose real and imaginary parts are the even/odd elements of the original real data), followed by O(<i>N</i>) post-processing operations.
+</p><p>It was once believed that real-input DFTs could be more efficiently computed by means of the discrete Hartley transform (DHT), but it was subsequently argued that a specialized real-input DFT algorithm (FFT) can typically be found that requires fewer operations than the corresponding DHT algorithm (FHT) for the same number of inputs.<sup class="reference" id="cite_ref-Sorensen_Jones_Heideman_Burrus_1987_1_23-1">[23]</sup> Bruun's algorithm (above) is another method that was initially proposed to take advantage of real inputs, but it has not proved popular.
+</p><p>There are further FFT specializations for the cases of real data that have even/odd symmetry, in which case one can gain another factor of roughly two in time and memory and the DFT becomes the discrete cosine/sine transform(s) (DCT/DST).  Instead of directly modifying an FFT algorithm for these cases, DCTs/DSTs can also be computed via FFTs of real data combined with O(<i>N</i>) pre- and post-processing.
+</p>
+<h2><span class="mw-headline" id="Computational_issues">Computational issues</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Bounds_on_complexity_and_operation_counts">Bounds on complexity and operation counts</span><span class="mw-editsection"></span></h3>
+<style data-mw-deduplicate="TemplateStyles:r1105704213">.mw-parser-output .unsolved{margin:0.5em 0 1em 1em;border:#ccc solid;padding:0.35em 0.35em 0.35em 2.2em;background-color:#eee;background-image:url("https://upload.wikimedia.org/wikipedia/commons/2/26/Question%2C_Web_Fundamentals.svg");background-position:top 50%left 0.35em;background-size:1.5em;background-repeat:no-repeat}@media(min-width:720px){.mw-parser-output .unsolved{clear:right;float:right;max-width:25%}}.mw-parser-output .unsolved-label{font-weight:bold}.mw-parser-output .unsolved-body{margin:0.35em;font-style:italic}.mw-parser-output .unsolved-more{font-size:smaller}</style>
+
+<p>A fundamental question of longstanding theoretical interest is to prove lower bounds on the complexity and exact operation counts of fast Fourier transforms, and many open problems remain. It is not rigorously proved whether DFTs truly require <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle \Omega (N\log N)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi mathvariant="normal">Ω<!-- Ω --></mi>
+<mo stretchy="false">(</mo>
+<mi>N</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle \Omega (N\log N)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle \Omega (N\log N)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1634170913ca50ea928f05410b7fb24e230eff18" style="vertical-align: -0.838ex; width:11.361ex; height:2.843ex;"/></span> (i.e., order <i><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle N\log N}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>N</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>N</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle N\log N}</annotation>
+</semantics>
+</math></span><img alt="N\log N" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bb8c981ff3c2090fa9a4f9637750fa5ff3a03fae" style="vertical-align: -0.671ex; width:7.873ex; height:2.509ex;"/></span></i> or greater) operations, even for the simple case of power of two sizes, although no algorithms with lower complexity are known. In particular, the count of arithmetic operations is usually the focus of such questions, although actual performance on modern-day computers is determined by many other factors such as cache or CPU pipeline optimization.
+</p><p>Following work by Shmuel Winograd (1978),<sup class="reference" id="cite_ref-Winograd_1978_21-1">[21]</sup> a tight Θ(<i>N</i>) lower bound is known for the number of real multiplications required by an FFT. It can be shown that only <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle 4N-2\log _{2}^{2}(N)-2\log _{2}(N)-4}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mn>4</mn>
+<mi>N</mi>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<msubsup>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msubsup>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mn>4</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle 4N-2\log _{2}^{2}(N)-2\log _{2}(N)-4}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle 4N-2\log _{2}^{2}(N)-2\log _{2}(N)-4}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/72c43facdb938b429bec4e78c0d75f7bd6b18ed2" style="vertical-align: -0.838ex; width:31.807ex; height:3.176ex;"/></span> irrational real multiplications are required to compute a DFT of power-of-two length <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle N=2^{m}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>N</mi>
+<mo>=</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>m</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle N=2^{m}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle N=2^{m}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3ffd5aef5ab7b0b604b845816981c2bb04559391" style="vertical-align: -0.338ex; width:8ex; height:2.343ex;"/></span>. Moreover, explicit algorithms that achieve this count are known (Heideman &amp; Burrus, 1986;<sup class="reference" id="cite_ref-Heideman_Burrus_1986_25-0">[25]</sup> Duhamel, 1990<sup class="reference" id="cite_ref-Duhamel_1990_26-0">[26]</sup>). However, these algorithms require too many additions to be practical, at least on modern computers with hardware multipliers (Duhamel, 1990;<sup class="reference" id="cite_ref-Duhamel_1990_26-1">[26]</sup> Frigo &amp; Johnson, 2005).<sup class="reference" id="cite_ref-Frigo_Johnson_2005_17-1">[17]</sup>
+</p><p>A tight lower bound is not known on the number of required additions, although lower bounds have been proved under some restrictive assumptions on the algorithms. In 1973, Morgenstern<sup class="reference" id="cite_ref-Morgenstern_1973_27-0">[27]</sup> proved an <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Omega (N\log N)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Ω<!-- Ω --></mi>
+<mo stretchy="false">(</mo>
+<mi>N</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Omega (N\log N)}</annotation>
+</semantics>
+</math></span><img alt="\Omega (N\log N)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f4a4f89566cd62497e495a3d00451624e3cf7818" style="vertical-align: -0.838ex; width:11.361ex; height:2.843ex;"/></span> lower bound on the addition count for algorithms where the multiplicative constants have bounded magnitudes (which is true for most but not all FFT algorithms).  Pan (1986)<sup class="reference" id="cite_ref-Pan_1986_28-0">[28]</sup> proved an <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Omega (N\log N)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Ω<!-- Ω --></mi>
+<mo stretchy="false">(</mo>
+<mi>N</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Omega (N\log N)}</annotation>
+</semantics>
+</math></span><img alt="\Omega (N\log N)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f4a4f89566cd62497e495a3d00451624e3cf7818" style="vertical-align: -0.838ex; width:11.361ex; height:2.843ex;"/></span> lower bound assuming a bound on a measure of the FFT algorithm's "asynchronicity", but the generality of this assumption is unclear. For the case of power-of-two <i>N</i>, Papadimitriou (1979)<sup class="reference" id="cite_ref-Papadimitriou_1979_29-0">[29]</sup> argued that the number <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle N\log _{2}N}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>N</mi>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>N</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle N\log _{2}N}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle N\log _{2}N}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fdec4ccdfda4e2c51c13487efde7abd1502d516f" style="vertical-align: -0.838ex; width:8.927ex; height:2.676ex;"/></span> of complex-number additions achieved by Cooley–Tukey algorithms is <i>optimal</i> under certain assumptions on the graph of the algorithm (his assumptions imply, among other things, that no additive identities in the roots of unity are exploited). (This argument would imply that at least <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle 2N\log _{2}N}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mn>2</mn>
+<mi>N</mi>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>N</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle 2N\log _{2}N}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle 2N\log _{2}N}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ffea394945bff050d39134d412b6ab913bf5e89c" style="vertical-align: -0.838ex; width:10.09ex; height:2.676ex;"/></span> real additions are required, although this is not a tight bound because extra additions are required as part of complex-number multiplications.) Thus far, no published FFT algorithm has achieved fewer than <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle N\log _{2}N}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>N</mi>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>N</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle N\log _{2}N}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle N\log _{2}N}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fdec4ccdfda4e2c51c13487efde7abd1502d516f" style="vertical-align: -0.838ex; width:8.927ex; height:2.676ex;"/></span> complex-number additions (or their equivalent) for power-of-two <i>N</i>.
+</p><p>A third problem is to minimize the <i>total</i> number of real multiplications and additions, sometimes called the "arithmetic complexity" (although in this context it is the exact count and not the asymptotic complexity that is being considered).  Again, no tight lower bound has been proven. Since 1968, however, the lowest published count for power-of-two <i>N</i> was long achieved by the split-radix FFT algorithm, which requires <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle 4N\log _{2}(N)-6N+8}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mn>4</mn>
+<mi>N</mi>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mn>6</mn>
+<mi>N</mi>
+<mo>+</mo>
+<mn>8</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle 4N\log _{2}(N)-6N+8}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle 4N\log _{2}(N)-6N+8}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8ee3f6e28f3185fc1f05f288f4fe379a294ee8c2" style="vertical-align: -0.838ex; width:21.581ex; height:2.843ex;"/></span> real multiplications and additions for <i>N</i> &gt; 1. This was recently reduced to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle \sim {\frac {34}{9}}N\log _{2}N}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mo>∼<!-- ∼ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>34</mn>
+<mn>9</mn>
+</mfrac>
+</mrow>
+<mi>N</mi>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>N</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle \sim {\frac {34}{9}}N\log _{2}N}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle \sim {\frac {34}{9}}N\log _{2}N}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bde13807fa9c9caf42a16833121e9ebcbab64747" style="vertical-align: -1.338ex; width:13.861ex; height:3.843ex;"/></span> (Johnson and Frigo, 2007;<sup class="reference" id="cite_ref-Frigo_Johnson_2007_16-1">[16]</sup> Lundy and Van Buskirk, 2007<sup class="reference" id="cite_ref-Lundy_Buskirk_2007_30-0">[30]</sup>). A slightly larger count (but still better than split radix for <i>N</i> ≥ 256) was shown to be provably optimal for <i>N</i> ≤ 512 under additional restrictions on the possible algorithms (split-radix-like flowgraphs with unit-modulus multiplicative factors), by reduction to a satisfiability modulo theories problem solvable by brute force (Haynal &amp; Haynal, 2011).<sup class="reference" id="cite_ref-Haynal_2011_31-0">[31]</sup>
+</p><p>Most of the attempts to lower or prove the complexity of FFT algorithms have focused on the ordinary complex-data case, because it is the simplest. However, complex-data FFTs are so closely related to algorithms for related problems such as real-data FFTs, discrete cosine transforms, discrete Hartley transforms, and so on, that any improvement in one of these would immediately lead to improvements in the others (Duhamel &amp; Vetterli, 1990).<sup class="reference" id="cite_ref-Duhamel_Vetterli_1990_32-0">[32]</sup>
+</p>
+<h3><span class="mw-headline" id="Approximations">Approximations</span><span class="mw-editsection"></span></h3>
+<p>All of the FFT algorithms discussed above compute the DFT exactly (i.e. neglecting floating-point errors). A few "FFT" algorithms have been proposed, however, that compute the DFT <i>approximately</i>, with an error that can be made arbitrarily small at the expense of increased computations. Such algorithms trade the approximation error for increased speed or other properties. For example, an approximate FFT algorithm by Edelman et al. (1999)<sup class="reference" id="cite_ref-Edelman_McCorquodale_Toledo_1999_33-0">[33]</sup> achieves lower communication requirements for parallel computing with the help of a fast multipole method. A wavelet-based approximate FFT by Guo and Burrus (1996)<sup class="reference" id="cite_ref-Guo_Burrus_1996_34-0">[34]</sup> takes sparse inputs/outputs (time/frequency localization) into account more efficiently than is possible with an exact FFT. Another algorithm for approximate computation of a subset of the DFT outputs is due to Shentov et al. (1995).<sup class="reference" id="cite_ref-Shentov_Mitra_Heute_Hossen_1995_35-0">[35]</sup> The Edelman algorithm works equally well for sparse and non-sparse data, since it is based on the compressibility (rank deficiency) of the Fourier matrix itself rather than the compressibility (sparsity) of the data. Conversely, if the data are sparse—that is, if only <i>K</i> out of <i>N</i> Fourier coefficients are nonzero—then the complexity can be reduced to O(<i>K</i> log(<i>N</i>) log(<i>N</i>/<i>K</i>)), and this has been demonstrated to lead to practical speedups compared to an ordinary FFT for <i>N</i>/<i>K</i> &gt; 32 in a large-<i>N</i> example (<i>N</i> = 2<sup>22</sup>) using a probabilistic approximate algorithm (which estimates the largest <i>K</i> coefficients to several decimal places).<sup class="reference" id="cite_ref-Hassanieh_2012_36-0">[36]</sup>
+</p>
+<h3><span class="mw-headline" id="Accuracy">Accuracy</span><span class="mw-editsection"></span></h3>
+<p>FFT algorithms have errors when finite-precision floating-point arithmetic is used, but these errors are typically quite small; most FFT algorithms, e.g. Cooley–Tukey, have excellent numerical properties as a consequence of the pairwise summation structure of the algorithms.  The upper bound on the relative error for the Cooley–Tukey algorithm is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O(\epsilon \log N)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>ϵ<!-- ϵ --></mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O(\epsilon \log N)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O(\epsilon \log N)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d7d8d0b789ff7929bed8c5e791a416f08bbfd701" style="vertical-align: -0.838ex; width:10.336ex; height:2.843ex;"/></span>, compared to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O(\epsilon N^{3/2})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>ϵ<!-- ϵ --></mi>
+<msup>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>2</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O(\epsilon N^{3/2})}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O(\epsilon N^{3/2})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4c8d1efabf2afa37b4b2acd7bd9ad5283b90ba49" style="vertical-align: -0.838ex; width:9.348ex; height:3.176ex;"/></span> for the naïve DFT formula,<sup class="reference" id="cite_ref-Gentleman_Sande_1966_18-1">[18]</sup> where ε is the machine floating-point relative precision. In fact, the root mean square (rms) errors are much better than these upper bounds, being only <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O(\epsilon {\sqrt {\log N}})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>ϵ<!-- ϵ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>N</mi>
+</msqrt>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O(\epsilon {\sqrt {\log N}})}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O(\epsilon {\sqrt {\log N}})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/66db1d2d01ddcc1a637acf7f3a5810017a7135fc" style="vertical-align: -1.005ex; width:12.273ex; height:3.343ex;"/></span> for Cooley–Tukey and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O(\epsilon {\sqrt {N}})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>ϵ<!-- ϵ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>N</mi>
+</msqrt>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O(\epsilon {\sqrt {N}})}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O(\epsilon {\sqrt {N}})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6307f895d607bf125a9c5747958c3ea4ccb252d1" style="vertical-align: -0.838ex; width:8.526ex; height:3.176ex;"/></span> for the naïve DFT (Schatzman, 1996).<sup class="reference" id="cite_ref-Schatzman_1996_37-0">[37]</sup> These results, however, are very sensitive to the accuracy of the twiddle factors used in the FFT (i.e. the trigonometric function values), and it is not unusual for incautious FFT implementations to have much worse accuracy, e.g. if they use inaccurate trigonometric recurrence formulas. Some FFTs other than Cooley–Tukey, such as the Rader–Brenner algorithm, are intrinsically less stable.
+</p><p>In fixed-point arithmetic, the finite-precision errors accumulated by FFT algorithms are worse, with rms errors growing as <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O({\sqrt {N}})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>N</mi>
+</msqrt>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O({\sqrt {N}})}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O({\sqrt {N}})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e4b1e5a5caa44de529b6bf9f9c93a4e35e979518" style="vertical-align: -0.838ex; width:7.582ex; height:3.176ex;"/></span> for the Cooley–Tukey algorithm (Welch, 1969).<sup class="reference" id="cite_ref-Welch_1969_38-0">[38]</sup> Achieving this accuracy requires careful attention to scaling to minimize loss of precision, and fixed-point FFT algorithms involve rescaling at each intermediate stage of decompositions like Cooley–Tukey.
+</p><p>To verify the correctness of an FFT implementation, rigorous guarantees can be obtained in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O(N\log N)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>N</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O(N\log N)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O(N\log N)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/438fabd48f340dbf8e4325300074495daa0f7e0d" style="vertical-align: -0.838ex; width:11.456ex; height:2.843ex;"/></span> time by a simple procedure checking the linearity, impulse-response, and time-shift properties of the transform on random inputs (Ergün, 1995).<sup class="reference" id="cite_ref-Ergün_1995_39-0">[39]</sup>
+</p>
+<h2><span class="mw-headline" id="Multidimensional_FFTs">Multidimensional FFTs</span><span class="mw-editsection"></span></h2>
+<p>As defined in the multidimensional DFT article, the multidimensional DFT
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle X_{\mathbf {k} }=\sum _{\mathbf {n} =0}^{\mathbf {N} -1}e^{-2\pi i\mathbf {k} \cdot (\mathbf {n} /\mathbf {N} )}x_{\mathbf {n} }}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="bold">k</mi>
+</mrow>
+</mrow>
+</msub>
+<mo>=</mo>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="bold">n</mi>
+</mrow>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="bold">N</mi>
+</mrow>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</munderover>
+<msup>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<mi>π<!-- π --></mi>
+<mi>i</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="bold">k</mi>
+</mrow>
+<mo>⋅<!-- ⋅ --></mo>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="bold">n</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="bold">N</mi>
+</mrow>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="bold">n</mi>
+</mrow>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle X_{\mathbf {k} }=\sum _{\mathbf {n} =0}^{\mathbf {N} -1}e^{-2\pi i\mathbf {k} \cdot (\mathbf {n} /\mathbf {N} )}x_{\mathbf {n} }}</annotation>
+</semantics>
+</math></span><img alt="X_{\mathbf {k} }=\sum _{\mathbf {n} =0}^{\mathbf {N} -1}e^{-2\pi i\mathbf {k} \cdot (\mathbf {n} /\mathbf {N} )}x_{\mathbf {n} }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/daa39008ca86510b59d3e28ba7f6932c3bc1d0b8" style="vertical-align: -3.005ex; width:23.843ex; height:7.343ex;"/></span></dd></dl>
+<p>transforms an array <i>x</i><sub><b>n</b></sub> with a <i>d</i>-dimensional vector of indices <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle \mathbf {n} =\left(n_{1},\ldots ,n_{d}\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="bold">n</mi>
+</mrow>
+<mo>=</mo>
+<mrow>
+<mo>(</mo>
+<mrow>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+</mrow>
+</msub>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle \mathbf {n} =\left(n_{1},\ldots ,n_{d}\right)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle \mathbf {n} =\left(n_{1},\ldots ,n_{d}\right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ca890aa139a4124c7c4d0df15babab834ed82cf3" style="vertical-align: -0.838ex; width:16.507ex; height:2.843ex;"/></span> by a set of <i>d</i> nested summations (over <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle n_{j}=0\ldots N_{j}-1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mn>0</mn>
+<mo>…<!-- … --></mo>
+<msub>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle n_{j}=0\ldots N_{j}-1}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle n_{j}=0\ldots N_{j}-1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e94d4f5441d633f971776866c393c29b3192bcdc" style="vertical-align: -1.005ex; width:16.842ex; height:2.843ex;"/></span> for each <i>j</i>), where the division <b>n</b>/<b>N</b>, defined as <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle \mathbf {n} /\mathbf {N} =\left(n_{1}/N_{1},\ldots ,n_{d}/N_{d}\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="bold">n</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="bold">N</mi>
+</mrow>
+<mo>=</mo>
+<mrow>
+<mo>(</mo>
+<mrow>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<msub>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<msub>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+</mrow>
+</msub>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle \mathbf {n} /\mathbf {N} =\left(n_{1}/N_{1},\ldots ,n_{d}/N_{d}\right)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle \mathbf {n} /\mathbf {N} =\left(n_{1}/N_{1},\ldots ,n_{d}/N_{d}\right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/11a64760a8b85c7f642c54cdc13a2c19d1a5a278" style="vertical-align: -0.838ex; width:27.964ex; height:2.843ex;"/></span>, is performed element-wise.  Equivalently, it is the composition of a sequence of <i>d</i> sets of one-dimensional DFTs, performed along one dimension at a time (in any order).
+</p><p>This compositional viewpoint immediately provides the simplest and most common multidimensional DFT algorithm, known as the <b>row-column</b> algorithm (after the two-dimensional case, below). That is, one simply performs a sequence of <i>d</i> one-dimensional FFTs (by any of the above algorithms): first you transform along the <i>n</i><sub>1</sub> dimension, then along the <i>n</i><sub>2</sub> dimension, and so on (or actually, any ordering works). This method is easily shown to have the usual <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O(N\log N)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>N</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O(N\log N)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O(N\log N)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/438fabd48f340dbf8e4325300074495daa0f7e0d" style="vertical-align: -0.838ex; width:11.456ex; height:2.843ex;"/></span> complexity, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle N=N_{1}\cdot N_{2}\cdot \cdots \cdot N_{d}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>N</mi>
+<mo>=</mo>
+<msub>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⋅<!-- ⋅ --></mo>
+<mo>⋯<!-- ⋯ --></mo>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle N=N_{1}\cdot N_{2}\cdot \cdots \cdot N_{d}}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle N=N_{1}\cdot N_{2}\cdot \cdots \cdot N_{d}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1dc54357d1a3e26f0f124ed9da043611f5027fcf" style="vertical-align: -0.671ex; width:21.722ex; height:2.509ex;"/></span> is the total number of data points transformed. In particular, there are <i>N</i>/<i>N</i><sub>1</sub> transforms of size <i>N</i><sub>1</sub>, etcetera, so the complexity of the sequence of FFTs is:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{aligned}&amp;{\frac {N}{N_{1}}}O(N_{1}\log N_{1})+\cdots +{\frac {N}{N_{d}}}O(N_{d}\log N_{d})\\[6pt]={}&amp;O\left(N\left[\log N_{1}+\cdots +\log N_{d}\right]\right)=O(N\log N).\end{aligned}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="right left right left right left right left right left right left" columnspacing="0em 2em 0em 2em 0em 2em 0em 2em 0em 2em 0em" displaystyle="true" rowspacing="0.9em 0.3em">
+<mtr>
+<mtd></mtd>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>N</mi>
+<msub>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mfrac>
+</mrow>
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<msub>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mo>⋯<!-- ⋯ --></mo>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>N</mi>
+<msub>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+</mrow>
+</msub>
+</mfrac>
+</mrow>
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+</mrow>
+</msub>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<msub>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+</mrow>
+</mtd>
+<mtd>
+<mi>O</mi>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mi>N</mi>
+<mrow>
+<mo>[</mo>
+<mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<msub>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mo>⋯<!-- ⋯ --></mo>
+<mo>+</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<msub>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+</mrow>
+</msub>
+</mrow>
+<mo>]</mo>
+</mrow>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mo>=</mo>
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>N</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{aligned}&amp;{\frac {N}{N_{1}}}O(N_{1}\log N_{1})+\cdots +{\frac {N}{N_{d}}}O(N_{d}\log N_{d})\\[6pt]={}&amp;O\left(N\left[\log N_{1}+\cdots +\log N_{d}\right]\right)=O(N\log N).\end{aligned}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\begin{aligned}&amp;{\frac {N}{N_{1}}}O(N_{1}\log N_{1})+\cdots +{\frac {N}{N_{d}}}O(N_{d}\log N_{d})\\[6pt]={}&amp;O\left(N\left[\log N_{1}+\cdots +\log N_{d}\right]\right)=O(N\log N).\end{aligned}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7d9f3e21e0eb0873097784bf3d9d67d607df86f5" style="vertical-align: -4.505ex; width:47.12ex; height:10.176ex;"/></span></dd></dl>
+<p>In two dimensions, the <i>x</i><sub><b>k</b></sub> can be viewed as an <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n_{1}\times n_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>×<!-- × --></mo>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n_{1}\times n_{2}}</annotation>
+</semantics>
+</math></span><img alt="n_{1}\times n_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/82858cf4e363d953f3cc4d584aa9fbc3ade86398" style="vertical-align: -0.671ex; width:7.738ex; height:2.009ex;"/></span> matrix, and this algorithm corresponds to first performing the FFT of all the rows (resp. columns), grouping the resulting transformed rows (resp. columns) together as another <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n_{1}\times n_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>×<!-- × --></mo>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n_{1}\times n_{2}}</annotation>
+</semantics>
+</math></span><img alt="n_{1}\times n_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/82858cf4e363d953f3cc4d584aa9fbc3ade86398" style="vertical-align: -0.671ex; width:7.738ex; height:2.009ex;"/></span> matrix, and then performing the FFT on each of the columns (resp. rows) of this second matrix, and similarly grouping the results into the final result matrix.
+</p><p>In more than two dimensions, it is often advantageous for cache locality to group the dimensions recursively.  For example, a three-dimensional FFT might first perform two-dimensional FFTs of each planar "slice" for each fixed <i>n</i><sub>1</sub>, and then perform the one-dimensional FFTs along the <i>n</i><sub>1</sub> direction. More generally, an asymptotically optimal cache-oblivious algorithm consists of recursively dividing the dimensions into two groups <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle (n_{1},\ldots ,n_{d/2})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle (n_{1},\ldots ,n_{d/2})}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle (n_{1},\ldots ,n_{d/2})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8b326af447592c176f0ef5c132456a81556e2468" style="vertical-align: -1.171ex; width:13.567ex; height:3.176ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle (n_{d/2+1},\ldots ,n_{d})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>2</mn>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle (n_{d/2+1},\ldots ,n_{d})}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle (n_{d/2+1},\ldots ,n_{d})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dacf87c7c7c06d47ab6e5c41fbe23d23de01b022" style="vertical-align: -1.171ex; width:15.705ex; height:3.176ex;"/></span> that are transformed recursively (rounding if <i>d</i> is not even) (see Frigo and Johnson, 2005).<sup class="reference" id="cite_ref-Frigo_Johnson_2005_17-2">[17]</sup> Still, this remains a straightforward variation of the row-column algorithm that ultimately requires only a one-dimensional FFT algorithm as the base case, and still has O(<i>N</i> log <i>N</i>) complexity.  Yet another variation is to perform matrix transpositions in between transforming subsequent dimensions, so that the transforms operate on contiguous data; this is especially important for out-of-core and distributed memory situations where accessing non-contiguous data is extremely time-consuming.
+</p><p>There are other multidimensional FFT algorithms that are distinct from the row-column algorithm, although all of them have <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O(N\log N)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>N</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O(N\log N)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O(N\log N)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/438fabd48f340dbf8e4325300074495daa0f7e0d" style="vertical-align: -0.838ex; width:11.456ex; height:2.843ex;"/></span> complexity. Perhaps the simplest non-row-column FFT is the vector-radix FFT algorithm, which is a generalization of the ordinary Cooley–Tukey algorithm where one divides the transform dimensions by a vector <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle \mathbf {r} =\left(r_{1},r_{2},\ldots ,r_{d}\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="bold">r</mi>
+</mrow>
+<mo>=</mo>
+<mrow>
+<mo>(</mo>
+<mrow>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+</mrow>
+</msub>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle \mathbf {r} =\left(r_{1},r_{2},\ldots ,r_{d}\right)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle \mathbf {r} =\left(r_{1},r_{2},\ldots ,r_{d}\right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c00dcf6d1fad2115029d48485902e4384ce65965" style="vertical-align: -0.838ex; width:18.568ex; height:2.843ex;"/></span> of radices at each step. (This may also have cache benefits.) The simplest case of vector-radix is where all of the radices are equal (e.g. vector-radix-2 divides <i>all</i> of the dimensions by two), but this is not necessary.  Vector radix with only a single non-unit radix at a time, i.e. <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle \mathbf {r} =\left(1,\ldots ,1,r,1,\ldots ,1\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="bold">r</mi>
+</mrow>
+<mo>=</mo>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mn>1</mn>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mi>r</mi>
+<mo>,</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<mn>1</mn>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle \mathbf {r} =\left(1,\ldots ,1,r,1,\ldots ,1\right)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle \mathbf {r} =\left(1,\ldots ,1,r,1,\ldots ,1\right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bae6de808fd13a1a9ebe50f1b11ea32555d8c807" style="vertical-align: -0.838ex; width:24.133ex; height:2.843ex;"/></span>, is essentially a row-column algorithm. Other, more complicated, methods include polynomial transform algorithms due to Nussbaumer (1977),<sup class="reference" id="cite_ref-Nussbaumer_1977_40-0">[40]</sup> which view the transform in terms of convolutions and polynomial products. See Duhamel and Vetterli (1990)<sup class="reference" id="cite_ref-Duhamel_Vetterli_1990_32-1">[32]</sup> for more information and references.
+</p>
+<h2><span class="mw-headline" id="Other_generalizations">Other generalizations</span><span class="mw-editsection"></span></h2>
+<p>An <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O(N^{5/2}\log N)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>5</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>2</mn>
+</mrow>
+</msup>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O(N^{5/2}\log N)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O(N^{5/2}\log N)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/255a86c92790f8124e501279575ea6b728a4a5f7" style="vertical-align: -0.838ex; width:14.213ex; height:3.176ex;"/></span> generalization to spherical harmonics on the sphere <i>S</i><sup>2</sup> with <i>N</i><sup>2</sup> nodes was described by Mohlenkamp,<sup class="reference" id="cite_ref-Mohlenkamp_1999_41-0">[41]</sup> along with an algorithm conjectured (but not proven) to have <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O(N^{2}\log ^{2}(N))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<msup>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O(N^{2}\log ^{2}(N))}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O(N^{2}\log ^{2}(N))}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7e7b8e356d3755709ee04aa32abe7ae40528f678" style="vertical-align: -0.838ex; width:15.046ex; height:3.176ex;"/></span> complexity; Mohlenkamp also provides an implementation in the libftsh library.<sup class="reference" id="cite_ref-libftsh_42-0">[42]</sup> A spherical-harmonic algorithm with <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O(N^{2}\log N)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>N</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O(N^{2}\log N)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O(N^{2}\log N)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/facdd99377006ae3ae63e15507bc2dd0a46b6e8c" style="vertical-align: -0.838ex; width:12.569ex; height:3.009ex;"/></span>complexity is described by Rokhlin and Tygert.<sup class="reference" id="cite_ref-Rokhlin_Tygert_2006_43-0">[43]</sup>
+</p><p>The fast folding algorithm is analogous to the FFT, except that it operates on a series of binned waveforms rather than a series of real or complex scalar values. Rotation (which in the FFT is multiplication by a complex phasor) is a circular shift of the component waveform.
+</p><p>Various groups have also published "FFT" algorithms for non-equispaced data, as reviewed in Potts <i>et al.</i> (2001).<sup class="reference" id="cite_ref-Potts_Steidl_Tasche_2001_44-0">[44]</sup> Such algorithms do not strictly compute the DFT (which is only defined for equispaced data), but rather some approximation thereof (a non-uniform discrete Fourier transform, or NDFT, which itself is often computed only approximately). More generally there are various other methods of spectral estimation.
+</p>
+<h2><span class="mw-headline" id="Applications">Applications</span><span class="mw-editsection"></span></h2>
+<p>The FFT is used in digital recording, sampling, additive synthesis and pitch correction software.<sup class="reference" id="cite_ref-45">[45]</sup>
+</p><p>The FFT's importance derives from the fact that it has made working in the frequency domain equally computationally feasible as working in the temporal or spatial domain. Some of the important applications of the FFT include:<sup class="reference" id="cite_ref-Rockmore_2000_15-1">[15]</sup><sup class="reference" id="cite_ref-Chu_George_1999_46-0">[46]</sup>
+</p>
+<ul><li>fast large-integer multiplication algorithms and polynomial multiplication,</li>
+<li>efficient matrix–vector multiplication for Toeplitz, circulant and other structured matrices,</li>
+<li>filtering algorithms (see overlap–add and overlap–save methods),</li>
+<li>fast algorithms for discrete cosine or sine transforms (e.g. fast DCT used for JPEG and MPEG/MP3 encoding and decoding),</li>
+<li>fast Chebyshev approximation,</li>
+<li>solving difference equations,</li>
+<li>computation of isotopic distributions.<sup class="reference" id="cite_ref-Fernandez-de-Cossio_2012_47-0">[47]</sup></li>
+<li>modulation and demodulation of complex data symbols using orthogonal frequency division multiplexing (OFDM) for 5G, LTE, Wi-Fi, DSL, and other modern communication systems.</li></ul>
+<h2><span class="mw-headline" id="Research_areas">Research areas</span><span class="mw-editsection"></span></h2>
+<dl><dt>Big FFTs</dt>
+<dd>With the explosion of big data in fields such as astronomy, the need for 512K FFTs has arisen for certain interferometry calculations. The data collected by projects such as WMAP and LIGO require FFTs of tens of billions of points. As this size does not fit into main memory, so called out-of-core FFTs are an active area of research.<sup class="reference" id="cite_ref-Cormen_Nicol_1998_48-0">[48]</sup></dd>
+<dt>Approximate FFTs</dt>
+<dd>For applications such as MRI, it is necessary to compute DFTs for nonuniformly spaced grid points and/or frequencies. Multipole based approaches can compute approximate quantities with factor of runtime increase.<sup class="reference" id="cite_ref-Dutt_Rokhlin_1993_49-0">[49]</sup></dd>
+<dt>Group FFTs</dt>
+<dd>The FFT may also be explained and interpreted using group representation theory allowing for further generalization. A function on any compact group, including non-cyclic, has an expansion in terms of a basis of irreducible matrix elements. It remains active area of research to find efficient algorithm for performing this change of basis. Applications including efficient spherical harmonic expansion, analyzing certain Markov processes, robotics etc.<sup class="reference" id="cite_ref-Rockmore_2004_50-0">[50]</sup></dd>
+<dt>Quantum FFTs</dt>
+<dd>Shor's fast algorithm for integer factorization on a quantum computer has a subroutine to compute DFT of a binary vector. This is implemented as sequence of 1- or 2-bit quantum gates now known as quantum FFT, which is effectively the Cooley–Tukey FFT realized as a particular factorization of the Fourier matrix. Extension to these ideas is currently being explored.<sup class="reference" id="cite_ref-51">[51]</sup></dd></dl>
+<h2><span class="mw-headline" id="Language_reference">Language reference</span><span class="mw-editsection"></span></h2>
+<table class="wikitable">
+<tbody><tr>
+<th>Language
+</th>
+<th>Command/Method
+</th>
+<th>Pre-requisites
+</th></tr>
+<tr>
+<td>R
+</td>
+<td>stats::fft(x)
+</td>
+<td>None
+</td></tr>
+<tr>
+<td>Octave/MATLAB
+</td>
+<td>fft(x)
+</td>
+<td>None
+</td></tr>
+<tr>
+<td>Python
+</td>
+<td>fft.fft(x)
+</td>
+<td>numpy scipy
+</td></tr>
+<tr>
+<td>Mathematica
+</td>
+<td>Fourier[x]
+</td>
+<td>None
+</td></tr>
+<tr>
+<td>Fortran
+</td>
+<td>fftw_one(plan,in,out)
+</td>
+<td>FFTW
+</td></tr>
+<tr>
+<td>Julia
+</td>
+<td>fft(A [,dims])
+</td>
+<td>FFTW
+</td></tr>
+<tr>
+<td>Rust
+</td>
+<td>fft.process(&amp;mut x);
+</td>
+<td>rustfft
+</td></tr>
+<tr>
+<td>Haskell
+</td>
+<td>dft x
+</td>
+<td>fft
+</td></tr></tbody></table>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<p>FFT-related algorithms:
+</p>
+<ul><li>Goertzel algorithm – computes individual terms of discrete Fourier transform</li></ul>
+<p>FFT implementations:
+</p>
+<ul><li>ALGLIB – a dual/GPL-licensed C++ and C# library (also supporting other languages), with real/complex FFT implementation</li>
+<li>FFTPACK – another Fortran FFT library (public domain)</li>
+<li>Architecture-specific:
+<ul><li>Arm Performance Libraries<sup class="reference" id="cite_ref-Arm_Performance_Libraries_52-0">[52]</sup></li>
+<li>Intel Integrated Performance Primitives</li>
+<li>Intel Math Kernel Library</li></ul></li>
+<li>Many more implementations are available,<sup class="reference" id="cite_ref-53">[53]</sup> for CPUs and GPUs, such as PocketFFT for C++</li></ul>
+<p>Other links:
+</p>
+<ul><li>Odlyzko–Schönhage algorithm applies the FFT to finite Dirichlet series</li>
+<li>Schönhage–Strassen algorithm – asymptotically fast multiplication algorithm for large integers</li>
+<li>Butterfly diagram – a diagram used to describe FFTs</li>
+<li>Spectral music (involves application of DFT analysis to musical composition)</li>
+<li>Spectrum analyzer – any of several devices that perform spectrum analysis, often via a DFT</li>
+<li>Time series</li>
+<li>Fast Walsh–Hadamard transform</li>
+<li>Generalized distributive law</li>
+<li>Least-squares spectral analysis</li>
+<li>Multidimensional transform</li>
+<li>Multidimensional discrete convolution</li>
+<li>Fast Fourier Transform Telescope</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="Further_reading">Further reading</span><span class="mw-editsection"></span></h2>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFBrigham2002">Brigham, E. Oran (2002). <i>The Fast Fourier Transform</i>. New York: Prentice-Hall.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=The+Fast+Fourier+Transform&amp;rft.place=New+York&amp;rft.pub=Prentice-Hall&amp;rft.date=2002&amp;rft.aulast=Brigham&amp;rft.aufirst=E.+Oran&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AFast+Fourier+transform"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFCormenLeisersonRivestStein2001">Cormen, Thomas H.; Leiserson, Charles E.; Rivest, Ronald L.; Stein, Clifford (2001). "Chapter 30: Polynomials and the FFT". <i>Introduction to Algorithms</i> (2 ed.). MIT Press / McGraw-Hill. ISBN <bdi>0-262-03293-7</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Chapter+30%3A+Polynomials+and+the+FFT&amp;rft.btitle=Introduction+to+Algorithms&amp;rft.edition=2&amp;rft.pub=MIT+Press+%2F+McGraw-Hill&amp;rft.date=2001&amp;rft.isbn=0-262-03293-7&amp;rft.aulast=Cormen&amp;rft.aufirst=Thomas+H.&amp;rft.au=Leiserson%2C+Charles+E.&amp;rft.au=Rivest%2C+Ronald+L.&amp;rft.au=Stein%2C+Clifford&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AFast+Fourier+transform"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFElliottRao1982">Elliott, Douglas F.; Rao, K. Ramamohan (1982). <i>Fast transforms: Algorithms, analyses, applications</i>. New York, USA: Academic Press.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Fast+transforms%3A+Algorithms%2C+analyses%2C+applications&amp;rft.place=New+York%2C+USA&amp;rft.pub=Academic+Press&amp;rft.date=1982&amp;rft.aulast=Elliott&amp;rft.aufirst=Douglas+F.&amp;rft.au=Rao%2C+K.+Ramamohan&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AFast+Fourier+transform"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFGuoSittonBurrus1994">Guo, Haitao; Sitton, Gary A.; Burrus, Charles Sidney (1994). "The Quick Discrete Fourier Transform". <i>Proceedings of ICASSP '94. IEEE International Conference on Acoustics, Speech and Signal Processing</i>. <i>Proceedings on the IEEE Conference on Acoustics, Speech, and Signal Processing (ICASSP)</i>. Vol. 3. pp. 445–448. doi:10.1109/ICASSP.1994.389994. ISBN <bdi>978-0-7803-1775-8</bdi>. S2CID 42639206.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=The+Quick+Discrete+Fourier+Transform&amp;rft.btitle=Proceedings+of+ICASSP+%2794.+IEEE+International+Conference+on+Acoustics%2C+Speech+and+Signal+Processing&amp;rft.pages=445-448&amp;rft.date=1994&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A42639206%23id-name%3DS2CID&amp;rft_id=info%3Adoi%2F10.1109%2FICASSP.1994.389994&amp;rft.isbn=978-0-7803-1775-8&amp;rft.aulast=Guo&amp;rft.aufirst=Haitao&amp;rft.au=Sitton%2C+Gary+A.&amp;rft.au=Burrus%2C+Charles+Sidney&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AFast+Fourier+transform"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFJohnsonFrigo2007">Johnson, Steven G.; Frigo, Matteo (2007). "A modified split-radix FFT with fewer arithmetic operations" <span class="cs1-format">(PDF)</span>. <i>IEEE Transactions on Signal Processing</i>. <b>55</b> (1): 111–119. Bibcode:2007ITSP...55..111J. CiteSeerX <span class="cs1-lock-free" title="Freely accessible">10.1.1.582.5497</span>. doi:10.1109/tsp.2006.882087. S2CID 14772428. Archived <span class="cs1-format">(PDF)</span> from the original on 2005-05-26.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=IEEE+Transactions+on+Signal+Processing&amp;rft.atitle=A+modified+split-radix+FFT+with+fewer+arithmetic+operations&amp;rft.volume=55&amp;rft.issue=1&amp;rft.pages=111-119&amp;rft.date=2007&amp;rft_id=%2F%2Fciteseerx.ist.psu.edu%2Fviewdoc%2Fsummary%3Fdoi%3D10.1.1.582.5497%23id-name%3DCiteSeerX&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A14772428%23id-name%3DS2CID&amp;rft_id=info%3Adoi%2F10.1109%2Ftsp.2006.882087&amp;rft_id=info%3Abibcode%2F2007ITSP...55..111J&amp;rft.aulast=Johnson&amp;rft.aufirst=Steven+G.&amp;rft.au=Frigo%2C+Matteo&amp;rft_id=http%3A%2F%2Fwww.fftw.org%2Fnewsplit.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AFast+Fourier+transform"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFPressTeukolskyVetterlingFlannery2007">Press, William H.; Teukolsky, Saul A.; Vetterling, William T.; Flannery, Brian P. (2007). "Chapter 12. Fast Fourier Transform". <i>Numerical Recipes: The Art of Scientific Computing</i> (3 ed.). New York, USA: Cambridge University Press. ISBN <bdi>978-0-521-88068-8</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Chapter+12.+Fast+Fourier+Transform&amp;rft.btitle=Numerical+Recipes%3A+The+Art+of+Scientific+Computing&amp;rft.place=New+York%2C+USA&amp;rft.edition=3&amp;rft.pub=Cambridge+University+Press&amp;rft.date=2007&amp;rft.isbn=978-0-521-88068-8&amp;rft.aulast=Press&amp;rft.aufirst=William+H.&amp;rft.au=Teukolsky%2C+Saul+A.&amp;rft.au=Vetterling%2C+William+T.&amp;rft.au=Flannery%2C+Brian+P.&amp;rft_id=http%3A%2F%2Fapps.nrbook.com%2Fempanel%2Findex.html%23pg%3D600&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AFast+Fourier+transform"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1 cs1-prop-long-vol" id="CITEREFSingleton1969">Singleton, Richard Collom (June 1969). "A Short Bibliography on the Fast Fourier Transform". <i>Special Issue on Fast Fourier Transform</i>. <i>IEEE Transactions on Audio and Electroacoustics</i>. Vol. AU-17. IEEE Audio and Electroacoustics Group. pp. 166–169. doi:10.1109/TAU.1969.1162029.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=A+Short+Bibliography+on+the+Fast+Fourier+Transform&amp;rft.btitle=Special+Issue+on+Fast+Fourier+Transform&amp;rft.pages=166-169&amp;rft.pub=IEEE+Audio+and+Electroacoustics+Group&amp;rft.date=1969-06&amp;rft_id=info%3Adoi%2F10.1109%2FTAU.1969.1162029&amp;rft.aulast=Singleton&amp;rft.aufirst=Richard+Collom&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AFast+Fourier+transform"></span> (NB. Contains extensive bibliography.)</li>
+<li>Elena Prestini: "The Evolution of Applied Harmonic Analysis", Springer, ISBN 978-0-8176-4125-2 (2004), Sec.3.10 'Gauss and the asteroids: history of the FFT'.</li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>Fast Fourier Transform for Polynomial Multiplication –  fast Fourier algorithm</li>
+<li><i>Fast Fourier Transforms</i>, Connexions online book edited by Charles Sidney Burrus, with chapters by Charles Sidney Burrus, Ivan Selesnick, Markus Pueschel, Matteo Frigo, and Steven G. Johnson (2008)</li>
+<li>Fast Fourier transform — FFT –  FFT programming in C++ –  the Cooley–Tukey algorithm</li>
+<li>Online documentation, links, book, and code</li>
+<li>Sri Welaratna, "Thirty years of FFT analyzers Archived 2014-01-12 at the Wayback Machine", <i>Sound and Vibration</i> (January 1997, 30th anniversary issue) –  a historical review of hardware FFT devices</li>
+<li>ALGLIB FFT Code –  a dual/GPL-licensed multilanguage (VBA, C++, Pascal, etc.) numerical analysis and data processing library</li>
+<li>SFFT: Sparse Fast Fourier Transform –  MIT's  sparse (sub-linear time) FFT algorithm, sFFT, and implementation</li>
+<li>VB6 FFT –  a VB6 optimized library implementation with source code</li>
+<li>Interactive FFT Tutorial –  a visual interactive intro to Fourier transforms and FFT methods</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2268
+Cached time: 20221223231159
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.757 seconds
+Real time usage: 1.416 seconds
+Preprocessor visited node count: 4157/1000000
+Post‐expand include size: 140454/2097152 bytes
+Template argument size: 2677/2097152 bytes
+Highest expansion depth: 12/100
+Expensive parser function count: 8/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 200876/5000000 bytes
+Lua time usage: 0.380/10.000 seconds
+Lua memory usage: 6369577/52428800 bytes
+Number of Wikibase entities loaded: 1/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  651.947      1 -total
+ 58.99%  384.591      1 Template:Reflist
+ 38.92%  253.734     40 Template:Cite_journal
+ 12.08%   78.776     17 Template:Cite_book
+  9.47%   61.751      1 Template:Authority_control
+  8.93%   58.194      1 Template:Short_description
+  5.03%   32.806      2 Template:Pagetype
+  4.49%   29.243      2 Template:Main
+  2.24%   14.626      1 Template:Use_American_English
+  1.93%   12.568      3 Template:Main_other
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:11512-0!canonical and timestamp 20221223231158 and revision id 1129063361.
+ -->
+</div></body>
+</html>

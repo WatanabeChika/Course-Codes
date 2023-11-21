@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Lempel-Ziv-Welch</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-No_footnotes plainlinks metadata ambox ambox-style ambox-No_footnotes" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<p><b>Lempel–Ziv–Welch</b> (<b>LZW</b>) is a universal lossless data compression algorithm created by Abraham Lempel, Jacob Ziv, and Terry Welch. It was published by Welch in 1984 as an improved implementation of the LZ78 algorithm published by Lempel and Ziv in 1978. The algorithm is simple to implement and has the potential for very high throughput in hardware implementations.<sup class="reference" id="cite_ref-WelchIEEE_1-0">[1]</sup>  It is the algorithm of the widely used Unix file compression utility compress and is used in the GIF image format.
+</p>
+
+<h2><span class="mw-headline" id="Algorithm">Algorithm</span><span class="mw-editsection"></span></h2>
+<p>The scenario described by Welch's 1984 paper<sup class="reference" id="cite_ref-WelchIEEE_1-1">[1]</sup> encodes sequences of 8-bit data as fixed-length 12-bit codes.  The codes from 0 to 255 represent 1-character sequences consisting of the corresponding 8-bit character, and the codes 256 through 4095 are created in a dictionary for sequences encountered in the data as it is encoded.  At each stage in compression, input bytes are gathered into a sequence until the next character would make a sequence with no code yet in the dictionary.  The code for the sequence (without that character) is added to the output, and a new code (for the sequence with that character) is added to the dictionary.
+</p><p>The idea was quickly adapted to other situations.  In an image based on a color table, for example, the natural character alphabet is the set of color table indexes, and in the 1980s, many images had small color tables (on the order of 16 colors).  For such a reduced alphabet, the full 12-bit codes yielded poor compression unless the image was large, so the idea of a <b>variable-width</b> code was introduced:  codes typically start one bit wider than the symbols being encoded, and as each code size is used up, the code width increases by 1 bit, up to some prescribed maximum (typically 12 bits).  When the maximum code value is reached, encoding proceeds using the existing table, but new codes are not generated for addition to the table.
+</p><p>Further refinements include reserving a code to indicate that the code table should be cleared and restored to its initial state (a "clear code", typically the first value immediately after the values for the individual alphabet characters), and a code to indicate the end of data (a "stop code", typically one greater than the clear code).  The clear code lets the table be reinitialized after it fills up, which lets the encoding adapt to changing patterns in the input data.  Smart encoders can monitor the compression efficiency and clear the table whenever the existing table no longer matches the input well.
+</p><p>Since codes are added in a manner determined by the data, the decoder mimics building the table as it sees the resulting codes.  It is critical that the encoder and decoder agree on the variety of LZW used: the size of the alphabet, the maximum table size (and code width), whether variable-width encoding is used, initial code size, and whether to use the clear and stop codes (and what values they have).  Most formats that employ LZW build this information into the format specification or provide explicit fields for them in a compression header for the data.
+</p>
+<h3><span class="mw-headline" id="Encoding">Encoding</span><span class="mw-editsection"></span></h3>
+<p>A high-level view of the encoding algorithm is shown here:
+</p>
+<ol><li>Initialize the dictionary to contain all strings of length one.</li>
+<li>Find the longest string <b>W</b> in the dictionary that matches the current input.</li>
+<li>Emit the dictionary index for <b>W</b> to output and remove <b>W</b> from the input.</li>
+<li>Add <b>W</b> followed by the next symbol in the input to the dictionary.</li>
+<li>Go to Step 2.</li></ol>
+<p>A dictionary is initialized to contain the single-character strings corresponding to all the possible input characters (and nothing else except the clear and stop codes if they're being used). The algorithm works by scanning through the input string for successively longer substrings until it finds one that is not in the dictionary. When such a string is found, the index for the string without the last character (i.e., the longest substring that <i>is</i> in the dictionary) is retrieved from the dictionary and sent to output, and the new string (including the last character) is added to the dictionary with the next available code. The last input character is then used as the next starting point to scan for substrings.
+</p><p>In this way, successively longer strings are registered in the dictionary and available for subsequent encoding as single output values. The algorithm works best on data with repeated patterns, so the initial parts of a message see little compression. As the message grows, however, the compression ratio tends asymptotically to the maximum (i.e., the compression factor or ratio improves on an increasing curve, and not linearly, approaching a theoretical maximum inside a limited time period rather than over infinite time).<sup class="reference" id="cite_ref-2">[2]</sup>
+</p>
+<h3><span class="mw-headline" id="Decoding">Decoding</span><span class="mw-editsection"></span></h3>
+<p>A high-level view of the decoding algorithm is shown here:
+</p>
+<ol><li>Initialize the dictionary to contain all strings of length one.</li>
+<li>Read the next encoded symbol: Is it encoded in the dictionary?
+<ol><li>Yes:
+<ol><li>Emit the corresponding string <b>W</b> to output.</li>
+<li>Concatenate the previous string emitted to output with the first symbol of <b>W</b>. Add this to the dictionary.</li></ol></li>
+<li>No:
+<ol><li>Concatenate the previous string emitted to output with its first symbol. Call this string <b>V</b>.</li>
+<li>Add <b>V</b> to the dictionary and emit <b>V</b> to output.</li></ol></li></ol></li>
+<li>Repeat Step 2 until end of input string</li></ol>
+<p>The decoding algorithm works by reading a value from the encoded input and outputting the corresponding string from the dictionary. However, the full dictionary is not needed, only the initial dictionary that contains single-character strings (and that is usually hard coded in the program, instead of sent with the encoded data). Instead, the full dictionary is rebuilt during the decoding process the following way: after decoding a value and outputting a string, the decoder concatenates it with the first character of the <i>next</i> decoded string (or the first character of current string, if the next one can't be decoded; since if the next value is unknown, then it must be the value added to the dictionary in <i>this</i> iteration, and so its first character is the same as the first character of the current string), and updates the dictionary with the new string. The decoder then proceeds to the next input (which was already read in the previous iteration) and processes it as before, and so on until it has exhausted the input stream.
+</p>
+<h3><span class="mw-headline" id="Variable-width_codes">Variable-width codes</span><span class="mw-editsection"></span></h3>
+<p>If variable-width codes are being used, the encoder and decoder must be careful to change the width at the same points in the encoded data so they don't disagree on boundaries between individual codes in the stream. In the standard version, the encoder increases the width from <i>p</i> to <i>p</i> + 1 when a sequence ω + <i>s</i> is encountered that is not in the table (so that a code must be added for it) but the next available code in the table is 2<sup><i>p</i></sup> (the first code requiring <i>p</i> + 1 bits).  The encoder emits the code for ω at width <i>p</i> (since that code does not require <i>p</i> + 1 bits), and then increases the code width so that the next code emitted is <i>p</i> + 1 bits wide.
+</p><p>The decoder is always one code behind the encoder in building the table, so when it sees the code for ω, it generates an entry for code 2<sup><i>p</i></sup> − 1.  Since this is the point where the encoder increases the code width, the decoder must increase the width here as well—at the point where it generates the largest code that fits in <i>p</i> bits.
+</p><p>Unfortunately, some early implementations of the encoding algorithm increase the code width and <i>then</i> emit ω at the new width instead of the old width, so that to the decoder it looks like the width changes one code too early.  This is called "early change"; it caused so much confusion that Adobe now allows both versions in PDF files, but includes an explicit flag in the header of each LZW-compressed stream to indicate whether early change is being used.  Of the graphics file formats that support LZW compression, TIFF uses early change, while GIF and most others don't.
+</p><p>When the table is cleared in response to a clear code, both encoder and decoder change the code width after the clear code back to the initial code width, starting with the code immediately following the clear code.
+</p>
+<h3><span class="mw-headline" id="Packing_order">Packing order</span><span class="mw-editsection"></span></h3>
+<p>Since the codes emitted typically do not fall on byte boundaries, the encoder and decoder must agree on how codes are packed into bytes.  The two common methods are <i>LSB-first</i> ("least significant bit first") and <i>MSB-first</i> ("most significant bit first").  In LSB-first packing, the first code is aligned so that the least significant bit of the code falls in the least significant bit of the first stream byte, and if the code has more than 8 bits, the high-order bits left over are aligned with the least significant bits of the next byte; further codes are packed with LSB going into the least significant bit not yet used in the current stream byte, proceeding into further bytes as necessary. MSB-first packing aligns the first code so that its <i>most</i> significant bit falls in the MSB of the first stream byte, with overflow aligned with the MSB of the next byte; further codes are written with MSB going into the most significant bit not yet used in the current stream byte.
+</p><p>GIF files use LSB-first packing order.  TIFF files and PDF files use MSB-first packing order.
+</p>
+<h2><span class="mw-headline" id="Example">Example</span><span class="mw-editsection"></span></h2>
+<p>The following example illustrates the LZW algorithm in action, showing the status of the output and the dictionary at every stage, both in encoding and decoding the data. This example has been constructed to give reasonable compression on a very short message.  In real text data, repetition is generally less pronounced, so longer input streams are typically necessary before the compression builds up efficiency.
+</p><p>The plaintext to be encoded (from an alphabet using only the capital letters) is:
+</p>
+<pre>TOBEORNOTTOBEORTOBEORNOT#
+</pre>
+<p>The <b>#</b> is a marker used to show that the end of the message has been reached. There are thus 26 symbols in the plaintext alphabet (the 26 capital letters <i>A</i> through <i>Z</i>), and the <i>#</i> character represents a stop code. We arbitrarily assign these the values 1 through 26 for the letters, and 0 for '#'. (Most flavors of LZW would put the stop code <i>after</i> the data alphabet, but nothing in the basic algorithm requires that.  The encoder and decoder only have to agree what value it has.)
+</p><p>A computer renders these as strings of bits.  Five-bit codes are needed to give sufficient combinations to encompass this set of 27 values. The dictionary is initialized with these 27 values.  As the dictionary grows, the codes must grow in width to accommodate the additional entries. A 5-bit code gives 2<sup>5</sup> = 32 possible combinations of bits, so when the 33rd dictionary word is created, the algorithm must switch at that point from 5-bit strings to 6-bit strings (for <i>all</i> code values, including those previously output with only five bits). Note that since the all-zero code 00000 is used, and is labeled "0", the 33rd dictionary entry is labeled <b>32</b>.  (Previously generated output is not affected by the code-width change, but once a 6-bit value is generated in the dictionary, it could conceivably be the next code emitted, so the width for subsequent output shifts to 6 bits to accommodate that.)
+</p><p>The initial dictionary, then, consists of the following entries:
+</p>
+<table class="wikitable" style="text-align: right; margin-left: auto; margin-right: auto;">
+<tbody><tr>
+<th>Symbol</th>
+<th>Binary</th>
+<th>Decimal
+</th></tr>
+<tr>
+<td>#</td>
+<td>00000</td>
+<td>0
+</td></tr>
+<tr>
+<td>A</td>
+<td>00001</td>
+<td>1
+</td></tr>
+<tr>
+<td>B</td>
+<td>00010</td>
+<td>2
+</td></tr>
+<tr>
+<td>C</td>
+<td>00011</td>
+<td>3
+</td></tr>
+<tr>
+<td>D</td>
+<td>00100</td>
+<td>4
+</td></tr>
+<tr>
+<td>E</td>
+<td>00101</td>
+<td>5
+</td></tr>
+<tr>
+<td>F</td>
+<td>00110</td>
+<td>6
+</td></tr>
+<tr>
+<td>G</td>
+<td>00111</td>
+<td>7
+</td></tr>
+<tr>
+<td>H</td>
+<td>01000</td>
+<td>8
+</td></tr>
+<tr>
+<td>I</td>
+<td>01001</td>
+<td>9
+</td></tr>
+<tr>
+<td>J</td>
+<td>01010</td>
+<td>10
+</td></tr>
+<tr>
+<td>K</td>
+<td>01011</td>
+<td>11
+</td></tr>
+<tr>
+<td>L</td>
+<td>01100</td>
+<td>12
+</td></tr>
+<tr>
+<td>M</td>
+<td>01101</td>
+<td>13
+</td></tr>
+<tr>
+<td>N</td>
+<td>01110</td>
+<td>14
+</td></tr>
+<tr>
+<td>O</td>
+<td>01111</td>
+<td>15
+</td></tr>
+<tr>
+<td>P</td>
+<td>10000</td>
+<td>16
+</td></tr>
+<tr>
+<td>Q</td>
+<td>10001</td>
+<td>17
+</td></tr>
+<tr>
+<td>R</td>
+<td>10010</td>
+<td>18
+</td></tr>
+<tr>
+<td>S</td>
+<td>10011</td>
+<td>19
+</td></tr>
+<tr>
+<td>T</td>
+<td>10100</td>
+<td>20
+</td></tr>
+<tr>
+<td>U</td>
+<td>10101</td>
+<td>21
+</td></tr>
+<tr>
+<td>V</td>
+<td>10110</td>
+<td>22
+</td></tr>
+<tr>
+<td>W</td>
+<td>10111</td>
+<td>23
+</td></tr>
+<tr>
+<td>X</td>
+<td>11000</td>
+<td>24
+</td></tr>
+<tr>
+<td>Y</td>
+<td>11001</td>
+<td>25
+</td></tr>
+<tr>
+<td>Z</td>
+<td>11010</td>
+<td>26
+</td></tr>
+</tbody></table>
+<h3><span class="mw-headline" id="Encoding_2">Encoding</span><span class="mw-editsection"></span></h3>
+<p>Buffer input characters in a sequence ω until ω + next character is not in the dictionary.  Emit the code for ω, and add ω + next character to the dictionary.  Start buffering again with the next character. (The string to be encoded is "TOBEORNOTTOBEORTOBEORNOT#".)
+</p>
+<table class="wikitable" style="text-align: right; margin-left: auto; margin-right: auto;">
+<tbody><tr>
+<th rowspan="2" scope="col" width="6em">Current Sequence
+</th>
+<th rowspan="2" scope="col" width="4em">Next Char
+</th>
+<th colspan="2">Output
+</th>
+<th colspan="2" rowspan="2" scope="col" width="7em">Extended Dictionary
+</th>
+<th rowspan="2">Comments
+</th></tr>
+<tr>
+<th>Code</th>
+<th>Bits
+</th></tr>
+<tr>
+<td style="text-align: center;">NULL
+</td>
+<td style="text-align: center;">T</td>
+<td></td>
+<td>
+</td>
+<td style="border-right: none;">
+</td>
+<td style="border-left: none;"></td>
+<td>
+</td></tr>
+<tr>
+<td style="text-align: center;">T
+</td>
+<td style="text-align: center;">O
+</td>
+<td>20</td>
+<td><style data-mw-deduplicate="TemplateStyles:r886049734">.mw-parser-output .monospaced{font-family:monospace,monospace}</style><span class="monospaced">10100</span>
+</td>
+<td style="border-right: none;">27:
+</td>
+<td style="border-left: none;">TO
+</td>
+<td style="text-align: left;">27 = first available code after 0 through 26
+</td></tr>
+<tr>
+<td style="text-align: center;">O
+</td>
+<td style="text-align: center;">B
+</td>
+<td>15</td>
+<td><link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">01111</span>
+</td>
+<td style="border-right: none;">28:
+</td>
+<td style="border-left: none;">OB</td>
+<td>
+</td></tr>
+<tr>
+<td style="text-align: center;">B
+</td>
+<td style="text-align: center;">E
+</td>
+<td>2</td>
+<td><link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">00010</span>
+</td>
+<td style="border-right: none;">29:
+</td>
+<td style="border-left: none;">BE</td>
+<td>
+</td></tr>
+<tr>
+<td style="text-align: center;">E
+</td>
+<td style="text-align: center;">O
+</td>
+<td>5</td>
+<td><link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">00101</span>
+</td>
+<td style="border-right: none;">30:
+</td>
+<td style="border-left: none;">EO</td>
+<td>
+</td></tr>
+<tr>
+<td style="text-align: center;">O
+</td>
+<td style="text-align: center;">R
+</td>
+<td>15</td>
+<td><link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">01111</span>
+</td>
+<td style="border-right: none;">31:
+</td>
+<td style="border-left: none;">OR</td>
+<td>
+</td></tr>
+<tr>
+<td style="text-align: center;">R
+</td>
+<td style="text-align: center;">N
+</td>
+<td>18</td>
+<td><link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">10010</span>
+</td>
+<td style="border-right: none;">32:
+</td>
+<td style="border-left: none;">RN
+</td>
+<td style="text-align: left;">32 requires 6 bits, so for next output use 6 bits
+</td></tr>
+<tr>
+<td style="text-align: center;">N
+</td>
+<td style="text-align: center;">O
+</td>
+<td>14</td>
+<td><link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">001110</span>
+</td>
+<td style="border-right: none;">33:
+</td>
+<td style="border-left: none;">NO</td>
+<td>
+</td></tr>
+<tr>
+<td style="text-align: center;">O
+</td>
+<td style="text-align: center;">T
+</td>
+<td>15</td>
+<td><link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">001111</span>
+</td>
+<td style="border-right: none;">34:
+</td>
+<td style="border-left: none;">OT</td>
+<td>
+</td></tr>
+<tr>
+<td style="text-align: center;">T
+</td>
+<td style="text-align: center;">T
+</td>
+<td>20</td>
+<td><link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">010100</span>
+</td>
+<td style="border-right: none;">35:
+</td>
+<td style="border-left: none;">TT</td>
+<td>
+</td></tr>
+<tr>
+<td style="text-align: center;">TO
+</td>
+<td style="text-align: center;">B
+</td>
+<td>27</td>
+<td><link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">011011</span>
+</td>
+<td style="border-right: none;">36:
+</td>
+<td style="border-left: none;">TOB</td>
+<td>
+</td></tr>
+<tr>
+<td style="text-align: center;">BE
+</td>
+<td style="text-align: center;">O
+</td>
+<td>29</td>
+<td><link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">011101</span>
+</td>
+<td style="border-right: none;">37:
+</td>
+<td style="border-left: none;">BEO</td>
+<td>
+</td></tr>
+<tr>
+<td style="text-align: center;">OR
+</td>
+<td style="text-align: center;">T
+</td>
+<td>31</td>
+<td><link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">011111</span>
+</td>
+<td style="border-right: none;">38:
+</td>
+<td style="border-left: none;">ORT</td>
+<td>
+</td></tr>
+<tr>
+<td style="text-align: center;">TOB
+</td>
+<td style="text-align: center;">E
+</td>
+<td>36</td>
+<td><link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">100100</span>
+</td>
+<td style="border-right: none;">39:
+</td>
+<td style="border-left: none;">TOBE</td>
+<td>
+</td></tr>
+<tr>
+<td style="text-align: center;">EO
+</td>
+<td style="text-align: center;">R
+</td>
+<td>30</td>
+<td><link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">011110</span>
+</td>
+<td style="border-right: none;">40:
+</td>
+<td style="border-left: none;">EOR</td>
+<td>
+</td></tr>
+<tr>
+<td style="text-align: center;">RN
+</td>
+<td style="text-align: center;">O
+</td>
+<td>32</td>
+<td><link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">100000</span>
+</td>
+<td style="border-right: none;">41:
+</td>
+<td style="border-left: none;">RNO</td>
+<td>
+</td></tr>
+<tr>
+<td style="text-align: center;">OT
+</td>
+<td style="text-align: center;">#
+</td>
+<td>34</td>
+<td><link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">100010</span>
+</td>
+<td style="border-right: none;">
+</td>
+<td style="border-left: none;">
+</td>
+<td style="text-align: left;"># stops the algorithm; send the cur seq
+</td></tr>
+<tr>
+<td></td>
+<td></td>
+<td>0</td>
+<td><link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">000000</span>
+</td>
+<td style="border-right: none;">
+</td>
+<td style="border-left: none;">
+</td>
+<td style="text-align: left;">and the stop code
+</td></tr>
+</tbody></table>
+<dl><dd>Unencoded length = 25 symbols × 5 bits/symbol = 125 bits</dd>
+<dd>Encoded length = (6 codes × 5 bits/code) + (11 codes × 6 bits/code) = 96 bits.</dd></dl>
+<p>Using LZW has saved 29 bits out of 125, reducing the message by more than 23%. If the message were longer, then the dictionary words would begin to represent longer and longer sections of text, sending repeated words very compactly.
+</p>
+<h3><span class="mw-headline" id="Decoding_2">Decoding</span><span class="mw-editsection"></span></h3>
+<p>To decode an LZW-compressed archive, one needs to know in advance the initial dictionary used, but additional entries can be reconstructed as they are always simply concatenations of previous entries.  
+</p>
+<table class="wikitable" style="text-align: right; margin-left: auto; margin-right: auto;">
+<tbody><tr>
+<th colspan="2">Input
+</th>
+<th rowspan="2" scope="col" width="6em">Output Sequence
+</th>
+<th colspan="4">New Dictionary Entry
+</th>
+<th rowspan="2">Comments
+</th></tr>
+<tr>
+<th>Bits</th>
+<th>Code
+</th>
+<th colspan="2" scope="col" width="6em">Full
+</th>
+<th colspan="2" scope="col" width="6em">Conjecture
+</th></tr>
+<tr>
+<td>10100</td>
+<td>20
+</td>
+<td style="text-align: center;">T
+</td>
+<td style="border-right: none;">
+</td>
+<td style="border-left: none;">
+</td>
+<td style="border-right: none;">27:
+</td>
+<td style="border-left: none;">T?</td>
+<td>
+</td></tr>
+<tr>
+<td>01111</td>
+<td>15
+</td>
+<td style="text-align: center;">O
+</td>
+<td style="border-right: none;">27:
+</td>
+<td style="border-left: none;">TO
+</td>
+<td style="border-right: none;">28:
+</td>
+<td style="border-left: none;">O?</td>
+<td>
+</td></tr>
+<tr>
+<td>00010</td>
+<td>2
+</td>
+<td style="text-align: center;">B
+</td>
+<td style="border-right: none;">28:
+</td>
+<td style="border-left: none;">OB
+</td>
+<td style="border-right: none;">29:
+</td>
+<td style="border-left: none;">B?</td>
+<td>
+</td></tr>
+<tr>
+<td>00101</td>
+<td>5
+</td>
+<td style="text-align: center;">E
+</td>
+<td style="border-right: none;">29:
+</td>
+<td style="border-left: none;">BE
+</td>
+<td style="border-right: none;">30:
+</td>
+<td style="border-left: none;">E?</td>
+<td>
+</td></tr>
+<tr>
+<td>01111</td>
+<td>15
+</td>
+<td style="text-align: center;">O
+</td>
+<td style="border-right: none;">30:
+</td>
+<td style="border-left: none;">EO
+</td>
+<td style="border-right: none;">31:
+</td>
+<td style="border-left: none;">O?</td>
+<td>
+</td></tr>
+<tr>
+<td>10010</td>
+<td>18
+</td>
+<td style="text-align: center;">R
+</td>
+<td style="border-right: none;">31:
+</td>
+<td style="border-left: none;">OR
+</td>
+<td style="border-right: none;">32:
+</td>
+<td style="border-left: none;">R?
+</td>
+<td style="text-align: left;">created code 31 (last to fit in 5 bits)
+</td></tr>
+<tr>
+<td>001110</td>
+<td>14
+</td>
+<td style="text-align: center;">N
+</td>
+<td style="border-right: none;">32:
+</td>
+<td style="border-left: none;">RN
+</td>
+<td style="border-right: none;">33:
+</td>
+<td style="border-left: none;">N?
+</td>
+<td style="text-align: left;">so start reading input at 6 bits
+</td></tr>
+<tr>
+<td>001111</td>
+<td>15
+</td>
+<td style="text-align: center;">O
+</td>
+<td style="border-right: none;">33:
+</td>
+<td style="border-left: none;">NO
+</td>
+<td style="border-right: none;">34:
+</td>
+<td style="border-left: none;">O?</td>
+<td>
+</td></tr>
+<tr>
+<td>010100</td>
+<td>20
+</td>
+<td style="text-align: center;">T
+</td>
+<td style="border-right: none;">34:
+</td>
+<td style="border-left: none;">OT
+</td>
+<td style="border-right: none;">35:
+</td>
+<td style="border-left: none;">T?</td>
+<td>
+</td></tr>
+<tr>
+<td>011011</td>
+<td>27
+</td>
+<td style="text-align: center;">TO
+</td>
+<td style="border-right: none;">35:
+</td>
+<td style="border-left: none;">TT
+</td>
+<td style="border-right: none;">36:
+</td>
+<td style="border-left: none;">TO?</td>
+<td>
+</td></tr>
+<tr>
+<td>011101</td>
+<td>29
+</td>
+<td style="text-align: center;">BE
+</td>
+<td style="border-right: none;">36:
+</td>
+<td style="border-left: none;">TOB
+</td>
+<td style="border-right: none;">37:
+</td>
+<td style="border-left: none;">BE?
+</td>
+<td style="text-align: left;">36 = TO + 1st symbol (B) of
+</td></tr>
+<tr>
+<td>011111</td>
+<td>31
+</td>
+<td style="text-align: center;">OR
+</td>
+<td style="border-right: none;">37:
+</td>
+<td style="border-left: none;">BEO
+</td>
+<td style="border-right: none;">38:
+</td>
+<td style="border-left: none;">OR?
+</td>
+<td style="text-align: left;">next coded sequence received (BE)
+</td></tr>
+<tr>
+<td>100100</td>
+<td>36
+</td>
+<td style="text-align: center;">TOB
+</td>
+<td style="border-right: none;">38:
+</td>
+<td style="border-left: none;">ORT
+</td>
+<td style="border-right: none;">39:
+</td>
+<td style="border-left: none;">TOB?</td>
+<td>
+</td></tr>
+<tr>
+<td>011110</td>
+<td>30
+</td>
+<td style="text-align: center;">EO
+</td>
+<td style="border-right: none;">39:
+</td>
+<td style="border-left: none;">TOBE
+</td>
+<td style="border-right: none;">40:
+</td>
+<td style="border-left: none;">EO?</td>
+<td>
+</td></tr>
+<tr>
+<td>100000</td>
+<td>32
+</td>
+<td style="text-align: center;">RN
+</td>
+<td style="border-right: none;">40:
+</td>
+<td style="border-left: none;">EOR
+</td>
+<td style="border-right: none;">41:
+</td>
+<td style="border-left: none;">RN?</td>
+<td>
+</td></tr>
+<tr>
+<td>100010</td>
+<td>34
+</td>
+<td style="text-align: center;">OT
+</td>
+<td style="border-right: none;">41:
+</td>
+<td style="border-left: none;">RNO
+</td>
+<td style="border-right: none;">42:
+</td>
+<td style="border-left: none;">OT?</td>
+<td>
+</td></tr>
+<tr>
+<td>000000</td>
+<td>0
+</td>
+<td style="text-align: center;">#
+</td>
+<td style="border-right: none;">
+</td>
+<td style="border-left: none;">
+</td>
+<td style="border-right: none;">
+</td>
+<td style="border-left: none;"></td>
+<td>
+</td></tr>
+</tbody></table>
+<p>At each stage, the decoder receives a code X; it looks X up in the table and outputs the sequence χ it codes, and it conjectures χ + ? as the entry the encoder just added – because the encoder emitted X for χ precisely because χ + ? was not in the table, and the encoder goes ahead and adds it.  But what is the missing letter?  It is the first letter in the sequence coded by the <i>next</i> code Z that the decoder receives.  So the decoder looks up Z, decodes it into the sequence ω and takes the first letter z and tacks it onto the end of χ as the next dictionary entry.
+</p><p>This works as long as the codes received are in the decoder's dictionary, so that they can be decoded into sequences.  What happens if the decoder receives a code Z that is not yet in its dictionary?  Since the decoder is always just one code behind the encoder, Z can be in the encoder's dictionary only if the encoder <i>just</i> generated it, when emitting the previous code X for χ.  Thus Z codes some ω that is χ + ?, and the decoder can determine the unknown character as follows:
+</p>
+<ol><li>The decoder sees X and then Z, where X codes the sequence χ and Z codes some unknown sequence ω.</li>
+<li>The decoder knows that the encoder just added Z as a code for χ + some unknown character <i>c</i>, so ω = χ + <i>c</i>.</li>
+<li>Since <i>c</i> is the first character in the input stream after χ, and since ω is the string appearing immediately after χ, <i>c</i> must be the first character of the sequence ω.</li>
+<li>Since χ is an initial substring of ω, <i>c</i> must also be the first character of χ.</li>
+<li>So even though the Z code is not in the table, the decoder is able to infer the unknown sequence and adds χ + (the first character of χ) to the table as the value of Z.</li></ol>
+<p>This situation occurs whenever the encoder encounters input of the form <i>cScSc</i>, where <i>c</i> is a single character, <i>S</i> is a string and <i>cS</i> is already in the dictionary, but <i>cSc</i> is not. The encoder emits the code for <i>cS</i>, putting a new code for <i>cSc</i> into the dictionary. Next it sees <i>cSc</i> in the input (starting at the second <i>c</i> of <i>cScSc</i>) and emits the new code it just inserted.  The argument above shows that whenever the decoder receives a code not in its dictionary, the situation must look like this.
+</p><p>Although input of form <i>cScSc</i> might seem unlikely, this pattern is fairly common when the input stream is characterized by significant repetition.  In particular, long strings of a single character (which are common in the kinds of images LZW is often used to encode) repeatedly generate patterns of this sort.
+</p>
+<h2><span class="mw-headline" id="Further_coding">Further coding</span><span class="mw-editsection"></span></h2>
+<p>The simple scheme described above focuses on the LZW algorithm itself.  Many applications apply further encoding to the sequence of output symbols.  Some package the coded stream as printable characters using some form of binary-to-text encoding; this increases the encoded length and decreases the compression rate.  Conversely, increased compression can often be achieved with an <i>adaptive entropy encoder</i>. Such a coder estimates the probability distribution for the value of the next symbol, based on the observed frequencies of values so far.  A standard entropy encoding such as Huffman coding or arithmetic coding then uses shorter codes for values with higher probabilities.
+</p>
+<h2><span class="mw-headline" id="Uses">Uses</span><span class="mw-editsection"></span></h2>
+<p>LZW compression became the first widely used universal data compression method on computers. A large English text file can typically be compressed via LZW to about half its original size.
+</p><p>LZW was used in the public-domain program compress, which became a more or less standard utility in Unix systems around 1986. It has since disappeared from many distributions, both because it infringed the LZW patent and because gzip produced better compression ratios using the LZ77-based DEFLATE algorithm, but as of 2008 at least FreeBSD includes both compress and uncompress as a part of the distribution. Several other popular compression utilities also used LZW or closely related methods.
+</p><p>LZW became very widely used when it became part of the GIF image format in 1987. It may also (optionally) be used in TIFF and PDF files. (Although LZW is available in Adobe Acrobat software, Acrobat by default uses DEFLATE for most text and color-table-based image data in PDF files.)
+</p>
+<h2><span class="mw-headline" id="Patents">Patents</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p>Various patents have been issued in the United States and other countries for LZW and similar algorithms. LZ78 was covered by <span>U.S. Patent 4,464,650</span> by Lempel, Ziv, Cohn, and Eastman, assigned to Sperry Corporation, later Unisys Corporation, filed on August 10, 1981. Two US patents were issued for the LZW algorithm: <span>U.S. Patent 4,814,746</span> by Victor S. Miller and Mark N. Wegman and assigned to IBM, originally filed on June 1, 1983, and <span>U.S. Patent 4,558,302</span> by Welch, assigned to Sperry Corporation, later Unisys Corporation, filed on June 20, 1983. 
+</p><p>In addition to the above patents, Welch's 1983 patent also includes citations to several other patents that influenced it, including two 1980 Japanese patents (JP9343880A and JP17790880A) from NEC's Jun Kanatsu, <span>U.S. Patent 4,021,782</span> (1974) from John S. Hoerning, <span>U.S. Patent 4,366,551</span> (1977) from Klaus E. Holtz, and a 1981 German patent (DE19813118676) from Karl Eckhart Heinz.<sup class="reference" id="cite_ref-3">[3]</sup>
+</p><p>In 1993–94, and again in 1999, Unisys Corporation received widespread condemnation when it attempted to enforce licensing fees for LZW in GIF images.  The 1993–1994 Unisys-CompuServe controversy (CompuServe being the creator of the GIF format) prompted a Usenet comp.graphics discussion <i>Thoughts on a GIF-replacement file format</i>, which in turn fostered an email exchange that eventually culminated in the creation of the patent-unencumbered Portable Network Graphics (PNG) file format in 1995.
+</p><p>Unisys's US patent on the LZW algorithm expired on June 20, 2003,<sup class="reference" id="cite_ref-LZWPatentInfo_4-0">[4]</sup> 20 years after it had been filed. Patents that had been filed in the United Kingdom, France, Germany, Italy, Japan and Canada all expired in 2004,<sup class="reference" id="cite_ref-LZWPatentInfo_4-1">[4]</sup> likewise 20 years after they had been filed.
+</p>
+<h2><span class="mw-headline" id="Variants">Variants</span><span class="mw-editsection"></span></h2>
+<ul><li>LZMW (1985, by V. Miller, M. Wegman)<sup class="reference" id="cite_ref-5">[5]</sup> – Searches input for the longest string already in the dictionary (the "current" match); adds the concatenation of the previous match with the current match to the dictionary.  (Dictionary entries thus grow more rapidly; but this scheme is much more complicated to implement.)  Miller and Wegman also suggest deleting low-frequency entries from the dictionary when the dictionary fills up.</li>
+<li>LZAP (1988, by James Storer)<sup class="reference" id="cite_ref-6">[6]</sup> – modification of LZMW: instead of adding just the concatenation of the previous match with the current match to the dictionary, add the concatenations of the previous match with each initial substring of the current match ("AP" stands for "all prefixes").  For example, if the previous match is "wiki" and current match is "pedia", then the LZAP encoder adds 5 new sequences to the dictionary: "wikip", "wikipe", "wikiped", "wikipedi", and "wikipedia", where the LZMW encoder adds only the one sequence "wikipedia". This eliminates some of the complexity of LZMW, at the price of adding more dictionary entries.</li>
+<li>LZWL is a syllable-based variant of LZW.</li></ul>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>LZ77 and LZ78</li>
+<li>LZMA</li>
+<li>Lempel–Ziv–Storer–Szymanski</li>
+<li>LZJB</li>
+<li>Context tree weighting</li>
+<li>Discrete cosine transform (DCT), a lossy compression algorithm used in JPEG and MPEG coding standards</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>Rosettacode wiki, algorithm in various languages</li>
+<li><span>U.S. Patent 4,558,302</span>, Terry A. Welch, <i>High speed data compression and decompression apparatus and method</i></li>
+<li>SharpLZW – C# open source implementation</li>
+<li>MIT OpenCourseWare: Lecture including LZW algorithm</li>
+<li>Mark Nelson, <i>LZW Data Compression</i> on Dr. Dobbs Journal (October 1, 1989)</li>
+<li>Shrink, Reduce, and Implode: The Legacy Zip Compression Methods explains LZW and how it was used in PKZIP</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2412
+Cached time: 20221223235411
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.267 seconds
+Real time usage: 0.363 seconds
+Preprocessor visited node count: 1875/1000000
+Post‐expand include size: 65846/2097152 bytes
+Template argument size: 1942/2097152 bytes
+Highest expansion depth: 13/100
+Expensive parser function count: 2/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 19656/5000000 bytes
+Lua time usage: 0.142/10.000 seconds
+Lua memory usage: 4997252/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  291.225      1 -total
+ 30.85%   89.829      1 Template:Reflist
+ 23.88%   69.542      2 Template:Cite_journal
+ 19.86%   57.830      6 Template:Navbox
+ 19.22%   55.970      1 Template:Compression_Methods
+ 18.01%   52.442      1 Template:Short_description
+ 15.60%   45.439      1 Template:No_footnotes
+ 13.79%   40.160      1 Template:Ambox
+  9.24%   26.919      2 Template:Pagetype
+  6.75%   19.664      7 Template:US_patent
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:75854-0!canonical and timestamp 20221223235411 and revision id 1114178965.
+ -->
+</div></body>
+</html>

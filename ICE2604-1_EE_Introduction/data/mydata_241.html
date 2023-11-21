@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>CORDIC</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p>
+<span class="anchor" id="Differential_CORDIC"></span><span class="anchor" id="Branching_CORDIC"></span><span class="anchor" id="Compensated_CORDIC"></span><span class="anchor" id="Redundant_CORDIC"></span><span class="anchor" id="Hybrid_CORDIC"></span><span class="anchor" id="Merged_CORDIC"></span><span class="anchor" id="All-serial_CORDIC"></span><span class="anchor" id="Pipelined_CORDIC"></span><span class="anchor" id="hyperbolic_mode"></span><span class="anchor" id="modified_rotation_mode"></span><span class="anchor" id="Generalized_Hyperbolic_CORDIC"></span><span class="anchor" id="GH_CORDIC"></span>
+</p>
+<style data-mw-deduplicate="TemplateStyles:r1045330069">.mw-parser-output .sidebar{width:22em;float:right;clear:right;margin:0.5em 0 1em 1em;background:#f8f9fa;border:1px solid #aaa;padding:0.2em;text-align:center;line-height:1.4em;font-size:88%;border-collapse:collapse;display:table}body.skin-minerva .mw-parser-output .sidebar{display:table!important;float:right!important;margin:0.5em 0 1em 1em!important}.mw-parser-output .sidebar-subgroup{width:100%;margin:0;border-spacing:0}.mw-parser-output .sidebar-left{float:left;clear:left;margin:0.5em 1em 1em 0}.mw-parser-output .sidebar-none{float:none;clear:both;margin:0.5em 1em 1em 0}.mw-parser-output .sidebar-outer-title{padding:0 0.4em 0.2em;font-size:125%;line-height:1.2em;font-weight:bold}.mw-parser-output .sidebar-top-image{padding:0.4em}.mw-parser-output .sidebar-top-caption,.mw-parser-output .sidebar-pretitle-with-top-image,.mw-parser-output .sidebar-caption{padding:0.2em 0.4em 0;line-height:1.2em}.mw-parser-output .sidebar-pretitle{padding:0.4em 0.4em 0;line-height:1.2em}.mw-parser-output .sidebar-title,.mw-parser-output .sidebar-title-with-pretitle{padding:0.2em 0.8em;font-size:145%;line-height:1.2em}.mw-parser-output .sidebar-title-with-pretitle{padding:0.1em 0.4em}.mw-parser-output .sidebar-image{padding:0.2em 0.4em 0.4em}.mw-parser-output .sidebar-heading{padding:0.1em 0.4em}.mw-parser-output .sidebar-content{padding:0 0.5em 0.4em}.mw-parser-output .sidebar-content-with-subgroup{padding:0.1em 0.4em 0.2em}.mw-parser-output .sidebar-above,.mw-parser-output .sidebar-below{padding:0.3em 0.8em;font-weight:bold}.mw-parser-output .sidebar-collapse .sidebar-above,.mw-parser-output .sidebar-collapse .sidebar-below{border-top:1px solid #aaa;border-bottom:1px solid #aaa}.mw-parser-output .sidebar-navbar{text-align:right;font-size:115%;padding:0 0.4em 0.4em}.mw-parser-output .sidebar-list-title{padding:0 0.4em;text-align:left;font-weight:bold;line-height:1.6em;font-size:105%}.mw-parser-output .sidebar-list-title-c{padding:0 0.4em;text-align:center;margin:0 3.3em}@media(max-width:720px){body.mediawiki .mw-parser-output .sidebar{width:100%!important;clear:both;float:none!important;margin-left:0!important;margin-right:0!important}}</style><table class="sidebar nomobile nowraplinks"><tbody><tr><th class="sidebar-title" style="background:#ccccff;">Trigonometry</th></tr><tr><td class="sidebar-image"><img alt="Sinus und Kosinus am Einheitskreis 1.svg" data-file-height="410" data-file-width="410" decoding="async" height="250" src="//upload.wikimedia.org/wikipedia/commons/thumb/7/72/Sinus_und_Kosinus_am_Einheitskreis_1.svg/250px-Sinus_und_Kosinus_am_Einheitskreis_1.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/7/72/Sinus_und_Kosinus_am_Einheitskreis_1.svg/375px-Sinus_und_Kosinus_am_Einheitskreis_1.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/7/72/Sinus_und_Kosinus_am_Einheitskreis_1.svg/500px-Sinus_und_Kosinus_am_Einheitskreis_1.svg.png 2x" width="250"/></td></tr><tr><td class="sidebar-content hlist" style="padding-top:0.2em;padding-bottom:0.7em;">
+<ul><li>Outline</li>
+<li>History</li>
+<li>Usage</li></ul>
+<ul><li>Functions (inverse)</li>
+<li>Generalized trigonometry</li></ul></td>
+</tr><tr><th class="sidebar-heading" style="background:#ddddff;">
+Reference</th></tr><tr><td class="sidebar-content hlist" style="padding-top:0.2em;padding-bottom:0.7em;">
+<ul><li>Identities</li>
+<li>Exact constants</li>
+<li>Tables</li>
+<li>Unit circle</li></ul></td>
+</tr><tr><th class="sidebar-heading" style="background:#ddddff;">
+Laws and theorems</th></tr><tr><td class="sidebar-content hlist" style="padding-top:0.2em;padding-bottom:0.7em;">
+<ul><li>Sines</li>
+<li>Cosines</li>
+<li>Tangents</li>
+<li>Cotangents</li></ul>
+<ul><li>Pythagorean theorem</li></ul></td>
+</tr><tr><th class="sidebar-heading" style="background:#ddddff;">
+Calculus</th></tr><tr><td class="sidebar-content hlist" style="padding-top:0.2em;padding-bottom:0.7em;">
+<ul><li>Trigonometric substitution</li>
+<li>Integrals (inverse functions)</li>
+<li>Derivatives</li></ul></td>
+</tr><tr><td class="sidebar-navbar"><style data-mw-deduplicate="TemplateStyles:r1063604349">.mw-parser-output .navbar{display:inline;font-size:88%;font-weight:normal}.mw-parser-output .navbar-collapse{float:left;text-align:left}.mw-parser-output .navbar-boxtext{word-spacing:0}.mw-parser-output .navbar ul{display:inline-block;white-space:nowrap;line-height:inherit}.mw-parser-output .navbar-brackets::before{margin-right:-0.125em;content:"[ "}.mw-parser-output .navbar-brackets::after{margin-left:-0.125em;content:" ]"}.mw-parser-output .navbar li{word-spacing:-0.125em}.mw-parser-output .navbar a>span,.mw-parser-output .navbar a>abbr{text-decoration:inherit}.mw-parser-output .navbar-mini abbr{font-variant:small-caps;border-bottom:none;text-decoration:none;cursor:inherit}.mw-parser-output .navbar-ct-full{font-size:114%;margin:0 7em}.mw-parser-output .navbar-ct-mini{font-size:114%;margin:0 4em}</style></td></tr></tbody></table>
+<p><b>CORDIC</b> (for "coordinate rotation digital computer"), also known as <b>Volder's algorithm</b>, or: <b>Digit-by-digit method</b> <b>Circular CORDIC</b> (Jack E. Volder),<sup class="reference" id="cite_ref-Volder_1959_1_1-0">[1]</sup><sup class="reference" id="cite_ref-Volder_1959_2_2-0">[2]</sup> <b>Linear CORDIC</b>, <b>Hyperbolic CORDIC</b> (John Stephen Walther),<sup class="reference" id="cite_ref-Walther_1971_3-0">[3]</sup><sup class="reference" id="cite_ref-Walther_2000_4-0">[4]</sup> and <b>Generalized Hyperbolic CORDIC</b> (<b>GH CORDIC</b>) (Yuanyong Luo et al.),<sup class="reference" id="cite_ref-Luo_2019_TVLSI_5-0">[5]</sup><sup class="reference" id="cite_ref-Luo_2019_TVLSI_c_6-0">[6]</sup> is a simple and efficient algorithm to calculate trigonometric functions, hyperbolic functions, square roots, multiplications, divisions, and exponentials and logarithms with arbitrary base, typically converging with one digit (or bit) per iteration.  CORDIC is therefore also an example of <b>digit-by-digit algorithms</b>. CORDIC and closely related methods known as <b>pseudo-multiplication</b> and <b>pseudo-division</b> or <b>factor combining</b> are commonly used when no hardware multiplier is available (e.g. in simple microcontrollers and FPGAs), as the only operations it requires are additions, subtractions, bitshift and lookup tables. As such, they all belong to the class of shift-and-add algorithms. In computer science, CORDIC is often used to implement floating-point arithmetic when the target platform lacks hardware multiply for cost or space reasons.
+</p>
+
+<h2><span class="mw-headline" id="History"><span class="anchor" id="Binary_CORDIC"></span><span class="anchor" id="Decimal_CORDIC"></span><span class="anchor" id="Unified_CORDIC"></span>History</span><span class="mw-editsection"></span></h2>
+<p>Similar mathematical techniques were published by Henry Briggs as early as 1624<sup class="reference" id="cite_ref-Briggs_1624_7-0">[7]</sup><sup class="reference" id="cite_ref-Laporte_2014_Briggs_8-0">[8]</sup> and Robert Flower in 1771,<sup class="reference" id="cite_ref-Flower_1771_9-0">[9]</sup> but CORDIC is better optimized for low-complexity finite-state CPUs.
+</p><p>CORDIC was conceived in 1956<sup class="reference" id="cite_ref-Volder_1956_10-0">[10]</sup><sup class="reference" id="cite_ref-Volder_2000_11-0">[11]</sup> by Jack E. Volder at the aeroelectronics department of Convair out of necessity to replace the analog resolver in the B-58 bomber's navigation computer with a more accurate and faster real-time digital solution.<sup class="reference" id="cite_ref-Volder_2000_11-1">[11]</sup> Therefore, CORDIC is sometimes referred to as a digital resolver.<sup class="reference" id="cite_ref-Perle_1971_12-0">[12]</sup><sup class="reference" id="cite_ref-Schmid_1983_13-0">[13]</sup>
+</p><p>In his research Volder was inspired by a formula in the 1946 edition of the <i>CRC Handbook of Chemistry and Physics</i>:<sup class="reference" id="cite_ref-Volder_2000_11-2">[11]</sup>
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{aligned}K_{n}R\sin(\theta \pm \varphi )&amp;=R\sin(\theta )\pm 2^{-n}R\cos(\theta ),\\K_{n}R\cos(\theta \pm \varphi )&amp;=R\cos(\theta )\mp 2^{-n}R\sin(\theta ),\\\end{aligned}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="right left right left right left right left right left right left" columnspacing="0em 2em 0em 2em 0em 2em 0em 2em 0em 2em 0em" displaystyle="true" rowspacing="3pt">
+<mtr>
+<mtd>
+<msub>
+<mi>K</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mi>R</mi>
+<mi>sin</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>θ<!-- θ --></mi>
+<mo>±<!-- ± --></mo>
+<mi>φ<!-- φ --></mi>
+<mo stretchy="false">)</mo>
+</mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mi>R</mi>
+<mi>sin</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>θ<!-- θ --></mi>
+<mo stretchy="false">)</mo>
+<mo>±<!-- ± --></mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>n</mi>
+</mrow>
+</msup>
+<mi>R</mi>
+<mi>cos</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>θ<!-- θ --></mi>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>K</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mi>R</mi>
+<mi>cos</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>θ<!-- θ --></mi>
+<mo>±<!-- ± --></mo>
+<mi>φ<!-- φ --></mi>
+<mo stretchy="false">)</mo>
+</mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mi>R</mi>
+<mi>cos</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>θ<!-- θ --></mi>
+<mo stretchy="false">)</mo>
+<mo>∓<!-- ∓ --></mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>n</mi>
+</mrow>
+</msup>
+<mi>R</mi>
+<mi>sin</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>θ<!-- θ --></mi>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{aligned}K_{n}R\sin(\theta \pm \varphi )&amp;=R\sin(\theta )\pm 2^{-n}R\cos(\theta ),\\K_{n}R\cos(\theta \pm \varphi )&amp;=R\cos(\theta )\mp 2^{-n}R\sin(\theta ),\\\end{aligned}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\begin{aligned}K_{n}R\sin(\theta \pm \varphi )&amp;=R\sin(\theta )\pm 2^{-n}R\cos(\theta ),\\K_{n}R\cos(\theta \pm \varphi )&amp;=R\cos(\theta )\mp 2^{-n}R\sin(\theta ),\\\end{aligned}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/153cb3c6424ebb38f0d8fbc32be2c93e3b6e6382" style="vertical-align: -2.505ex; width:42.779ex; height:6.176ex;"/></span></dd></dl>
+<p>with <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle K_{n}={\sqrt {1+2^{-2n}}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>K</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mn>1</mn>
+<mo>+</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<mi>n</mi>
+</mrow>
+</msup>
+</msqrt>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle K_{n}={\sqrt {1+2^{-2n}}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle K_{n}={\sqrt {1+2^{-2n}}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1575f9eb96313f7d8019df90ec360272e5119a32" style="vertical-align: -0.838ex; width:17.098ex; height:3.509ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \tan(\varphi )=2^{-n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>tan</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>φ<!-- φ --></mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>n</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \tan(\varphi )=2^{-n}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \tan(\varphi )=2^{-n}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/df7b124d2594f42ab5366fe21018ce099356d500" style="vertical-align: -0.838ex; width:13.447ex; height:3.009ex;"/></span>.
+</p><p>His research led to an internal technical report proposing the CORDIC algorithm to solve sine and cosine functions and a prototypical computer implementing it.<sup class="reference" id="cite_ref-Volder_1956_10-1">[10]</sup><sup class="reference" id="cite_ref-Volder_2000_11-3">[11]</sup> The report also discussed the possibility to compute hyperbolic coordinate rotation, logarithms and exponential functions with modified CORDIC algorithms.<sup class="reference" id="cite_ref-Volder_1956_10-2">[10]</sup><sup class="reference" id="cite_ref-Volder_2000_11-4">[11]</sup> Utilizing CORDIC for multiplication and division was also conceived at this time.<sup class="reference" id="cite_ref-Volder_2000_11-5">[11]</sup> Based on the CORDIC principle, Dan H. Daggett, a colleague of Volder at Convair, developed conversion algorithms between binary and binary-coded decimal (BCD).<sup class="reference" id="cite_ref-Volder_2000_11-6">[11]</sup><sup class="reference" id="cite_ref-Daggett_1959_14-0">[14]</sup>
+</p><p><span class="anchor" id="CORDIC_I"></span><span class="anchor" id="CORDIC_II"></span>In 1958, Convair finally started to build a demonstration system to solve radar fix-taking problems named <i>CORDIC I</i>, completed in 1960 without Volder, who had left the company already.<sup class="reference" id="cite_ref-Volder_1959_1_1-1">[1]</sup><sup class="reference" id="cite_ref-Volder_2000_11-7">[11]</sup> More universal <i>CORDIC II</i> models <i>A</i> (stationary) and <i>B</i> (airborne) were built and tested by Daggett and Harry Schuss in 1962.<sup class="reference" id="cite_ref-Volder_2000_11-8">[11]</sup><sup class="reference" id="cite_ref-ASG_1962_15-0">[15]</sup>
+</p><p>Volder's CORDIC algorithm was first described in public in 1959,<sup class="reference" id="cite_ref-Volder_1959_1_1-2">[1]</sup><sup class="reference" id="cite_ref-Volder_1959_2_2-1">[2]</sup><sup class="reference" id="cite_ref-Volder_2000_11-9">[11]</sup><sup class="reference" id="cite_ref-Schmid_1983_13-1">[13]</sup><sup class="reference" id="cite_ref-Schmid_1974_16-0">[16]</sup> which caused it to be incorporated into navigation computers by companies including Martin-Orlando, Computer Control, Litton, Kearfott, Lear-Siegler, Sperry, Raytheon, and Collins Radio.<sup class="reference" id="cite_ref-Volder_2000_11-10">[11]</sup>
+</p><p><span class="anchor" id="Pseudo-division"></span><span class="anchor" id="Pseudo-multiplication"></span><span class="anchor" id="Athena"></span><span class="anchor" id="Green_Machine"></span>Volder teamed up with Malcolm McMillan to build <i>Athena</i>, a fixed-point desktop calculator utilizing his binary CORDIC algorithm.<sup class="reference" id="cite_ref-Leibson_2010_2_17-0">[17]</sup> The design was introduced to Hewlett-Packard in June 1965, but not accepted.<sup class="reference" id="cite_ref-Leibson_2010_2_17-1">[17]</sup> Still, McMillan introduced David S. Cochran (HP) to Volder's algorithm and when Cochran later met Volder he referred him to a similar approach John E. Meggitt (IBM<sup class="reference" id="cite_ref-Meggitt_1962_18-0">[18]</sup>) had proposed as <i>pseudo-multiplication</i> and <i>pseudo-division</i> in 1961.<sup class="reference" id="cite_ref-Meggitt_1962_18-1">[18]</sup><sup class="reference" id="cite_ref-Cochran_2010_2_19-0">[19]</sup> Meggitt's method also suggested the use of base 10<sup class="reference" id="cite_ref-Meggitt_1962_18-2">[18]</sup> rather than base 2, as used by Volder's CORDIC so far. These efforts led to the ROMable logic implementation of a decimal CORDIC prototype machine inside of Hewlett-Packard in 1966,<sup class="reference" id="cite_ref-Cochran_1966_20-0">[20]</sup><sup class="reference" id="cite_ref-Cochran_2010_2_19-1">[19]</sup> built by and conceptually derived from Thomas E. Osborne's prototypical <i>Green Machine</i>, a four-function, floating-point desktop calculator he had completed in DTL logic<sup class="reference" id="cite_ref-Leibson_2010_2_17-2">[17]</sup> in December 1964.<sup class="reference" id="cite_ref-Osborne_1994_21-0">[21]</sup> This project resulted in the public demonstration of Hewlett-Packard's first desktop calculator with scientific functions, the hp 9100A in March 1968, with series production starting later that year.<sup class="reference" id="cite_ref-Leibson_2010_2_17-3">[17]</sup><sup class="reference" id="cite_ref-Osborne_1994_21-1">[21]</sup><sup class="reference" id="cite_ref-Leibson_2010_1_22-0">[22]</sup><sup class="reference" id="cite_ref-Cochran_1968_23-0">[23]</sup>
+</p><p><span class="anchor" id="Logarithmic_Computing_Instrument"></span><span class="anchor" id="Factor_combining"></span>When Wang Laboratories found that the hp 9100A used an approach similar to the <i>factor combining</i> method in their earlier LOCI-1<sup class="reference" id="cite_ref-Wang_1964_LOCI-1_24-0">[24]</sup> (September 1964) and LOCI-2 (January 1965)<sup class="reference" id="cite_ref-Bensene_2013_25-0">[25]</sup><sup class="reference" id="cite_ref-Wang_1967_LOCI_26-0">[26]</sup> <i>Logarithmic Computing Instrument</i> desktop calculators,<sup class="reference" id="cite_ref-Bensene_2004_27-0">[27]</sup> they unsuccessfully accused Hewlett-Packard of infringement of one of An Wang's patents in 1968.<sup class="reference" id="cite_ref-Cochran_2010_2_19-2">[19]</sup><sup class="reference" id="cite_ref-Cochran_2010_1_28-0">[28]</sup><sup class="reference" id="cite_ref-Wang_US3402285_29-0">[29]</sup><sup class="reference" id="cite_ref-Wang_DE1499281B1_30-0">[30]</sup>
+</p><p>John Stephen Walther at Hewlett-Packard generalized the algorithm into the <i>Unified CORDIC</i> algorithm in 1971, allowing it to calculate hyperbolic functions, natural exponentials, natural logarithms, multiplications, divisions, and square roots.<sup class="reference" id="cite_ref-Swartzlander_1990_31-0">[31]</sup><sup class="reference" id="cite_ref-Walther_1971_3-1">[3]</sup><sup class="reference" id="cite_ref-Walther_2000_4-1">[4]</sup><sup class="reference" id="cite_ref-Petrocelli_1972_32-0">[32]</sup> The CORDIC subroutines for trigonometric and hyperbolic functions could share most of their code.<sup class="reference" id="cite_ref-Cochran_2010_1_28-1">[28]</sup> This development resulted in the first scientific handheld calculator, the HP-35 in 1972.<sup class="reference" id="cite_ref-Cochran_2010_1_28-2">[28]</sup><sup class="reference" id="cite_ref-Cochran_1972_33-0">[33]</sup><sup class="reference" id="cite_ref-Laporte_2005_Trig_34-0">[34]</sup><sup class="reference" id="cite_ref-Laporte_2005_Secret_35-0">[35]</sup><sup class="reference" id="cite_ref-Laporte_2012_Digit_36-0">[36]</sup><sup class="reference" id="cite_ref-Laporte_2012_HP35Log_37-0">[37]</sup> Based on hyperbolic CORDIC, Yuanyong Luo et al. further proposed a Generalized Hyperbolic CORDIC (GH CORDIC) to directly compute logarithms and exponentials with an arbitrary fixed base in 2019.<sup class="reference" id="cite_ref-Luo_2019_TVLSI_5-1">[5]</sup><sup class="reference" id="cite_ref-Luo_2019_TVLSI_c_6-1">[6]</sup><sup class="reference" id="cite_ref-Wang_2020_tvlsi_38-0">[38]</sup><sup class="reference" id="cite_ref-Mopuri_2019_Nth_39-0">[39]</sup><sup class="reference" id="cite_ref-Vachhani_2020_40-0">[40]</sup> Theoretically, Hyperbolic CORDIC is a special case of GH CORDIC.<sup class="reference" id="cite_ref-Luo_2019_TVLSI_5-2">[5]</sup>
+</p><p>Originally, CORDIC was implemented only using the binary numeral system and despite Meggitt suggesting the use of the decimal system for his pseudo-multiplication approach, decimal CORDIC continued to remain mostly unheard of for several more years, so that Hermann Schmid and Anthony Bogacki still suggested it as a novelty as late as 1973<sup class="reference" id="cite_ref-Schmid_1974_16-1">[16]</sup><sup class="reference" id="cite_ref-Schmid_1983_13-2">[13]</sup><sup class="reference" id="cite_ref-Schmid_1973_41-0">[41]</sup><sup class="reference" id="cite_ref-Franke_1973_42-0">[42]</sup><sup class="reference" id="cite_ref-Muller_2006_43-0">[43]</sup> and it was found only later that Hewlett-Packard had implemented it in 1966 already.<sup class="reference" id="cite_ref-Volder_2000_11-11">[11]</sup><sup class="reference" id="cite_ref-Schmid_1983_13-3">[13]</sup><sup class="reference" id="cite_ref-Cochran_1966_20-1">[20]</sup><sup class="reference" id="cite_ref-Cochran_2010_1_28-3">[28]</sup>
+</p><p>Decimal CORDIC became widely used in pocket calculators,<sup class="reference" id="cite_ref-Schmid_1983_13-4">[13]</sup> most of which operate in binary-coded decimal (BCD) rather than binary. This change in the input and output format did not alter CORDIC's core calculation algorithms. CORDIC is particularly well-suited for handheld calculators, in which low cost – and thus low chip gate count – is much more important than speed.
+</p><p>CORDIC has been implemented in the ARM-based STM32G4, Intel 8087,<sup class="reference" id="cite_ref-Muller_2006_43-1">[43]</sup><sup class="reference" id="cite_ref-Nave_1983_44-0">[44]</sup><sup class="reference" id="cite_ref-Palmer_1984_45-0">[45]</sup><sup class="reference" id="cite_ref-Glass_1990_46-0">[46]</sup><sup class="reference" id="cite_ref-Jarvis_1990_47-0">[47]</sup> 80287,<sup class="reference" id="cite_ref-Jarvis_1990_47-1">[47]</sup><sup class="reference" id="cite_ref-Yuen_1988_48-0">[48]</sup> 80387<sup class="reference" id="cite_ref-Jarvis_1990_47-2">[47]</sup><sup class="reference" id="cite_ref-Yuen_1988_48-1">[48]</sup> up to the 80486<sup class="reference" id="cite_ref-Muller_2006_43-2">[43]</sup> coprocessor series as well as in the Motorola 68881<sup class="reference" id="cite_ref-Muller_2006_43-3">[43]</sup><sup class="reference" id="cite_ref-Nave_1983_44-1">[44]</sup> and 68882 for some kinds of floating-point instructions, mainly as a way to reduce the gate counts (and complexity) of the FPU sub-system.
+</p>
+<h2><span class="mw-headline" id="Applications">Applications</span><span class="mw-editsection"></span></h2>
+<p>CORDIC uses simple shift-add operations for several computing tasks such as the calculation of trigonometric, hyperbolic and logarithmic functions, real and complex multiplications, division, square-root calculation, solution of linear systems, eigenvalue estimation, singular value decomposition, QR factorization and many others. As a consequence, CORDIC has been used for applications in diverse areas such as signal and image processing, communication systems, robotics and 3D graphics apart from general scientific and technical computation.<sup class="reference" id="cite_ref-Meher_2009_49-0">[49]</sup><sup class="reference" id="cite_ref-Meher_2013_CORDIC_50-0">[50]</sup>
+</p>
+<h3><span class="mw-headline" id="Hardware">Hardware</span><span class="mw-editsection"></span></h3>
+<p>The algorithm was used in the navigational system of the Apollo program's Lunar Roving Vehicle to compute bearing and range, or distance from the Lunar module.<sup class="reference" id="cite_ref-Heffron-LaPiana_1970_51-0">[51]</sup><sup class="reference" id="cite_ref-Smith-Mastin_1973_52-0">[52]</sup> CORDIC was used to implement the Intel 8087 math coprocessor in 1980, avoiding the need to implement hardware multiplication.<sup class="reference" id="cite_ref-Shirriff_2020_53-0">[53]</sup>
+</p><p>CORDIC is generally faster than other approaches when a hardware multiplier is not available (e.g., a microcontroller), or when the number of gates required to implement the functions it supports should be minimized (e.g., in an FPGA or ASIC).
+In fact, CORDIC is a standard drop-in IP in FPGA development applications such as Vivado for Xilinx, while a power series implementation is not due to the specificity of such an IP, i.e. CORDIC can compute many different functions (general purpose) while a hardware multiplier configured to execute power series implementations can only compute the function it was designed for.
+</p><p>On the other hand, when a hardware multiplier is available (<i>e.g.</i>, in a DSP microprocessor), table-lookup methods and power series are generally faster than CORDIC. In recent years, the CORDIC algorithm has been used extensively for various biomedical applications, especially in FPGA implementations<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (March 2021)">citation needed</span></i>]</sup>.
+</p><p>The STM32G4 series  and certain STM32H7 series of MCUs implement a CORDIC module to accelerate computations in various mixed signal applications such as graphics for human-machine interface and field oriented control of motors. While not as fast as a power series approximation, CORDIC is indeed faster than interpolating table based implementations such as the ones provided by the ARM CMSIS and C standard libraries.<sup class="reference" id="cite_ref-STM_2021_54-0">[54]</sup> Though the results may be slightly less accurate as the CORDIC modules provided only achieve 20 bits of precision in the result. For example, most of the performance difference compared to the ARM implementation is due to the overhead of the interpolation algorithm, which achieves full floating point precision (24 bits) and can likely achieve relative error to that precision.<sup class="reference" id="cite_ref-ARM_2021_55-0">[55]</sup> Another benefit is that the CORDIC module is a coprocessor and can be run in parallel with other CPU tasks.
+</p><p>The issue with using Taylor series is that while they do provide small absolute error, they do not exhibit well behaved relative error.<sup class="reference" id="cite_ref-Error_2021_56-0">[56]</sup> Other means of polynomial approximation, such as minimax optimization, may be used to control both kinds of error.
+</p>
+<h3><span class="mw-headline" id="Software">Software</span><span class="mw-editsection"></span></h3>
+<p>Many older systems with integer-only CPUs have implemented CORDIC to varying extents as part of their IEEE floating-point libraries. As most modern general-purpose CPUs have floating-point registers with common operations such as add, subtract, multiply, divide, sine, cosine, square root, log<sub>10</sub>, natural log, the need to implement CORDIC in them with software is nearly non-existent. Only microcontroller or special safety and time-constrained software applications would need to consider using CORDIC.
+</p>
+<h2><span class="mw-headline" id="Modes_of_operation">Modes of operation</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Rotation_mode"><span class="anchor" id="rotation_mode"></span> Rotation mode</span><span class="mw-editsection"></span></h3>
+<p>CORDIC can be used to calculate a number of different functions. This explanation shows how to use CORDIC in <i>rotation mode</i> to calculate the sine and cosine of an angle, assuming that the desired angle is given in radians and represented in a fixed-point format. To determine the sine or cosine for an angle <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \beta }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>β<!-- β --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \beta }</annotation>
+</semantics>
+</math></span><img alt="\beta " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7ed48a5e36207156fb792fa79d29925d2f7901e8" style="vertical-align: -0.671ex; width:1.332ex; height:2.509ex;"/></span>, the <i>y</i> or <i>x</i> coordinate of a point on the unit circle corresponding to the desired angle must be found. Using CORDIC, one would start with the vector <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v_{0}}</annotation>
+</semantics>
+</math></span><img alt="v_{0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/60faad24775635f4722ccc438093dbbfe05f34ae" style="vertical-align: -0.671ex; width:2.182ex; height:2.009ex;"/></span>:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v_{0}={\begin{bmatrix}1\\0\end{bmatrix}}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>[</mo>
+<mtable columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<mn>1</mn>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mn>0</mn>
+</mtd>
+</mtr>
+</mtable>
+<mo>]</mo>
+</mrow>
+</mrow>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v_{0}={\begin{bmatrix}1\\0\end{bmatrix}}.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle v_{0}={\begin{bmatrix}1\\0\end{bmatrix}}.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d5c3fbd77c3337eb666d7e3600df0939baecdaa5" style="vertical-align: -2.505ex; width:10.296ex; height:6.176ex;"/></span></dd></dl>
+
+<p>In the first iteration, this vector is rotated 45° counterclockwise to get the vector <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v_{1}}</annotation>
+</semantics>
+</math></span><img alt="v_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/98d33f5d498d528bd8c10edc8ac8c34347f32b3a" style="vertical-align: -0.671ex; width:2.182ex; height:2.009ex;"/></span>. Successive iterations rotate the vector in one or the other direction by size-decreasing steps, until the desired angle has been achieved. Each step angle is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \gamma _{i}=\arctan {(2^{-i})}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>γ<!-- γ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mi>arctan</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">(</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \gamma _{i}=\arctan {(2^{-i})}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \gamma _{i}=\arctan {(2^{-i})}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8c79d38f054d5a784a9d282509c5e0c7546af4cc" style="vertical-align: -0.838ex; width:17.006ex; height:3.176ex;"/></span> for <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i=0,1,2,\dots }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+<mo>=</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mn>2</mn>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i=0,1,2,\dots }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle i=0,1,2,\dots }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f669f395e9238413da376ffd54d5e33356f8cad6" style="vertical-align: -0.671ex; width:13.213ex; height:2.509ex;"/></span>.
+</p><p>More formally, every iteration calculates a rotation, which is performed by multiplying the vector <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v_{i}}</annotation>
+</semantics>
+</math></span><img alt="v_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7dffe5726650f6daac54829972a94f38eb8ec127" style="vertical-align: -0.671ex; width:1.927ex; height:2.009ex;"/></span> with the rotation matrix <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R_{i}}</annotation>
+</semantics>
+</math></span><img alt="R_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/db421291be9d0103404ced7495b363437b67b6b1" style="vertical-align: -0.671ex; width:2.564ex; height:2.509ex;"/></span>:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v_{i+1}=R_{i}v_{i}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v_{i+1}=R_{i}v_{i}.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle v_{i+1}=R_{i}v_{i}.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/38c412e541258dd5f47842ddc68c01de0cac5ef5" style="vertical-align: -0.671ex; width:12.264ex; height:2.509ex;"/></span></dd></dl>
+<p>The rotation matrix is given by
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R_{i}={\begin{bmatrix}\cos(\gamma _{i})&amp;-\sin(\gamma _{i})\\\sin(\gamma _{i})&amp;\cos(\gamma _{i})\end{bmatrix}}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>[</mo>
+<mtable columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<mi>cos</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>γ<!-- γ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mtd>
+<mtd>
+<mo>−<!-- − --></mo>
+<mi>sin</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>γ<!-- γ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mi>sin</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>γ<!-- γ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mtd>
+<mtd>
+<mi>cos</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>γ<!-- γ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mtd>
+</mtr>
+</mtable>
+<mo>]</mo>
+</mrow>
+</mrow>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R_{i}={\begin{bmatrix}\cos(\gamma _{i})&amp;-\sin(\gamma _{i})\\\sin(\gamma _{i})&amp;\cos(\gamma _{i})\end{bmatrix}}.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle R_{i}={\begin{bmatrix}\cos(\gamma _{i})&amp;-\sin(\gamma _{i})\\\sin(\gamma _{i})&amp;\cos(\gamma _{i})\end{bmatrix}}.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/86ce9988b7f09f3468d65559443e292008b2042f" style="vertical-align: -2.505ex; width:27.626ex; height:6.176ex;"/></span></dd></dl>
+<p>Using the following two trigonometric identities:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{aligned}\cos(\gamma _{i})&amp;={\frac {1}{\sqrt {1+\tan ^{2}(\gamma _{i})}}},\\\sin(\gamma _{i})&amp;={\frac {\tan(\gamma _{i})}{\sqrt {1+\tan ^{2}(\gamma _{i})}}},\end{aligned}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="right left right left right left right left right left right left" columnspacing="0em 2em 0em 2em 0em 2em 0em 2em 0em 2em 0em" displaystyle="true" rowspacing="3pt">
+<mtr>
+<mtd>
+<mi>cos</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>γ<!-- γ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<msqrt>
+<mn>1</mn>
+<mo>+</mo>
+<msup>
+<mi>tan</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>γ<!-- γ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</msqrt>
+</mfrac>
+</mrow>
+<mo>,</mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mi>sin</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>γ<!-- γ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mi>tan</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>γ<!-- γ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mrow>
+<msqrt>
+<mn>1</mn>
+<mo>+</mo>
+<msup>
+<mi>tan</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>γ<!-- γ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</msqrt>
+</mfrac>
+</mrow>
+<mo>,</mo>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{aligned}\cos(\gamma _{i})&amp;={\frac {1}{\sqrt {1+\tan ^{2}(\gamma _{i})}}},\\\sin(\gamma _{i})&amp;={\frac {\tan(\gamma _{i})}{\sqrt {1+\tan ^{2}(\gamma _{i})}}},\end{aligned}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\begin{aligned}\cos(\gamma _{i})&amp;={\frac {1}{\sqrt {1+\tan ^{2}(\gamma _{i})}}},\\\sin(\gamma _{i})&amp;={\frac {\tan(\gamma _{i})}{\sqrt {1+\tan ^{2}(\gamma _{i})}}},\end{aligned}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5124bff539f2b62701939cdd6cec1e9a4ead4d29" style="vertical-align: -7.464ex; margin-bottom: -0.207ex; width:26.811ex; height:16.509ex;"/></span></dd></dl>
+<p>the rotation matrix becomes
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R_{i}={\frac {1}{\sqrt {1+\tan ^{2}(\gamma _{i})}}}{\begin{bmatrix}1&amp;-\tan(\gamma _{i})\\\tan(\gamma _{i})&amp;1\end{bmatrix}}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<msqrt>
+<mn>1</mn>
+<mo>+</mo>
+<msup>
+<mi>tan</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>γ<!-- γ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</msqrt>
+</mfrac>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>[</mo>
+<mtable columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<mn>1</mn>
+</mtd>
+<mtd>
+<mo>−<!-- − --></mo>
+<mi>tan</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>γ<!-- γ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mi>tan</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>γ<!-- γ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mtd>
+<mtd>
+<mn>1</mn>
+</mtd>
+</mtr>
+</mtable>
+<mo>]</mo>
+</mrow>
+</mrow>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R_{i}={\frac {1}{\sqrt {1+\tan ^{2}(\gamma _{i})}}}{\begin{bmatrix}1&amp;-\tan(\gamma _{i})\\\tan(\gamma _{i})&amp;1\end{bmatrix}}.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle R_{i}={\frac {1}{\sqrt {1+\tan ^{2}(\gamma _{i})}}}{\begin{bmatrix}1&amp;-\tan(\gamma _{i})\\\tan(\gamma _{i})&amp;1\end{bmatrix}}.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/997e698ed9e1a8247042d646da8c016702d9bd34" style="vertical-align: -4.671ex; width:43.769ex; height:8.343ex;"/></span></dd></dl>
+<p>The expression for the rotated vector <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v_{i+1}=R_{i}v_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v_{i+1}=R_{i}v_{i}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle v_{i+1}=R_{i}v_{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/85b3c9ead2a0dcca551cd62ef18c61d7ce0a4d0e" style="vertical-align: -0.671ex; width:11.617ex; height:2.509ex;"/></span> then becomes
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{bmatrix}x_{i+1}\\y_{i+1}\end{bmatrix}}={\frac {1}{\sqrt {1+\tan ^{2}(\gamma _{i})}}}{\begin{bmatrix}1&amp;-\tan(\gamma _{i})\\\tan(\gamma _{i})&amp;1\end{bmatrix}}{\begin{bmatrix}x_{i}\\y_{i}\end{bmatrix}},}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>[</mo>
+<mtable columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+</mtable>
+<mo>]</mo>
+</mrow>
+</mrow>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<msqrt>
+<mn>1</mn>
+<mo>+</mo>
+<msup>
+<mi>tan</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>γ<!-- γ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</msqrt>
+</mfrac>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>[</mo>
+<mtable columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<mn>1</mn>
+</mtd>
+<mtd>
+<mo>−<!-- − --></mo>
+<mi>tan</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>γ<!-- γ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mi>tan</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>γ<!-- γ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mtd>
+<mtd>
+<mn>1</mn>
+</mtd>
+</mtr>
+</mtable>
+<mo>]</mo>
+</mrow>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>[</mo>
+<mtable columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+</mtable>
+<mo>]</mo>
+</mrow>
+</mrow>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{bmatrix}x_{i+1}\\y_{i+1}\end{bmatrix}}={\frac {1}{\sqrt {1+\tan ^{2}(\gamma _{i})}}}{\begin{bmatrix}1&amp;-\tan(\gamma _{i})\\\tan(\gamma _{i})&amp;1\end{bmatrix}}{\begin{bmatrix}x_{i}\\y_{i}\end{bmatrix}},}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\begin{bmatrix}x_{i+1}\\y_{i+1}\end{bmatrix}}={\frac {1}{\sqrt {1+\tan ^{2}(\gamma _{i})}}}{\begin{bmatrix}1&amp;-\tan(\gamma _{i})\\\tan(\gamma _{i})&amp;1\end{bmatrix}}{\begin{bmatrix}x_{i}\\y_{i}\end{bmatrix}},}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/60242db984ce568b7a449480ffb180c26971ddc8" style="vertical-align: -4.671ex; width:53.977ex; height:8.343ex;"/></span></dd></dl>
+<p>where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{i}}</annotation>
+</semantics>
+</math></span><img alt="x_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e87000dd6142b81d041896a30fe58f0c3acb2158" style="vertical-align: -0.671ex; width:2.129ex; height:2.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y_{i}}</annotation>
+</semantics>
+</math></span><img alt="y_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/67d30d30b6c2dbe4d6f150d699de040937ecc95f" style="vertical-align: -0.671ex; width:1.939ex; height:2.009ex;"/></span> are the components of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v_{i}}</annotation>
+</semantics>
+</math></span><img alt="v_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7dffe5726650f6daac54829972a94f38eb8ec127" style="vertical-align: -0.671ex; width:1.927ex; height:2.009ex;"/></span>. Restricting the angles <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \gamma _{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>γ<!-- γ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \gamma _{i}}</annotation>
+</semantics>
+</math></span><img alt="\gamma _{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/907e4a28946d45e5cbf3cf3c6c48de68296039c4" style="vertical-align: -0.838ex; width:2.004ex; height:2.176ex;"/></span> such that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \tan(\gamma _{i})=\pm 2^{-i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>tan</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>γ<!-- γ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mo>±<!-- ± --></mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \tan(\gamma _{i})=\pm 2^{-i}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \tan(\gamma _{i})=\pm 2^{-i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/675b0547b44d317482d6ba61e8a21596681bbc67" style="vertical-align: -0.838ex; width:15.32ex; height:3.176ex;"/></span>, the multiplication with the tangent can be replaced by a division by a power of two, which is efficiently done in digital computer hardware using a bit shift. The expression then becomes
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{bmatrix}x_{i+1}\\y_{i+1}\end{bmatrix}}=K_{i}{\begin{bmatrix}1&amp;-\sigma _{i}2^{-i}\\\sigma _{i}2^{-i}&amp;1\end{bmatrix}}{\begin{bmatrix}x_{i}\\y_{i}\end{bmatrix}},}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>[</mo>
+<mtable columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+</mtable>
+<mo>]</mo>
+</mrow>
+</mrow>
+<mo>=</mo>
+<msub>
+<mi>K</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>[</mo>
+<mtable columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<mn>1</mn>
+</mtd>
+<mtd>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>σ<!-- σ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+</mrow>
+</msup>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>σ<!-- σ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+</mrow>
+</msup>
+</mtd>
+<mtd>
+<mn>1</mn>
+</mtd>
+</mtr>
+</mtable>
+<mo>]</mo>
+</mrow>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>[</mo>
+<mtable columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+</mtable>
+<mo>]</mo>
+</mrow>
+</mrow>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{bmatrix}x_{i+1}\\y_{i+1}\end{bmatrix}}=K_{i}{\begin{bmatrix}1&amp;-\sigma _{i}2^{-i}\\\sigma _{i}2^{-i}&amp;1\end{bmatrix}}{\begin{bmatrix}x_{i}\\y_{i}\end{bmatrix}},}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\begin{bmatrix}x_{i+1}\\y_{i+1}\end{bmatrix}}=K_{i}{\begin{bmatrix}1&amp;-\sigma _{i}2^{-i}\\\sigma _{i}2^{-i}&amp;1\end{bmatrix}}{\begin{bmatrix}x_{i}\\y_{i}\end{bmatrix}},}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/53fad2fba4028912a3de09ae296bec368517bdb6" style="vertical-align: -2.671ex; width:37.363ex; height:6.509ex;"/></span></dd></dl>
+<p>where
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle K_{i}={\frac {1}{\sqrt {1+2^{-2i}}}},}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>K</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<msqrt>
+<mn>1</mn>
+<mo>+</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<mi>i</mi>
+</mrow>
+</msup>
+</msqrt>
+</mfrac>
+</mrow>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle K_{i}={\frac {1}{\sqrt {1+2^{-2i}}}},}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle K_{i}={\frac {1}{\sqrt {1+2^{-2i}}}},}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6bdf48b905d4f66328f5771f8f253640b9deca60" style="vertical-align: -3.171ex; width:17.743ex; height:6.509ex;"/></span></dd></dl>
+<p>and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sigma _{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>σ<!-- σ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sigma _{i}}</annotation>
+</semantics>
+</math></span><img alt="\sigma _{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6ab3208a7d0c634ef720e03ff5a9949e8310edc4" style="vertical-align: -0.671ex; width:2.127ex; height:2.009ex;"/></span> is used to determine the direction of the rotation: if the angle <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \gamma _{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>γ<!-- γ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \gamma _{i}}</annotation>
+</semantics>
+</math></span><img alt="\gamma _{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/907e4a28946d45e5cbf3cf3c6c48de68296039c4" style="vertical-align: -0.838ex; width:2.004ex; height:2.176ex;"/></span> is positive, then <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sigma _{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>σ<!-- σ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sigma _{i}}</annotation>
+</semantics>
+</math></span><img alt="\sigma _{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6ab3208a7d0c634ef720e03ff5a9949e8310edc4" style="vertical-align: -0.671ex; width:2.127ex; height:2.009ex;"/></span> is +1, otherwise it is −1.
+</p><p>All <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle K_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>K</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle K_{i}}</annotation>
+</semantics>
+</math></span><img alt="K_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/719736a1feb0bd7e73bb1425641a61229f55bb6d" style="vertical-align: -0.671ex; width:2.773ex; height:2.509ex;"/></span> factors can be ignored in the iterative process and then applied all at once afterwards with a scaling factor <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle K(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>K</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle K(n)}</annotation>
+</semantics>
+</math></span><img alt="K(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2686537be23bcc3708f1a649d59ecac05ca4622e" style="vertical-align: -0.838ex; width:5.27ex; height:2.843ex;"/></span>
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle K(n)=\prod _{i=0}^{n-1}K_{i}=\prod _{i=0}^{n-1}{\frac {1}{\sqrt {1+2^{-2i}}}},}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>K</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<munderover>
+<mo>∏<!-- ∏ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</munderover>
+<msub>
+<mi>K</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<munderover>
+<mo>∏<!-- ∏ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</munderover>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<msqrt>
+<mn>1</mn>
+<mo>+</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<mi>i</mi>
+</mrow>
+</msup>
+</msqrt>
+</mfrac>
+</mrow>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle K(n)=\prod _{i=0}^{n-1}K_{i}=\prod _{i=0}^{n-1}{\frac {1}{\sqrt {1+2^{-2i}}}},}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle K(n)=\prod _{i=0}^{n-1}K_{i}=\prod _{i=0}^{n-1}{\frac {1}{\sqrt {1+2^{-2i}}}},}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/14b96b1cebd29054472d4024c40f9c2b8e08275f" style="vertical-align: -3.171ex; width:33.06ex; height:7.509ex;"/></span></dd></dl>
+<p>which is calculated in advance and stored in a table or as a single constant, if the number of iterations is fixed. This correction could also be made in advance, by scaling <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v_{0}}</annotation>
+</semantics>
+</math></span><img alt="v_{0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/60faad24775635f4722ccc438093dbbfe05f34ae" style="vertical-align: -0.671ex; width:2.182ex; height:2.009ex;"/></span> and hence saving a multiplication. Additionally, it can be noted that<sup class="reference" id="cite_ref-Muller_2006_43-4">[43]</sup>
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle K=\lim _{n\to \infty }K(n)\approx 0.6072529350088812561694}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>K</mi>
+<mo>=</mo>
+<munder>
+<mo form="prefix" movablelimits="true">lim</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo stretchy="false">→<!-- → --></mo>
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mrow>
+</munder>
+<mi>K</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo>≈<!-- ≈ --></mo>
+<mn>0.6072529350088812561694</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle K=\lim _{n\to \infty }K(n)\approx 0.6072529350088812561694}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle K=\lim _{n\to \infty }K(n)\approx 0.6072529350088812561694}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/30bfa0fe5802c439447b299ccce38635ac405965" style="vertical-align: -1.838ex; width:45.576ex; height:3.843ex;"/></span></dd></dl>
+<p>to allow further reduction of the algorithm's complexity. Some applications may avoid correcting for <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle K}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>K</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle K}</annotation>
+</semantics>
+</math></span><img alt="K" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2b76fce82a62ed5461908f0dc8f037de4e3686b0" style="vertical-align: -0.338ex; width:2.066ex; height:2.176ex;"/></span> altogether, resulting in a processing gain <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A}</annotation>
+</semantics>
+</math></span><img alt="A" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7daff47fa58cdfd29dc333def748ff5fa4c923e3" style="vertical-align: -0.338ex; width:1.743ex; height:2.176ex;"/></span>:<sup class="reference" id="cite_ref-Andraka_1998_57-0">[57]</sup>
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A={\frac {1}{K}}=\lim _{n\to \infty }\prod _{i=0}^{n-1}{\sqrt {1+2^{-2i}}}\approx 1.64676025812107.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<mi>K</mi>
+</mfrac>
+</mrow>
+<mo>=</mo>
+<munder>
+<mo form="prefix" movablelimits="true">lim</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo stretchy="false">→<!-- → --></mo>
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mrow>
+</munder>
+<munderover>
+<mo>∏<!-- ∏ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</munderover>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mn>1</mn>
+<mo>+</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<mi>i</mi>
+</mrow>
+</msup>
+</msqrt>
+</mrow>
+<mo>≈<!-- ≈ --></mo>
+<mn>1.64676025812107.</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A={\frac {1}{K}}=\lim _{n\to \infty }\prod _{i=0}^{n-1}{\sqrt {1+2^{-2i}}}\approx 1.64676025812107.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle A={\frac {1}{K}}=\lim _{n\to \infty }\prod _{i=0}^{n-1}{\sqrt {1+2^{-2i}}}\approx 1.64676025812107.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1503142594c396b9822c7e90517c7f4708c930a0" style="vertical-align: -3.005ex; width:51.194ex; height:7.343ex;"/></span></dd></dl>
+<p>After a sufficient number of iterations, the vector's angle will be close to the wanted angle <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \beta }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>β<!-- β --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \beta }</annotation>
+</semantics>
+</math></span><img alt="\beta " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7ed48a5e36207156fb792fa79d29925d2f7901e8" style="vertical-align: -0.671ex; width:1.332ex; height:2.509ex;"/></span>. For most ordinary purposes, 40 iterations (<i>n</i> = 40) is sufficient to obtain the correct result to the 10th decimal place.
+</p><p>The only task left is to determine whether the rotation should be clockwise or counterclockwise at each iteration (choosing the value of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sigma }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>σ<!-- σ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sigma }</annotation>
+</semantics>
+</math></span><img alt="\sigma " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/59f59b7c3e6fdb1d0365a494b81fb9a696138c36" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span>). This is done by keeping track of how much the angle was rotated at each iteration and subtracting that from the wanted angle; then in order to get closer to the wanted angle <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \beta }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>β<!-- β --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \beta }</annotation>
+</semantics>
+</math></span><img alt="\beta " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7ed48a5e36207156fb792fa79d29925d2f7901e8" style="vertical-align: -0.671ex; width:1.332ex; height:2.509ex;"/></span>, if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \beta _{n+1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>β<!-- β --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \beta _{n+1}}</annotation>
+</semantics>
+</math></span><img alt="\beta _{n+1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d68c2d0950af5115cbf9d985bdb7ae35a89a1b30" style="vertical-align: -0.671ex; width:4.635ex; height:2.509ex;"/></span> is positive, the rotation is clockwise, otherwise it is negative and the rotation is counterclockwise:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \beta _{0}=\beta }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>β<!-- β --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mi>β<!-- β --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \beta _{0}=\beta }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \beta _{0}=\beta }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b0dba44538967471db199d8365ee5b8690f411af" style="vertical-align: -0.671ex; width:6.8ex; height:2.509ex;"/></span></dd></dl>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \beta _{i+1}=\beta _{i}-\sigma _{i}\gamma _{i},\quad \gamma _{i}=\arctan(2^{-i}).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>β<!-- β --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<msub>
+<mi>β<!-- β --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>σ<!-- σ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<msub>
+<mi>γ<!-- γ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+<mspace width="1em"></mspace>
+<msub>
+<mi>γ<!-- γ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mi>arctan</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \beta _{i+1}=\beta _{i}-\sigma _{i}\gamma _{i},\quad \gamma _{i}=\arctan(2^{-i}).}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \beta _{i+1}=\beta _{i}-\sigma _{i}\gamma _{i},\quad \gamma _{i}=\arctan(2^{-i}).}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/636cd9282dc451b1c07e3884704be59270e6e09a" style="vertical-align: -0.838ex; width:37.023ex; height:3.176ex;"/></span></dd></dl>
+<p>The values of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \gamma _{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>γ<!-- γ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \gamma _{n}}</annotation>
+</semantics>
+</math></span><img alt="\gamma _{n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/84a6d83f89515bf8d1a053639dc484e620f42036" style="vertical-align: -0.838ex; width:2.423ex; height:2.176ex;"/></span> must also be precomputed and stored. But for small angles, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \arctan(\gamma _{n})=\gamma _{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>arctan</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>γ<!-- γ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<msub>
+<mi>γ<!-- γ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \arctan(\gamma _{n})=\gamma _{n}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \arctan(\gamma _{n})=\gamma _{n}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d5428e8e677ff506fb8dc1cee5e5a47b06f3ca9a" style="vertical-align: -0.838ex; width:16.219ex; height:2.843ex;"/></span> in fixed-point representation, reducing table size.
+</p><p>As can be seen in the illustration above, the sine of the angle <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \beta }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>β<!-- β --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \beta }</annotation>
+</semantics>
+</math></span><img alt="\beta " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7ed48a5e36207156fb792fa79d29925d2f7901e8" style="vertical-align: -0.671ex; width:1.332ex; height:2.509ex;"/></span> is the <i>y</i> coordinate of the final vector <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v_{n},}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v_{n},}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle v_{n},}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7fe10f33631a49b7e241b1ba7b0bc4615b7025f9" style="vertical-align: -0.671ex; width:2.993ex; height:2.009ex;"/></span> while the <i>x</i> coordinate is the cosine value.
+</p>
+<h3><span class="mw-headline" id="Vectoring_mode"><span class="anchor" id="vectoring_mode"></span> Vectoring mode</span><span class="mw-editsection"></span></h3>
+<p>The rotation-mode algorithm described above can rotate any vector (not only a unit vector aligned along the <i>x</i> axis) by an angle between −90° and +90°. Decisions on the direction of the rotation depend on <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \beta _{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>β<!-- β --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \beta _{i}}</annotation>
+</semantics>
+</math></span><img alt="\beta _{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f111c43e5cfce37bcffc6121a19b81c6efd825ed" style="vertical-align: -0.671ex; width:2.115ex; height:2.509ex;"/></span> being positive or negative.
+</p><p>The vectoring-mode of operation requires a slight modification of the algorithm. It starts with a vector the <i>x</i> coordinate of which is positive and the <i>y</i> coordinate is arbitrary. Successive rotations have the goal of rotating the vector to the <i>x</i> axis (and therefore reducing the <i>y</i> coordinate to zero). At each step, the value of <i>y</i> determines the direction of the rotation. The final value of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \beta _{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>β<!-- β --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \beta _{i}}</annotation>
+</semantics>
+</math></span><img alt="\beta _{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f111c43e5cfce37bcffc6121a19b81c6efd825ed" style="vertical-align: -0.671ex; width:2.115ex; height:2.509ex;"/></span> contains the total angle of rotation. The final value of <i>x</i> will be the magnitude of the original vector scaled by <i>K</i>. So, an obvious use of the vectoring mode is the transformation from rectangular to polar coordinates.
+</p>
+<h2><span class="mw-headline" id="Implementation">Implementation</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Software_example">Software example</span><span class="mw-editsection"></span></h3>
+<p>The following is a MATLAB/GNU Octave implementation of CORDIC that does not rely on any transcendental functions except in the precomputation of tables. If the number of iterations <i>n</i> is predetermined, then the second table can be replaced by a single constant. With MATLAB's standard double-precision arithmetic and "format long" printout, the results increase in accuracy for <i>n</i> up to about 48.
+</p>
+
+<p>The two-by-two matrix multiplication can be carried out by a pair of simple shifts and adds. 
+</p>
+
+<p>In Java the Math class has a <code>scalb(double x,int scale)</code> method to perform such a shift,<sup class="reference" id="cite_ref-Java_Math_58-0">[58]</sup> C has the ldexp function,<sup class="reference" id="cite_ref-ldexp_59-0">[59]</sup> and the x86 class of processors have the <code>fscale</code> floating point operation.<sup class="reference" id="cite_ref-Intel_2016_60-0">[60]</sup>
+</p>
+<h3><span class="mw-headline" id="Hardware_example">Hardware example</span><span class="mw-editsection"></span></h3>
+<p>The number of logic gates for the implementation of a CORDIC is roughly comparable to the number required for a multiplier as both require combinations of shifts and additions. The choice for a multiplier-based or CORDIC-based implementation will depend on the context. The multiplication of two complex numbers represented by their real and imaginary components (rectangular coordinates), for example, requires 4 multiplications, but could be realized by a single CORDIC operating on complex numbers represented by their polar coordinates, especially if the magnitude of the numbers is not relevant (multiplying a complex vector with a vector on the unit circle actually amounts to a rotation). CORDICs are often used in circuits for telecommunications such as digital down converters.
+</p>
+<h2><span class="mw-headline" id="Double_iterations_CORDIC">Double iterations CORDIC</span><span class="mw-editsection"></span></h2>
+<p>In the publications: http://baykov.de/CORDIC1972.htm and http://baykov.de/CORDIC1975.htm it was proposed to use the <b>double iterations</b> method for the implementation of the functions: arcsinX, arccosX, lnX, expX, as well as for  calculation of the hyperbolic functions. Double iterations method consists in the fact that unlike the classical CORDIC method, where the iteration step value changes EVERY time, i.e. on each iteration, in the double iteration method, the iteration step value is repeated twice and changes only through one iteration. Hence the designation for the degree indicator for double iterations appeared: <i>i</i> = 1,1,2,2,3,3... Whereas with ordinary iterations: <i>i</i> = 1,2,3... The double iteration method guarantees the convergence of the method throughout the valid range of argument changes.
+</p><p>The generalization of the CORDIC convergence problems for the  arbitrary positional number system http://baykov.de/CORDIC1985.htm with Radix R showed that for the functions sin, cos, arctg, it is enough to perform (R-1) iterations for each value of i (i =  0 or 1 to n, where n is the number of digits), i.e. for each digit of the result. For the functions ln, exp, sh, ch, arth, R iterations should be performed for each value i. For the functions arcsin and arccos 2 (R-1) iterations should be performed for each number digit, i.e. for each value of i.
+For arsh, arch functions, the number of iterations will be 2R for each i, that is, for each result digit.
+</p>
+<h2><span class="mw-headline" id="Related_algorithms">Related algorithms</span><span class="mw-editsection"></span></h2>
+<p>CORDIC is part of the class of "shift-and-add" algorithms, as are the logarithm and exponential algorithms derived from Henry Briggs' work.  Another shift-and-add algorithm which can be used for computing many elementary functions is the BKM algorithm, which is a generalization of the logarithm and exponential algorithms to the complex plane.  For instance, BKM can be used to compute the sine and cosine of a real angle <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> (in radians) by computing the exponential of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 0+ix}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>0</mn>
+<mo>+</mo>
+<mi>i</mi>
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 0+ix}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 0+ix}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e3ac61c1c2ce16e8066b23152c977aa867f235e1" style="vertical-align: -0.505ex; width:6.135ex; height:2.343ex;"/></span>, which is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \operatorname {cis} (x)=\cos(x)+i\sin(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>cis</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>cos</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>i</mi>
+<mi>sin</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \operatorname {cis} (x)=\cos(x)+i\sin(x)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \operatorname {cis} (x)=\cos(x)+i\sin(x)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3b238a1baef74bfa90e4d60c1b716eb47b7fc2d3" style="vertical-align: -0.838ex; width:25.108ex; height:2.843ex;"/></span>. The BKM algorithm is slightly more complex than CORDIC, but has the advantage that it does not need a scaling factor (<i>K</i>).
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097025294">.mw-parser-output .side-box{margin:4px 0;box-sizing:border-box;border:1px solid #aaa;font-size:88%;line-height:1.25em;background-color:#f9f9f9}.mw-parser-output .side-box-abovebelow,.mw-parser-output .side-box-text{padding:0.25em 0.9em}.mw-parser-output .side-box-image{padding:2px 0 2px 0.9em;text-align:center}.mw-parser-output .side-box-imageright{padding:2px 0.9em 2px 0;text-align:center}@media(min-width:500px){.mw-parser-output .side-box-flex{display:flex;align-items:center}.mw-parser-output .side-box-text{flex:1}}@media(min-width:720px){.mw-parser-output .side-box{width:238px}.mw-parser-output .side-box-right{clear:right;float:right;margin-left:1em}.mw-parser-output .side-box-left{margin-right:1em}}</style>
+<ul><li>Methods of computing square roots</li>
+<li>IEEE 754</li>
+<li>Floating-point units</li>
+<li>Digital Circuits/CORDIC in Wikibooks</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="Further_reading">Further reading</span><span class="mw-editsection"></span></h2>
+<ul><li><span class="anchor" id="DIVIC"></span><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFParini1966">Parini, Joseph A. (1966-09-05). "DIVIC Gives Answer to Complex Navigation Questions". <i>Electronics</i>: 105–111. ISSN 0013-5070.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Electronics&amp;rft.atitle=DIVIC+Gives+Answer+to+Complex+Navigation+Questions&amp;rft.pages=105-111&amp;rft.date=1966-09-05&amp;rft.issn=0013-5070&amp;rft.aulast=Parini&amp;rft.aufirst=Joseph+A.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span> (NB. <i>DIVIC</i> stands for <i>DIgital Variable Increments Computer</i>. Some sources erroneously refer to this as by <i>J. M. Parini</i>.)</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFAndersonEarleGoldschmidtPowers1965">Anderson, Stanley F.; Earle, John G.; Goldschmidt, Robert Elliott; Powers, Don M. (1965-11-01). "The IBM System/360 Model 91: Floating-Point Execution Unit" <span class="cs1-format">(PDF)</span>. <i>IBM Journal of Research and Development</i>. Riverton, New Jersey, USA (published January 1967). <b>11</b> (1): 34–53. doi:10.1147/rd.111.0034<span class="reference-accessdate">. Retrieved <span class="nowrap">2016-01-02</span></span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=IBM+Journal+of+Research+and+Development&amp;rft.atitle=The+IBM+System%2F360+Model+91%3A+Floating-Point+Execution+Unit&amp;rft.volume=11&amp;rft.issue=1&amp;rft.pages=34-53&amp;rft.date=1965-11-01&amp;rft_id=info%3Adoi%2F10.1147%2Frd.111.0034&amp;rft.aulast=Anderson&amp;rft.aufirst=Stanley+F.&amp;rft.au=Earle%2C+John+G.&amp;rft.au=Goldschmidt%2C+Robert+Elliott&amp;rft.au=Powers%2C+Don+M.&amp;rft_id=http%3A%2F%2Fhome.citycable.ch%2Fpierrefleur%2FJacques-Laporte%2Fibmrd1101E.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFLiccardo1968">Liccardo, Michael A. (September 1968). <i>An Interconnect Processor with Emphasis on CORDIC Mode Operation</i> (MSc thesis). Berkeley, CA, USA: University of California, Berkeley, Department of Electrical Engineering. OCLC 500565168.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=An+Interconnect+Processor+with+Emphasis+on+CORDIC+Mode+Operation&amp;rft.place=Berkeley%2C+CA%2C+USA&amp;rft.pub=University+of+California%2C+Berkeley%2C+Department+of+Electrical+Engineering&amp;rft.date=1968-09&amp;rft_id=info%3Aoclcnum%2F500565168&amp;rft.aulast=Liccardo&amp;rft.aufirst=Michael+A.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span></li>
+<li><link href="mw-data:TemplateStyles:r1041539562" rel="mw-deduplicated-inline-style"/><span class="citation patent" id="CITEREFCochran1971">US patent 3576983A, Cochran, David S., "Digital calculator system for computing square roots", published 1971-05-04, issued 1971-05-04,  assigned to Hewlett-Packard Co.</span><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Apatent&amp;rft.number=3576983A&amp;rft.cc=US&amp;rft.title=Digital+calculator+system+for+computing+square+roots&amp;rft.inventor=Cochran&amp;rft.assignee=%5B%5BHewlett-Packard+Co.%5D%5D&amp;rft.date=1971-05-04&amp;rft.appldate=1968-10-02&amp;rft.pubdate=1971-05-04&amp;rft.prioritydate=1968-10-02"><span style="display: none;"> </span></span> ([14])</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFChen1972">Chen, Tien Chi (July 1972). "Automatic Computation of Exponentials, Logarithms, Ratios, and Square Roots" <span class="cs1-format">(PDF)</span>. <i>IBM Journal of Research and Development</i>. <b>16</b> (4): 380–388. doi:10.1147/rd.164.0380. ISSN 0018-8646<span class="reference-accessdate">. Retrieved <span class="nowrap">2016-01-02</span></span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=IBM+Journal+of+Research+and+Development&amp;rft.atitle=Automatic+Computation+of+Exponentials%2C+Logarithms%2C+Ratios%2C+and+Square+Roots&amp;rft.volume=16&amp;rft.issue=4&amp;rft.pages=380-388&amp;rft.date=1972-07&amp;rft_id=info%3Adoi%2F10.1147%2Frd.164.0380&amp;rft.issn=0018-8646&amp;rft.aulast=Chen&amp;rft.aufirst=Tien+Chi&amp;rft_id=http%3A%2F%2Fhome.citycable.ch%2Fpierrefleur%2FJacques-Laporte%2Fchen.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFEgbert1977">Egbert, William E. (May 1977). "Personal Calculator Algorithms I: Square Roots" <span class="cs1-format">(PDF)</span>. <i>Hewlett-Packard Journal</i>. Palo Alto, California, USA: Hewlett-Packard. <b>28</b> (9): 22–24<span class="reference-accessdate">. Retrieved <span class="nowrap">2016-01-02</span></span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Hewlett-Packard+Journal&amp;rft.atitle=Personal+Calculator+Algorithms+I%3A+Square+Roots&amp;rft.volume=28&amp;rft.issue=9&amp;rft.pages=22-24&amp;rft.date=1977-05&amp;rft.aulast=Egbert&amp;rft.aufirst=William+E.&amp;rft_id=http%3A%2F%2Fwww.hpl.hp.com%2Fhpjournal%2Fpdfs%2FIssuePDFs%2F1977-05.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span> ([15])</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFEgbert1977">Egbert, William E. (June 1977). "Personal Calculator Algorithms II: Trigonometric Functions" <span class="cs1-format">(PDF)</span>. <i>Hewlett-Packard Journal</i>. Palo Alto, California, USA: Hewlett-Packard. <b>28</b> (10): 17–20<span class="reference-accessdate">. Retrieved <span class="nowrap">2016-01-02</span></span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Hewlett-Packard+Journal&amp;rft.atitle=Personal+Calculator+Algorithms+II%3A+Trigonometric+Functions&amp;rft.volume=28&amp;rft.issue=10&amp;rft.pages=17-20&amp;rft.date=1977-06&amp;rft.aulast=Egbert&amp;rft.aufirst=William+E.&amp;rft_id=http%3A%2F%2Fwww.hpl.hp.com%2Fhpjournal%2Fpdfs%2FIssuePDFs%2F1977-06.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span> ([16])</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFEgbert1977">Egbert, William E. (November 1977). "Personal Calculator Algorithms III: Inverse Trigonometric Functions" <span class="cs1-format">(PDF)</span>. <i>Hewlett-Packard Journal</i>. Palo Alto, California, USA: Hewlett-Packard. <b>29</b> (3): 22–23<span class="reference-accessdate">. Retrieved <span class="nowrap">2016-01-02</span></span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Hewlett-Packard+Journal&amp;rft.atitle=Personal+Calculator+Algorithms+III%3A+Inverse+Trigonometric+Functions&amp;rft.volume=29&amp;rft.issue=3&amp;rft.pages=22-23&amp;rft.date=1977-11&amp;rft.aulast=Egbert&amp;rft.aufirst=William+E.&amp;rft_id=http%3A%2F%2Fwww.hpl.hp.com%2Fhpjournal%2Fpdfs%2FIssuePDFs%2F1977-11.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span> ([17])</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFEgbert1978">Egbert, William E. (April 1978). "Personal Calculator Algorithms IV: Logarithmic Functions" <span class="cs1-format">(PDF)</span>. <i>Hewlett-Packard Journal</i>. Palo Alto, California, USA: Hewlett-Packard. <b>29</b> (8): 29–32<span class="reference-accessdate">. Retrieved <span class="nowrap">2016-01-02</span></span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Hewlett-Packard+Journal&amp;rft.atitle=Personal+Calculator+Algorithms+IV%3A+Logarithmic+Functions&amp;rft.volume=29&amp;rft.issue=8&amp;rft.pages=29-32&amp;rft.date=1978-04&amp;rft.aulast=Egbert&amp;rft.aufirst=William+E.&amp;rft_id=http%3A%2F%2Fwww.hpl.hp.com%2Fhpjournal%2Fpdfs%2FIssuePDFs%2F1978-04.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span> ([18])</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFSenzig1975">Senzig, Don (1975). "Calculator Algorithms". <i>IEEE Compcon Reader Digest</i>. IEEE: 139–141. IEEE Catalog No. 75 CH 0920-9C.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=IEEE+Compcon+Reader+Digest&amp;rft.atitle=Calculator+Algorithms&amp;rft.pages=139-141&amp;rft.date=1975&amp;rft.aulast=Senzig&amp;rft.aufirst=Don&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2 cs1-prop-script cs1-prop-foreign-lang-source" id="CITEREFBaykov1972">Baykov, Vladimir D. (1972), <bdi lang="ru">Вопросы исследования вычисления элементарных функций по методу «цифра за цифрой»</bdi> [<i>Problems of elementary functions evaluation based on digit by digit (CORDIC) technique</i>] (PhD thesis) (in Russian), Leningrad State University of Electrical Engineering</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81%D1%8B+%D0%B8%D1%81%D1%81%D0%BB%D0%B5%D0%B4%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F+%D0%B2%D1%8B%D1%87%D0%B8%D1%81%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F+%D1%8D%D0%BB%D0%B5%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D1%80%D0%BD%D1%8B%D1%85+%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D0%B9+%D0%BF%D0%BE+%D0%BC%D0%B5%D1%82%D0%BE%D0%B4%D1%83+%C2%AB%D1%86%D0%B8%D1%84%D1%80%D0%B0+%D0%B7%D0%B0+%D1%86%D0%B8%D1%84%D1%80%D0%BE%D0%B9%C2%BB&amp;rft.pub=Leningrad+State+University+of+Electrical+Engineering&amp;rft.date=1972&amp;rft.aulast=Baykov&amp;rft.aufirst=Vladimir+D.&amp;rft_id=http%3A%2F%2Fbaykov.de%2Fcordic1972.htm&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1 cs1-prop-script cs1-prop-foreign-lang-source" id="CITEREFBaykovSmolov1975">Baykov, Vladimir D.; Smolov, Vladimir B. (1975). <i>Apparaturnaja realizatsija elementarnikh funktsij v CVM</i> <bdi lang="ru">Аппаратурная реализация элементарных функций в ЦВМ</bdi> [<i>Hardware implementation of elementary functions in computers</i>] (in Russian). Leningrad State University. Archived from the original on 2019-03-02<span class="reference-accessdate">. Retrieved <span class="nowrap">2019-03-02</span></span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Apparaturnaja+realizatsija+elementarnikh+funktsij+v+CVM+%D0%90%D0%BF%D0%BF%D0%B0%D1%80%D0%B0%D1%82%D1%83%D1%80%D0%BD%D0%B0%D1%8F+%D1%80%D0%B5%D0%B0%D0%BB%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F+%D1%8D%D0%BB%D0%B5%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D1%80%D0%BD%D1%8B%D1%85+%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D0%B9+%D0%B2+%D0%A6%D0%92%D0%9C&amp;rft.pub=Leningrad+State+University&amp;rft.date=1975&amp;rft.aulast=Baykov&amp;rft.aufirst=Vladimir+D.&amp;rft.au=Smolov%2C+Vladimir+B.&amp;rft_id=http%3A%2F%2Fbaykov.de%2Fcordic1975.htm&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1 cs1-prop-script cs1-prop-foreign-lang-source" id="CITEREFBaykovSeljutin1982">Baykov, Vladimir D.; Seljutin, S. A. (1982).  <bdi lang="ru">Вычисление элементарных функций в ЭКВМ</bdi> [<i>Elementary functions evaluation in microcalculators</i>] (in Russian). Moscow: Radio i svjaz (Радио и связь).</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=%D0%92%D1%8B%D1%87%D0%B8%D1%81%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5+%D1%8D%D0%BB%D0%B5%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D1%80%D0%BD%D1%8B%D1%85+%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D0%B9+%D0%B2+%D0%AD%D0%9A%D0%92%D0%9C&amp;rft.place=Moscow&amp;rft.pub=Radio+i+svjaz+%28%D0%A0%D0%B0%D0%B4%D0%B8%D0%BE+%D0%B8+%D1%81%D0%B2%D1%8F%D0%B7%D1%8C%29&amp;rft.date=1982&amp;rft.aulast=Baykov&amp;rft.aufirst=Vladimir+D.&amp;rft.au=Seljutin%2C+S.+A.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1 cs1-prop-script cs1-prop-foreign-lang-source" id="CITEREFBaykovSmolov1985">Baykov, Vladimir D.; Smolov, Vladimir B. (1985). <bdi lang="ru">Специализированные процессоры: итерационные алгоритмы и структуры</bdi> [<i>Special-purpose processors: iterative algorithms and structures</i>] (in Russian). Moscow: Radio i svjaz (Радио и связь).</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=%D0%A1%D0%BF%D0%B5%D1%86%D0%B8%D0%B0%D0%BB%D0%B8%D0%B7%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%BD%D1%8B%D0%B5+%D0%BF%D1%80%D0%BE%D1%86%D0%B5%D1%81%D1%81%D0%BE%D1%80%D1%8B%3A+%D0%B8%D1%82%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%BD%D1%8B%D0%B5+%D0%B0%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC%D1%8B+%D0%B8+%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D1%8B&amp;rft.place=Moscow&amp;rft.pub=Radio+i+svjaz+%28%D0%A0%D0%B0%D0%B4%D0%B8%D0%BE+%D0%B8+%D1%81%D0%B2%D1%8F%D0%B7%D1%8C%29&amp;rft.date=1985&amp;rft.aulast=Baykov&amp;rft.aufirst=Vladimir+D.&amp;rft.au=Smolov%2C+Vladimir+B.&amp;rft_id=http%3A%2F%2Fbaykov.de%2Fcordic1985.htm&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFCoppens1980">Coppens, Thomas, ed. (January 1980). "CORDIC constants in TI 58/59 ROM". <i>Texas Instruments Software Exchange Newsletter</i>. Kapellen, Belgium: TISOFT. <b>2</b> (2).</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Texas+Instruments+Software+Exchange+Newsletter&amp;rft.atitle=CORDIC+constants+in+TI+58%2F59+ROM&amp;rft.volume=2&amp;rft.issue=2&amp;rft.date=1980-01&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFCoppens1980">Coppens, Thomas, ed. (April–June 1980). "Natural logarithm computation scheme / e<sup>x</sup> computing scheme / 1/x computing scheme". <i>Texas Instruments Software Exchange Newsletter</i>. Kapellen, Belgium: TISOFT. <b>2</b> (3).</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Texas+Instruments+Software+Exchange+Newsletter&amp;rft.atitle=Natural+logarithm+computation+scheme+%2F+e%3Csup%3Ex%3C%2Fsup%3E+computing+scheme+%2F+1%2Fx+computing+scheme&amp;rft.volume=2&amp;rft.issue=3&amp;rft.date=1980-04%2F1980-06&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span> (about CORDIC in TI-58/TI-59)</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation news cs1" id="CITEREFTI_Graphic_Products_Team1995">TI Graphic Products Team (1995) [1993]. "Transcendental function algorithms". Dallas, Texas, USA: Texas Instruments, Consumer Products. Archived from the original on 2016-03-17<span class="reference-accessdate">. Retrieved <span class="nowrap">2019-03-02</span></span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.atitle=Transcendental+function+algorithms&amp;rft.date=1995&amp;rft.au=TI+Graphic+Products+Team&amp;rft_id=https%3A%2F%2Fperso.uclouvain.be%2Falphonse.magnus%2Fnum1a%2Fcordic.txt&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1 cs1-prop-foreign-lang-source" id="CITEREFJorkeLampeWengel1989">Jorke, Günter; Lampe, Bernhard; Wengel, Norbert (1989). <i>Arithmetische Algorithmen der Mikrorechentechnik</i> (in German) (1 ed.). Berlin, Germany: VEB Verlag Technik. pp. 219, 261, 271–296. ISBN <bdi>3341005153</bdi>. <link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/>EAN 9783341005156. MPN 5539165. License 201.370/4/89<span class="reference-accessdate">. Retrieved <span class="nowrap">2015-12-01</span></span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Arithmetische+Algorithmen+der+Mikrorechentechnik&amp;rft.place=Berlin%2C+Germany&amp;rft.pages=219%2C+261%2C+271-296&amp;rft.edition=1&amp;rft.pub=VEB+Verlag+Technik&amp;rft.date=1989&amp;rft.isbn=3341005153&amp;rft.aulast=Jorke&amp;rft.aufirst=G%C3%BCnter&amp;rft.au=Lampe%2C+Bernhard&amp;rft.au=Wengel%2C+Norbert&amp;rft_id=https%3A%2F%2Fbooks.google.com%2Fbooks%3Fid%3DDqYWAQAAMAAJ&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFZechmeister2021">Zechmeister, M. (2021). <i>Solving Kepler's equation with CORDIC double iterations</i> <span class="cs1-format">(PDF)</span>. <i>Monthly Notices of the Royal Astronomical Society</i>. Vol. 500. Göttingen, Germany: Institut für Astrophysik, Georg-August-Universität. pp. 109–117. arXiv:<span class="cs1-lock-free" title="Freely accessible">2008.02894</span>. doi:10.1093/mnras/staa2441.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Solving+Kepler%27s+equation+with+CORDIC+double+iterations&amp;rft.place=G%C3%B6ttingen%2C+Germany&amp;rft.pages=109-117&amp;rft.pub=Institut+f%C3%BCr+Astrophysik%2C+Georg-August-Universit%C3%A4t&amp;rft.date=2021&amp;rft_id=info%3Aarxiv%2F2008.02894&amp;rft_id=info%3Adoi%2F10.1093%2Fmnras%2Fstaa2441&amp;rft.aulast=Zechmeister&amp;rft.aufirst=M.&amp;rft_id=http%3A%2F%2Farxiv.org%2Fpdf%2F2008.02894.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFFrerking1994">Frerking, Marvin E. (1994). <i>Digital Signal Processing in Communication Systems</i> (1 ed.).</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Digital+Signal+Processing+in+Communication+Systems&amp;rft.edition=1&amp;rft.date=1994&amp;rft.aulast=Frerking&amp;rft.aufirst=Marvin+E.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFKantabutra1996">Kantabutra, Vitit (1996). "On hardware for computing exponential and trigonometric functions". <i>IEEE Transactions on Computers</i>. <b>45</b> (3): 328–339. doi:10.1109/12.485571.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=IEEE+Transactions+on+Computers&amp;rft.atitle=On+hardware+for+computing+exponential+and+trigonometric+functions&amp;rft.volume=45&amp;rft.issue=3&amp;rft.pages=328-339&amp;rft.date=1996&amp;rft_id=info%3Adoi%2F10.1109%2F12.485571&amp;rft.aulast=Kantabutra&amp;rft.aufirst=Vitit&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFJohansson2008">Johansson, Kenny (2008). "6.5 Sine and Cosine Functions". <i>Low Power and Low Complexity Shift-and-Add Based Computations</i> <span class="cs1-format">(PDF)</span> (Dissertation thesis). Linköping Studies in Science and Technology (1 ed.). Linköping, Sweden: Department of Electrical Engineering, Linköping University. pp. 244–250. ISBN <bdi>978-91-7393-836-5</bdi>. ISSN 0345-7524. No. 1201. Archived <span class="cs1-format">(PDF)</span> from the original on 2017-08-13<span class="reference-accessdate">. Retrieved <span class="nowrap">2021-08-23</span></span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=6.5+Sine+and+Cosine+Functions&amp;rft.btitle=Low+Power+and+Low+Complexity+Shift-and-Add+Based+Computations&amp;rft.place=Link%C3%B6ping%2C+Sweden&amp;rft.series=Link%C3%B6ping+Studies+in+Science+and+Technology&amp;rft.pages=244-250&amp;rft.edition=1&amp;rft.pub=Department+of+Electrical+Engineering%2C+Link%C3%B6ping+University&amp;rft.date=2008&amp;rft.issn=0345-7524&amp;rft.isbn=978-91-7393-836-5&amp;rft.aulast=Johansson&amp;rft.aufirst=Kenny&amp;rft_id=https%3A%2F%2Fwww.diva-portal.org%2Fsmash%2Fget%2Fdiva2%3A1733%2FFULLTEXT02.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span> (x+268 pages)</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFBanerjee2001">Banerjee, Ayan (2001). "FPGA realization of a CORDIC based FFT processor for biomedical signal processing". <i>Microprocessors and Microsystems</i>. Kharagpur, West Bengal, India. <b>25</b> (3): 131–142. doi:10.1016/S0141-9331(01)00106-5.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Microprocessors+and+Microsystems&amp;rft.atitle=FPGA+realization+of+a+CORDIC+based+FFT+processor+for+biomedical+signal+processing&amp;rft.volume=25&amp;rft.issue=3&amp;rft.pages=131-142&amp;rft.date=2001&amp;rft_id=info%3Adoi%2F10.1016%2FS0141-9331%2801%2900106-5&amp;rft.aulast=Banerjee&amp;rft.aufirst=Ayan&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation web cs1" id="CITEREFKahan2002">Kahan, William Morton (2002-05-20). "Pseudo-Division Algorithms for Floating-Point Logarithms and Exponentials" <span class="cs1-format">(PDF)</span>. Berkeley, CA, USA: University of California. Archived from the original <span class="cs1-format">(PDF)</span> on 2015-12-25<span class="reference-accessdate">. Retrieved <span class="nowrap">2016-01-15</span></span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=Pseudo-Division+Algorithms+for+Floating-Point+Logarithms+and+Exponentials&amp;rft.place=Berkeley%2C+CA%2C+USA&amp;rft.pub=University+of+California&amp;rft.date=2002-05-20&amp;rft.aulast=Kahan&amp;rft.aufirst=William+Morton&amp;rft_id=http%3A%2F%2Fwww.cims.nyu.edu%2F~dbindel%2Fclass%2Fcs279%2Flogexp.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation web cs1" id="CITEREFCockrum2008">Cockrum, Chris K. (Fall 2008). "Implementation of a CORDIC Algorithm in a Digital Down-Converter" <span class="cs1-format">(PDF)</span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=Implementation+of+a+CORDIC+Algorithm+in+a+Digital+Down-Converter&amp;rft.date=2008&amp;rft.aulast=Cockrum&amp;rft.aufirst=Chris+K.&amp;rft_id=http%3A%2F%2Fcockrum.net%2FCockrum_Fall_2008_Final_Paper.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFLakshmiDhar2009">Lakshmi, Boppana; Dhar, Anindya Sundar (2009-10-06). "CORDIC Architectures: A Survey". <i>VLSI Design</i>. Kharagpur, West Bengal, India: Department of Electronics and Electrical Communication Engineering, Indian Institute of Technology (published 2010-10-10). <b>2010</b>: 1–19. doi:<span class="cs1-lock-free" title="Freely accessible">10.1155/2010/794891</span>. 794891.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=VLSI+Design&amp;rft.atitle=CORDIC+Architectures%3A+A+Survey&amp;rft.volume=2010&amp;rft.pages=1-19&amp;rft.date=2009-10-06&amp;rft_id=info%3Adoi%2F10.1155%2F2010%2F794891&amp;rft.aulast=Lakshmi&amp;rft.aufirst=Boppana&amp;rft.au=Dhar%2C+Anindya+Sundar&amp;rft_id=%2F%2Fdoi.org%2F10.1155%252F2010%252F794891&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation web cs1" id="CITEREFSavard2018">Savard, John J. G. (2018) [2006]. "Advanced Arithmetic Techniques". <i>quadibloc</i>. Archived from the original on 2018-07-03<span class="reference-accessdate">. Retrieved <span class="nowrap">2018-07-16</span></span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=unknown&amp;rft.jtitle=quadibloc&amp;rft.atitle=Advanced+Arithmetic+Techniques&amp;rft.date=2018&amp;rft.aulast=Savard&amp;rft.aufirst=John+J.+G.&amp;rft_id=http%3A%2F%2Fwww.quadibloc.com%2Fcomp%2Fcp0202.htm&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span></li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFWang2011">Wang, Shaoyun (July 2011), <i>CORDIC Bibliography Site</i></cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=CORDIC+Bibliography+Site&amp;rft.date=2011-07&amp;rft.aulast=Wang&amp;rft.aufirst=Shaoyun&amp;rft_id=http%3A%2F%2Fcordic-bibliography.blogspot.com%2F2011%2F07%2Fcordic-bibliography-site-revive.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACORDIC"></span></li>
+<li>Soft CORDIC IP (verilog HDL code)</li>
+<li><i>CORDIC Bibliography Site</i></li>
+<li>BASIC Stamp, CORDIC math implementation</li>
+<li>CORDIC implementation in verilog</li>
+<li>CORDIC Vectoring with Arbitrary Target Value</li>
+<li>PicBasic Pro, Pic18 CORDIC math implementation</li>
+<li>Python CORDIC implementation</li>
+<li>Simple C code for fixed-point CORDIC</li>
+<li>Tutorial and MATLAB Implementation – Using CORDIC to Estimate Phase of a Complex Number</li>
+<li>Descriptions of hardware CORDICs in Arx with testbenches in C++ and VHDL</li>
+<li>An Introduction to the CORDIC algorithm</li>
+<li>Implementation of the CORDIC Algorithm in a Digital Down-Converter</li>
+<li>50-th Anniversary of the CORDIC Algorithm</li>
+<li>Implementation of the CORDIC Algorithm: fixed point C code for trigonometric and hyperbolic functions, C code for test and performance verification</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2339
+Cached time: 20221224000350
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.864 seconds
+Real time usage: 1.104 seconds
+Preprocessor visited node count: 6896/1000000
+Post‐expand include size: 265175/2097152 bytes
+Template argument size: 6455/2097152 bytes
+Highest expansion depth: 12/100
+Expensive parser function count: 7/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 273732/5000000 bytes
+Lua time usage: 0.478/10.000 seconds
+Lua memory usage: 8580529/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  781.215      1 -total
+ 50.63%  395.493      1 Template:Reflist
+ 28.17%  220.030     37 Template:Cite_journal
+ 11.88%   92.842     23 Template:Cite_web
+  9.82%   76.716     17 Template:Cite_book
+  6.31%   49.302      1 Template:Short_description
+  5.31%   41.484      6 Template:Navbox
+  5.00%   39.073      1 Template:CPU_technologies
+  4.89%   38.223      1 Template:Trigonometry
+  4.71%   36.801      1 Template:Sidebar
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:859590-0!canonical and timestamp 20221224000349 and revision id 1128523967.
+ -->
+</div></body>
+</html>

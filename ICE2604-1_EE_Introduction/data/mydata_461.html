@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>height-balanced_binary_search_tree</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-More_citations_needed plainlinks metadata ambox ambox-content ambox-Refimprove" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+
+
+<p>In computer science, a <b>self-balancing binary search tree</b> (BST) is any node-based binary search tree that automatically keeps its height (maximal number of levels below the root) small in the face of arbitrary item insertions and deletions.<sup class="reference" id="cite_ref-knuth_1-0">[1]</sup>
+These operations when designed for a self-balancing binary search tree, contain precautionary measures against boundlessly increasing tree height, so that these abstract data structures receive the attribute "self-balancing".
+</p><p>For <b>height-balanced</b> binary trees, the height is defined to be logarithmic <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {O}}(\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">O</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {O}}(\log n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\mathcal {O}}(\log n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/74a9dfea91c47d1c6563e89bbcd891771b91acfa" style="vertical-align: -0.838ex; width:8.413ex; height:2.843ex;"/></span> in the number <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span> of items. This is the case for many binary search trees, such as AVL trees and red–black trees. Splay trees and treaps are self-balancing but not height-balanced, as their height is not guaranteed to be logarithmic in the number of items.
+</p><p>Self-balancing binary search trees provide efficient implementations for mutable ordered lists, and can be used for other abstract data structures such as associative arrays, priority queues and sets.
+</p>
+
+<h2><span class="mw-headline" id="Overview">Overview</span><span class="mw-editsection"></span></h2>
+
+<p>Most operations on a binary search tree (BST) take time directly proportional to the height of the tree, so it is desirable to keep the height small. A binary tree with height <i>h</i> can contain at most 2<sup>0</sup>+2<sup>1</sup>+···+2<sup><i>h</i></sup> = 2<sup><i>h</i>+1</sup>−1 nodes. It follows that for any tree with <i>n</i> nodes and height <i>h</i>:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\leq 2^{h+1}-1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>≤<!-- ≤ --></mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>h</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\leq 2^{h+1}-1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n\leq 2^{h+1}-1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34bfb3725cd0fd6e834537810c74080e0e2180d3" style="vertical-align: -0.505ex; width:12.938ex; height:2.843ex;"/></span></dd></dl>
+<p>And that implies:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h\geq \lceil \log _{2}(n+1)-1\rceil \geq \lfloor \log _{2}n\rfloor }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+<mo>≥<!-- ≥ --></mo>
+<mo fence="false" stretchy="false">⌈<!-- ⌈ --></mo>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>+</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo fence="false" stretchy="false">⌉<!-- ⌉ --></mo>
+<mo>≥<!-- ≥ --></mo>
+<mo fence="false" stretchy="false">⌊<!-- ⌊ --></mo>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo fence="false" stretchy="false">⌋<!-- ⌋ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h\geq \lceil \log _{2}(n+1)-1\rceil \geq \lfloor \log _{2}n\rfloor }</annotation>
+</semantics>
+</math></span><img alt="h\geq \lceil \log _{2}(n+1)-1\rceil \geq \lfloor \log _{2}n\rfloor " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4264fcbd5d567771faa2bd486de80e2593a07575" style="vertical-align: -0.838ex; width:32.709ex; height:2.843ex;"/></span>.</dd></dl>
+<p>In other words, the minimum height of a binary tree with <i>n</i> nodes is <span class="nowrap">log<sub>2</sub>(<i>n</i>),</span> rounded down; that is, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \lfloor \log _{2}n\rfloor }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">⌊<!-- ⌊ --></mo>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo fence="false" stretchy="false">⌋<!-- ⌋ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \lfloor \log _{2}n\rfloor }</annotation>
+</semantics>
+</math></span><img alt="\lfloor \log _{2}n\rfloor " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/992c9e2c99d88241b484aad58ab2f6875708d2fd" style="vertical-align: -0.838ex; width:7.873ex; height:2.843ex;"/></span>.<sup class="reference" id="cite_ref-knuth_1-1">[1]</sup>
+</p><p>However, the simplest algorithms for BST item insertion may yield a tree with height <i>n</i> in rather common situations.  For example, when the items are inserted in sorted key order, the tree degenerates into a linked list with <i>n</i> nodes.  The difference in performance between the two situations may be enormous: for example, when <i>n</i> = 1,000,000, the minimum height is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \lfloor \log _{2}(1,000,000)\rfloor =19}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">⌊<!-- ⌊ --></mo>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mn>000</mn>
+<mo>,</mo>
+<mn>000</mn>
+<mo stretchy="false">)</mo>
+<mo fence="false" stretchy="false">⌋<!-- ⌋ --></mo>
+<mo>=</mo>
+<mn>19</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \lfloor \log _{2}(1,000,000)\rfloor =19}</annotation>
+</semantics>
+</math></span><img alt="\lfloor \log _{2}(1,000,000)\rfloor =19" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/73c74b7a3617eaae266b0e5af80ac0bedbf44afc" style="vertical-align: -0.838ex; width:23.529ex; height:2.843ex;"/></span>.
+</p><p>If the data items are known ahead of time, the height can be kept small, in the average sense, by adding values in a random order, resulting in a random binary search tree.  However, there are many situations (such as online algorithms) where this randomization is not viable.
+</p><p>Self-balancing binary trees solve this problem by performing transformations on the tree (such as tree rotations) at key insertion times, in order to keep the height proportional to <span class="nowrap">log<sub>2</sub>(<i>n</i>).</span> Although a certain overhead is involved, it is not bigger than the always necessary lookup cost and may be justified by ensuring fast execution of all operations.
+</p><p>While it is possible to maintain a BST with minimum height with expected <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(\log n)}</annotation>
+</semantics>
+</math></span><img alt="O(\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/aae0f22048ba6b7c05dbae17b056bfa16e21807d" style="vertical-align: -0.838ex; width:8.336ex; height:2.843ex;"/></span> time operations (lookup/insertion/removal), the additional space requirements required to maintain such a structure tend to outweigh the decrease in search time. For comparison, an AVL tree is guaranteed to be within a factor of 1.44 of the optimal height while requiring only two additional bits of storage in a naive implementation.<sup class="reference" id="cite_ref-knuth_1-2">[1]</sup> Therefore, most self-balancing BST algorithms keep the height within a constant factor of this lower bound.
+</p><p>In the asymptotic ("Big-O") sense, a self-balancing BST structure containing <i>n</i> items allows the lookup, insertion, and removal of an item in O(log <i>n</i>) worst-case time, and ordered enumeration of all items in O(<i>n</i>) time.  For some implementations these are per-operation time bounds, while for others they are amortized bounds over a sequence of operations.  These times are asymptotically optimal among all data structures that manipulate the key only through comparisons.
+</p>
+<h2><span class="mw-headline" id="Implementations">Implementations</span><span class="mw-editsection"></span></h2>
+<p>Data structures implementing this type of tree include:
+</p>
+<ul><li>2–3 tree</li>
+<li>AA tree</li>
+<li>AVL tree</li>
+<li>B-tree</li>
+<li>Red–black tree</li>
+<li>Scapegoat tree</li>
+<li>Splay tree</li>
+<li>Tango tree</li>
+<li>Treap</li>
+<li>Weight-balanced tree</li></ul>
+<h2><span class="mw-headline" id="Applications">Applications</span><span class="mw-editsection"></span></h2>
+<p>Self-balancing binary search trees can be used in a natural way to construct and maintain ordered lists, such as priority queues.  They can also be used for associative arrays; key-value pairs are simply inserted with an ordering based on the key alone. In this capacity, self-balancing BSTs have a number of advantages and disadvantages over their main competitor, hash tables. One advantage of self-balancing BSTs is that they allow fast (indeed, asymptotically optimal) enumeration of the items <i>in key order</i>, which hash tables do not provide.  One disadvantage is that their lookup algorithms get more complicated when there may be multiple items with the same key. Self-balancing BSTs have better worst-case lookup performance than hash tables (O(log n) compared to O(n)), but have worse average-case performance (O(log n) compared to O(1)).
+</p><p>Self-balancing BSTs can be used to implement any algorithm that requires mutable ordered lists, to achieve optimal worst-case asymptotic performance. For example, if binary tree sort is implemented with a self-balancing BST, we have a very simple-to-describe yet asymptotically optimal O(<i>n</i> log <i>n</i>) sorting algorithm. Similarly, many algorithms in computational geometry exploit variations on self-balancing BSTs to solve problems such as the line segment intersection problem and the point location problem efficiently.  (For average-case performance, however, self-balancing BSTs may be less efficient than other solutions.  Binary tree sort, in particular, is likely to be slower than merge sort, quicksort, or heapsort, because of the tree-balancing overhead as well as cache access patterns.)
+</p><p>Self-balancing BSTs are flexible data structures, in that it's easy to extend them to efficiently record additional information or perform new operations. For example, one can record the number of nodes in each subtree having a certain property, allowing one to count the number of nodes in a certain key range with that property in O(log <i>n</i>) time. These extensions can be used, for example, to optimize database queries or other list-processing algorithms.
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Search data structure</li>
+<li>Day–Stout–Warren algorithm</li>
+<li>Fusion tree</li>
+<li>Skip list</li>
+<li>Sorting</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>Dictionary of Algorithms and Data Structures: Height-balanced binary search tree</li>
+<li>GNU libavl, a LGPL-licensed library of binary tree implementations in C, with documentation</li></ul>
+
+
+<!-- 
+NewPP limit report
+Parsed by mw2392
+Cached time: 20221223234605
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [show‐toc]
+CPU time usage: 0.178 seconds
+Real time usage: 0.311 seconds
+Preprocessor visited node count: 777/1000000
+Post‐expand include size: 37248/2097152 bytes
+Template argument size: 1110/2097152 bytes
+Highest expansion depth: 16/100
+Expensive parser function count: 1/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 11423/5000000 bytes
+Lua time usage: 0.074/10.000 seconds
+Lua memory usage: 2450098/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  208.262      1 -total
+ 32.27%   67.197      1 Template:Refimprove
+ 29.62%   61.682      1 Template:Ambox
+ 22.99%   47.882      1 Template:Short_description
+ 20.56%   42.812      1 Template:Reflist
+ 20.11%   41.873      1 Template:CS-Trees
+ 19.93%   41.517      2 Template:Navbox
+ 15.32%   31.902      1 Template:ISBN
+ 12.68%   26.411      2 Template:Pagetype
+ 12.62%   26.288      1 Template:Catalog_lookup_link
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:378310-0!canonical and timestamp 20221223234605 and revision id 1092928206.
+ -->
+</div></body>
+</html>

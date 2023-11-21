@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>dining_philosophers</title>
+</head>
+<body>
+<div class="mw-parser-output">
+
+<p>In computer science, the <b>dining philosophers problem</b> is an example problem often used in concurrent algorithm design to illustrate synchronization issues and techniques for resolving them.
+</p><p>It was originally formulated in 1965 by Edsger Dijkstra as a student exam exercise, presented in terms of computers competing for access to tape drive peripherals.
+Soon after, Tony Hoare gave the problem its present form.<sup class="reference" id="cite_ref-1">[1]</sup><sup class="reference" id="cite_ref-formalization_2-0">[2]</sup><sup class="reference" id="cite_ref-3">[3]</sup><sup class="reference" id="cite_ref-4">[4]</sup>
+</p>
+
+<h2><span class="mw-headline" id="Problem_statement">Problem statement</span><span class="mw-editsection"></span></h2>
+<p>Five philosophers dine together at the same table. Each philosopher has their own place at the table. There is a fork between each plate. The dish served is a kind of spaghetti which has to be eaten with two forks. Each philosopher can only alternately think and eat. Moreover, a philosopher can only eat their spaghetti when they have both a left and right fork. Thus two forks will only be available when their two nearest neighbors are thinking, not eating.  After an individual philosopher finishes eating, they will put down both forks.
+The problem is how to design a regimen (a concurrent algorithm) such that no philosopher will starve; <i>i.e.</i>, each can forever continue to alternate between eating and thinking, assuming that no philosopher can know when others may want to eat or think (an issue of incomplete information).
+</p>
+<h3><span class="mw-headline" id="Problems">Problems</span><span class="mw-editsection"></span></h3>
+<p>The problem was designed to illustrate the challenges of avoiding deadlock, a system state in which no progress is possible.  To see that a proper solution to this problem is not obvious, consider a proposal in which each philosopher is instructed to behave as follows:
+</p>
+<ul><li>think until the left fork is available; when it is, pick it up;</li>
+<li>think until the right fork is available; when it is, pick it up;</li>
+<li>when both forks are held, eat for a fixed amount of time;</li>
+<li>put the left fork down;</li>
+<li>put the right fork down;</li>
+<li>repeat from the beginning.</li></ul>
+<p>However, they each will think for an undetermined amount of time and may end up holding a left fork thinking, staring at the right side of the plate, unable to eat because there is no right fork, until they starve.
+</p><p>Resource starvation, mutual exclusion and livelock are other types of sequence and access problem.
+</p>
+<h2><span class="mw-headline" id="Solutions">Solutions</span><span class="mw-editsection"></span></h2>
+<h3><span id="Dijkstra.27s_solution"></span><span class="mw-headline" id="Dijkstra's_solution">Dijkstra's solution</span><span class="mw-editsection"></span></h3>
+<p>Dijkstra's solution uses one mutex, one semaphore per philosopher and one state variable per philosopher. This solution is more complex than the resource hierarchy solution.<sup class="reference" id="cite_ref-5">[5]</sup><sup class="reference" id="cite_ref-6">[6]</sup> This is a C++20 version of Dijkstra's solution with Tanenbaum's changes:
+</p>
+
+<p>The function test() and its use in take_forks() and put_forks() make the Dijkstra solution deadlock-free.
+</p>
+<h3><span class="mw-headline" id="Resource_hierarchy_solution">Resource hierarchy solution</span><span class="mw-editsection"></span></h3>
+<p>This solution assigns a partial order to the resources (the forks, in this case), and establishes the convention that all resources will be requested in order, and that no two resources unrelated by order will ever be used by a single unit of work at the same time.  Here, the resources (forks) will be numbered 1 through 5 and each unit of work (philosopher) will always pick up the lower-numbered fork first, and then the higher-numbered fork, from among the two forks they plan to use. The order in which each philosopher puts down the forks does not matter. In this case, if four of the five philosophers simultaneously pick up their lower-numbered fork, only the highest-numbered fork will remain on the table, so the fifth philosopher will not be able to pick up any fork.  Moreover, only one philosopher will have access to that highest-numbered fork, so he will be able to eat using two forks. This can intuitively be thought of as having one "left-handed" philosopher at the table, who -- unlike all the other philosophers -- takes his fork from the left first.
+</p><p>While the resource hierarchy solution avoids deadlocks, it is not always practical, especially when the list of required resources is not completely known in advance.  For example, if a unit of work holds resources 3 and 5 and then determines it needs resource 2, it must release 5, then 3 before acquiring 2, and then it must re-acquire 3 and 5 in that order.  Computer programs that access large numbers of database records would not run efficiently if they were required to release all higher-numbered records before accessing a new record, making the method impractical for that purpose.<sup class="reference" id="cite_ref-formalization_2-1">[2]</sup>
+</p><p>The resource hierarchy solution is not <i>fair</i>. If philosopher 1 is slow to take a fork, and if philosopher 2 is quick to think and pick its forks back up, then philosopher 1 will never get to pick up both forks. A fair solution must guarantee that each philosopher will eventually eat, no matter how slowly that philosopher moves relative to the others.
+</p><p>The following source code is a C++11 implementation of the resource hierarchy solution for three philosophers. The sleep_for() function simulates the time normally spend with business logic.<sup class="reference" id="cite_ref-7">[7]</sup>
+</p><p>
+For GCC: compile with </p>
+
+<h3><span class="mw-headline" id="Arbitrator_solution">Arbitrator solution</span><span class="mw-editsection"></span></h3>
+<p>Another approach is to guarantee that a philosopher can only pick up both forks or none by introducing an arbitrator, e.g., a waiter. In order to pick up the forks, a philosopher must ask permission of the waiter. The waiter gives permission to only one philosopher at a time until the philosopher has picked up both of their forks. Putting down a fork is always allowed. The waiter can be implemented as a mutex.
+In addition to introducing a new central entity (the waiter), this approach can result in reduced parallelism: if a philosopher is eating and one of his neighbors is requesting the forks, all other philosophers must wait until this request has been fulfilled even if forks for them are still available.
+</p>
+
+<h3><span class="mw-headline" id="Limiting_the_number_of_diners_in_the_table">Limiting the number of diners in the table</span><span class="mw-editsection"></span></h3>
+<p>A solution presented by William Stallings<sup class="reference" id="cite_ref-8">[8]</sup> is to allow a maximum of <i>n-1</i> philosophers to sit down at any time. The last philosopher would have to wait (for example, using a semaphore) for someone to finish dining before they "sit down" and request access to any fork. This guarantees at least one philosopher may always acquire both forks, allowing the system to make progress.
+</p>
+<h3><span id="Chandy.2FMisra_solution"></span><span class="mw-headline" id="Chandy/Misra_solution">Chandy/Misra solution</span><span class="mw-editsection"></span></h3>
+<p>In 1984, K. Mani Chandy and J. Misra<sup class="reference" id="cite_ref-9">[9]</sup> proposed a different solution to the dining philosophers problem to allow for arbitrary agents (numbered <i>P</i><sub>1</sub>, ..., <i>P</i><sub><i>n</i></sub>) to contend for an arbitrary number of resources, unlike Dijkstra's solution. It is also completely distributed and requires no central authority after initialization. However, it violates the requirement that "the philosophers do not speak to each other" (due to the request messages).
+</p>
+<ol><li>For every pair of philosophers contending for a resource, create a fork and give it to the philosopher with the lower ID (<i>n</i> for agent <i>P</i><sub><i>n</i></sub>). Each fork can either be <i>dirty</i> or <i>clean.</i> Initially, all forks are dirty.</li>
+<li>When a philosopher wants to use a set of resources (<i>i.e.</i>, eat), said philosopher must obtain the forks from their contending neighbors. For all such forks the philosopher does not have, they send a request message.</li>
+<li>When a philosopher with a fork receives a request message, they keep the fork if it is clean, but give it up when it is dirty. If the philosopher sends the fork over, they clean the fork before doing so.</li>
+<li>After a philosopher is done eating, all their forks become dirty. If another philosopher had previously requested one of the forks, the philosopher that has just finished eating cleans the fork and sends it.</li></ol>
+<p>This solution also allows for a large degree of concurrency, and will solve an arbitrarily large problem.
+</p><p>It also solves the starvation problem. The clean/dirty labels act as a way of giving preference to the most "starved" processes, and a disadvantage to processes that have just "eaten". One could compare their solution to one where philosophers are not allowed to eat twice in a row without letting others use the forks in between. Chandy and Misra's solution is more flexible than that, but has an element tending in that direction.
+</p><p>In their analysis, they derive a system of preference levels from the distribution of the forks and their clean/dirty states. They show that this system may describe a directed acyclic graph, and if so, the operations in their protocol cannot turn that graph into a cyclic one. This guarantees that deadlock cannot occur. However, if the system is initialized to a perfectly symmetric state, like all philosophers holding their left side forks, then the graph is cyclic at the outset, and their solution cannot prevent a deadlock. Initializing the system so that philosophers with lower IDs have dirty forks ensures the graph is initially acyclic.
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Cigarette smokers problem</li>
+<li>Producers-consumers problem</li>
+<li>Readers-writers problem</li>
+<li>Sleeping barber problem</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="Bibliography">Bibliography</span><span class="mw-editsection"></span></h2>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFSilberschatz,_AbrahamPeterson,_James_L.1988">Silberschatz, Abraham; Peterson, James L. (1988). <i>Operating Systems Concepts</i>. Addison-Wesley. ISBN <bdi>0-201-18760-4</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Operating+Systems+Concepts&amp;rft.pub=Addison-Wesley&amp;rft.date=1988&amp;rft.isbn=0-201-18760-4&amp;rft.au=Silberschatz%2C+Abraham&amp;rft.au=Peterson%2C+James+L.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ADining+philosophers+problem"></span></li>
+<li>Dijkstra, E. W. (1971, June). Hierarchical ordering of sequential processes. Acta Informatica 1(2): 115–138.</li>
+<li>Lehmann, D. J., Rabin M. O, (1981). On the Advantages of Free Choice: A Symmetric and Fully Distributed Solution to the Dining Philosophers Problem. Principles Of Programming Languages 1981 (POPL'81), pp. 133–138.</li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>Dining Philosophers Problem I</li>
+<li>Dining Philosophers Problem II</li>
+<li>Dining Philosophers Problem III</li>
+<li>Discussion of the problem with solution code for 2 or 4 philosophers</li>
+<li>Discussion of various solutions at the Wayback Machine (archived December 8, 2013)</li>
+<li>Discussion of a solution using continuation based threads (cbthreads) at the Wayback Machine (archived March 4, 2012)</li>
+<li>Formal specification of the Chandy-Misra solution written in TLA+</li>
+<li>Distributed symmetric solutions</li>
+<li>Programming the Dining Philosophers with Simulation</li>
+<li>Interactive example of the Philosophers problem (Java required)</li>
+<li>Satan Comes to Dinner</li>
+<li>Wot No Chickens? – Peter H. Welch proposed the Starving Philosophers variant that demonstrates an unfortunate consequence of the behaviour of Java thread monitors is to make thread starvation more likely than strictly necessary.</li>
+<li>ThreadMentor</li>
+<li>Solving The Dining Philosophers Problem With Asynchronous Agents</li>
+<li>Solution using Actors</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2383
+Cached time: 20221224001517
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.220 seconds
+Real time usage: 0.289 seconds
+Preprocessor visited node count: 797/1000000
+Post‐expand include size: 26422/2097152 bytes
+Template argument size: 1001/2097152 bytes
+Highest expansion depth: 12/100
+Expensive parser function count: 3/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 66276/5000000 bytes
+Lua time usage: 0.115/10.000 seconds
+Lua memory usage: 4855916/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  224.250      1 -total
+ 50.40%  113.014      1 Template:Reflist
+ 35.06%   78.623      5 Template:Cite_book
+ 31.75%   71.190      2 Template:Cite_EWD
+ 21.13%   47.386      1 Template:Short_description
+ 20.45%   45.858      1 Template:Concurrent_computing
+ 19.67%   44.109      1 Template:Navbox
+ 11.83%   26.525      2 Template:Pagetype
+  5.30%   11.874      3 Template:Citation
+  5.14%   11.525      3 Template:Main_other
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:285344-0!canonical and timestamp 20221224001517 and revision id 1120886101.
+ -->
+</div></body>
+</html>

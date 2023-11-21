@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>tail_recursion</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p>In computer science, a <b>tail call</b> is a subroutine call performed as the final action of a procedure.<sup class="reference" id="cite_ref-MuchnickAssociates1997_1-0">[1]</sup> If the target of a tail is the same subroutine, the subroutine is said to be <b>tail recursive</b>, which is a special case of direct recursion. <b>Tail recursion</b> (or <b>tail-end recursion</b>) is particularly useful, and is often easy to optimize in implementations. 
+</p><p>Tail calls can be implemented without adding a new stack frame to the call stack. Most of the frame of the current procedure is no longer needed, and can be replaced by the frame of the tail call, modified as appropriate (similar to overlay for processes, but for function calls). The program can then jump to the called subroutine. Producing such code instead of a standard call sequence is called <b>tail-call elimination</b> or <b>tail-call optimization</b>. Tail-call elimination allows procedure calls in tail position to be implemented as efficiently as goto statements, thus allowing efficient structured programming. In the words of Guy L. Steele, "in general, procedure calls may be usefully thought of as GOTO statements which also pass parameters, and can be uniformly coded as [machine code] JUMP instructions."<sup class="reference" id="cite_ref-aim-443_2-0">[2]</sup>
+</p><p>Not all programming languages require tail-call elimination. However, in functional programming languages, tail-call elimination is often guaranteed by the language standard, allowing tail recursion to use a similar amount of memory as an equivalent loop. The special case of tail-recursive calls, when a function calls itself, may be more amenable to call elimination than general tail calls. When the language semantics do not explicitly support general tail calls, a compiler can often still optimize <b>sibling calls</b>, or tail calls to functions which take and return the same types as the caller.<sup class="reference" id="cite_ref-llvm.org_3-0">[3]</sup>
+</p>
+
+<h2><span class="mw-headline" id="Description">Description</span><span class="mw-editsection"></span></h2>
+<p>When a function is called, the computer must "remember" the place it was called from, the <i>return address</i>, so that it can return to that location with the result once the call is complete. Typically, this information is saved on the call stack, a simple list of return locations in order of the times that the call locations they describe were reached. For tail calls, there is no need to remember the caller – instead, tail-call elimination makes only the minimum necessary changes to the stack frame before passing it on,<sup class="reference" id="cite_ref-4">[4]</sup> and the tail-called function will return directly to the <i>original</i> caller. The tail call doesn't have to appear lexically after all other statements in the source code; it is only important that the calling function return immediately after the tail call, returning the tail call's result if any, since the calling function is bypassed when the optimization is performed.
+</p><p>For non-recursive function calls, this is usually an optimization that saves only a little time and space, since there are not that many different functions available to call. When dealing with recursive or mutually recursive functions where recursion happens through tail calls, however, the stack space and the number of returns saved can grow to be very significant, since a function can call itself, directly or indirectly, creating a new call stack frame each time. Tail-call elimination often reduces asymptotic stack space requirements from linear, or O(n), to constant, or O(1). Tail-call elimination is thus required by the standard definitions of some programming languages, such as Scheme,<sup class="reference" id="cite_ref-SchemeProperTailRec_5-0">[5]</sup><sup class="reference" id="cite_ref-6">[6]</sup> and languages in the ML family among others. The Scheme language definition formalizes the intuitive notion of tail position exactly, by specifying which syntactic forms allow having results in tail context.<sup class="reference" id="cite_ref-7">[7]</sup> Implementations allowing an unlimited number of tail calls to be active at the same moment, thanks to tail-call elimination, can also be called 'properly tail recursive'.<sup class="reference" id="cite_ref-SchemeProperTailRec_5-1">[5]</sup>
+</p><p>Besides space and execution efficiency, tail-call elimination is important in the functional programming idiom known as continuation-passing style (CPS), which would otherwise quickly run out of stack space.
+</p>
+<h2><span class="mw-headline" id="Syntactic_form">Syntactic form</span><span class="mw-editsection"></span></h2>
+<p>A tail call can be located just before the syntactical end of a function:
+</p>
+
+<p>Here, both <code>a(data)</code> and <code>b(data)</code> are calls, but <code>b</code> is the last thing the procedure executes before returning and is thus in tail position. However, not all tail calls are necessarily located at the syntactical end of a subroutine:
+</p>
+
+<p>Here, both calls to <code>b</code> and <code>c</code> are in tail position. This is because each of them lies in the end of if-branch respectively, even though the first one is not syntactically at the end of <code>bar</code>'s body.
+</p><p>In this code:
+</p>
+
+
+
+<p>the call to <code>a(data)</code> is in tail position in <code>foo2</code>, but it is <b>not</b> in tail position either in <code>foo1</code> or in <code>foo3</code>, because control must return to the caller to allow it to inspect or modify the return value before returning it.
+</p>
+<h2><span class="mw-headline" id="Example_programs">Example programs</span><span class="mw-editsection"></span></h2>
+<p>The following program is an example in Scheme:<sup class="reference" id="cite_ref-sicp_8-0">[8]</sup>
+</p>
+
+<p>This is not written in a tail-recursive style, because the multiplication function ("*") is in the tail position. This can be compared to:
+</p>
+
+<p>This program assumes applicative-order evaluation. The inner procedure <code>fact-iter</code> calls itself <i>last</i> in the control flow. This allows an interpreter or compiler to reorganize the execution which would ordinarily look like this:<sup class="reference" id="cite_ref-sicp_8-1">[8]</sup>
+</p>
+<pre>  call factorial (4)
+   call fact-iter (1 4)
+    call fact-iter (4 3)
+     call fact-iter (12 2)
+      call fact-iter (24 1)
+      return 24
+     return 24
+    return 24
+   return 24
+  return 24
+</pre>
+<p>into the more efficient variant, in terms of both space and time:
+</p>
+<pre>  call factorial (4)
+   call fact-iter (1 4)
+   replace arguments with (4 3)
+   replace arguments with (12 2)
+   replace arguments with (24 1)
+   return 24
+  return 24
+</pre>
+<p>This reorganization saves space because no state except for the calling function's address needs to be saved, either on the stack or on the heap, and the call stack frame for <code>fact-iter</code> is reused for the intermediate results storage. This also means that the programmer need not worry about running out of stack or heap space for extremely deep recursions. In typical implementations, the tail-recursive variant will be substantially faster than the other variant, but only by a constant factor.
+</p><p>Some programmers working in functional languages will rewrite recursive code to be tail recursive so they can take advantage of this feature. This often requires addition of an "accumulator" argument (<code>product</code> in the above example) to the function. In some cases (such as filtering lists) and in some languages, full tail recursion may require a function that was previously purely functional to be written such that it mutates references stored in other variables.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (April 2007)">citation needed</span></i>]</sup>
+</p>
+<h2><span class="mw-headline" id="Tail_recursion_modulo_cons">Tail recursion modulo cons</span><span class="mw-editsection"></span></h2>
+<p><b>Tail recursion modulo cons</b> is a generalization of tail-recursion optimization introduced by David H. D. Warren<sup class="reference" id="cite_ref-9">[9]</sup> in the context of compilation of Prolog, seen as an <i>explicitly</i> <i>set once</i> language. It was described (though not named) by Daniel P. Friedman and David S. Wise in 1974<sup class="reference" id="cite_ref-10">[10]</sup> as a LISP compilation technique. As the name suggests, it applies when the only operation left to perform after a recursive call is to prepend a known value in front of the list returned from it (or to perform a constant number of simple data-constructing operations, in general). This call would thus be a <i>tail call</i> save for ("modulo") the said <i>cons</i> operation. But prefixing a value at the start of a list <i>on exit</i> from a recursive call is the same as appending this value at the end of the growing list <i>on entry</i> into the recursive call, thus building the list as a side effect, as if in an implicit accumulator parameter. The following Prolog fragment illustrates the concept:
+</p>
+<h3><span class="mw-headline" id="Example_code">Example code</span><span class="mw-editsection"></span></h3>
+<table>
+<tbody><tr>
+<td>
+</td>
+<td>
+</td></tr>
+<tr>
+<td>
+</td>
+<td>
+</td></tr></tbody></table>
+<p>Thus in tail-recursive translation such a call is transformed into first creating a new list node and setting its <code>first</code> field, and <i>then</i> making the tail call with the pointer to the node's <code>rest</code> field as argument, to be filled recursively. The same effect is achieved when the recursion is <i>guarded</i> under a lazily evaluated data constructor, which is automatically achieved in lazy programming languages like Haskell.
+</p>
+<h3><span class="mw-headline" id="C_example">C example</span><span class="mw-editsection"></span></h3>
+<p>The following fragment defines a recursive function in C that duplicates a linked list (with some equivalent Scheme and Prolog code as comments, for comparison):
+</p>
+<table>
+<tbody><tr valign="top">
+<td rowspan="2">
+
+</td>
+<td>
+</td></tr>
+<tr>
+<td>
+</td></tr></tbody></table>
+<p>In this form the function is not tail recursive, because control returns to the caller after the recursive call duplicates the rest of the input list. Even if it were to allocate the <i>head</i> node before duplicating the rest, it would still need to plug in the result of the recursive call into the <code>next</code> field <i>after</i> the call.<sup class="reference" id="cite_ref-11">[a]</sup>
+So the function is <i>almost</i> tail recursive. Warren's method pushes the responsibility of filling the <code>next</code> field into the recursive call itself, which thus becomes tail call.<sup class="reference" id="cite_ref-12">[b]</sup> Using  sentinel head node to simplify the code, 
+</p>
+<table>
+<tbody><tr valign="top">
+<td rowspan="2">
+
+</td>
+<td>
+</td></tr>
+<tr>
+<td>
+</td></tr></tbody></table>
+<p>The callee now appends to the end of the growing list, rather than have the caller prepend to the beginning of the returned list. The work is now done on the way <i>forward</i> from the list's start, <i>before</i> the recursive call which then proceeds further, instead of <i>backward</i> from the list's end, <i>after</i> the recursive call has returned its result. It is thus similar to the accumulating parameter technique, turning a recursive computation into an iterative one.
+</p><p>Characteristically for this technique, a parent frame is created on the execution call stack, which the tail-recursive callee can reuse as its own call frame if the tail-call optimization is present.
+</p><p>The tail-recursive implementation can now be converted into an explicitly iterative implementation, as an accumulating loop:
+</p>
+<table>
+<tbody><tr valign="top">
+<td rowspan="2">
+
+</td>
+<td>
+</td></tr>
+<tr>
+<td>
+</td></tr></tbody></table>
+<h2><span class="mw-headline" id="History">History</span><span class="mw-editsection"></span></h2>
+<p>In a paper delivered to the ACM conference in Seattle in 1977, Guy L. Steele summarized the debate over the GOTO and structured programming, and observed that procedure calls in the tail position of a procedure can be best treated as a direct transfer of control to the called procedure, typically eliminating unnecessary stack manipulation operations.<sup class="reference" id="cite_ref-aim-443_2-1">[2]</sup> Since such "tail calls" are very common in Lisp, a language where procedure calls are ubiquitous, this form of optimization considerably reduces the cost of a procedure call compared to other implementations. Steele argued that poorly-implemented procedure calls had led to an artificial perception that the GOTO was cheap compared to the procedure call. Steele further argued that "in general procedure calls may be usefully thought of as GOTO statements which also pass parameters, and can be uniformly coded as [machine code] JUMP instructions", with the machine code stack manipulation instructions "considered an optimization (rather than vice versa!)".<sup class="reference" id="cite_ref-aim-443_2-2">[2]</sup> Steele cited evidence that well-optimized numerical algorithms in Lisp could execute faster than code produced by then-available commercial Fortran compilers because the cost of a procedure call in Lisp was much lower. In Scheme, a Lisp dialect developed by Steele with Gerald Jay Sussman, tail-call elimination is guaranteed to be implemented in any interpreter.<sup class="reference" id="cite_ref-r5rs_13-0">[11]</sup>
+</p>
+<h2><span class="mw-headline" id="Implementation_methods">Implementation methods</span><span class="mw-editsection"></span></h2>
+<p>Tail recursion is important to some high-level languages, especially functional and logic languages and members of the Lisp family. In these languages, tail recursion is the most commonly used way (and sometimes the only way available) of implementing iteration. The language specification of Scheme requires that tail calls are to be optimized so as not to grow the stack. Tail calls can be made explicitly in Perl, with a variant of the "goto" statement that takes a function name: <code>goto &amp;NAME;</code><sup class="reference" id="cite_ref-14">[12]</sup>
+</p><p>However, for language implementations which store function arguments and local variables on a call stack (which is the default implementation for many languages, at least on systems with a hardware stack, such as the x86), implementing generalized tail-call optimization (including mutual tail recursion) presents an issue: if the size of the callee's activation record is different from that of the caller, then additional cleanup or resizing of the stack frame may be required. For these cases, optimizing tail recursion remains trivial, but general tail-call optimization may be harder to implement efficiently.
+</p><p>For example, in the Java virtual machine (JVM), tail-recursive calls can be eliminated (as this reuses the existing call stack), but general tail calls cannot be (as this changes the call stack).<sup class="reference" id="cite_ref-15">[13]</sup><sup class="reference" id="cite_ref-16">[14]</sup> As a result, functional languages such as Scala that target the JVM can efficiently implement direct tail recursion, but not mutual tail recursion.
+</p><p>The GCC, LLVM/Clang, and Intel compiler suites perform tail-call optimization for C and other languages at higher optimization levels or when the <code>-foptimize-sibling-calls</code> option is passed.<sup class="reference" id="cite_ref-llvm-documentation-tco_17-0">[15]</sup><sup class="reference" id="cite_ref-18">[16]</sup><sup class="reference" id="cite_ref-19">[17]</sup> Though the given language syntax may not explicitly support it, the compiler can make this optimization whenever it can determine that the return types for the caller and callee are equivalent, and that the argument types passed to both function are either the same, or require the same amount of total storage space on the call stack.<sup class="reference" id="cite_ref-20">[18]</sup>
+</p><p>Various implementation methods are available.
+</p>
+<h3><span class="mw-headline" id="In_assembly">In assembly</span><span class="mw-editsection"></span></h3>
+<style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-Unreferenced_section plainlinks metadata ambox ambox-content ambox-Unreferenced" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<p>Tail calls are often optimized by interpreters and compilers of functional programming and logic programming languages to more efficient forms of iteration. For example, Scheme programmers commonly express while loops as calls to procedures in tail position and rely on the Scheme compiler or interpreter to substitute the tail calls with more efficient jump instructions.<sup class="reference" id="cite_ref-21">[19]</sup>
+</p><p>For compilers generating assembly directly, tail-call elimination is easy: it suffices to replace a call opcode with a jump one, after fixing parameters on the stack.
+From a compiler's perspective, the first example above is initially translated into pseudo-assembly language (in fact, this is valid x86 assembly):
+</p>
+
+<p>Tail-call elimination replaces the last two lines with a single jump instruction:
+</p>
+
+<p>After subroutine <code>A</code> completes, it will then return directly to the return address of <code>foo</code>, omitting the unnecessary <code>ret</code> statement.
+</p><p>Typically, the subroutines being called need to be supplied with parameters. The generated code thus needs to make sure that the call frame for A is properly set up before jumping to the tail-called subroutine. For instance, on platforms where the call stack does not just contain the return address, but also the parameters for the subroutine, the compiler may need to emit instructions to adjust the call stack. On such a platform, for the code:
+</p>
+<pre><b>function</b> foo(data1, data2)
+   B(data1)
+   <b>return</b> A(data2)
+</pre>
+<p>(where <code>data1</code> and <code>data2</code> are parameters) a compiler might translate that as:<sup class="reference" id="cite_ref-22">[c]</sup>
+</p>
+
+<p>A tail-call optimizer could then change the code to:
+</p>
+
+<p>This code is more efficient both in terms of execution speed and use of stack space.
+</p>
+<h3><span class="mw-headline" id="Through_trampolining">Through trampolining</span><span class="mw-editsection"></span></h3>
+<p>Since many Scheme compilers use C as an intermediate target code, the tail recursion must be encoded in C without growing the stack, even if the C compiler does not optimize tail calls. Many implementations achieve this by using a device known as a trampoline, a piece of code that repeatedly calls functions. All functions are entered via the trampoline. When a function has to tail-call another, instead of calling it directly and then returning the result, it returns the address of the function to be called and the call parameters back to the trampoline (from which it was called itself), and the trampoline takes care of calling this function next with the specified parameters. This ensures that the C stack does not grow and iteration can continue indefinitely.
+</p><p>It is possible to implement trampolines using higher-order functions in languages that support them, such as Groovy, Visual Basic .NET and C#.<sup class="reference" id="cite_ref-onyourtail_23-0">[20]</sup>
+</p><p>Using a trampoline for all function calls is rather more expensive than the normal C function call, so at least one Scheme compiler, Chicken, uses a technique first described by Henry Baker from an unpublished suggestion by Andrew Appel,<sup class="reference" id="cite_ref-Chicken_24-0">[21]</sup> in which normal C calls are used but the stack size is checked before every call. When the stack reaches its maximum permitted size, objects on the stack are garbage-collected using the Cheney algorithm by moving all live data into a separate heap. Following this, the stack is unwound ("popped") and the program resumes from the state saved just before the garbage collection. Baker says "Appel's method avoids making a large number of small trampoline bounces by occasionally jumping off the Empire State Building."<sup class="reference" id="cite_ref-Chicken_24-1">[21]</sup> The garbage collection ensures that mutual tail recursion can continue indefinitely. However, this approach requires that no C function call ever returns, since there is no guarantee that its caller's stack frame still exists; therefore, it involves a much more dramatic internal rewriting of the program code: continuation-passing style.
+</p>
+<h2><span class="mw-headline" id="Relation_to_the_while_statement">Relation to the <i>while</i> statement</span><span class="mw-editsection"></span></h2>
+<p>Tail recursion can be related to the <i>while</i> statement, an explicit iteration, for instance by transforming
+</p>
+<pre><b>procedure</b> foo(<i>x</i>)
+    <b>if</b> <i>p</i>(<i>x</i>)
+        <b>return</b> bar(<i>x</i>)
+    <b>else</b>
+        <b>return</b> foo(baz(<i>x</i>))
+</pre>
+<p>into
+</p>
+<pre><b>procedure</b> foo(<i>x</i>)
+    <b>while</b> <b>true</b>
+        <b>if</b> <i>p</i>(<i>x</i>)
+            <b>return</b> bar(<i>x</i>)
+        <b>else</b>
+            <i>x</i> ← baz(<i>x</i>)
+</pre>
+<p>where <i>x</i> may be a tuple involving more than one variable: if so, care must be taken in implementing the assignment statement <i>x</i> ← baz(<i>x</i>) so that dependencies are respected. One may need to introduce auxiliary variables or use a <i>swap</i> construct.
+</p><p>More generally,
+</p>
+<pre><b>procedure</b> foo(<i>x</i>)
+    <b>if</b> <i>p</i>(<i>x</i>)
+        <b>return</b> bar(<i>x</i>)
+    <b>else if</b> <i>q</i>(<i>x</i>)
+        <b>return</b> baz(<i>x</i>)
+    ...
+    <b>else if</b> <i>r</i>(<i>x</i>)
+        <b>return</b> foo(qux(<i>x</i>))
+    ...
+    <b>else</b>
+        <b>return</b> foo(quux(<i>x</i>))
+</pre>
+<p>can be transformed into
+</p>
+<pre><b>procedure</b> foo(<i>x</i>)
+    <b>while</b> <b>true</b>
+        <b>if</b> <i>p</i>(<i>x</i>)
+            <b>return</b> bar(<i>x</i>)
+        <b>else if</b> <i>q</i>(<i>x</i>)
+            <b>return</b> baz(<i>x</i>)
+        ...
+        <b>else if</b> <i>r</i>(<i>x</i>)
+            <i>x</i> ← qux(<i>x</i>)
+        ...
+        <b>else</b>
+            <i>x</i> ← quux(<i>x</i>)
+</pre>
+<p>For instance, this Python program gives a non-tail recursive definition <code>fact</code> of the factorial:
+</p>
+
+<p>Indeed, <code>n * fact(n - 1)</code> wraps the call to <code>fact</code>. But it can be transformed into a tail-recursive definition by adding an argument <code>a</code> called an <i>accumulator</i>.<sup class="reference" id="cite_ref-sicp_8-2">[8]</sup>
+</p><p>This Python program gives a tail-recursive definition <code>fact_iter</code> of the factorial:
+</p>
+
+<p>This Python program gives an iterative definition <code>fact_iter</code> of the factorial:
+</p>
+
+<h2><span class="mw-headline" id="Language_support">Language support</span><span class="mw-editsection"></span></h2>
+<ul><li>Clojure - Clojure has <code>recur</code> special form.<sup class="reference" id="cite_ref-25">[22]</sup></li>
+<li>Common Lisp - Some implementations perform tail-call optimization during compilation if optimizing for speed</li>
+<li>Elixir - Elixir implements tail-call optimization,<sup class="reference" id="cite_ref-26">[23]</sup> as do all languages currently targeting the BEAM VM.</li>
+<li>Elm - Yes<sup class="reference" id="cite_ref-27">[24]</sup></li>
+<li>Erlang - Yes</li>
+<li>F#- F# implements TCO by default where possible <sup class="reference" id="cite_ref-28">[25]</sup></li>
+<li>Go - No support<sup class="reference" id="cite_ref-29">[26]</sup></li>
+<li>Haskell - Yes<sup class="reference" id="cite_ref-30">[27]</sup></li>
+<li>JavaScript - ECMAScript 6.0 compliant engines should have tail calls<sup class="reference" id="cite_ref-31">[28]</sup> which is now implemented on Safari/WebKit<sup class="reference" id="cite_ref-32">[29]</sup> but rejected by V8 and SpiderMonkey</li>
+<li>Kotlin - Has <code>tailrec</code> modifier for functions<sup class="reference" id="cite_ref-33">[30]</sup></li>
+<li>Lua - Tail recursion is required by the language definition<sup class="reference" id="cite_ref-34">[31]</sup></li>
+<li>Objective-C - Compiler optimizes tail calls when -O1 (or higher) option specified but it is easily disturbed by calls added by Automatic Reference Counting (ARC).</li>
+<li>OCaml - Yes</li>
+<li>Perl - Explicit with a variant of the "goto" statement that takes a function name: <code>goto &amp;NAME;</code><sup class="reference" id="cite_ref-35">[32]</sup></li>
+<li>PureScript - Yes</li>
+<li>Python - Stock Python implementations do not perform tail-call optimization, though a third-party module is available to do this.<sup class="reference" id="cite_ref-36">[33]</sup> Language inventor Guido van Rossum contends that stack traces are altered by tail-call elimination making debugging harder, and prefers that programmers use explicit iteration instead<sup class="reference" id="cite_ref-37">[34]</sup></li>
+<li>Racket - Yes<sup class="reference" id="cite_ref-38">[35]</sup></li>
+<li>Rust - tail-call optimization may be done in limited circumstances, but is not guaranteed<sup class="reference" id="cite_ref-39">[36]</sup></li>
+<li>Scala - Tail-recursive functions are automatically optimized by the compiler. Such functions can also optionally be marked with a <code>@tailrec</code> annotation, which makes it a compilation error if the function is not tail recursive<sup class="reference" id="cite_ref-40">[37]</sup></li>
+<li>Scheme - Required by the language definition<sup class="reference" id="cite_ref-41">[38]</sup><sup class="reference" id="cite_ref-42">[39]</sup></li>
+<li>Tcl - Since Tcl 8.6, Tcl has a tailcall command<sup class="reference" id="cite_ref-43">[40]</sup></li>
+<li>Zig - Yes<sup class="reference" id="cite_ref-44">[41]</sup></li></ul>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1128808480">.mw-parser-output .portalbox{padding:0;display:table;box-sizing:border-box;max-width:175px}.mw-parser-output .portalborder{border:solid #aaa 1px;padding:0.1em;background:#f9f9f9}.mw-parser-output .portalbox-entry{display:table-row;font-size:85%;line-height:110%;font-style:italic;font-weight:bold}.mw-parser-output .portalbox-image{display:table-cell;padding:0.2em;vertical-align:middle;text-align:center}.mw-parser-output .portalbox-link{display:table-cell;padding:0.2em 0.2em 0.2em 0.3em;vertical-align:middle}@media(min-width:720px){.mw-parser-output .portalleft{clear:left;float:left;margin:0.5em 1em 0.5em 0}.mw-parser-output .portalright{clear:right;float:right;margin:0.5em 0 0.5em 1em}}</style>
+<style data-mw-deduplicate="TemplateStyles:r1097025294">.mw-parser-output .side-box{margin:4px 0;box-sizing:border-box;border:1px solid #aaa;font-size:88%;line-height:1.25em;background-color:#f9f9f9}.mw-parser-output .side-box-abovebelow,.mw-parser-output .side-box-text{padding:0.25em 0.9em}.mw-parser-output .side-box-image{padding:2px 0 2px 0.9em;text-align:center}.mw-parser-output .side-box-imageright{padding:2px 0.9em 2px 0;text-align:center}@media(min-width:500px){.mw-parser-output .side-box-flex{display:flex;align-items:center}.mw-parser-output .side-box-text{flex:1}}@media(min-width:720px){.mw-parser-output .side-box{width:238px}.mw-parser-output .side-box-right{clear:right;float:right;margin-left:1em}.mw-parser-output .side-box-left{margin-right:1em}}</style>
+<ul><li>Course-of-values recursion</li>
+<li>Recursion (computer science)</li>
+<li>Inline expansion</li>
+<li>Leaf subroutine</li>
+<li>Corecursion</li></ul>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1011085734" rel="mw-deduplicated-inline-style"/>
+<!-- 
+NewPP limit report
+Parsed by mw2380
+Cached time: 20221223234835
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.376 seconds
+Real time usage: 0.519 seconds
+Preprocessor visited node count: 2331/1000000
+Post‐expand include size: 57280/2097152 bytes
+Template argument size: 2048/2097152 bytes
+Highest expansion depth: 12/100
+Expensive parser function count: 32/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 149305/5000000 bytes
+Lua time usage: 0.200/10.000 seconds
+Lua memory usage: 7240935/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  434.255      1 -total
+ 45.23%  196.423      2 Template:Reflist
+ 22.11%   96.015      1 Template:Unreferenced_section
+ 21.63%   93.917      1 Template:Unreferenced
+ 21.10%   91.630      1 Template:Ambox
+ 19.85%   86.221     30 Template:Cite_web
+ 16.96%   73.638      3 Template:Cite_book
+ 10.95%   47.538      1 Template:Short_description
+  6.57%   28.545      1 Template:Citation_needed
+  6.16%   26.765      2 Template:Pagetype
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:1110903-0!canonical and timestamp 20221223234834 and revision id 1123549203.
+ -->
+</div></body>
+</html>

@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>quick_search</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<style data-mw-deduplicate="TemplateStyles:r1066479718">.mw-parser-output .infobox-subbox{padding:0;border:none;margin:-3px;width:auto;min-width:100%;font-size:100%;clear:none;float:none;background-color:transparent}.mw-parser-output .infobox-3cols-child{margin:auto}.mw-parser-output .infobox .navbar{font-size:100%}body.skin-minerva .mw-parser-output .infobox-header,body.skin-minerva .mw-parser-output .infobox-subheader,body.skin-minerva .mw-parser-output .infobox-above,body.skin-minerva .mw-parser-output .infobox-title,body.skin-minerva .mw-parser-output .infobox-image,body.skin-minerva .mw-parser-output .infobox-full-data,body.skin-minerva .mw-parser-output .infobox-below{text-align:center}</style><table class="infobox"><caption class="infobox-title">Boyer–Moore string search</caption><tbody><tr><th class="infobox-label" scope="row">Class</th><td class="infobox-data">String search</td></tr><tr><th class="infobox-label" scope="row">Data structure</th><td class="infobox-data">String</td></tr><tr><th class="infobox-label" scope="row">Worst-case performance</th><td class="infobox-data">Θ(m) preprocessing + O(mn) matching<sup class="reference" id="cite_ref-1">[note 1]</sup></td></tr><tr><th class="infobox-label" scope="row">Best-case performance</th><td class="infobox-data">Θ(m) preprocessing + Ω(n/m) matching</td></tr><tr><th class="infobox-label" scope="row">Worst-case space complexity</th><td class="infobox-data">Θ(k)<sup class="reference" id="cite_ref-2">[note 2]</sup></td></tr></tbody></table>
+<p>In computer science, the <b>Boyer–Moore string-search algorithm</b> is an efficient string-searching algorithm that is the standard benchmark for practical string-search literature.<sup class="reference" id="cite_ref-3">[1]</sup> It was developed by Robert S. Boyer and J Strother Moore in 1977.<sup class="reference" id="cite_ref-original_4-0">[2]</sup> The original paper contained static tables for computing the pattern shifts without an explanation of how to produce them. The algorithm for producing the tables was published in a follow-on paper; this paper contained errors which were later corrected by Wojciech Rytter in 1980.<sup class="reference" id="cite_ref-Knuth_Morris_Pratt_5-0">[3]</sup><sup class="reference" id="cite_ref-Rytter1980_6-0">[4]</sup>
+</p><p>The algorithm preprocesses the string being searched for (the pattern), but not the string being searched in (the text). It is thus well-suited for applications in which the pattern is much shorter than the text or where it persists across multiple searches. The Boyer–Moore algorithm uses information gathered during the preprocess step to skip sections of the text, resulting in a lower constant factor than many other string search algorithms. In general, the algorithm runs faster as the pattern length increases. The key features of the algorithm are to match on the tail of the pattern rather than the head, and to skip along the text in jumps of multiple characters rather than searching every single character in the text.
+</p>
+
+<h2><span class="mw-headline" id="Definitions">Definitions</span><span class="mw-editsection"></span></h2>
+
+<ul><li><i><b>T</b></i> denotes the input text to be searched. Its length is <b>n</b>.</li>
+<li><i><b>P</b></i> denotes the string to be searched for, called the <i>pattern</i>. Its length is <b>m</b>.</li>
+<li><b><i>S</i>[<i>i</i>]</b> denotes the character at index <i>i</i> of string <i>S</i>, counting from 1.</li>
+<li><b><i>S</i>[<i>i</i>..<i>j</i>]</b> denotes the substring of string <i>S</i> starting at index <i>i</i> and ending at <i>j</i>, inclusive.</li>
+<li>A <i>prefix</i> of <i>S</i> is a substring <i>S</i>[1..<i>i</i>] for some <i>i</i> in range [1, <i>l</i>], where <i>l</i> is the length of <i>S</i>.</li>
+<li>A <i>suffix</i> of <i>S</i> is a substring <i>S</i>[<i>i</i>..<i>l</i>] for some <i>i</i> in range [1, <i>l</i>], where <i>l</i> is the length of <i>S</i>.</li>
+<li>An <i>alignment</i> of <i>P</i> to <i>T</i> is an index <i>k</i> in <i>T</i> such that the last character of <i>P</i> is aligned with index <i>k</i> of <i>T</i>.</li>
+<li>A <i>match</i> or <i>occurrence</i> of <i>P</i> occurs at an alignment <i>k</i> if <i>P</i> is equivalent to <i>T</i>[(<i>k</i>-<i>m</i>+1)..<i>k</i>].</li></ul>
+<h2><span class="mw-headline" id="Description">Description</span><span class="mw-editsection"></span></h2>
+<p>The Boyer–Moore algorithm searches for occurrences of <span class="texhtml mvar" style="font-style:italic;">P</span> in <span class="texhtml mvar" style="font-style:italic;">T</span> by performing explicit character comparisons at different alignments. Instead of a brute-force search of all alignments (of which there are <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n-m+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mi>m</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n-m+1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n-m+1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/daf05a81af7f32136866fbc265d3ad198dc9057b" style="vertical-align: -0.505ex; width:10.278ex; height:2.343ex;"/></span>), Boyer–Moore uses information gained by preprocessing <span class="texhtml mvar" style="font-style:italic;">P</span> to skip as many alignments as possible.
+</p><p>Previous to the introduction of this algorithm, the usual way to search within text was to examine each character of the text for the first character of the pattern. Once that was found the subsequent characters of the text would be compared to the characters of the pattern. If no match occurred then the text would again be checked character by character in an effort to find a match. Thus almost every character in the text needs to be examined.
+</p><p>The key insight in this algorithm is that if the end of the pattern is compared to the text, then jumps along the text can be made rather than checking every character of the text. The reason that this works is that in lining up the pattern against the text, the last character of the pattern is compared to the character in the text. If the characters do not match, there is no need to continue searching backwards along the text. If the character in the text does not match any of the characters in the pattern, then the next character in the text to check is located <span class="texhtml mvar" style="font-style:italic;">m</span> characters farther along the text, where <span class="texhtml mvar" style="font-style:italic;">m</span> is the length of the pattern. If the character in the text <i>is</i> in the pattern, then a partial shift of the pattern along the text is done to line up along the matching character and the process is repeated. Jumping along the text to make comparisons rather than checking every character in the text decreases the number of comparisons that have to be made, which is the key to the efficiency of the algorithm.
+</p><p>More formally, the algorithm begins at alignment <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k=m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+<mo>=</mo>
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k=m}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle k=m}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/81b1071d97e4f1ae74d676a06d0d896a9e06b9f0" style="vertical-align: -0.338ex; width:6.35ex; height:2.176ex;"/></span>, so the start of <span class="texhtml mvar" style="font-style:italic;">P</span> is aligned with the start of <span class="texhtml mvar" style="font-style:italic;">T</span>. Characters in <span class="texhtml mvar" style="font-style:italic;">P</span> and <span class="texhtml mvar" style="font-style:italic;">T</span> are then compared starting at index <span class="texhtml mvar" style="font-style:italic;">m</span> in <span class="texhtml mvar" style="font-style:italic;">P</span> and <span class="texhtml mvar" style="font-style:italic;">k</span> in <span class="texhtml mvar" style="font-style:italic;">T</span>, moving backward. The strings are matched from the end of <span class="texhtml mvar" style="font-style:italic;">P</span> to the start of <span class="texhtml mvar" style="font-style:italic;">P</span>. The comparisons continue until either the beginning of <span class="texhtml mvar" style="font-style:italic;">P</span> is reached (which means there is a match) or a mismatch occurs upon which the alignment is shifted forward (to the right) according to the maximum value permitted by a number of rules. The comparisons are performed again at the new alignment, and the process repeats until the alignment is shifted past the end of <span class="texhtml mvar" style="font-style:italic;">T</span>, which means no further matches will be found.
+</p><p>The shift rules are implemented as constant-time table lookups, using tables generated during the preprocessing of <span class="texhtml mvar" style="font-style:italic;">P</span>.
+</p>
+<h2><span class="mw-headline" id="Shift_rules">Shift rules</span><span class="mw-editsection"></span></h2>
+<p>A shift is calculated by applying two rules: the bad character rule and the good suffix rule. The actual shifting offset is the maximum of the shifts calculated by these rules.
+</p>
+<h3><span class="mw-headline" id="The_bad_character_rule">The bad character rule</span><span class="mw-editsection"></span></h3>
+<h4><span class="mw-headline" id="Description_2">Description</span><span class="mw-editsection"></span></h4>
+
+<p>The bad-character rule considers the character in <span class="texhtml mvar" style="font-style:italic;">T</span> at which the comparison process failed (assuming such a failure occurred). The next occurrence of that character to the left in <span class="texhtml mvar" style="font-style:italic;">P</span> is found, and a shift which brings that occurrence in line with the mismatched occurrence in <span class="texhtml mvar" style="font-style:italic;">T</span> is proposed. If the mismatched character does not occur to the left in <span class="texhtml mvar" style="font-style:italic;">P</span>, a shift is proposed that moves the entirety of <span class="texhtml mvar" style="font-style:italic;">P</span> past the point of mismatch.
+</p>
+<h4><span class="mw-headline" id="Preprocessing">Preprocessing</span><span class="mw-editsection"></span></h4>
+<p>Methods vary on the exact form the table for the bad character rule should take, but a simple constant-time lookup solution is as follows: create a 2D table which is indexed first by the index of the character <span class="texhtml mvar" style="font-style:italic;">c</span> in the alphabet and second by the index <span class="texhtml mvar" style="font-style:italic;">i</span> in the pattern. This lookup will return the occurrence of <span class="texhtml mvar" style="font-style:italic;">c</span> in <span class="texhtml mvar" style="font-style:italic;">P</span> with the next-highest index <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle j&lt;i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>j</mi>
+<mo>&lt;</mo>
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle j&lt;i}</annotation>
+</semantics>
+</math></span><img alt="j&lt;i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/49a18ef9f535c9ff19683360978ab4550c92d4d1" style="vertical-align: -0.671ex; margin-left: -0.027ex; width:4.886ex; height:2.509ex;"/></span> or -1 if there is no such occurrence. The proposed shift will then be <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i-j}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mi>j</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i-j}</annotation>
+</semantics>
+</math></span><img alt="i-j" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2c78f9458ea63e9d74a5d753f8f093de91d3f74b" style="vertical-align: -0.671ex; width:4.601ex; height:2.509ex;"/></span>, with <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(1)}</annotation>
+</semantics>
+</math></span><img alt="O(1)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e66384bc40452c5452f33563fe0e27e803b0cc21" style="vertical-align: -0.838ex; width:4.745ex; height:2.843ex;"/></span> lookup time and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(km)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mi>m</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(km)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(km)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ef7b32d356b1b995c2e780d34c0202de5caaac9d" style="vertical-align: -0.838ex; width:6.834ex; height:2.843ex;"/></span> space, assuming a finite alphabet of length <span class="texhtml mvar" style="font-style:italic;">k</span>.
+</p><p>The C and Java implementations below have a <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(k)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(k)}</annotation>
+</semantics>
+</math></span><img alt="O(k)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f5ec39041121b14e8c2b1a986c9b04547b223e3c" style="vertical-align: -0.838ex; width:4.794ex; height:2.843ex;"/></span> space complexity (make_delta1, makeCharTable). This is the same as the original delta1 and the BMH bad character table. This table maps a character at position <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span> to shift by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \operatorname {len} (p)-1-i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>len</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>p</mi>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \operatorname {len} (p)-1-i}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \operatorname {len} (p)-1-i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3adfb1f5f8e7b309b0f6748139efef2da9f64976" style="vertical-align: -0.838ex; width:13.596ex; height:2.843ex;"/></span>, with the last instance—the least shift amount—taking precedence. All unused characters are set as <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \operatorname {len} (p)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>len</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>p</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \operatorname {len} (p)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \operatorname {len} (p)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f6ea82c03659f8bb5c3ec57fb7360e6ecc5e070e" style="vertical-align: -0.838ex; width:5.95ex; height:2.843ex;"/></span> as a sentinel value.
+</p>
+<h3><span class="mw-headline" id="The_good_suffix_rule">The good suffix rule</span><span class="mw-editsection"></span></h3>
+<h4><span class="mw-headline" id="Description_3">Description</span><span class="mw-editsection"></span></h4>
+
+<p>The good suffix rule is markedly more complex in both concept and implementation than the bad character rule. Like the bad character rule, it also exploits the algorithm's feature of comparisons beginning at the end of the pattern and proceeding towards the pattern's start. It can be described as follows:<sup class="reference" id="cite_ref-ASTS_7-0">[5]</sup>
+</p>
+<blockquote>
+<p>Suppose for a given alignment of <i><b>P</b></i> and <i><b>T</b></i>, a substring <i><b>t</b></i> of <i><b>T</b></i> matches a suffix of <i><b>P</b></i>, but a mismatch occurs at the next comparison to the left. 
+</p>
+<ol><li>Then find, if it exists, the right-most copy <i><b>t'</b></i> of <i><b>t</b></i> in <i><b>P</b></i> such that <i><b>t'</b></i> is not a suffix of <i><b>P</b></i> and the character to the left of <i><b>t'</b></i> in <i><b>P</b></i> differs from the character to the left of <i><b>t</b></i> in <i><b>P</b></i>. Shift <i><b>P</b></i> to the right so that substring <i><b>t'</b></i> in <i><b>P</b></i> aligns with substring <i><b>t</b></i> in <i><b>T</b></i>.</li>
+<li>If <i><b>t'</b></i> does not exist, then shift the left end of <i><b>P</b></i> past the left end of <i><b>t</b></i> in <i><b>T</b></i> by the least amount so that a prefix of the shifted pattern matches a suffix of <i><b>t</b></i> in <i><b>T</b></i>.</li>
+<li>If no such shift is possible, then shift <i><b>P</b></i> by <b>m</b> (length of P) places to the right.</li>
+<li>If an occurrence of <i><b>P</b></i> is found, then shift <i><b>P</b></i> by the least amount so that a <i>proper</i> prefix of the shifted <i><b>P</b></i> matches a suffix of the occurrence of <i><b>P</b></i> in <i><b>T</b></i>.</li>
+<li>If no such shift is possible, then shift <i><b>P</b></i> by <b>m</b> places, that is, shift <i><b>P</b></i> past <i><b>t</b></i>.</li></ol>
+</blockquote>
+<h4><span class="mw-headline" id="Preprocessing_2">Preprocessing</span><span class="mw-editsection"></span></h4>
+<p>The good suffix rule requires two tables: one for use in the general case, and another for use when either the general case returns no meaningful result or a match occurs. These tables will be designated <span class="texhtml mvar" style="font-style:italic;">L</span> and <span class="texhtml mvar" style="font-style:italic;">H</span> respectively. Their definitions are as follows:<sup class="reference" id="cite_ref-ASTS_7-1">[5]</sup>
+</p>
+<blockquote>
+<p>For each <span class="texhtml mvar" style="font-style:italic;">i</span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle L[i]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>L</mi>
+<mo stretchy="false">[</mo>
+<mi>i</mi>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle L[i]}</annotation>
+</semantics>
+</math></span><img alt="L[i]" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f505bfd1424f010a620a5a78e2f175653949230c" style="vertical-align: -0.838ex; width:3.679ex; height:2.843ex;"/></span> is the largest position less than <span class="texhtml mvar" style="font-style:italic;">m</span> such that string <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P[i..m]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+<mo stretchy="false">[</mo>
+<mi>i</mi>
+<mo>.</mo>
+<mo>.</mo>
+<mi>m</mi>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P[i..m]}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle P[i..m]}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6564dec688dd106b263166f6e8b473228a43fd2c" style="vertical-align: -0.838ex; width:7.95ex; height:2.843ex;"/></span> matches a suffix of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P[1..L[i]]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+<mo stretchy="false">[</mo>
+<mn>1..</mn>
+<mi>L</mi>
+<mo stretchy="false">[</mo>
+<mi>i</mi>
+<mo stretchy="false">]</mo>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P[1..L[i]]}</annotation>
+</semantics>
+</math></span><img alt="P[1..L[i]]" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8ab9c5431f611e9b3d65a8385c6fecbbe2b7402c" style="vertical-align: -0.838ex; width:9.174ex; height:2.843ex;"/></span> and such that the character preceding that suffix is not equal to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P[i-1]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+<mo stretchy="false">[</mo>
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P[i-1]}</annotation>
+</semantics>
+</math></span><img alt="P[i-1]" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/684dd0cf230387708cb8a649188c273134e8b10d" style="vertical-align: -0.838ex; width:7.844ex; height:2.843ex;"/></span>. <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle L[i]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>L</mi>
+<mo stretchy="false">[</mo>
+<mi>i</mi>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle L[i]}</annotation>
+</semantics>
+</math></span><img alt="L[i]" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f505bfd1424f010a620a5a78e2f175653949230c" style="vertical-align: -0.838ex; width:3.679ex; height:2.843ex;"/></span> is defined to be zero if there is no position satisfying the condition.
+</p>
+</blockquote>
+<blockquote>
+<p>Let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle H[i]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>H</mi>
+<mo stretchy="false">[</mo>
+<mi>i</mi>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle H[i]}</annotation>
+</semantics>
+</math></span><img alt="H[i]" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3e0d1e646ae278fb8ce6fc87c85e9cf2f61fcd0" style="vertical-align: -0.838ex; width:4.16ex; height:2.843ex;"/></span> denote the length of the largest suffix of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P[i..m]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+<mo stretchy="false">[</mo>
+<mi>i</mi>
+<mo>.</mo>
+<mo>.</mo>
+<mi>m</mi>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P[i..m]}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle P[i..m]}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6564dec688dd106b263166f6e8b473228a43fd2c" style="vertical-align: -0.838ex; width:7.95ex; height:2.843ex;"/></span> that is also a prefix of <span class="texhtml mvar" style="font-style:italic;">P</span>, if one exists. If none exists, let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle H[i]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>H</mi>
+<mo stretchy="false">[</mo>
+<mi>i</mi>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle H[i]}</annotation>
+</semantics>
+</math></span><img alt="H[i]" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3e0d1e646ae278fb8ce6fc87c85e9cf2f61fcd0" style="vertical-align: -0.838ex; width:4.16ex; height:2.843ex;"/></span> be zero.
+</p>
+</blockquote>
+<p>Both of these tables are constructible in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(m)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>m</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(m)}</annotation>
+</semantics>
+</math></span><img alt="O(m)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a0ffd498cf521ce19814e6b7053f1f8ebb1d3c88" style="vertical-align: -0.838ex; width:5.623ex; height:2.843ex;"/></span> time and use <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(m)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>m</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(m)}</annotation>
+</semantics>
+</math></span><img alt="O(m)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a0ffd498cf521ce19814e6b7053f1f8ebb1d3c88" style="vertical-align: -0.838ex; width:5.623ex; height:2.843ex;"/></span> space. The alignment shift for index <span class="texhtml mvar" style="font-style:italic;">i</span> in <span class="texhtml mvar" style="font-style:italic;">P</span> is given by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle m-L[i]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>m</mi>
+<mo>−<!-- − --></mo>
+<mi>L</mi>
+<mo stretchy="false">[</mo>
+<mi>i</mi>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle m-L[i]}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle m-L[i]}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9e45516651dd0b944b9dcf91cd5c0a1943ab7062" style="vertical-align: -0.838ex; width:8.56ex; height:2.843ex;"/></span> or <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle m-H[i]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>m</mi>
+<mo>−<!-- − --></mo>
+<mi>H</mi>
+<mo stretchy="false">[</mo>
+<mi>i</mi>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle m-H[i]}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle m-H[i]}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/70a06e817bd11e4e67faf5a192a03dd9da892571" style="vertical-align: -0.838ex; width:9.041ex; height:2.843ex;"/></span>. <span class="texhtml mvar" style="font-style:italic;">H</span> should only be used if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle L[i]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>L</mi>
+<mo stretchy="false">[</mo>
+<mi>i</mi>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle L[i]}</annotation>
+</semantics>
+</math></span><img alt="L[i]" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f505bfd1424f010a620a5a78e2f175653949230c" style="vertical-align: -0.838ex; width:3.679ex; height:2.843ex;"/></span> is zero or a match has been found.
+</p>
+<h2><span class="mw-headline" id="The_Galil_rule">The Galil rule</span><span class="mw-editsection"></span></h2>
+<p>A simple but important optimization of Boyer–Moore was put forth by Zvi Galil in 1979.<sup class="reference" id="cite_ref-galil_8-0">[6]</sup>
+As opposed to shifting, the Galil rule deals with speeding up the actual comparisons done at each alignment by skipping sections that are known to match. Suppose that at an alignment <span class="texhtml"><i>k</i><sub>1</sub></span>, <span class="texhtml"><i><b>P</b></i></span> is compared with <span class="texhtml"><i><b>T</b></i></span> down to character <span class="texhtml"><i><b>c</b></i></span> of <span class="texhtml"><i><b>T</b></i></span>. Then if <span class="texhtml"><i><b>P</b></i></span> is shifted to <span class="texhtml"><i>k</i><sub>2</sub></span> such that its left end is between <span class="texhtml"><i><b>c</b></i></span> and <span class="texhtml"><i>k</i><sub>1</sub></span>, in the next comparison phase a prefix of <span class="texhtml"><i><b>P</b></i></span> must match the substring <span class="texhtml"><i><b>T</b></i>[(<i>k</i><sub>2</sub> - <i>n</i>)..<i>k</i><sub>1</sub>]</span>. Thus if the comparisons get down to position <span class="texhtml"><i>k</i><sub>1</sub></span> of <span class="texhtml"><i><b>T</b></i></span>, an occurrence of <span class="texhtml"><i><b>P</b></i></span> can be recorded without explicitly comparing past <span class="texhtml"><i>k</i><sub>1</sub></span>. In addition to increasing the efficiency of Boyer–Moore, the Galil rule is required for proving linear-time execution in the worst case.
+</p><p>The Galil rule, in its original version, is only effective for versions that output multiple matches. It updates the substring range only on <span class="texhtml"><i><b>c</b></i> = 0</span>, i.e. a full match. A generalized version for dealing with submatches was reported in 1985 as the Apostolico–Giancarlo algorithm.<sup class="reference" id="cite_ref-9">[7]</sup>
+</p>
+<h2><span class="mw-headline" id="Performance">Performance</span><span class="mw-editsection"></span></h2>
+<p>The Boyer–Moore algorithm as presented in the original paper has worst-case running time of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n+m)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>+</mo>
+<mi>m</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n+m)}</annotation>
+</semantics>
+</math></span><img alt="O(n+m)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5d103b38ce2abfde793118c89cd4fac5c956b89d" style="vertical-align: -0.838ex; width:9.858ex; height:2.843ex;"/></span> only if the pattern does <i>not</i> appear in the text. This was first proved by Knuth, Morris, and Pratt in 1977,<sup class="reference" id="cite_ref-Knuth_Morris_Pratt_5-1">[3]</sup> followed by Guibas and Odlyzko in 1980<sup class="reference" id="cite_ref-go_10-0">[8]</sup> with an upper bound of <span class="texhtml">5<i>n</i></span> comparisons in the worst case. Richard Cole gave a proof with an upper bound of <span class="texhtml">3<i>n</i></span> comparisons in the worst case in 1991.<sup class="reference" id="cite_ref-cole_11-0">[9]</sup>
+</p><p>When the pattern <i>does</i> occur in the text, running time of the original algorithm is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(nm)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mi>m</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(nm)}</annotation>
+</semantics>
+</math></span><img alt="O(nm)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/051245e657739f572fe7902c817ea9103c687fb7" style="vertical-align: -0.838ex; width:7.018ex; height:2.843ex;"/></span> in the worst case. This is easy to see when both pattern and text consist solely of the same repeated character. However, inclusion of the Galil rule results in linear runtime across all cases.<sup class="reference" id="cite_ref-galil_8-1">[6]</sup><sup class="reference" id="cite_ref-cole_11-1">[9]</sup>
+</p>
+<h2><span class="mw-headline" id="Implementations">Implementations</span><span class="mw-editsection"></span></h2>
+<p>Various implementations exist in different programming languages. In C++ it is part of the Standard Library since C++17, also Boost provides the generic Boyer–Moore search implementation under the <i>Algorithm</i> library. In Go (programming language) there is an implementation in search.go. D (programming language) uses a BoyerMooreFinder for predicate based matching within ranges as a part of the Phobos Runtime Library.
+</p><p>The Boyer–Moore algorithm is also used in GNU's grep.<sup class="reference" id="cite_ref-12">[10]</sup>
+</p>
+<h3><span class="mw-headline" id="Python_implementation">Python implementation</span><span class="mw-editsection"></span></h3>
+
+<h3><span class="mw-headline" id="C_implementation">C implementation</span><span class="mw-editsection"></span></h3>
+
+<h3><span class="mw-headline" id="Java_implementation">Java implementation</span><span class="mw-editsection"></span></h3>
+
+<h2><span class="mw-headline" id="Variants">Variants</span><span class="mw-editsection"></span></h2>
+<p>The Boyer–Moore–Horspool algorithm is a simplification of the Boyer–Moore algorithm using only the bad character rule.
+</p><p>The Apostolico–Giancarlo algorithm speeds up the process of checking whether a match has occurred at the given alignment by skipping explicit character comparisons. This uses information gleaned during the pre-processing of the pattern in conjunction with suffix match lengths recorded at each match attempt. Storing suffix match lengths requires an additional table equal in size to the text being searched.
+</p><p>The Raita algorithm improves the performance of Boyer-Moore-Horspool algorithm. The searching pattern of particular sub-string in a given string is different from Boyer-Moore-Horspool algorithm.
+</p>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1011085734" rel="mw-deduplicated-inline-style"/>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097025294">.mw-parser-output .side-box{margin:4px 0;box-sizing:border-box;border:1px solid #aaa;font-size:88%;line-height:1.25em;background-color:#f9f9f9}.mw-parser-output .side-box-abovebelow,.mw-parser-output .side-box-text{padding:0.25em 0.9em}.mw-parser-output .side-box-image{padding:2px 0 2px 0.9em;text-align:center}.mw-parser-output .side-box-imageright{padding:2px 0.9em 2px 0;text-align:center}@media(min-width:500px){.mw-parser-output .side-box-flex{display:flex;align-items:center}.mw-parser-output .side-box-text{flex:1}}@media(min-width:720px){.mw-parser-output .side-box{width:238px}.mw-parser-output .side-box-right{clear:right;float:right;margin-left:1em}.mw-parser-output .side-box-left{margin-right:1em}}</style>
+<ul><li>Original paper on the Boyer-Moore algorithm</li>
+<li>An example of the Boyer-Moore algorithm from the homepage of J Strother Moore, co-inventor of the algorithm</li>
+<li>Richard Cole's 1991 paper proving runtime linearity</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2393
+Cached time: 20221224032137
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.357 seconds
+Real time usage: 0.513 seconds
+Preprocessor visited node count: 2625/1000000
+Post‐expand include size: 49706/2097152 bytes
+Template argument size: 3508/2097152 bytes
+Highest expansion depth: 14/100
+Expensive parser function count: 4/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 108787/5000000 bytes
+Lua time usage: 0.165/10.000 seconds
+Lua memory usage: 5823854/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  330.734      1 -total
+ 36.58%  120.986      2 Template:Reflist
+ 28.51%   94.276      8 Template:Cite_journal
+ 16.85%   55.730      1 Template:Short_description
+ 12.23%   40.455      1 Template:Strings
+ 11.90%   39.353      1 Template:Commons_category
+ 11.68%   38.641      1 Template:Navbox
+ 11.20%   37.048      1 Template:Sister_project
+ 10.73%   35.493      1 Template:Side_box
+  8.64%   28.591      2 Template:Pagetype
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:684709-0!canonical and timestamp 20221224032137 and revision id 1126862484.
+ -->
+</div></body>
+</html>

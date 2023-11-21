@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>double_hashing</title>
+</head>
+<body>
+<div class="mw-parser-output"><p><b>Double hashing</b> is a computer programming technique used in conjunction with open addressing in hash tables to resolve hash collisions, by using a secondary hash of the key as an offset when a collision occurs. Double hashing with open addressing is a classical data structure on a table <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T}</annotation>
+</semantics>
+</math></span><img alt="T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7200acd984a1d3a3d7dc455e262fbe54f7f6e0" style="vertical-align: -0.338ex; width:1.636ex; height:2.176ex;"/></span>.
+</p><p>The double hashing technique uses one hash value as an index into the table and then repeatedly steps forward an interval until the desired value is located, an empty location is reached, or the entire table has been searched; but this interval is set by a second, independent hash function. Unlike the alternative collision-resolution methods of linear probing and quadratic probing, the interval depends on the data, so that values mapping to the same location have different bucket sequences; this minimizes repeated collisions and the effects of clustering.
+</p><p>Given two random, uniform, and independent hash functions <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{1}}</annotation>
+</semantics>
+</math></span><img alt="h_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/14e8880a2e4243a2fe5157e574a0547ef3d5d373" style="vertical-align: -0.671ex; width:2.393ex; height:2.509ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{2}}</annotation>
+</semantics>
+</math></span><img alt="h_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/56d2d1733d09f02f33694f72b6da94681021e0f0" style="vertical-align: -0.671ex; width:2.393ex; height:2.509ex;"/></span>, the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span>th location in the bucket sequence for value <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k}</annotation>
+</semantics>
+</math></span><img alt="k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3c9a2c7b599b37105512c5d570edc034056dd40" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> in a hash table of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |T|}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |T|}</annotation>
+</semantics>
+</math></span><img alt="|T|" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/073a0b1ce9d4c91f30329289adbb91aae47f87ea" style="vertical-align: -0.838ex; width:2.93ex; height:2.843ex;"/></span> buckets is: <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h(i,k)=(h_{1}(k)+i\cdot h_{2}(k)){\bmod {|}}T|.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo>,</mo>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>i</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo lspace="thickmathspace" rspace="thickmathspace">mod</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mrow>
+</mrow>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h(i,k)=(h_{1}(k)+i\cdot h_{2}(k)){\bmod {|}}T|.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h(i,k)=(h_{1}(k)+i\cdot h_{2}(k)){\bmod {|}}T|.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0748b8e09b4a9d8a18ad9fb1157bb6711c140e7f" style="vertical-align: -0.838ex; width:36.511ex; height:2.843ex;"/></span>
+Generally, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{1}}</annotation>
+</semantics>
+</math></span><img alt="h_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/14e8880a2e4243a2fe5157e574a0547ef3d5d373" style="vertical-align: -0.671ex; width:2.393ex; height:2.509ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{2}}</annotation>
+</semantics>
+</math></span><img alt="h_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/56d2d1733d09f02f33694f72b6da94681021e0f0" style="vertical-align: -0.671ex; width:2.393ex; height:2.509ex;"/></span> are selected from a set of universal hash functions; <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{1}}</annotation>
+</semantics>
+</math></span><img alt="h_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/14e8880a2e4243a2fe5157e574a0547ef3d5d373" style="vertical-align: -0.671ex; width:2.393ex; height:2.509ex;"/></span> is selected to have a range of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \{0,|T|-1\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">{</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \{0,|T|-1\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \{0,|T|-1\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0bad5881d1e407134e32b163d2e5c07c7f25b925" style="vertical-align: -0.838ex; width:11.454ex; height:2.843ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{2}}</annotation>
+</semantics>
+</math></span><img alt="h_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/56d2d1733d09f02f33694f72b6da94681021e0f0" style="vertical-align: -0.671ex; width:2.393ex; height:2.509ex;"/></span> to have a range of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \{1,|T|-1\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">{</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \{1,|T|-1\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \{1,|T|-1\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d6ad445c2e5f41214d5f44efcaf56c566f97680c" style="vertical-align: -0.838ex; width:11.454ex; height:2.843ex;"/></span>. Double hashing approximates a random distribution; more precisely, pair-wise independent hash functions yield a probability of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (n/|T|)^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (n/|T|)^{2}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle (n/|T|)^{2}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/93240fc0489c7a775c0c2d6caafc19cc51785825" style="vertical-align: -0.838ex; width:8.351ex; height:3.176ex;"/></span> that any pair of keys will follow the same bucket sequence.
+</p>
+
+<h2><span id="Selection_of_h2.28k.29"></span><span class="mw-headline" id="Selection_of_h2(k)">Selection of h<sub>2</sub>(k)</span><span class="mw-editsection"></span></h2>
+<p>The secondary hash function <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{2}(k)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{2}(k)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h_{2}(k)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/672e55126f244759d915a62fb76f67945ca11801" style="vertical-align: -0.838ex; width:5.414ex; height:2.843ex;"/></span> should have several characteristics:
+</p>
+<ul><li>it should never yield an index of zero</li>
+<li>it should cycle through the whole table</li>
+<li>it should be very fast to compute</li>
+<li>it should be pair-wise independent of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{1}(k)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{1}(k)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h_{1}(k)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/266eabc55994976e6128ee6c346661d9c91c0958" style="vertical-align: -0.838ex; width:5.414ex; height:2.843ex;"/></span></li>
+<li>The distribution characteristics of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{2}}</annotation>
+</semantics>
+</math></span><img alt="h_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/56d2d1733d09f02f33694f72b6da94681021e0f0" style="vertical-align: -0.671ex; width:2.393ex; height:2.509ex;"/></span> are irrelevant. It is analogous to a random-number generator.</li>
+<li>All <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{2}(k)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{2}(k)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h_{2}(k)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/672e55126f244759d915a62fb76f67945ca11801" style="vertical-align: -0.838ex; width:5.414ex; height:2.843ex;"/></span> be <i>relatively prime</i> to |<i>T</i>|.</li></ul>
+<p>In practice:
+</p>
+<ul><li>If division hashing is used for both functions, the divisors are chosen as primes.</li>
+<li>If the <i>T</i> is a power of 2, the first and last requirements are usually satisfied by making <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{2}(k)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{2}(k)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h_{2}(k)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/672e55126f244759d915a62fb76f67945ca11801" style="vertical-align: -0.838ex; width:5.414ex; height:2.843ex;"/></span> always return an odd number. This has the side effect of doubling the chance of collision due to one wasted bit.<sup class="reference" id="cite_ref-Dillinger04_1-0">[1]</sup></li></ul>
+<h2><span class="mw-headline" id="Analysis">Analysis</span><span class="mw-editsection"></span></h2>
+<p>Let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span> be the number of elements stored in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T}</annotation>
+</semantics>
+</math></span><img alt="T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7200acd984a1d3a3d7dc455e262fbe54f7f6e0" style="vertical-align: -0.338ex; width:1.636ex; height:2.176ex;"/></span>, then <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T}</annotation>
+</semantics>
+</math></span><img alt="T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7200acd984a1d3a3d7dc455e262fbe54f7f6e0" style="vertical-align: -0.338ex; width:1.636ex; height:2.176ex;"/></span>'s load factor is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \alpha =n/|T|}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>α<!-- α --></mi>
+<mo>=</mo>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \alpha =n/|T|}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \alpha =n/|T|}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a2b940e38b39e96aaae17b343bfd86b1f0b3f3ee" style="vertical-align: -0.838ex; width:10.073ex; height:2.843ex;"/></span>.  That is, start by randomly, uniformly and independently selecting two universal hash functions <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{1}}</annotation>
+</semantics>
+</math></span><img alt="h_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/14e8880a2e4243a2fe5157e574a0547ef3d5d373" style="vertical-align: -0.671ex; width:2.393ex; height:2.509ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{2}}</annotation>
+</semantics>
+</math></span><img alt="h_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/56d2d1733d09f02f33694f72b6da94681021e0f0" style="vertical-align: -0.671ex; width:2.393ex; height:2.509ex;"/></span> to build a double hashing table <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T}</annotation>
+</semantics>
+</math></span><img alt="T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7200acd984a1d3a3d7dc455e262fbe54f7f6e0" style="vertical-align: -0.338ex; width:1.636ex; height:2.176ex;"/></span>. All elements are put in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T}</annotation>
+</semantics>
+</math></span><img alt="T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7200acd984a1d3a3d7dc455e262fbe54f7f6e0" style="vertical-align: -0.338ex; width:1.636ex; height:2.176ex;"/></span> by double hashing using <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{1}}</annotation>
+</semantics>
+</math></span><img alt="h_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/14e8880a2e4243a2fe5157e574a0547ef3d5d373" style="vertical-align: -0.671ex; width:2.393ex; height:2.509ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{2}}</annotation>
+</semantics>
+</math></span><img alt="h_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/56d2d1733d09f02f33694f72b6da94681021e0f0" style="vertical-align: -0.671ex; width:2.393ex; height:2.509ex;"/></span>.
+Given a key <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k}</annotation>
+</semantics>
+</math></span><img alt="k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3c9a2c7b599b37105512c5d570edc034056dd40" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span>, the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (i+1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (i+1)}</annotation>
+</semantics>
+</math></span><img alt="(i+1)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/01d1bd3a07f06d94e26759b664525a5eb7570e8f" style="vertical-align: -0.838ex; width:6.615ex; height:2.843ex;"/></span>-st hash location is computed by:
+</p><p></p>
+<p>Let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T}</annotation>
+</semantics>
+</math></span><img alt="T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7200acd984a1d3a3d7dc455e262fbe54f7f6e0" style="vertical-align: -0.338ex; width:1.636ex; height:2.176ex;"/></span> have fixed load factor <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \alpha :1&gt;\alpha &gt;0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>α<!-- α --></mi>
+<mo>:</mo>
+<mn>1</mn>
+<mo>&gt;</mo>
+<mi>α<!-- α --></mi>
+<mo>&gt;</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \alpha :1&gt;\alpha &gt;0}</annotation>
+</semantics>
+</math></span><img alt="\alpha: 1 &gt; \alpha &gt; 0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b8d2dc615d197941f8f945fc9f0a7aea129dbc32" style="vertical-align: -0.338ex; width:13.434ex; height:2.176ex;"/></span>.
+Bradford and Katehakis<sup class="reference" id="cite_ref-2">[2]</sup>
+showed the expected number of probes for an unsuccessful search in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T}</annotation>
+</semantics>
+</math></span><img alt="T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7200acd984a1d3a3d7dc455e262fbe54f7f6e0" style="vertical-align: -0.338ex; width:1.636ex; height:2.176ex;"/></span>, still using these initially chosen hash functions, is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\tfrac {1}{1-\alpha }}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>1</mn>
+<mrow>
+<mn>1</mn>
+<mo>−<!-- − --></mo>
+<mi>α<!-- α --></mi>
+</mrow>
+</mfrac>
+</mstyle>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\tfrac {1}{1-\alpha }}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\tfrac {1}{1-\alpha }}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/562bb29f2c3ae22b9db60ea00fd28c9c9dacdb61" style="vertical-align: -1.338ex; width:3.989ex; height:3.676ex;"/></span> regardless of the distribution of the inputs. Pair-wise independence of the hash functions suffices.
+</p><p>Like all other forms of open addressing, double hashing becomes linear as the hash table approaches maximum capacity. The usual heuristic is to limit the table loading to 75% of capacity.  Eventually, rehashing to a larger size will be necessary, as with all other open addressing schemes.
+</p>
+<h2><span class="mw-headline" id="Variants">Variants</span><span class="mw-editsection"></span></h2>
+<p>Peter Dillinger's PhD thesis<sup class="reference" id="cite_ref-Dillinger10_3-0">[3]</sup> points out that double hashing produces unwanted equivalent hash functions when the hash functions are treated as a set, as in Bloom filters: If <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{2}(y)=-h_{2}(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{2}(y)=-h_{2}(x)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h_{2}(y)=-h_{2}(x)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ea0398b318224ec0f5258b3828f4b084e00355ff" style="vertical-align: -0.838ex; width:15.797ex; height:2.843ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{1}(y)=h_{1}(x)+k\cdot h_{2}(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>k</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{1}(y)=h_{1}(x)+k\cdot h_{2}(x)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h_{1}(y)=h_{1}(x)+k\cdot h_{2}(x)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c4745cb9206b260765743c1b2ba096e9435c7e1d" style="vertical-align: -0.838ex; width:25.252ex; height:2.843ex;"/></span>, then <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h(i,y)=h(k-i,x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo>,</mo>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+<mo>,</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h(i,y)=h(k-i,x)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h(i,y)=h(k-i,x)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1ba24185b6c4622c2508070ba027e1450c962085" style="vertical-align: -0.838ex; width:19.605ex; height:2.843ex;"/></span> and the sets of hashes <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \left\{h(0,x),...,h(k,x)\right\}=\left\{h(0,y),...,h(k,y)\right\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow>
+<mo>{</mo>
+<mrow>
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>,</mo>
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo>,</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+<mo>}</mo>
+</mrow>
+<mo>=</mo>
+<mrow>
+<mo>{</mo>
+<mrow>
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>,</mo>
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo>,</mo>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+<mo>}</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \left\{h(0,x),...,h(k,x)\right\}=\left\{h(0,y),...,h(k,y)\right\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \left\{h(0,x),...,h(k,x)\right\}=\left\{h(0,y),...,h(k,y)\right\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f5fb9011ff2fcfb8026c84c0edeb55c5badbe1b1" style="vertical-align: -0.838ex; width:44.534ex; height:2.843ex;"/></span>  are identical.  This makes a collision twice as likely as the hoped-for <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1/|T|^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>T</mi>
+<msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1/|T|^{2}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 1/|T|^{2}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c80c2ab9388db7d6a5caf7e0bfe63ad3a9135157" style="vertical-align: -0.838ex; width:6.309ex; height:3.343ex;"/></span>.
+</p><p>There are additionally a significant number of mostly-overlapping hash sets; if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{2}(y)=h_{2}(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{2}(y)=h_{2}(x)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h_{2}(y)=h_{2}(x)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/674a2cd6ab157b3db6e8a26d3635dac6e087b1b7" style="vertical-align: -0.838ex; width:13.989ex; height:2.843ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h1(y)=h_{1}(x)\pm h_{2}(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+<mn>1</mn>
+<mo stretchy="false">(</mo>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>±<!-- ± --></mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h1(y)=h_{1}(x)\pm h_{2}(x)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h1(y)=h_{1}(x)\pm h_{2}(x)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/adc6a9a5c43f02c9bf03887bd4e1c780812f80d5" style="vertical-align: -0.838ex; width:22.469ex; height:2.843ex;"/></span>, then <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h(i,y)=h(i\pm 1,x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo>,</mo>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo>±<!-- ± --></mo>
+<mn>1</mn>
+<mo>,</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h(i,y)=h(i\pm 1,x)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h(i,y)=h(i\pm 1,x)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b90a925a9123c6f352b0667bbf67b9279dc02ce1" style="vertical-align: -0.838ex; width:19.556ex; height:2.843ex;"/></span>, and comparing additional hash values (expanding the range of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span>) is of no help.
+</p>
+<h3><span class="mw-headline" id="Triple_hashing">Triple hashing</span><span class="mw-editsection"></span></h3>
+<p>Adding a quadratic term <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i^{2},}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>i</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i^{2},}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle i^{2},}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/53ee7c26c7c90ebf893e0e564d02c620897eeb0c" style="vertical-align: -0.671ex; width:2.504ex; height:3.009ex;"/></span><sup class="reference" id="cite_ref-Kirsch08_4-0">[4]</sup> <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i(i+1)/2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i(i+1)/2}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle i(i+1)/2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8b058be36b57520f1c2fcb3ef5d628aae56a7f4a" style="vertical-align: -0.838ex; width:9.742ex; height:2.843ex;"/></span> (a triangular number) or even <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i^{2}\cdot h_{3}(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>i</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i^{2}\cdot h_{3}(x)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle i^{2}\cdot h_{3}(x)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/981b85b6605bd81fc1ff4cb36d9476a7716fe31a" style="vertical-align: -0.838ex; width:9.068ex; height:3.176ex;"/></span> (<b>triple hashing</b>)<sup class="reference" id="cite_ref-5">[5]</sup> to the hash function improves the hash function somewhat<sup class="reference" id="cite_ref-Kirsch08_4-1">[4]</sup> but does not fix this problem; if:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{1}(y)=h_{1}(x)+k\cdot h_{2}(x)+k^{2}\cdot h_{3}(x),}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>k</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<msup>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{1}(y)=h_{1}(x)+k\cdot h_{2}(x)+k^{2}\cdot h_{3}(x),}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h_{1}(y)=h_{1}(x)+k\cdot h_{2}(x)+k^{2}\cdot h_{3}(x),}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/962bdd9d69d58013a3c7f5e0eb5ce5f49117ccef" style="vertical-align: -0.838ex; width:38.216ex; height:3.176ex;"/></span></dd>
+<dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{2}(y)=-h_{2}(x)-2k\cdot h_{3}(x),}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<mi>k</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{2}(y)=-h_{2}(x)-2k\cdot h_{3}(x),}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h_{2}(y)=-h_{2}(x)-2k\cdot h_{3}(x),}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/11fd70c9fba82e9da3de1cd07533abb7b3935eee" style="vertical-align: -0.838ex; width:28.869ex; height:2.843ex;"/></span> and</dd>
+<dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{3}(y)=h_{3}(x).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{3}(y)=h_{3}(x).}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h_{3}(y)=h_{3}(x).}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e8ba8410388558577af66166c6f029c6ef393948" style="vertical-align: -0.838ex; width:14.635ex; height:2.843ex;"/></span></dd></dl>
+<p>then
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{aligned}h(k-i,y)&amp;=h_{1}(y)+(k-i)\cdot h_{2}(y)+(k-i)^{2}\cdot h_{3}(y)\\&amp;=h_{1}(y)+(k-i)(-h_{2}(x)-2kh_{3}(x))+(k-i)^{2}h_{3}(x)\\&amp;=\ldots \\&amp;=h_{1}(x)+kh_{2}(x)+k^{2}h_{3}(x)+(i-k)h_{2}(x)+(i^{2}-k^{2})h_{3}(x)\\&amp;=h_{1}(x)+ih_{2}(x)+i^{2}h_{3}(x)\\&amp;=h(i,x).\\\end{aligned}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="right left right left right left right left right left right left" columnspacing="0em 2em 0em 2em 0em 2em 0em 2em 0em 2em 0em" displaystyle="true" rowspacing="3pt">
+<mtr>
+<mtd>
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+<mo>,</mo>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+</mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+<mo stretchy="false">)</mo>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">(</mo>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<mi>k</mi>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mo>…<!-- … --></mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>k</mi>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<msup>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>i</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>−<!-- − --></mo>
+<msup>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>i</mi>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<msup>
+<mi>i</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo>,</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{aligned}h(k-i,y)&amp;=h_{1}(y)+(k-i)\cdot h_{2}(y)+(k-i)^{2}\cdot h_{3}(y)\\&amp;=h_{1}(y)+(k-i)(-h_{2}(x)-2kh_{3}(x))+(k-i)^{2}h_{3}(x)\\&amp;=\ldots \\&amp;=h_{1}(x)+kh_{2}(x)+k^{2}h_{3}(x)+(i-k)h_{2}(x)+(i^{2}-k^{2})h_{3}(x)\\&amp;=h_{1}(x)+ih_{2}(x)+i^{2}h_{3}(x)\\&amp;=h(i,x).\\\end{aligned}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\begin{aligned}h(k-i,y)&amp;=h_{1}(y)+(k-i)\cdot h_{2}(y)+(k-i)^{2}\cdot h_{3}(y)\\&amp;=h_{1}(y)+(k-i)(-h_{2}(x)-2kh_{3}(x))+(k-i)^{2}h_{3}(x)\\&amp;=\ldots \\&amp;=h_{1}(x)+kh_{2}(x)+k^{2}h_{3}(x)+(i-k)h_{2}(x)+(i^{2}-k^{2})h_{3}(x)\\&amp;=h_{1}(x)+ih_{2}(x)+i^{2}h_{3}(x)\\&amp;=h(i,x).\\\end{aligned}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9dee9fdf3648de5de362083ab87e55b7c08a991e" style="vertical-align: -9.005ex; width:71.976ex; height:19.176ex;"/></span></dd></dl>
+<h3><span class="mw-headline" id="Enhanced_double_hashing">Enhanced double hashing</span><span class="mw-editsection"></span></h3>
+<p>Adding a cubic term <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i^{3}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>i</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i^{3}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle i^{3}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ea4e64ab87a7f65eb03e03d66caa56dca75182a5" style="vertical-align: -0.338ex; width:1.857ex; height:2.676ex;"/></span><sup class="reference" id="cite_ref-Kirsch08_4-2">[4]</sup> or <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (i^{3}-i)/6}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<msup>
+<mi>i</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>6</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (i^{3}-i)/6}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle (i^{3}-i)/6}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e43d75c5b1d4cf194b4baeb2b069cd3d95ee1dd3" style="vertical-align: -0.838ex; width:9.634ex; height:3.176ex;"/></span> (a tetrahedral number),<sup class="reference" id="cite_ref-Dillinger04_1-1">[1]</sup> does solve the problem, a technique known as <b>enhanced double hashing</b>.  This can be computed efficiently by forward differencing:
+</p>
+
+<p>In addition to rectifying the collision problem, enhanced double hashing also removes double-hashing's numerical restrictions on <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{2}(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{2}(x)}</annotation>
+</semantics>
+</math></span><img alt="h_{2}(x)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d4960c74f885bc90838e4ed3abc4ae97ae838948" style="vertical-align: -0.838ex; width:5.532ex; height:2.843ex;"/></span>'s properties, allowing a hash function similar in property to (but still independent of) <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{1}}</annotation>
+</semantics>
+</math></span><img alt="h_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/14e8880a2e4243a2fe5157e574a0547ef3d5d373" style="vertical-align: -0.671ex; width:2.393ex; height:2.509ex;"/></span> to be used.<sup class="reference" id="cite_ref-Dillinger04_1-2">[1]</sup>
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Cuckoo hashing</li>
+<li>2-choice hashing</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>How Caching Affects Hashing by Gregory L. Heileman and Wenbin Luo 2005.</li>
+<li>Hash Table Animation</li>
+<li>klib a C library that includes double hashing functionality.</li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw1403
+Cached time: 20221214135541
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.185 seconds
+Real time usage: 0.246 seconds
+Preprocessor visited node count: 623/1000000
+Post‐expand include size: 9913/2097152 bytes
+Template argument size: 78/2097152 bytes
+Highest expansion depth: 8/100
+Expensive parser function count: 1/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 22191/5000000 bytes
+Lua time usage: 0.066/10.000 seconds
+Lua memory usage: 3080100/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  117.754      1 -total
+100.00%  117.754      1 Template:Reflist
+ 60.51%   71.258      1 Template:Cite_conference
+  7.42%    8.742      1 Template:Cite_journal
+  6.20%    7.296      1 Template:Citation
+  4.98%    5.866      1 Template:Cite_thesis
+  1.63%    1.923      1 Template:Main_other
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:1583816-0!canonical and timestamp 20221214135540 and revision id 1106470694.
+ -->
+</div></body>
+</html>

@@ -1,0 +1,3421 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>dual_linear_program</title>
+</head>
+<body>
+<div class="mw-parser-output"><p>The <b>dual</b> of a given linear program (LP) is another LP that is derived from the original (the <b>primal</b>) LP in the following schematic way:
+</p>
+<ul><li>Each variable in the primal LP becomes a constraint in the dual LP;</li>
+<li>Each constraint in the primal LP becomes a variable in the dual LP;</li>
+<li>The objective direction is inversed – maximum in the primal becomes minimum in the dual and vice versa.</li></ul>
+<p>The <b>weak duality theorem</b> states that the objective value of the dual LP at any feasible solution is always a bound on the objective of the primal LP at any feasible solution (upper or lower bound, depending on whether it is a maximization or minimization problem).  In fact, this bounding property holds for the optimal values of the dual and primal LPs.
+</p><p>The <b>strong duality theorem</b> states that, moreover, if the primal has an optimal solution then the dual has an optimal solution too, <i>and the two optima are equal</i>.<sup class="reference" id="cite_ref-gm06_1-0">[1]</sup>
+</p><p>These theorems belong to a larger class of duality theorems in optimization. The strong duality theorem is one of the cases in which the duality gap (the gap between the optimum of the primal and the optimum of the dual) is 0.
+</p>
+
+<h2><span class="mw-headline" id="Form_of_the_dual_LP">Form of the dual LP</span><span class="mw-editsection"></span></h2><p>
+Suppose we have the linear program: </p><blockquote><p>Maximize <b>c</b><sup>T</sup><b>x</b>  subject to <i>A</i><b>x</b> ≤ <b>b</b>, <b>x</b> ≥ 0.</p></blockquote><p>We would like to construct an upper bound on the solution. So we create a linear combination of the constraints, with positive coefficients, such that the coefficients of <b>x</b> in the constraints are at least <b>c</b><sup>T</sup>. This linear combination gives us an upper bound on the objective. The variables <b>y</b> of the dual LP are the coefficients of this linear combination. The dual LP tries to find such coefficients that <i>minimize</i> the resulting upper bound. This gives the following LP:<sup class="reference" id="cite_ref-gm06_1-1">[1]</sup><sup class="reference nowrap"><span title="Page / location: 81–83">: 81–83 </span></sup></p><blockquote><p>Minimize  <b>b</b><sup>T</sup><b>y</b>  subject to <i>A</i><sup>T</sup><b>y</b> ≥ <b>c</b>, <b>y</b> ≥ 0   </p></blockquote><p>This LP is called the <i>dual of</i> the original LP.
+</p><h3><span class="mw-headline" id="Interpretation">Interpretation</span><span class="mw-editsection"></span></h3>
+<p>The duality theorem has an economic interpretation.<sup class="reference" id="cite_ref-2">[2]</sup><sup class="reference" id="cite_ref-3">[3]</sup> If we interpret the primal LP as a classical "resource allocation" problem, its dual LP can be interpreted as a "resource valuation" problem. 
+</p><p>Consider a factory that is planning its production of goods. Let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> be its production schedule (make <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{i}}</annotation>
+</semantics>
+</math></span><img alt="x_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e87000dd6142b81d041896a30fe58f0c3acb2158" style="vertical-align: -0.671ex; width:2.129ex; height:2.009ex;"/></span> amount of good <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span>), let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c\geq 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+<mo>≥<!-- ≥ --></mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c\geq 0}</annotation>
+</semantics>
+</math></span><img alt="c \geq 0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f5bacf524070fd3832229ef1b522442e3a2fb8e4" style="vertical-align: -0.505ex; width:5.268ex; height:2.343ex;"/></span> be the list of market prices (a unit of good <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span> can sell for <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c_{i}}</annotation>
+</semantics>
+</math></span><img alt="c_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/01acb7953ba52c2aa44264b5d0f8fd223aa178a2" style="vertical-align: -0.671ex; width:1.807ex; height:2.009ex;"/></span>). The constraints it has are <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x\geq 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+<mo>≥<!-- ≥ --></mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x\geq 0}</annotation>
+</semantics>
+</math></span><img alt="x\geq 0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a2608e2b392b079f5b763f27bf52883dbee3b64a" style="vertical-align: -0.505ex; width:5.591ex; height:2.343ex;"/></span> (it cannot produce negative goods) and raw-material constraints. Let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle b}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>b</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle b}</annotation>
+</semantics>
+</math></span><img alt="b" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f11423fbb2e967f986e36804a8ae4271734917c3" style="vertical-align: -0.338ex; width:0.998ex; height:2.176ex;"/></span> be the raw material it has available, and let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A\geq 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+<mo>≥<!-- ≥ --></mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A\geq 0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle A\geq 0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ebee3e714a32508aa26658d5c88f6a09237c82dc" style="vertical-align: -0.505ex; width:6.004ex; height:2.343ex;"/></span> be the matrix of material costs (producing one unit of good <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span> requires <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A_{ji}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>A</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A_{ji}}</annotation>
+</semantics>
+</math></span><img alt="A_{{ji}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e69838a00348145ea8766a36b8e398e5e8a810ea" style="vertical-align: -1.005ex; width:3.22ex; height:2.843ex;"/></span> units of raw material <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle j}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>j</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle j}</annotation>
+</semantics>
+</math></span><img alt="j" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2f461e54f5c093e92a55547b9764291390f0b5d0" style="vertical-align: -0.671ex; margin-left: -0.027ex; width:0.985ex; height:2.509ex;"/></span>).
+</p><p>
+Then, the constrained revenue maximization is the primal LP:</p><blockquote><p>Maximize <b>c</b><sup>T</sup><b>x</b>  subject to <i>A</i><b>x</b> ≤ <b>b</b>, <b>x</b> ≥ 0.</p></blockquote><p>Now consider another factory that has no raw material, and wishes to purchase the entire stock of raw material from the previous factory. It offers a price vector of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>y</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y}</annotation>
+</semantics>
+</math></span><img alt="y" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b8a6208ec717213d4317e666f1ae872e00620a0d" style="vertical-align: -0.671ex; width:1.155ex; height:2.009ex;"/></span> (a unit of raw material <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span> for <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y_{i}}</annotation>
+</semantics>
+</math></span><img alt="y_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/67d30d30b6c2dbe4d6f150d699de040937ecc95f" style="vertical-align: -0.671ex; width:1.939ex; height:2.009ex;"/></span>). For the offer to be accepted, it should be the case that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A^{T}y\geq c}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>A</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>T</mi>
+</mrow>
+</msup>
+<mi>y</mi>
+<mo>≥<!-- ≥ --></mo>
+<mi>c</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A^{T}y\geq c}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle A^{T}y\geq c}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3cd2d5cd71075563526dec0bc6083c5c0bd9110f" style="vertical-align: -0.671ex; width:8.393ex; height:3.009ex;"/></span>, since otherwise the factory could earn more cash by producing a certain product than selling off the raw material used to produce the good. It also should be <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y\geq 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>y</mi>
+<mo>≥<!-- ≥ --></mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y\geq 0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle y\geq 0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/130e8795bc869a5b823133c5a0972693605c00bd" style="vertical-align: -0.671ex; width:5.416ex; height:2.509ex;"/></span>, since the factory would not sell any raw material with negative price. Then, the second factory's optimization problem is the dual LP:</p><blockquote><p>Minimize  <b>b</b><sup>T</sup><b>y</b>  subject to <i>A</i><sup>T</sup><b>y</b> ≥ <b>c</b>, <b>y</b> ≥ 0</p></blockquote><p>The duality theorem states that the duality gap between the two LP problems is at least zero. Economically, it means that if the first factory is given an offer to buy its entire stock of raw material, at a per-item price of <b>y</b>, such that <i>A</i><sup>T</sup><b>y</b> ≥ <b>c</b>, <b>y</b> ≥ 0, then it should take the offer. It will make at least as much revenue as it could producing finished goods. 
+</p><p>The strong duality theorem further states that the duality gap is zero. With strong duality, the dual solution <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y^{*}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y^{*}}</annotation>
+</semantics>
+</math></span><img alt="y^{*}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3fcfcfa0fbced647ea73759c68ffd7a028729d62" style="vertical-align: -0.671ex; width:2.215ex; height:2.676ex;"/></span> is, economically speaking, the "equilibrium price" (see shadow price) for the raw material that a factory with production matrix <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A}</annotation>
+</semantics>
+</math></span><img alt="A" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7daff47fa58cdfd29dc333def748ff5fa4c923e3" style="vertical-align: -0.338ex; width:1.743ex; height:2.176ex;"/></span> and raw material stock <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle b}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>b</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle b}</annotation>
+</semantics>
+</math></span><img alt="b" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f11423fbb2e967f986e36804a8ae4271734917c3" style="vertical-align: -0.338ex; width:0.998ex; height:2.176ex;"/></span> would accept for raw material, given the market price for finished goods <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c}</annotation>
+</semantics>
+</math></span><img alt="c" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/86a67b81c2de995bd608d5b2df50cd8cd7d92455" style="vertical-align: -0.338ex; width:1.007ex; height:1.676ex;"/></span>. (Note that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y^{*}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y^{*}}</annotation>
+</semantics>
+</math></span><img alt="y^{*}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3fcfcfa0fbced647ea73759c68ffd7a028729d62" style="vertical-align: -0.671ex; width:2.215ex; height:2.676ex;"/></span> may not be unique, so the equilibrium price may not be fully determined by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A}</annotation>
+</semantics>
+</math></span><img alt="A" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7daff47fa58cdfd29dc333def748ff5fa4c923e3" style="vertical-align: -0.338ex; width:1.743ex; height:2.176ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle b}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>b</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle b}</annotation>
+</semantics>
+</math></span><img alt="b" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f11423fbb2e967f986e36804a8ae4271734917c3" style="vertical-align: -0.338ex; width:0.998ex; height:2.176ex;"/></span>, and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c}</annotation>
+</semantics>
+</math></span><img alt="c" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/86a67b81c2de995bd608d5b2df50cd8cd7d92455" style="vertical-align: -0.338ex; width:1.007ex; height:1.676ex;"/></span>.)
+</p><p>To see why, consider if the raw material prices <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y\geq 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>y</mi>
+<mo>≥<!-- ≥ --></mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y\geq 0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle y\geq 0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/130e8795bc869a5b823133c5a0972693605c00bd" style="vertical-align: -0.671ex; width:5.416ex; height:2.509ex;"/></span> are such that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (A^{T}y)_{i}&lt;c_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<msup>
+<mi>A</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>T</mi>
+</mrow>
+</msup>
+<mi>y</mi>
+<msub>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>&lt;</mo>
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (A^{T}y)_{i}&lt;c_{i}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle (A^{T}y)_{i}&lt;c_{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6c6280cbe6a0dbcb5822bcb21c75a4c2e9be4186" style="vertical-align: -0.838ex; width:11.802ex; height:3.176ex;"/></span> for some <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span>, then the factory would purchase more raw material to produce more of good <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span>, since the prices are "too low". Conversely, if the raw material prices satisfy <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A^{T}y\geq c,y\geq 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>A</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>T</mi>
+</mrow>
+</msup>
+<mi>y</mi>
+<mo>≥<!-- ≥ --></mo>
+<mi>c</mi>
+<mo>,</mo>
+<mi>y</mi>
+<mo>≥<!-- ≥ --></mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A^{T}y\geq c,y\geq 0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle A^{T}y\geq c,y\geq 0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/570d9a08c5f0ab631f7e4c88419737be31267a1a" style="vertical-align: -0.671ex; width:14.844ex; height:3.009ex;"/></span>, but does not minimize <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle b^{T}y}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>T</mi>
+</mrow>
+</msup>
+<mi>y</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle b^{T}y}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle b^{T}y}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5462d71c0f5dbc65657a9ad3d544a901b9a09498" style="vertical-align: -0.671ex; width:3.542ex; height:3.009ex;"/></span>, then the factory would make more money by selling its raw material than producing goods, since the prices are "too high". At equilibrium price <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y^{*}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y^{*}}</annotation>
+</semantics>
+</math></span><img alt="y^{*}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3fcfcfa0fbced647ea73759c68ffd7a028729d62" style="vertical-align: -0.671ex; width:2.215ex; height:2.676ex;"/></span>, the factory cannot increase its profit by purchasing or selling off raw material.
+</p><p>The duality theorem has a physical interpretation too.<sup class="reference" id="cite_ref-gm06_1-2">[1]</sup><sup class="reference nowrap"><span title="Page / location: 86–87">: 86–87 </span></sup>
+</p>
+<h2><span class="mw-headline" id="Constructing_the_dual_LP">Constructing the dual LP</span><span class="mw-editsection"></span></h2>
+<p>In general, given a primal LP, the following algorithm can be used to construct its dual LP.<sup class="reference" id="cite_ref-gm06_1-3">[1]</sup><sup class="reference nowrap"><span title="Page / location: 85">: 85 </span></sup> The primal LP is defined by:
+</p>
+<ul><li>A set of <i>n</i> variables:       <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{1},\ldots ,x_{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{1},\ldots ,x_{n}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle x_{1},\ldots ,x_{n}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/737e02a5fbf8bc31d443c91025339f9fd1de1065" style="vertical-align: -0.671ex; width:10.11ex; height:2.009ex;"/></span>.</li>
+<li>For each variable <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{i}}</annotation>
+</semantics>
+</math></span><img alt="x_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e87000dd6142b81d041896a30fe58f0c3acb2158" style="vertical-align: -0.671ex; width:2.129ex; height:2.009ex;"/></span>, a <i>sign constraint</i> – it should be either non-negative (<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{i}\geq 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{i}\geq 0}</annotation>
+</semantics>
+</math></span><img alt="x_{i}\geq 0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/90a99710f61d5dea19e49ae5b31164d2b56b07e3" style="vertical-align: -0.671ex; width:6.39ex; height:2.509ex;"/></span>), or non-positive  (<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{i}\leq 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>≤<!-- ≤ --></mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{i}\leq 0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle x_{i}\leq 0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f8feb153376cf595bc9a797b3eb2429efd3c7605" style="vertical-align: -0.671ex; width:6.39ex; height:2.509ex;"/></span>), or unconstrained  (<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{i}\in \mathbb {R} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>∈<!-- ∈ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">R</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{i}\in \mathbb {R} }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle x_{i}\in \mathbb {R} }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c16c64c292c38a4a3ebfee3be0ade520d4463413" style="vertical-align: -0.671ex; width:6.648ex; height:2.509ex;"/></span>).</li>
+<li>An objective function:    <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\text{maximize}}~~~c_{1}x_{1}+\cdots +c_{n}x_{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>maximize</mtext>
+</mrow>
+<mtext> </mtext>
+<mtext> </mtext>
+<mtext> </mtext>
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mo>⋯<!-- ⋯ --></mo>
+<mo>+</mo>
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\text{maximize}}~~~c_{1}x_{1}+\cdots +c_{n}x_{n}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\text{maximize}}~~~c_{1}x_{1}+\cdots +c_{n}x_{n}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a410bc6e5194a496bfbff8a2d2bc09fea85f9632" style="vertical-align: -0.671ex; width:28.985ex; height:2.509ex;"/></span></li>
+<li>A list of <i>m</i> constraints. Each constraint <i>j</i> is:   <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a_{j1}x_{1}+\cdots +a_{jn}x_{n}\lesseqqgtr b_{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+<mn>1</mn>
+</mrow>
+</msub>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mo>⋯<!-- ⋯ --></mo>
+<mo>+</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+<mi>n</mi>
+</mrow>
+</msub>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mo>⪋<!-- ⪋ --></mo>
+<msub>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a_{j1}x_{1}+\cdots +a_{jn}x_{n}\lesseqqgtr b_{j}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle a_{j1}x_{1}+\cdots +a_{jn}x_{n}\lesseqqgtr b_{j}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/017c39e373499d8c229b8b1bfe5bf8f546e9a0f8" style="vertical-align: -1.338ex; width:24.429ex; height:3.843ex;"/></span>where the symbol before the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle b_{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle b_{j}}</annotation>
+</semantics>
+</math></span><img alt="b_{j}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fa56eff4488494085785b7b0d6e2069bd45a3ce5" style="vertical-align: -1.005ex; width:1.907ex; height:2.843ex;"/></span> can be one of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \geq }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>≥<!-- ≥ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \geq }</annotation>
+</semantics>
+</math></span><img alt="\geq " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bcef7c0e95bb77a35fd1a874ca91f425215f3c26" style="vertical-align: -0.505ex; width:1.808ex; height:2.176ex;"/></span> or <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \leq }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>≤<!-- ≤ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \leq }</annotation>
+</semantics>
+</math></span><img alt="\leq " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/440568a09c3bfdf0e1278bfa79eb137c04e94035" style="vertical-align: -0.505ex; width:1.808ex; height:2.176ex;"/></span> or <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle =}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>=</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle =}</annotation>
+</semantics>
+</math></span><img alt="=" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/505a4ceef454c69dffd23792c84b90f488543743" style="vertical-align: 0.307ex; margin-bottom: -0.478ex; width:1.808ex; height:1.343ex;"/></span>.</li></ul>
+<p>The dual LP is constructed as follows.
+</p>
+<ul><li>Each primal constraint becomes a dual variable. So there are <i>m</i> variables: <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y_{1},\ldots ,y_{m}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>m</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y_{1},\ldots ,y_{m}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle y_{1},\ldots ,y_{m}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5d5b339e24327c7f983d51cb2edaeba7905548f7" style="vertical-align: -0.671ex; width:10.186ex; height:2.009ex;"/></span>.</li>
+<li>The sign constraint of each dual variable is "opposite" to the sign of its primal constraint. So  "<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \geq b_{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>≥<!-- ≥ --></mo>
+<msub>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \geq b_{j}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \geq b_{j}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3b750068d4d8eda40a9835465922c68e6850cd4f" style="vertical-align: -1.005ex; width:4.361ex; height:2.843ex;"/></span>" becomes  <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y_{j}\leq 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>≤<!-- ≤ --></mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y_{j}\leq 0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle y_{j}\leq 0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1d36193050d9f06f4c6b8211249b1d5f557953fa" style="vertical-align: -1.005ex; width:6.31ex; height:2.843ex;"/></span> and  "<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \leq b_{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>≤<!-- ≤ --></mo>
+<msub>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \leq b_{j}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \leq b_{j}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c4d531e7ab7c6b721661762faeb769fbff1f74f9" style="vertical-align: -1.005ex; width:4.361ex; height:2.843ex;"/></span>" becomes  <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y_{j}\geq 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y_{j}\geq 0}</annotation>
+</semantics>
+</math></span><img alt="y_{j}\geq 0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/49f3403ec2784b5cfb5dbb9f7672742464846410" style="vertical-align: -1.005ex; width:6.31ex; height:2.843ex;"/></span>  and "<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle =b_{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>=</mo>
+<msub>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle =b_{j}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle =b_{j}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/93df9304f366a3c290e62a6134f4197ee53b5ec4" style="vertical-align: -1.005ex; width:4.361ex; height:2.843ex;"/></span>" becomes <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y_{j}\in \mathbb {R} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>∈<!-- ∈ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">R</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y_{j}\in \mathbb {R} }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle y_{j}\in \mathbb {R} }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d426fb0c9e2292e5d7b476b7bcb78a1e6201ef40" style="vertical-align: -1.005ex; width:6.568ex; height:2.843ex;"/></span>.</li>
+<li>The dual objective function is    <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\text{minimize }}~~~b_{1}y_{1}+\cdots +b_{m}y_{m}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>minimize </mtext>
+</mrow>
+<mtext> </mtext>
+<mtext> </mtext>
+<mtext> </mtext>
+<msub>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mo>⋯<!-- ⋯ --></mo>
+<mo>+</mo>
+<msub>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>m</mi>
+</mrow>
+</msub>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>m</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\text{minimize }}~~~b_{1}y_{1}+\cdots +b_{m}y_{m}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\text{minimize }}~~~b_{1}y_{1}+\cdots +b_{m}y_{m}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/393d5cc936d27e123a76afb9560d115e10368fdb" style="vertical-align: -0.671ex; width:29.628ex; height:2.509ex;"/></span></li>
+<li>Each primal variable becomes a dual constraint. So there are <i>n</i> constraints.  The coefficient of a dual variable in the dual constraint is the coefficient of its primal variable in its primal constraint.  So each constraint <i>i</i> is: <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a_{1i}y_{1}+\cdots +a_{mi}y_{m}\lesseqqgtr c_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+<mi>i</mi>
+</mrow>
+</msub>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mo>⋯<!-- ⋯ --></mo>
+<mo>+</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>m</mi>
+<mi>i</mi>
+</mrow>
+</msub>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>m</mi>
+</mrow>
+</msub>
+<mo>⪋<!-- ⪋ --></mo>
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a_{1i}y_{1}+\cdots +a_{mi}y_{m}\lesseqqgtr c_{i}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle a_{1i}y_{1}+\cdots +a_{mi}y_{m}\lesseqqgtr c_{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/56b94348c502b052c5124a184f851da0240df466" style="vertical-align: -1.338ex; width:24.64ex; height:3.843ex;"/></span>, where the symbol before the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c_{i}}</annotation>
+</semantics>
+</math></span><img alt="c_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/01acb7953ba52c2aa44264b5d0f8fd223aa178a2" style="vertical-align: -0.671ex; width:1.807ex; height:2.009ex;"/></span> is similar to the sign constraint on variable <i>i</i> in the primal LP. So <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{i}\leq 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>≤<!-- ≤ --></mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{i}\leq 0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle x_{i}\leq 0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f8feb153376cf595bc9a797b3eb2429efd3c7605" style="vertical-align: -0.671ex; width:6.39ex; height:2.509ex;"/></span> becomes "<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \leq c_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>≤<!-- ≤ --></mo>
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \leq c_{i}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \leq c_{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/82acf0f6151a6a1ca6e31d8db473072621dbab58" style="vertical-align: -0.671ex; width:4.26ex; height:2.343ex;"/></span>" and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{i}\geq 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{i}\geq 0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle x_{i}\geq 0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/90a99710f61d5dea19e49ae5b31164d2b56b07e3" style="vertical-align: -0.671ex; width:6.39ex; height:2.509ex;"/></span> becomes "<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \geq c_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>≥<!-- ≥ --></mo>
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \geq c_{i}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \geq c_{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7d4f47b3df3d9caf88cbd6c0ee3ef87187819045" style="vertical-align: -0.671ex; width:4.26ex; height:2.343ex;"/></span>"  and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{i}\in \mathbb {R} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>∈<!-- ∈ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">R</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{i}\in \mathbb {R} }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle x_{i}\in \mathbb {R} }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c16c64c292c38a4a3ebfee3be0ade520d4463413" style="vertical-align: -0.671ex; width:6.648ex; height:2.509ex;"/></span> becomes "<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle =c_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>=</mo>
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle =c_{i}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle =c_{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9bdaa2ff7305f2116210502886a9dc620f313236" style="vertical-align: -0.671ex; width:4.26ex; height:2.009ex;"/></span>".</li></ul>
+<p>From this algorithm, it is easy to see that the dual of the dual is the primal.
+</p>
+<h2><span class="mw-headline" id="Vector_formulations">Vector formulations</span><span class="mw-editsection"></span></h2>
+<p>If all constraints have the same sign, it is possible to present the above recipe in a shorter way using matrices and vectors. The following table shows the relation between various kinds of primals and duals.
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>Primal
+</th>
+<th>Dual
+</th>
+<th>Note
+</th></tr>
+<tr>
+<td>Maximize <b>c</b><sup>T</sup><b>x</b>  subject to <i>A</i><b>x</b> ≤ <b>b</b>, <b>x</b> ≥ 0
+</td>
+<td>Minimize  <b>b</b><sup>T</sup><b>y</b>  subject to <i>A</i><sup>T</sup><b>y</b> ≥ <b>c</b>, <b>y</b> ≥ 0
+</td>
+<td>This is called a "symmetric" dual problem
+</td></tr>
+<tr>
+<td>Maximize <b>c</b><sup>T</sup><b>x</b> subject to <i>A</i><b>x</b> ≤ <b>b</b>
+</td>
+<td>Minimize  <b>b</b><sup>T</sup><b>y</b> subject to <i>A</i><sup>T</sup><b>y</b> = <b>c</b>, <b>y</b> ≥ 0
+</td>
+<td>This is called an "asymmetric" dual problem
+</td></tr>
+<tr>
+<td>Maximize <b>c</b><sup>T</sup><b>x</b>  subject to <i>A</i><b>x</b> = <b>b</b>, <b>x</b> ≥ 0
+</td>
+<td>Minimize  <b>b</b><sup>T</sup><b>y</b>  subject to <i>A</i><sup>T</sup><b>y</b> ≥ <b>c</b>
+</td>
+<td>
+</td></tr></tbody></table>
+<h2><span class="mw-headline" id="The_duality_theorems">The duality theorems</span><span class="mw-editsection"></span></h2>
+<p>Below, suppose the primal LP is "maximize <b>c</b><sup>T</sup><b>x</b> subject to [constraints]" and the dual LP is "minimize <b>b</b><sup>T</sup><b>y</b> subject to [constraints]".
+</p>
+<h3><span class="mw-headline" id="Weak_duality">Weak duality</span><span class="mw-editsection"></span></h3>
+<p>The <b>weak duality theorem</b> says that, for each feasible solution <b>x</b> of the primal and each feasible solution <b>y</b> of the dual:  <b>c</b><sup>T</sup><b>x</b> ≤ <b>b</b><sup>T</sup><b>y</b>. In other words, the objective value in each feasible solution of the dual is an upper-bound on the objective value of the primal, and objective value in each feasible solution of the primal is a lower-bound on the objective value of the dual. Here is a proof for the primal LP  "Maximize <b>c</b><sup>T</sup><b>x</b>  subject to <i>A</i><b>x</b> ≤ <b>b</b>, <b>x</b> ≥ 0":
+</p>
+<ul><li><b>c</b><sup>T</sup><b>x</b></li>
+<li><b>= x<sup>T</sup>c</b>    [since this just a scalar product of the two vectors]</li>
+<li>≤ <b>x<sup>T</sup></b>(<i><b>A</b></i><sup><b>T</b></sup><b>y</b>)      [since <i>A</i><sup>T</sup><b>y</b> ≥ <b>c</b> by the dual constraints, and <b>x</b> ≥ 0]</li>
+<li>= (<b>x<sup>T</sup><i>A</i><sup>T</sup></b>)<b>y</b>      [by associativity]</li>
+<li>= (<b>Ax</b>)<sup><b>T</b></sup><b>y</b>        [by properties of transpose]</li>
+<li>≤ <b>b<sup>T</sup>y</b>             [since <i>A</i><b>x</b> ≤ <b>b</b> by the primal constraints]</li></ul><p>
+Weak duality implies:</p><blockquote><p>max<sub><b>x</b></sub> <b>c</b><sup>T</sup><b>x</b>   ≤  min<b><sub>y</sub></b> <b>b</b><sup>T</sup><b>y</b></p></blockquote><p>In particular, if the primal is unbounded (from above) then the dual has no feasible solution, and if the dual is unbounded (from below) then the primal has no feasible solution.
+</p><h3><span class="mw-headline" id="Strong_duality">Strong duality</span><span class="mw-editsection"></span></h3><p>
+The <b>strong duality theorem</b> says that if one of the two problems has an optimal solution, so does the other one and that the bounds given by the weak duality theorem are tight, i.e.:</p><blockquote><p>max<sub><b>x</b></sub> <b>c</b><sup>T</sup><b>x</b>  =  min<b><sub>y</sub></b> <b>b</b><sup>T</sup><b>y</b></p></blockquote><p>The strong duality theorem is harder to prove; the proofs usually use the weak duality theorem as a sub-routine.
+</p><p>One proof uses the simplex algorithm and relies on the proof that, with the suitable pivot rule, it provides a correct solution. The proof establishes that, once the simplex algorithm finishes with a solution to the primal LP, it is possible to read from the final tableau, a solution to the dual LP.  So, by running the simplex algorithm, we obtain solutions to both the primal and the dual simultaneously.<sup class="reference" id="cite_ref-gm06_1-4">[1]</sup><sup class="reference nowrap"><span title="Page / location: 87–89">: 87–89 </span></sup>
+</p><p>Another proof uses the Farkas lemma.<sup class="reference" id="cite_ref-gm06_1-5">[1]</sup><sup class="reference nowrap"><span title="Page / location: 94">: 94 </span></sup>
+</p>
+<h3><span class="mw-headline" id="Theoretical_implications">Theoretical implications</span><span class="mw-editsection"></span></h3><p>
+1. The weak duality theorem implies that finding a <i>single</i> feasible solution is as hard as finding an <i>optimal</i> feasible solution. Suppose we have an oracle that, given an LP, finds an arbitrary feasible solution (if one exists). Given the LP "Maximize <b>c</b><sup>T</sup><b>x</b>  subject to <i>A</i><b>x</b> ≤ <b>b</b>, <b>x</b> ≥ 0", we can construct another LP by combining this LP with its dual. The combined LP has both <b>x</b> and <b>y</b> as variables:</p><blockquote><p>Maximize <b>1</b> </p></blockquote><blockquote><p>subject to <i>A</i><b>x</b> ≤ <b>b</b>,    <i>A</i><sup>T</sup><b>y</b> ≥ <b>c</b>,    <b>c</b><sup>T</sup><b>x</b> ≥ <b>b</b><sup>T</sup><b>y</b>,    <b>x</b> ≥ 0,   <b>y</b> ≥ 0</p></blockquote><p>If the combined LP has a feasible solution (<b>x</b>,<b>y</b>), then by weak duality, <b>c</b><sup>T</sup><b>x</b> = <b>b</b><sup>T</sup><b>y</b>. So <b>x</b> must be a maximal solution of the primal LP and <b>y</b> must be a minimal solution of the dual LP. If the combined LP has no feasible solution, then the primal LP has no feasible solution either.
+</p><p>2. The strong duality theorem provides a "good characterization" of the optimal value of an LP in that it allows us to easily prove that some value <i>t</i> is the optimum of some LP. The proof proceeds in two steps:<sup class="reference" id="cite_ref-lp_4-0">[4]</sup><sup class="reference nowrap"><span title="Page / location: 260–261">: 260–261 </span></sup>
+</p>
+<ul><li>Show a feasible solution to the primal LP with value <i>t</i>; this proves that the optimum is at least <i>t</i>.</li>
+<li>Show a feasible solution to the dual LP with value <i>t</i>; this proves that the optimum is at most <i>t</i>.</li></ul>
+<h2><span class="mw-headline" id="Examples">Examples</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Tiny_example">Tiny example</span><span class="mw-editsection"></span></h3>
+<p>Consider the primal LP, with two variables and one constraint:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{aligned}{\text{maximize }}&amp;3x_{1}+4x_{2}\\{\text{subject to }}&amp;5x_{1}+6x_{2}=7\\&amp;x_{1}\geq 0,x_{2}\geq 0\end{aligned}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="right left right left right left right left right left right left" columnspacing="0em 2em 0em 2em 0em 2em 0em 2em 0em 2em 0em" displaystyle="true" rowspacing="3pt">
+<mtr>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>maximize </mtext>
+</mrow>
+</mtd>
+<mtd>
+<mn>3</mn>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>4</mn>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>subject to </mtext>
+</mrow>
+</mtd>
+<mtd>
+<mn>5</mn>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>6</mn>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mn>7</mn>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<mn>0</mn>
+<mo>,</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<mn>0</mn>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{aligned}{\text{maximize }}&amp;3x_{1}+4x_{2}\\{\text{subject to }}&amp;5x_{1}+6x_{2}=7\\&amp;x_{1}\geq 0,x_{2}\geq 0\end{aligned}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\begin{aligned}{\text{maximize }}&amp;3x_{1}+4x_{2}\\{\text{subject to }}&amp;5x_{1}+6x_{2}=7\\&amp;x_{1}\geq 0,x_{2}\geq 0\end{aligned}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8891be6a96fe5a75b68495620d70e0b90bff9fb3" style="vertical-align: -3.838ex; width:25.486ex; height:8.843ex;"/></span></dd></dl>
+<p>Applying the recipe above gives the following dual LP, with one variable and two constraints:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{aligned}{\text{minimize }}&amp;7y_{1}\\{\text{subject to }}&amp;5y_{1}\geq 3\\&amp;6y_{1}\geq 4\\&amp;y_{1}\in \mathbb {R} \end{aligned}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="right left right left right left right left right left right left" columnspacing="0em 2em 0em 2em 0em 2em 0em 2em 0em 2em 0em" displaystyle="true" rowspacing="3pt">
+<mtr>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>minimize </mtext>
+</mrow>
+</mtd>
+<mtd>
+<mn>7</mn>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>subject to </mtext>
+</mrow>
+</mtd>
+<mtd>
+<mn>5</mn>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<mn>3</mn>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mn>6</mn>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<mn>4</mn>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>∈<!-- ∈ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">R</mi>
+</mrow>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{aligned}{\text{minimize }}&amp;7y_{1}\\{\text{subject to }}&amp;5y_{1}\geq 3\\&amp;6y_{1}\geq 4\\&amp;y_{1}\in \mathbb {R} \end{aligned}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\begin{aligned}{\text{minimize }}&amp;7y_{1}\\{\text{subject to }}&amp;5y_{1}\geq 3\\&amp;6y_{1}\geq 4\\&amp;y_{1}\in \mathbb {R} \end{aligned}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9b530cabb1020508e426b44155448ce62718238a" style="vertical-align: -5.338ex; width:18.779ex; height:11.843ex;"/></span></dd></dl>
+<p>It is easy to see that the maximum of the primal LP is attained when <i>x</i><sub>1</sub> is minimized to its lower bound (0) and <i>x</i><sub>2</sub> is maximized to its upper bound under the constraint (7/6). The maximum is 4 · 7/6 = 14/3.
+</p><p>Similarly, the minimum of the dual LP is attained when <i>y</i><sub>1</sub> is minimized to its lower bound under the constraints: the first constraint gives a lower bound of 3/5 while the second constraint gives a stricter lower bound of 4/6, so the actual lower bound is 4/6 and the minimum is 7 · 4/6 = 14/3.
+</p><p>In accordance with the strong duality theorem, the maximum of the primal equals the minimum of the dual.
+</p><p>We use this example to illustrate the proof of the weak duality theorem. Suppose that, in the primal LP, we want to get an upper bound on the objective <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 3x_{1}+4x_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>3</mn>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>4</mn>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 3x_{1}+4x_{2}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 3x_{1}+4x_{2}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a1caeceeff173726920e2aa0c94cc479e77497d5" style="vertical-align: -0.671ex; width:9.933ex; height:2.509ex;"/></span>.  We can use the constraint multiplied by some coefficient, say <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y_{1}}</annotation>
+</semantics>
+</math></span><img alt="y_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/eef4db76d658a98219aca14df06d9869d2b43c42" style="vertical-align: -0.671ex; width:2.193ex; height:2.009ex;"/></span>. For any <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y_{1}}</annotation>
+</semantics>
+</math></span><img alt="y_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/eef4db76d658a98219aca14df06d9869d2b43c42" style="vertical-align: -0.671ex; width:2.193ex; height:2.009ex;"/></span> we get:   <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y_{1}\cdot (5x_{1}+6x_{2})=7y_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>⋅<!-- ⋅ --></mo>
+<mo stretchy="false">(</mo>
+<mn>5</mn>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>6</mn>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>7</mn>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y_{1}\cdot (5x_{1}+6x_{2})=7y_{1}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle y_{1}\cdot (5x_{1}+6x_{2})=7y_{1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/74aba805f2ac3811eb02cc3e6b34e5618f970235" style="vertical-align: -0.838ex; width:22.069ex; height:2.843ex;"/></span>.  Now, if  <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y_{1}\cdot 5x_{1}\geq 3x_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>⋅<!-- ⋅ --></mo>
+<mn>5</mn>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<mn>3</mn>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y_{1}\cdot 5x_{1}\geq 3x_{1}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle y_{1}\cdot 5x_{1}\geq 3x_{1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9ce886b762919a235a9e09645a9ee75479b9b18a" style="vertical-align: -0.671ex; width:14.064ex; height:2.509ex;"/></span>and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y_{1}\cdot 6x_{2}\geq 4x_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>⋅<!-- ⋅ --></mo>
+<mn>6</mn>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<mn>4</mn>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y_{1}\cdot 6x_{2}\geq 4x_{2}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle y_{1}\cdot 6x_{2}\geq 4x_{2}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a7870d9ca3e311b61db2b7c66578f856f988f0b4" style="vertical-align: -0.671ex; width:14.064ex; height:2.509ex;"/></span>, then <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y_{1}\cdot (5x_{1}+6x_{2})\geq 3x_{1}+4x_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>⋅<!-- ⋅ --></mo>
+<mo stretchy="false">(</mo>
+<mn>5</mn>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>6</mn>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>≥<!-- ≥ --></mo>
+<mn>3</mn>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>4</mn>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y_{1}\cdot (5x_{1}+6x_{2})\geq 3x_{1}+4x_{2}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle y_{1}\cdot (5x_{1}+6x_{2})\geq 3x_{1}+4x_{2}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/82dd2215c3047421ad75c8fb37fe69fd9267f433" style="vertical-align: -0.838ex; width:28.647ex; height:2.843ex;"/></span>, so <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 7y_{1}\geq 3x_{1}+4x_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>7</mn>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<mn>3</mn>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>4</mn>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 7y_{1}\geq 3x_{1}+4x_{2}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 7y_{1}\geq 3x_{1}+4x_{2}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fde2ff437c00c20c924ce4e4f9e7f009f0751813" style="vertical-align: -0.671ex; width:16.388ex; height:2.509ex;"/></span>. Hence, the objective of the dual LP is an upper bound on the objective of the primal LP.
+</p>
+<h3><span class="mw-headline" id="Farmer_example">Farmer example</span><span class="mw-editsection"></span></h3>
+<p>Consider a farmer who may grow wheat and barley with the set provision of some <i>L</i> land, <i>F</i> fertilizer and <i>P</i> pesticide.
+To grow one unit of wheat, one unit of land, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle F_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>F</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle F_{1}}</annotation>
+</semantics>
+</math></span><img alt="F_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/100c7fbf174fe8b06eacc2a6b0bb2e1badd1c7ce" style="vertical-align: -0.671ex; width:2.549ex; height:2.509ex;"/></span> units of fertilizer and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>P</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P_{1}}</annotation>
+</semantics>
+</math></span><img alt="P_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/398f438d75434e6fbf48dc232c1ad7228a738568" style="vertical-align: -0.671ex; width:2.547ex; height:2.509ex;"/></span> units of pesticide must be used. Similarly, to grow one unit of barley, one unit of land, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle F_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>F</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle F_{2}}</annotation>
+</semantics>
+</math></span><img alt="F_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0fd17e0779153d765b40ebef91533489b87b2e37" style="vertical-align: -0.671ex; width:2.549ex; height:2.509ex;"/></span> units of fertilizer and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>P</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P_{2}}</annotation>
+</semantics>
+</math></span><img alt="P_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87858df7457aa93caaef5a316db87a7240cc8c29" style="vertical-align: -0.671ex; width:2.547ex; height:2.509ex;"/></span> units of pesticide must be used.
+</p><p>The primal problem would be the farmer deciding how much wheat (<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{1}}</annotation>
+</semantics>
+</math></span><img alt="x_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a8788bf85d532fa88d1fb25eff6ae382a601c308" style="vertical-align: -0.671ex; width:2.384ex; height:2.009ex;"/></span>) and barley (<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{2}}</annotation>
+</semantics>
+</math></span><img alt="x_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d7af1b928f06e4c7e3e8ebfd60704656719bd766" style="vertical-align: -0.671ex; width:2.384ex; height:2.009ex;"/></span>) to grow if their sell prices are <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S_{1}}</annotation>
+</semantics>
+</math></span><img alt="S_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5bf84e7fd4fb8259a9b37f956afdf83ee2a020f9" style="vertical-align: -0.671ex; width:2.479ex; height:2.509ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S_{2}}</annotation>
+</semantics>
+</math></span><img alt="S_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1143e284d5f25cef778ab482edf6617a523ddd9f" style="vertical-align: -0.671ex; width:2.479ex; height:2.509ex;"/></span> per unit.
+</p>
+<table>
+<tbody><tr>
+<td colspan="2">Maximize: <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S_{1}\cdot x_{1}+S_{2}\cdot x_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S_{1}\cdot x_{1}+S_{2}\cdot x_{2}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle S_{1}\cdot x_{1}+S_{2}\cdot x_{2}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7dec056bd019a7cb780aba29201b6e2e68f2b89c" style="vertical-align: -0.671ex; width:15.925ex; height:2.509ex;"/></span>
+</td>
+<td>(maximize the revenue from producing wheat and barley)
+</td></tr>
+<tr>
+<td>subject to:
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{1}+x_{2}\leq L}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>≤<!-- ≤ --></mo>
+<mi>L</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{1}+x_{2}\leq L}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle x_{1}+x_{2}\leq L}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6d67b19bb362ed9055a186d4480fa279ad37e6a7" style="vertical-align: -0.671ex; width:12.29ex; height:2.509ex;"/></span>
+</td>
+<td>(cannot use more land than available)
+</td></tr>
+<tr>
+<td>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle F_{1}\cdot x_{1}+F_{2}\cdot x_{2}\leq F}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>F</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<msub>
+<mi>F</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>≤<!-- ≤ --></mo>
+<mi>F</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle F_{1}\cdot x_{1}+F_{2}\cdot x_{2}\leq F}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle F_{1}\cdot x_{1}+F_{2}\cdot x_{2}\leq F}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4ac3bb61bc71ac8c41a5163964ca10ffc9eef9ce" style="vertical-align: -0.671ex; width:20.903ex; height:2.509ex;"/></span>
+</td>
+<td>(cannot use more fertilizer than available)
+</td></tr>
+<tr>
+<td>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P_{1}\cdot x_{1}+P_{2}\cdot x_{2}\leq P}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>P</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<msub>
+<mi>P</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>≤<!-- ≤ --></mo>
+<mi>P</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P_{1}\cdot x_{1}+P_{2}\cdot x_{2}\leq P}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle P_{1}\cdot x_{1}+P_{2}\cdot x_{2}\leq P}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/da5cc1437a98288e22b1af4f5502ceeeef4b54ac" style="vertical-align: -0.671ex; width:20.903ex; height:2.509ex;"/></span>
+</td>
+<td>(cannot use more pesticide than available)
+</td></tr>
+<tr>
+<td>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{1},x_{2}\geq 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{1},x_{2}\geq 0}</annotation>
+</semantics>
+</math></span><img alt="x_{1},x_{2}\geq 0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b668e0a1d484fae37d9d1375b63fdb0d4a38bf4f" style="vertical-align: -0.671ex; width:10.063ex; height:2.509ex;"/></span>
+</td>
+<td>(cannot produce negative quantities of wheat or barley).
+</td></tr></tbody></table>
+<p>In matrix form this becomes:
+</p>
+<dl><dd>Maximize: <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{bmatrix}S_{1}&amp;S_{2}\end{bmatrix}}{\begin{bmatrix}x_{1}\\x_{2}\end{bmatrix}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>[</mo>
+<mtable columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mtd>
+<mtd>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+</mtable>
+<mo>]</mo>
+</mrow>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>[</mo>
+<mtable columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+</mtable>
+<mo>]</mo>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{bmatrix}S_{1}&amp;S_{2}\end{bmatrix}}{\begin{bmatrix}x_{1}\\x_{2}\end{bmatrix}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\begin{bmatrix}S_{1}&amp;S_{2}\end{bmatrix}}{\begin{bmatrix}x_{1}\\x_{2}\end{bmatrix}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9c476520119e4bf358d8ac36d1ebcd06f81fee69" style="vertical-align: -2.505ex; width:14.916ex; height:6.176ex;"/></span></dd>
+<dd>subject to: <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{bmatrix}1&amp;1\\F_{1}&amp;F_{2}\\P_{1}&amp;P_{2}\end{bmatrix}}{\begin{bmatrix}x_{1}\\x_{2}\end{bmatrix}}\leq {\begin{bmatrix}L\\F\\P\end{bmatrix}},\,{\begin{bmatrix}x_{1}\\x_{2}\end{bmatrix}}\geq 0.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>[</mo>
+<mtable columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<mn>1</mn>
+</mtd>
+<mtd>
+<mn>1</mn>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>F</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mtd>
+<mtd>
+<msub>
+<mi>F</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>P</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mtd>
+<mtd>
+<msub>
+<mi>P</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+</mtable>
+<mo>]</mo>
+</mrow>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>[</mo>
+<mtable columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+</mtable>
+<mo>]</mo>
+</mrow>
+</mrow>
+<mo>≤<!-- ≤ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>[</mo>
+<mtable columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<mi>L</mi>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mi>F</mi>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mi>P</mi>
+</mtd>
+</mtr>
+</mtable>
+<mo>]</mo>
+</mrow>
+</mrow>
+<mo>,</mo>
+<mspace width="thinmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>[</mo>
+<mtable columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+</mtable>
+<mo>]</mo>
+</mrow>
+</mrow>
+<mo>≥<!-- ≥ --></mo>
+<mn>0.</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{bmatrix}1&amp;1\\F_{1}&amp;F_{2}\\P_{1}&amp;P_{2}\end{bmatrix}}{\begin{bmatrix}x_{1}\\x_{2}\end{bmatrix}}\leq {\begin{bmatrix}L\\F\\P\end{bmatrix}},\,{\begin{bmatrix}x_{1}\\x_{2}\end{bmatrix}}\geq 0.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\begin{bmatrix}1&amp;1\\F_{1}&amp;F_{2}\\P_{1}&amp;P_{2}\end{bmatrix}}{\begin{bmatrix}x_{1}\\x_{2}\end{bmatrix}}\leq {\begin{bmatrix}L\\F\\P\end{bmatrix}},\,{\begin{bmatrix}x_{1}\\x_{2}\end{bmatrix}}\geq 0.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4b87340d4c1a4629eaa18ea5d9ff0cc140b0c4c9" style="vertical-align: -4.005ex; width:37.478ex; height:9.176ex;"/></span></dd></dl>
+<p>For the dual problem assume that <i>y</i> unit prices for each of these means of production (inputs) are set by a planning board. The planning board's job is to minimize the total cost of procuring the set amounts of inputs while providing the farmer with a floor on the unit price of each of his crops (outputs), <i>S</i><sub>1</sub> for wheat and <i>S</i><sub>2</sub> for barley. This corresponds to the following LP:
+</p>
+<table>
+<tbody><tr>
+<td colspan="2">Minimize: <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle L\cdot y_{L}+F\cdot y_{F}+P\cdot y_{P}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>L</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>L</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<mi>F</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>F</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<mi>P</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>P</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle L\cdot y_{L}+F\cdot y_{F}+P\cdot y_{P}}</annotation>
+</semantics>
+</math></span><img alt="L\cdot y_{L}+F\cdot y_{F}+P\cdot y_{P}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/57a23c17cea8c64db190da3c5fa58ab13a20c203" style="vertical-align: -0.671ex; width:23.486ex; height:2.509ex;"/></span>
+</td>
+<td>(minimize the total cost of the means of production as the "objective function")
+</td></tr>
+<tr>
+<td>subject to:
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y_{L}+F_{1}\cdot y_{F}+P_{1}\cdot y_{P}\geq S_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>L</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<msub>
+<mi>F</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>F</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<msub>
+<mi>P</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>P</mi>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y_{L}+F_{1}\cdot y_{F}+P_{1}\cdot y_{P}\geq S_{1}}</annotation>
+</semantics>
+</math></span><img alt="y_{L}+F_{1}\cdot y_{F}+P_{1}\cdot y_{P}\geq S_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5a08eeae9272643319a9d990890619f07e222e52" style="vertical-align: -0.671ex; width:27.411ex; height:2.509ex;"/></span>
+</td>
+<td>(the farmer must receive no less than <i>S</i><sub>1</sub> for his wheat)
+</td></tr>
+<tr>
+<td>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y_{L}+F_{2}\cdot y_{F}+P_{2}\cdot y_{P}\geq S_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>L</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<msub>
+<mi>F</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>F</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<msub>
+<mi>P</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>P</mi>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y_{L}+F_{2}\cdot y_{F}+P_{2}\cdot y_{P}\geq S_{2}}</annotation>
+</semantics>
+</math></span><img alt="y_{L}+F_{2}\cdot y_{F}+P_{2}\cdot y_{P}\geq S_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1dbdae94efeb1f67a837b7e7514cad7d7c78b6e3" style="vertical-align: -0.671ex; width:27.411ex; height:2.509ex;"/></span>
+</td>
+<td>(the farmer must receive no less than <i>S</i><sub>2</sub> for his barley)
+</td></tr>
+<tr>
+<td>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y_{L},y_{F},y_{P}\geq 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>L</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>F</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>P</mi>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y_{L},y_{F},y_{P}\geq 0}</annotation>
+</semantics>
+</math></span><img alt="y_{L},y_{F},y_{P}\geq 0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/10dcf0408b128856af87d724ae78314e1c4fbe71" style="vertical-align: -0.671ex; width:14.028ex; height:2.509ex;"/></span>
+</td>
+<td>(prices cannot be negative).
+</td></tr></tbody></table>
+<p>In matrix form this becomes:
+</p>
+<dl><dd>Minimize: <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{bmatrix}L&amp;F&amp;P\end{bmatrix}}{\begin{bmatrix}y_{L}\\y_{F}\\y_{P}\end{bmatrix}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>[</mo>
+<mtable columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<mi>L</mi>
+</mtd>
+<mtd>
+<mi>F</mi>
+</mtd>
+<mtd>
+<mi>P</mi>
+</mtd>
+</mtr>
+</mtable>
+<mo>]</mo>
+</mrow>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>[</mo>
+<mtable columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>L</mi>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>F</mi>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>P</mi>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+</mtable>
+<mo>]</mo>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{bmatrix}L&amp;F&amp;P\end{bmatrix}}{\begin{bmatrix}y_{L}\\y_{F}\\y_{P}\end{bmatrix}}}</annotation>
+</semantics>
+</math></span><img alt="{\begin{bmatrix}L&amp;F&amp;P\end{bmatrix}}{\begin{bmatrix}y_{L}\\y_{F}\\y_{P}\end{bmatrix}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/25e6673756f03ae29069284d9d118444fedbf7f7" style="vertical-align: -4.171ex; width:18.217ex; height:9.509ex;"/></span></dd>
+<dd>subject to: <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{bmatrix}1&amp;F_{1}&amp;P_{1}\\1&amp;F_{2}&amp;P_{2}\end{bmatrix}}{\begin{bmatrix}y_{L}\\y_{F}\\y_{P}\end{bmatrix}}\geq {\begin{bmatrix}S_{1}\\S_{2}\end{bmatrix}},\,{\begin{bmatrix}y_{L}\\y_{F}\\y_{P}\end{bmatrix}}\geq 0.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>[</mo>
+<mtable columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<mn>1</mn>
+</mtd>
+<mtd>
+<msub>
+<mi>F</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mtd>
+<mtd>
+<msub>
+<mi>P</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mn>1</mn>
+</mtd>
+<mtd>
+<msub>
+<mi>F</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mtd>
+<mtd>
+<msub>
+<mi>P</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+</mtable>
+<mo>]</mo>
+</mrow>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>[</mo>
+<mtable columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>L</mi>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>F</mi>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>P</mi>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+</mtable>
+<mo>]</mo>
+</mrow>
+</mrow>
+<mo>≥<!-- ≥ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>[</mo>
+<mtable columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+</mtable>
+<mo>]</mo>
+</mrow>
+</mrow>
+<mo>,</mo>
+<mspace width="thinmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>[</mo>
+<mtable columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>L</mi>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>F</mi>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>P</mi>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+</mtable>
+<mo>]</mo>
+</mrow>
+</mrow>
+<mo>≥<!-- ≥ --></mo>
+<mn>0.</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{bmatrix}1&amp;F_{1}&amp;P_{1}\\1&amp;F_{2}&amp;P_{2}\end{bmatrix}}{\begin{bmatrix}y_{L}\\y_{F}\\y_{P}\end{bmatrix}}\geq {\begin{bmatrix}S_{1}\\S_{2}\end{bmatrix}},\,{\begin{bmatrix}y_{L}\\y_{F}\\y_{P}\end{bmatrix}}\geq 0.}</annotation>
+</semantics>
+</math></span><img alt="{\begin{bmatrix}1&amp;F_{1}&amp;P_{1}\\1&amp;F_{2}&amp;P_{2}\end{bmatrix}}{\begin{bmatrix}y_{L}\\y_{F}\\y_{P}\end{bmatrix}}\geq {\begin{bmatrix}S_{1}\\S_{2}\end{bmatrix}},\,{\begin{bmatrix}y_{L}\\y_{F}\\y_{P}\end{bmatrix}}\geq 0." aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2936f36d2ec51b2a7980cd76c9aa1329ac582468" style="vertical-align: -4.171ex; width:42.138ex; height:9.509ex;"/></span></dd></dl>
+<p>The primal problem deals with physical quantities. With all inputs available in limited quantities, and assuming the unit prices of all outputs is known, what quantities of outputs to produce so as to maximize total revenue? The dual problem deals with economic values. With floor guarantees on all output unit prices, and assuming the available quantity of all inputs is known, what input unit pricing scheme to set so as to minimize total expenditure?
+</p><p>To each variable in the primal space corresponds an inequality to satisfy in the dual space, both indexed by output type. To each inequality to satisfy in the primal space corresponds a variable in the dual space, both indexed by input type.
+</p><p>The coefficients that bound the inequalities in the primal space are used to compute the objective in the dual space, input quantities in this example. The coefficients used to compute the objective in the primal space bound the inequalities in the dual space, output unit prices in this example.
+</p><p>Both the primal and the dual problems make use of the same matrix. In the primal space, this matrix expresses the consumption of physical quantities of inputs necessary to produce set quantities of outputs. In the dual space, it expresses the creation of the economic values associated with the outputs from set input unit prices.
+</p><p>Since each inequality can be replaced by an equality and a slack variable, this means each primal variable corresponds to a dual slack variable, and each dual variable corresponds to a primal slack variable.  This relation allows us to speak about complementary slackness.
+</p>
+<h3><span class="mw-headline" id="Infeasible_program">Infeasible program</span><span class="mw-editsection"></span></h3>
+<p>A LP can also be unbounded or infeasible. Duality theory tells us that:
+</p>
+<ul><li>If the primal is unbounded, then the dual is infeasible;</li>
+<li>If the dual is unbounded, then the primal is infeasible.</li></ul>
+<p>However, it is possible for both the dual and the primal to be infeasible. Here is an example:
+</p>
+<table>
+<tbody><tr>
+<td colspan="2">Maximize: <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2x_{1}-x_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>2</mn>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2x_{1}-x_{2}}</annotation>
+</semantics>
+</math></span><img alt="2x_{1}-x_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bcc21cc02f5905be642d30e512e9fd4035b85583" style="vertical-align: -0.671ex; width:8.771ex; height:2.509ex;"/></span>
+</td></tr>
+<tr>
+<td>Subject to:
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{1}-x_{2}\leq 1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>≤<!-- ≤ --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{1}-x_{2}\leq 1}</annotation>
+</semantics>
+</math></span><img alt="x_{1}-x_{2}\leq 1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ef1e5603823acdb9d4ea161db8a57c3ce10b7a2b" style="vertical-align: -0.671ex; width:11.869ex; height:2.509ex;"/></span>
+</td></tr>
+<tr>
+<td>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle -x_{1}+x_{2}\leq -2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>−<!-- − --></mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>≤<!-- ≤ --></mo>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle -x_{1}+x_{2}\leq -2}</annotation>
+</semantics>
+</math></span><img alt="-x_{1}+x_{2}\leq -2" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e5cce22c98b0fccd9d9a8c2bdc764860fab33293" style="vertical-align: -0.671ex; width:15.485ex; height:2.509ex;"/></span>
+</td></tr>
+<tr>
+<td>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{1},x_{2}\geq 0.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<mn>0.</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{1},x_{2}\geq 0.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle x_{1},x_{2}\geq 0.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e4d859d9f2cc2136ea80a95eb549e167de96eaa2" style="vertical-align: -0.671ex; width:10.71ex; height:2.509ex;"/></span>
+</td></tr></tbody></table>
+<h2><span class="mw-headline" id="Applications">Applications</span><span class="mw-editsection"></span></h2>
+<p>The max-flow min-cut theorem is a special case of the strong duality theorem: flow-maximization is the primal LP, and cut-minimization is the dual LP. See Max-flow min-cut theorem#Linear program formulation.
+</p><p>Other graph-related theorems can be proved using the strong duality theorem, in particular, Konig's theorem.<sup class="reference" id="cite_ref-5">[5]</sup>
+</p><p>The Minimax theorem for zero-sum games can be proved using the strong-duality theorem.<sup class="reference" id="cite_ref-gm06_1-6">[1]</sup><sup class="reference nowrap"><span title="Page / location: sub.8.1">: sub.8.1 </span></sup>
+</p>
+<h2><span class="mw-headline" id="Alternative_algorithm">Alternative algorithm</span><span class="mw-editsection"></span></h2>
+<p>Sometimes, one may find it more intuitive to obtain the dual program without looking at the program matrix. Consider the following linear program:
+</p>
+<table cellspacing="10">
+<tbody><tr>
+<td>Minimize
+</td>
+<td colspan="2"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sum _{i=1}^{m}c_{i}x_{i}+\sum _{j=1}^{n}d_{j}t_{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>m</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>d</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sum _{i=1}^{m}c_{i}x_{i}+\sum _{j=1}^{n}d_{j}t_{j}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \sum _{i=1}^{m}c_{i}x_{i}+\sum _{j=1}^{n}d_{j}t_{j}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/575efa0127d3546f7116b248e876777fafb523ca" style="vertical-align: -3.338ex; width:18.128ex; height:7.176ex;"/></span>
+</td></tr>
+<tr>
+<td>subject to
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sum _{i=1}^{m}a_{ij}x_{i}+e_{j}t_{j}\geq g_{j},}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>m</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<msub>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<msub>
+<mi>g</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sum _{i=1}^{m}a_{ij}x_{i}+e_{j}t_{j}\geq g_{j},}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \sum _{i=1}^{m}a_{ij}x_{i}+e_{j}t_{j}\geq g_{j},}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/779b2160bd8e1eb1dace12579ca90d671ecc304b" style="vertical-align: -3.005ex; width:20.925ex; height:6.843ex;"/></span>
+</td>
+<td>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1\leq j\leq n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>j</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1\leq j\leq n}</annotation>
+</semantics>
+</math></span><img alt="1\leq j\leq n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/829066d1e818107baff629179da368c45fcb8883" style="vertical-align: -0.671ex; width:9.712ex; height:2.509ex;"/></span>
+</td></tr>
+<tr>
+<td>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f_{i}x_{i}+\sum _{j=1}^{n}b_{ij}t_{j}\geq h_{i},}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>f</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f_{i}x_{i}+\sum _{j=1}^{n}b_{ij}t_{j}\geq h_{i},}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle f_{i}x_{i}+\sum _{j=1}^{n}b_{ij}t_{j}\geq h_{i},}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6bbcac839da194ce5875898de2077f46a5f1fba1" style="vertical-align: -3.338ex; width:20.759ex; height:7.176ex;"/></span>
+</td>
+<td>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1\leq i\leq m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>i</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1\leq i\leq m}</annotation>
+</semantics>
+</math></span><img alt="1\leq i\leq m" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/be7492673ec3919cb5774b3ba4bb81a7c2365c88" style="vertical-align: -0.505ex; width:10.202ex; height:2.343ex;"/></span>
+</td></tr>
+<tr>
+<td>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{i}\geq 0,\,t_{j}\geq 0,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<mn>0</mn>
+<mo>,</mo>
+<mspace width="thinmathspace"></mspace>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<mn>0</mn>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{i}\geq 0,\,t_{j}\geq 0,}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle x_{i}\geq 0,\,t_{j}\geq 0,}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/278e360594f558676bcc6d738fb3c104f4931d17" style="vertical-align: -1.005ex; width:14.468ex; height:2.843ex;"/></span>
+</td>
+<td>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1\leq i\leq m,1\leq j\leq n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>i</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>m</mi>
+<mo>,</mo>
+<mn>1</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>j</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1\leq i\leq m,1\leq j\leq n}</annotation>
+</semantics>
+</math></span><img alt="1\leq i\leq m,1\leq j\leq n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f5e42ea3c962b5cd516529d361cfa5d073c38f8d" style="vertical-align: -0.671ex; width:20.948ex; height:2.509ex;"/></span>
+</td></tr></tbody></table>
+<p>We have <i>m</i> + <i>n</i> conditions and all variables are non-negative. We shall define <i>m</i> + <i>n</i> dual variables: <b>y</b><sub>j</sub> and <b>s</b><sub><i>i</i></sub>. We get:
+</p>
+<table cellspacing="10">
+<tbody><tr>
+<td>Minimize
+</td>
+<td colspan="2"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sum _{i=1}^{m}c_{i}x_{i}+\sum _{j=1}^{n}d_{j}t_{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>m</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>d</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sum _{i=1}^{m}c_{i}x_{i}+\sum _{j=1}^{n}d_{j}t_{j}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \sum _{i=1}^{m}c_{i}x_{i}+\sum _{j=1}^{n}d_{j}t_{j}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/575efa0127d3546f7116b248e876777fafb523ca" style="vertical-align: -3.338ex; width:18.128ex; height:7.176ex;"/></span>
+</td></tr>
+<tr>
+<td>subject to
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sum _{i=1}^{m}a_{ij}x_{i}\cdot y_{j}+e_{j}t_{j}\cdot y_{j}\geq g_{j}\cdot y_{j},}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>m</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<msub>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<msub>
+<mi>g</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sum _{i=1}^{m}a_{ij}x_{i}\cdot y_{j}+e_{j}t_{j}\cdot y_{j}\geq g_{j}\cdot y_{j},}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \sum _{i=1}^{m}a_{ij}x_{i}\cdot y_{j}+e_{j}t_{j}\cdot y_{j}\geq g_{j}\cdot y_{j},}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e155389091813026e56f100fba9aa2bcd82754bb" style="vertical-align: -3.005ex; width:32.11ex; height:6.843ex;"/></span>
+</td>
+<td>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1\leq j\leq n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>j</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1\leq j\leq n}</annotation>
+</semantics>
+</math></span><img alt="1\leq j\leq n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/829066d1e818107baff629179da368c45fcb8883" style="vertical-align: -0.671ex; width:9.712ex; height:2.509ex;"/></span>
+</td></tr>
+<tr>
+<td>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f_{i}x_{i}\cdot s_{i}+\sum _{j=1}^{n}b_{ij}t_{j}\cdot s_{i}\geq h_{i}\cdot s_{i},}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>f</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f_{i}x_{i}\cdot s_{i}+\sum _{j=1}^{n}b_{ij}t_{j}\cdot s_{i}\geq h_{i}\cdot s_{i},}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle f_{i}x_{i}\cdot s_{i}+\sum _{j=1}^{n}b_{ij}t_{j}\cdot s_{i}\geq h_{i}\cdot s_{i},}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/951397c643f502153878f3e9fb675c3a28972119" style="vertical-align: -3.338ex; width:31.466ex; height:7.176ex;"/></span>
+</td>
+<td>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1\leq i\leq m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>i</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1\leq i\leq m}</annotation>
+</semantics>
+</math></span><img alt="1\leq i\leq m" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/be7492673ec3919cb5774b3ba4bb81a7c2365c88" style="vertical-align: -0.505ex; width:10.202ex; height:2.343ex;"/></span>
+</td></tr>
+<tr>
+<td>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{i}\geq 0,\,t_{j}\geq 0,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<mn>0</mn>
+<mo>,</mo>
+<mspace width="thinmathspace"></mspace>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<mn>0</mn>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{i}\geq 0,\,t_{j}\geq 0,}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle x_{i}\geq 0,\,t_{j}\geq 0,}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/278e360594f558676bcc6d738fb3c104f4931d17" style="vertical-align: -1.005ex; width:14.468ex; height:2.843ex;"/></span>
+</td>
+<td>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1\leq i\leq m,1\leq j\leq n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>i</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>m</mi>
+<mo>,</mo>
+<mn>1</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>j</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1\leq i\leq m,1\leq j\leq n}</annotation>
+</semantics>
+</math></span><img alt="1\leq i\leq m,1\leq j\leq n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f5e42ea3c962b5cd516529d361cfa5d073c38f8d" style="vertical-align: -0.671ex; width:20.948ex; height:2.509ex;"/></span>
+</td></tr>
+<tr>
+<td>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y_{j}\geq 0,\,s_{i}\geq 0,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<mn>0</mn>
+<mo>,</mo>
+<mspace width="thinmathspace"></mspace>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<mn>0</mn>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y_{j}\geq 0,\,s_{i}\geq 0,}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle y_{j}\geq 0,\,s_{i}\geq 0,}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1de158b2e3204f6860048f50ba29a7aa165449a0" style="vertical-align: -1.005ex; width:14.529ex; height:2.843ex;"/></span>
+</td>
+<td>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1\leq j\leq n,1\leq i\leq m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>j</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>n</mi>
+<mo>,</mo>
+<mn>1</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>i</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1\leq j\leq n,1\leq i\leq m}</annotation>
+</semantics>
+</math></span><img alt="1\leq j\leq n,1\leq i\leq m" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/89a72c78f95b605681c9ca97557fd66e42638363" style="vertical-align: -0.671ex; width:20.948ex; height:2.509ex;"/></span>
+</td></tr></tbody></table>
+<p>Since this is a minimization problem, we would like to obtain a dual program that is a lower bound of the primal. In other words, we would like the sum of all right hand side of the constraints to be the maximal under the condition that for each primal variable the sum of its coefficients do not exceed its coefficient in the linear function. For example, <b>x</b><sub>1</sub> appears in <i>n</i> + 1 constraints. If we sum its constraints' coefficients we get <i>a</i><sub>1,1</sub><b>y</b><sub>1</sub> + <i>a</i><sub>1,2</sub><b>y</b><sub>2</sub> + ... + <i>a</i><sub>1,;;n;;</sub><b>y</b><sub><i>n</i></sub> + <i>f</i><sub>1</sub><b>s</b><sub>1</sub>. This sum must be at most <b>c</b><sub>1</sub>. As a result, we get:
+</p>
+<table cellspacing="10">
+<tbody><tr>
+<td>Maximize
+</td>
+<td colspan="2"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sum _{j=1}^{n}g_{j}y_{j}+\sum _{i=1}^{m}h_{i}s_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>g</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>m</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sum _{j=1}^{n}g_{j}y_{j}+\sum _{i=1}^{m}h_{i}s_{i}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \sum _{j=1}^{n}g_{j}y_{j}+\sum _{i=1}^{m}h_{i}s_{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/81c23cdbec10f8d916fb38dcca4212050096803a" style="vertical-align: -3.338ex; width:18.421ex; height:7.176ex;"/></span>
+</td></tr>
+<tr>
+<td>subject to
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sum _{j=1}^{n}a_{ij}y_{j}+f_{i}s_{i}\leq c_{i},}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<msub>
+<mi>f</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>≤<!-- ≤ --></mo>
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sum _{j=1}^{n}a_{ij}y_{j}+f_{i}s_{i}\leq c_{i},}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \sum _{j=1}^{n}a_{ij}y_{j}+f_{i}s_{i}\leq c_{i},}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/03478cac5c019d6d2fb949809d0217a821d4562b" style="vertical-align: -3.338ex; width:20.719ex; height:7.176ex;"/></span>
+</td>
+<td>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1\leq i\leq m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>i</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1\leq i\leq m}</annotation>
+</semantics>
+</math></span><img alt="1\leq i\leq m" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/be7492673ec3919cb5774b3ba4bb81a7c2365c88" style="vertical-align: -0.505ex; width:10.202ex; height:2.343ex;"/></span>
+</td></tr>
+<tr>
+<td>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle e_{j}y_{j}+\sum _{i=1}^{m}b_{ij}s_{i}\leq d_{j},}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>m</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>≤<!-- ≤ --></mo>
+<msub>
+<mi>d</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle e_{j}y_{j}+\sum _{i=1}^{m}b_{ij}s_{i}\leq d_{j},}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle e_{j}y_{j}+\sum _{i=1}^{m}b_{ij}s_{i}\leq d_{j},}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/623565c7aadea7447d6ac4777b3f53e1eea0afef" style="vertical-align: -3.005ex; width:20.853ex; height:6.843ex;"/></span>
+</td>
+<td>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1\leq j\leq n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>j</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1\leq j\leq n}</annotation>
+</semantics>
+</math></span><img alt="1\leq j\leq n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/829066d1e818107baff629179da368c45fcb8883" style="vertical-align: -0.671ex; width:9.712ex; height:2.509ex;"/></span>
+</td></tr>
+<tr>
+<td>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y_{j}\geq 0,\,s_{i}\geq 0,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<mn>0</mn>
+<mo>,</mo>
+<mspace width="thinmathspace"></mspace>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<mn>0</mn>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y_{j}\geq 0,\,s_{i}\geq 0,}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle y_{j}\geq 0,\,s_{i}\geq 0,}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1de158b2e3204f6860048f50ba29a7aa165449a0" style="vertical-align: -1.005ex; width:14.529ex; height:2.843ex;"/></span>
+</td>
+<td>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1\leq j\leq n,1\leq i\leq m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>j</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>n</mi>
+<mo>,</mo>
+<mn>1</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>i</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1\leq j\leq n,1\leq i\leq m}</annotation>
+</semantics>
+</math></span><img alt="1\leq j\leq n,1\leq i\leq m" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/89a72c78f95b605681c9ca97557fd66e42638363" style="vertical-align: -0.671ex; width:20.948ex; height:2.509ex;"/></span>
+</td></tr></tbody></table>
+<p>Note that we assume in our calculations steps that the program is in standard form. However, any linear program may be transformed to standard form and it is therefore not a limiting factor.
+</p>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<!-- 
+NewPP limit report
+Parsed by mw2299
+Cached time: 20221223002721
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.264 seconds
+Real time usage: 0.764 seconds
+Preprocessor visited node count: 2685/1000000
+Post‐expand include size: 15550/2097152 bytes
+Template argument size: 739/2097152 bytes
+Highest expansion depth: 16/100
+Expensive parser function count: 0/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 21170/5000000 bytes
+Lua time usage: 0.079/10.000 seconds
+Lua memory usage: 3996653/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  168.688      1 -total
+ 62.65%  105.680      1 Template:Reflist
+ 38.97%   65.740      2 Template:Cite_book
+ 37.97%   64.046      1 Template:Cite_Gartner_Matousek_2006
+ 33.73%   56.905      7 Template:Rp
+ 31.42%   52.996      7 Template:R/superscript
+ 18.07%   30.483     21 Template:R/where
+  6.11%   10.303      2 Template:Citation
+  3.76%    6.340      1 Template:Cite_Lovasz_Plummer
+  3.17%    5.348      1 Template:Cite_web
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:15772894-0!canonical and timestamp 20221223002720 and revision id 1128978314.
+ -->
+</div></body>
+</html>

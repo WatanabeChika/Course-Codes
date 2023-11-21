@@ -1,0 +1,2024 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Deutsch-Jozsa_algorithm</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p>The <b>Deutsch–Jozsa algorithm</b> is a deterministic quantum algorithm proposed by David Deutsch and Richard Jozsa in 1992 with improvements by Richard Cleve, Artur Ekert, Chiara Macchiavello, and Michele Mosca in 1998.<sup class="reference" id="cite_ref-DJ92_1-0">[1]</sup><sup class="reference" id="cite_ref-CEMM98_2-0">[2]</sup> Although of little current practical use, it is one of the first examples of a quantum algorithm that is exponentially faster than any possible deterministic classical algorithm.<sup class="reference" id="cite_ref-3">[3]</sup>
+</p><p>The Deutsch–Jozsa problem is specifically designed to be easy for a quantum algorithm and hard for any deterministic classical algorithm. It is a black box problem that can be solved efficiently by a quantum computer with no error, whereas a deterministic classical computer would need a exponential number of queries to the black box to solve the problem. More formally, it yields an oracle relative to which <b>EQP</b>, the class of problems that can be solved exactly in polynomial time on a quantum computer, and <b>P</b> are different.<sup class="reference" id="cite_ref-Johansson2017_4-0">[4]</sup>
+</p><p>Since the problem is easy to solve on a probabilistic classical computer, it does not yield an oracle separation with <b>BPP</b>, the class of problems that can be solved with bounded error in polynomial time on a probabilistic classical computer. Simon's problem is an example of a problem that yields an oracle separation between <b>BQP</b> and <b>BPP</b>.
+</p>
+
+<h2><span class="mw-headline" id="Problem_statement">Problem statement</span><span class="mw-editsection"></span></h2>
+<p>In the Deutsch–Jozsa problem, we are given a black box quantum computer known as an oracle that implements some function: 
+</p><p><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f\colon \{0,1\}^{n}\rightarrow \{0,1\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo>:<!-- : --></mo>
+<mo fence="false" stretchy="false">{</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mn>1</mn>
+<msup>
+<mo fence="false" stretchy="false">}</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mo stretchy="false">→<!-- → --></mo>
+<mo fence="false" stretchy="false">{</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mn>1</mn>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f\colon \{0,1\}^{n}\rightarrow \{0,1\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle f\colon \{0,1\}^{n}\rightarrow \{0,1\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f713c7fab3c3cb60f59ac3ca1cafddb734b927bd" style="vertical-align: -0.838ex; width:18.513ex; height:2.843ex;"/></span>
+</p><p>The function takes n-bit binary values as input and produces either a 0 or a 1 as output for each such value. We are promised that the function is either constant (0 on all inputs or 1 on all inputs) or <i>balanced</i> (1 for exactly half of the input domain and 0 for the other half).<sup class="reference" id="cite_ref-DJ92_1-1">[1]</sup> The task then is to determine if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f}</annotation>
+</semantics>
+</math></span><img alt="f" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/132e57acb643253e7810ee9702d9581f159a1c61" style="vertical-align: -0.671ex; width:1.279ex; height:2.509ex;"/></span> is constant or balanced by using the oracle.
+</p>
+<h2><span class="mw-headline" id="Classical_solution">Classical solution</span><span class="mw-editsection"></span></h2>
+<p>For a conventional deterministic algorithm where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span> is the number of bits, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{n-1}+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{n-1}+1}</annotation>
+</semantics>
+</math></span><img alt="2^{{n-1}}+1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/63c360467bd69c84245273b9dbf52230e11fde24" style="vertical-align: -0.505ex; width:8.484ex; height:2.843ex;"/></span> evaluations of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f}</annotation>
+</semantics>
+</math></span><img alt="f" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/132e57acb643253e7810ee9702d9581f159a1c61" style="vertical-align: -0.671ex; width:1.279ex; height:2.509ex;"/></span> will be required in the worst case. To prove that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f}</annotation>
+</semantics>
+</math></span><img alt="f" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/132e57acb643253e7810ee9702d9581f159a1c61" style="vertical-align: -0.671ex; width:1.279ex; height:2.509ex;"/></span> is constant, just over half the set of inputs must be evaluated and their outputs found to be identical (because the function is guaranteed to be either balanced or constant, not somewhere in between). The best case occurs where the function is balanced and the first two output values are different. For a conventional randomized algorithm, a constant <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k}</annotation>
+</semantics>
+</math></span><img alt="k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3c9a2c7b599b37105512c5d570edc034056dd40" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> evaluations of the function suffices to produce the correct answer with a high probability (failing with probability <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \epsilon \leq 1/2^{k}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>ϵ<!-- ϵ --></mi>
+<mo>≤<!-- ≤ --></mo>
+<mn>1</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \epsilon \leq 1/2^{k}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \epsilon \leq 1/2^{k}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3bb698c931dd2653fd77c77d5855c49635676d27" style="vertical-align: -0.838ex; width:8.619ex; height:3.176ex;"/></span> with <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k\geq 1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+<mo>≥<!-- ≥ --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k\geq 1}</annotation>
+</semantics>
+</math></span><img alt="k\geq 1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d30d7dcf305b7bce39d36df72fe3985b47aa9961" style="vertical-align: -0.505ex; width:5.472ex; height:2.343ex;"/></span>). However, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k=2^{n-1}+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+<mo>=</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k=2^{n-1}+1}</annotation>
+</semantics>
+</math></span><img alt="k=2^{{n-1}}+1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/05fa2f22fc26840563ee59f5c21a231183a32a75" style="vertical-align: -0.505ex; width:12.794ex; height:2.843ex;"/></span> evaluations are still required if we want an answer that has no possibility of error. The Deutsch-Jozsa quantum algorithm produces an answer that is always correct with a single evaluation of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f}</annotation>
+</semantics>
+</math></span><img alt="f" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/132e57acb643253e7810ee9702d9581f159a1c61" style="vertical-align: -0.671ex; width:1.279ex; height:2.509ex;"/></span>.
+</p>
+<h2><span class="mw-headline" id="History">History</span><span class="mw-editsection"></span></h2>
+<p>The Deutsch–Jozsa algorithm generalizes earlier (1985) work by David Deutsch, which provided a solution for the simple case where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n=1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n=1}</annotation>
+</semantics>
+</math></span><img alt="n=1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d9ec7e1edc2e6d98f5aec2a39ae5f1c99d1e1425" style="vertical-align: -0.338ex; width:5.656ex; height:2.176ex;"/></span>. 
+<br/>Specifically, given a boolean function whose input is 1 bit, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f:\{0,1\}\rightarrow \{0,1\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo>:</mo>
+<mo fence="false" stretchy="false">{</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mn>1</mn>
+<mo fence="false" stretchy="false">}</mo>
+<mo stretchy="false">→<!-- → --></mo>
+<mo fence="false" stretchy="false">{</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mn>1</mn>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f:\{0,1\}\rightarrow \{0,1\}}</annotation>
+</semantics>
+</math></span><img alt="f:\{0,1\}\rightarrow \{0,1\}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ecd95c5d716cb2ad23d6b5dc008678a7670916e2" style="vertical-align: -0.838ex; width:18.197ex; height:2.843ex;"/></span>, is it constant?<sup class="reference" id="cite_ref-Deu85_5-0">[5]</sup>
+</p><p>The algorithm as Deutsch had originally proposed it was not, in fact, deterministic. The algorithm was successful with a probability of one half. 
+In 1992, Deutsch and Jozsa produced a deterministic algorithm which was generalized to a function which takes <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span> bits for its input. Unlike Deutsch's algorithm, this algorithm required two function evaluations instead of only one.
+</p><p>Further improvements to the Deutsch–Jozsa algorithm were made by Cleve et al.,<sup class="reference" id="cite_ref-CEMM98_2-1">[2]</sup> resulting in an algorithm that is both deterministic and requires only a single query of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f}</annotation>
+</semantics>
+</math></span><img alt="f" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/132e57acb643253e7810ee9702d9581f159a1c61" style="vertical-align: -0.671ex; width:1.279ex; height:2.509ex;"/></span>. This algorithm is still referred to as Deutsch–Jozsa algorithm in honour of the groundbreaking techniques they employed.<sup class="reference" id="cite_ref-CEMM98_2-2">[2]</sup>
+</p>
+<h2><span class="mw-headline" id="Algorithm">Algorithm</span><span class="mw-editsection"></span></h2>
+<p>For the Deutsch–Jozsa algorithm to work, the oracle computing <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(x)}</annotation>
+</semantics>
+</math></span><img alt="f(x)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/202945cce41ecebb6f643f31d119c514bec7a074" style="vertical-align: -0.838ex; width:4.418ex; height:2.843ex;"/></span> from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> must be a quantum oracle which does not decohere <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span>. It also must not make a copy of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span>, because that would violate the no cloning theorem.
+</p>
+
+<p>The algorithm begins with the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n+1}</annotation>
+</semantics>
+</math></span><img alt="n+1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2a135e65a42f2d73cccbfc4569523996ca0036f1" style="vertical-align: -0.505ex; width:5.398ex; height:2.343ex;"/></span> bit state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |0\rangle ^{\otimes n}|1\rangle }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>0</mn>
+<msup>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>⊗<!-- ⊗ --></mo>
+<mi>n</mi>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>1</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |0\rangle ^{\otimes n}|1\rangle }</annotation>
+</semantics>
+</math></span><img alt="|0\rangle ^{{\otimes n}}|1\rangle " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/74ebbf3426ea5460233805b0f3a86675fa4e915f" style="vertical-align: -0.838ex; width:7.925ex; height:3.009ex;"/></span>. That is, the first n bits are each in the state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |0\rangle }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>0</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |0\rangle }</annotation>
+</semantics>
+</math></span><img alt="|0\rangle " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ed066a3ad158da0ad6d6a421a606b1c8a35eb95b" style="vertical-align: -0.838ex; width:2.714ex; height:2.843ex;"/></span> and the final bit is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |1\rangle }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>1</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |1\rangle }</annotation>
+</semantics>
+</math></span><img alt="|1\rangle " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2f53021ca18e77477ee5bd3c1523e5830189ec5c" style="vertical-align: -0.838ex; width:2.714ex; height:2.843ex;"/></span>. A Hadamard transform is applied to each bit to obtain the state
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\frac {1}{\sqrt {2^{n+1}}}}\sum _{x=0}^{2^{n}-1}|x\rangle (|0\rangle -|1\rangle )}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<msqrt>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msup>
+</msqrt>
+</mfrac>
+</mrow>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>x</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</munderover>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>x</mi>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>0</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo>−<!-- − --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>1</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\frac {1}{\sqrt {2^{n+1}}}}\sum _{x=0}^{2^{n}-1}|x\rangle (|0\rangle -|1\rangle )}</annotation>
+</semantics>
+</math></span><img alt="{\frac  {1}{{\sqrt  {2^{{n+1}}}}}}\sum _{{x=0}}^{{2^{n}-1}}|x\rangle (|0\rangle -|1\rangle )" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1e8e282cb185d113cea41d7effbb2a7824da0ff1" style="vertical-align: -3.171ex; width:25.262ex; height:7.509ex;"/></span>.</dd></dl>
+<p>We have the function <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f}</annotation>
+</semantics>
+</math></span><img alt="f" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/132e57acb643253e7810ee9702d9581f159a1c61" style="vertical-align: -0.671ex; width:1.279ex; height:2.509ex;"/></span> implemented as a quantum oracle. The oracle maps the state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |x\rangle |y\rangle }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>x</mi>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>y</mi>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |x\rangle |y\rangle }</annotation>
+</semantics>
+</math></span><img alt="|x\rangle |y\rangle " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/117efc81558a975a62aa4444733440ad5f65b980" style="vertical-align: -0.838ex; width:5.588ex; height:2.843ex;"/></span> to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |x\rangle |y\oplus f(x)\rangle }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>x</mi>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>y</mi>
+<mo>⊕<!-- ⊕ --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |x\rangle |y\oplus f(x)\rangle }</annotation>
+</semantics>
+</math></span><img alt="|x\rangle |y\oplus f(x)\rangle " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6280bad32d01da9eaf2066b19764f8c3ab812ad6" style="vertical-align: -0.838ex; width:12.846ex; height:2.843ex;"/></span>, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \oplus }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>⊕<!-- ⊕ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \oplus }</annotation>
+</semantics>
+</math></span><img alt="\oplus " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8b16e2bdaefee9eed86d866e6eba3ac47c710f60" style="vertical-align: -0.505ex; width:1.808ex; height:2.176ex;"/></span> denotes addition modulo 2. Applying the quantum oracle gives;
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\frac {1}{\sqrt {2^{n+1}}}}\sum _{x=0}^{2^{n}-1}|x\rangle (|0\oplus f(x)\rangle -|1\oplus f(x)\rangle )}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<msqrt>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msup>
+</msqrt>
+</mfrac>
+</mrow>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>x</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</munderover>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>x</mi>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>0</mn>
+<mo>⊕<!-- ⊕ --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo>−<!-- − --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>1</mn>
+<mo>⊕<!-- ⊕ --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\frac {1}{\sqrt {2^{n+1}}}}\sum _{x=0}^{2^{n}-1}|x\rangle (|0\oplus f(x)\rangle -|1\oplus f(x)\rangle )}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\frac {1}{\sqrt {2^{n+1}}}}\sum _{x=0}^{2^{n}-1}|x\rangle (|0\oplus f(x)\rangle -|1\oplus f(x)\rangle )}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/575a27c30c7acab1de6f973141d282e64823b4db" style="vertical-align: -3.171ex; width:39.778ex; height:7.509ex;"/></span>.</dd></dl>
+<p>For each <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x,f(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+<mo>,</mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x,f(x)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle x,f(x)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/089191d6fcec60fb5a5a77b39600faf7038a4a51" style="vertical-align: -0.838ex; width:6.781ex; height:2.843ex;"/></span> is either 0 or 1. Testing these two possibilities, we see the above state is equal to
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\frac {1}{\sqrt {2^{n+1}}}}\sum _{x=0}^{2^{n}-1}(-1)^{f(x)}|x\rangle (|0\rangle -|1\rangle )}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<msqrt>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msup>
+</msqrt>
+</mfrac>
+</mrow>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>x</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</munderover>
+<mo stretchy="false">(</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>x</mi>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>0</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo>−<!-- − --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>1</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\frac {1}{\sqrt {2^{n+1}}}}\sum _{x=0}^{2^{n}-1}(-1)^{f(x)}|x\rangle (|0\rangle -|1\rangle )}</annotation>
+</semantics>
+</math></span><img alt="{\frac  {1}{{\sqrt  {2^{{n+1}}}}}}\sum _{{x=0}}^{{2^{n}-1}}(-1)^{{f(x)}}|x\rangle (|0\rangle -|1\rangle )" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/abf82f90322364430dd88a7b2a4b64693b67f404" style="vertical-align: -3.171ex; width:33.01ex; height:7.509ex;"/></span>.</dd></dl>
+<p>At this point the last qubit <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\frac {|0\rangle -|1\rangle }{\sqrt {2}}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>0</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo>−<!-- − --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>1</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+</mrow>
+<msqrt>
+<mn>2</mn>
+</msqrt>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\frac {|0\rangle -|1\rangle }{\sqrt {2}}}}</annotation>
+</semantics>
+</math></span><img alt="\frac{|0\rangle - |1\rangle}{\sqrt{2}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4e428aaf74b13b0709992efede12bfa92e06247c" style="vertical-align: -2.838ex; width:9.104ex; height:6.676ex;"/></span> may be ignored and the following remains:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\frac {1}{\sqrt {2^{n}}}}\sum _{x=0}^{2^{n}-1}(-1)^{f(x)}|x\rangle }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<msqrt>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+</msqrt>
+</mfrac>
+</mrow>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>x</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</munderover>
+<mo stretchy="false">(</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>x</mi>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\frac {1}{\sqrt {2^{n}}}}\sum _{x=0}^{2^{n}-1}(-1)^{f(x)}|x\rangle }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\frac {1}{\sqrt {2^{n}}}}\sum _{x=0}^{2^{n}-1}(-1)^{f(x)}|x\rangle }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0c82f3a83139a67aea1598bca962822932798d4e" style="vertical-align: -3.005ex; width:20.444ex; height:7.343ex;"/></span>.</dd></dl>
+<p>Next, we will apply the Hadamard transform
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle H^{\otimes n}|k\rangle ={\frac {1}{\sqrt {2^{n}}}}\sum _{j=0}^{2^{n}-1}(-1)^{k\cdot j}|j\rangle }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>H</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>⊗<!-- ⊗ --></mo>
+<mi>n</mi>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>k</mi>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<msqrt>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+</msqrt>
+</mfrac>
+</mrow>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</munderover>
+<mo stretchy="false">(</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<mi>j</mi>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>j</mi>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle H^{\otimes n}|k\rangle ={\frac {1}{\sqrt {2^{n}}}}\sum _{j=0}^{2^{n}-1}(-1)^{k\cdot j}|j\rangle }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle H^{\otimes n}|k\rangle ={\frac {1}{\sqrt {2^{n}}}}\sum _{j=0}^{2^{n}-1}(-1)^{k\cdot j}|j\rangle }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0817994eb7191dae88c2dc09b61b8c55f63aa74a" style="vertical-align: -3.338ex; width:29.402ex; height:7.676ex;"/></span></dd></dl>
+<p>(<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle j\cdot k=j_{0}k_{0}\oplus j_{1}k_{1}\oplus \cdots \oplus j_{n-1}k_{n-1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>j</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<mi>k</mi>
+<mo>=</mo>
+<msub>
+<mi>j</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>⊕<!-- ⊕ --></mo>
+<msub>
+<mi>j</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>⊕<!-- ⊕ --></mo>
+<mo>⋯<!-- ⋯ --></mo>
+<mo>⊕<!-- ⊕ --></mo>
+<msub>
+<mi>j</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle j\cdot k=j_{0}k_{0}\oplus j_{1}k_{1}\oplus \cdots \oplus j_{n-1}k_{n-1}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle j\cdot k=j_{0}k_{0}\oplus j_{1}k_{1}\oplus \cdots \oplus j_{n-1}k_{n-1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/776db953370c5aa97c27730f392eb6cff6cf39b0" style="vertical-align: -0.671ex; margin-left: -0.027ex; width:35.581ex; height:2.509ex;"/></span> is the sum of the bitwise product, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \oplus }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>⊕<!-- ⊕ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \oplus }</annotation>
+</semantics>
+</math></span><img alt="\oplus " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8b16e2bdaefee9eed86d866e6eba3ac47c710f60" style="vertical-align: -0.505ex; width:1.808ex; height:2.176ex;"/></span> is addition modulo 2) over the first register to obtain
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\frac {1}{\sqrt {2^{n}}}}\sum _{x=0}^{2^{n}-1}(-1)^{f(x)}\left[{\frac {1}{\sqrt {2^{n}}}}\sum _{y=0}^{2^{n}-1}(-1)^{x\cdot y}|y\rangle \right]=\sum _{y=0}^{2^{n}-1}\left[{\frac {1}{2^{n}}}\sum _{x=0}^{2^{n}-1}(-1)^{f(x)}(-1)^{x\cdot y}\right]|y\rangle }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<msqrt>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+</msqrt>
+</mfrac>
+</mrow>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>x</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</munderover>
+<mo stretchy="false">(</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+<mrow>
+<mo>[</mo>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<msqrt>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+</msqrt>
+</mfrac>
+</mrow>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>y</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</munderover>
+<mo stretchy="false">(</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>x</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<mi>y</mi>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>y</mi>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+</mrow>
+<mo>]</mo>
+</mrow>
+<mo>=</mo>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>y</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</munderover>
+<mrow>
+<mo>[</mo>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+</mfrac>
+</mrow>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>x</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</munderover>
+<mo stretchy="false">(</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>x</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<mi>y</mi>
+</mrow>
+</msup>
+</mrow>
+<mo>]</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>y</mi>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\frac {1}{\sqrt {2^{n}}}}\sum _{x=0}^{2^{n}-1}(-1)^{f(x)}\left[{\frac {1}{\sqrt {2^{n}}}}\sum _{y=0}^{2^{n}-1}(-1)^{x\cdot y}|y\rangle \right]=\sum _{y=0}^{2^{n}-1}\left[{\frac {1}{2^{n}}}\sum _{x=0}^{2^{n}-1}(-1)^{f(x)}(-1)^{x\cdot y}\right]|y\rangle }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\frac {1}{\sqrt {2^{n}}}}\sum _{x=0}^{2^{n}-1}(-1)^{f(x)}\left[{\frac {1}{\sqrt {2^{n}}}}\sum _{y=0}^{2^{n}-1}(-1)^{x\cdot y}|y\rangle \right]=\sum _{y=0}^{2^{n}-1}\left[{\frac {1}{2^{n}}}\sum _{x=0}^{2^{n}-1}(-1)^{f(x)}(-1)^{x\cdot y}\right]|y\rangle }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b730ea6230891dd2a773119f37f72b0603eecf9f" style="vertical-align: -3.338ex; width:76.054ex; height:7.676ex;"/></span></dd></dl>
+<p>From this, we can see that the probability for a state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k}</annotation>
+</semantics>
+</math></span><img alt="k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3c9a2c7b599b37105512c5d570edc034056dd40" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> to be measured is
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \left|{\frac {1}{2^{n}}}\sum _{x=0}^{2^{n}-1}(-1)^{f(x)}(-1)^{x\cdot k}\right|^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mrow>
+<mo>|</mo>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+</mfrac>
+</mrow>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>x</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</munderover>
+<mo stretchy="false">(</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>x</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<mi>k</mi>
+</mrow>
+</msup>
+</mrow>
+<mo>|</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \left|{\frac {1}{2^{n}}}\sum _{x=0}^{2^{n}-1}(-1)^{f(x)}(-1)^{x\cdot k}\right|^{2}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \left|{\frac {1}{2^{n}}}\sum _{x=0}^{2^{n}-1}(-1)^{f(x)}(-1)^{x\cdot k}\right|^{2}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8e4db42c3672a03e079633912817b9adaea8ba04" style="vertical-align: -3.171ex; width:25.242ex; height:8.009ex;"/></span></dd></dl>
+<p>The probability of measuring <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k=0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k=0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle k=0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6307c8a99dad7d0bcb712352ae0a748bd99a038b" style="vertical-align: -0.338ex; width:5.472ex; height:2.176ex;"/></span>, corresponding to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |0\rangle ^{\otimes n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>0</mn>
+<msup>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>⊗<!-- ⊗ --></mo>
+<mi>n</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |0\rangle ^{\otimes n}}</annotation>
+</semantics>
+</math></span><img alt="|0\rangle ^{{\otimes n}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/de7fb7c35a405ed7bb9376e84754d039f3030998" style="vertical-align: -0.838ex; width:5.211ex; height:3.009ex;"/></span>, is
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\bigg |}{\frac {1}{2^{n}}}\sum _{x=0}^{2^{n}-1}(-1)^{f(x)}{\bigg |}^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mo maxsize="2.047em" minsize="2.047em">|</mo>
+</mrow>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+</mfrac>
+</mrow>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>x</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</munderover>
+<mo stretchy="false">(</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+<msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mo maxsize="2.047em" minsize="2.047em">|</mo>
+</mrow>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\bigg |}{\frac {1}{2^{n}}}\sum _{x=0}^{2^{n}-1}(-1)^{f(x)}{\bigg |}^{2}}</annotation>
+</semantics>
+</math></span><img alt="{\bigg |}{\frac  {1}{2^{n}}}\sum _{{x=0}}^{{2^{n}-1}}(-1)^{{f(x)}}{\bigg |}^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d63bcf95178860da9a399485674f72ffbfb8620e" style="vertical-align: -3.005ex; width:17.975ex; height:7.343ex;"/></span></dd></dl>
+<p>which evaluates to 1 if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(x)}</annotation>
+</semantics>
+</math></span><img alt="f(x)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/202945cce41ecebb6f643f31d119c514bec7a074" style="vertical-align: -0.838ex; width:4.418ex; height:2.843ex;"/></span> is constant (constructive interference) and 0 if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(x)}</annotation>
+</semantics>
+</math></span><img alt="f(x)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/202945cce41ecebb6f643f31d119c514bec7a074" style="vertical-align: -0.838ex; width:4.418ex; height:2.843ex;"/></span> is balanced (destructive interference). In other words, the final measurement will be <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |0\rangle ^{\otimes n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>0</mn>
+<msup>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>⊗<!-- ⊗ --></mo>
+<mi>n</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |0\rangle ^{\otimes n}}</annotation>
+</semantics>
+</math></span><img alt="|0\rangle ^{{\otimes n}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/de7fb7c35a405ed7bb9376e84754d039f3030998" style="vertical-align: -0.838ex; width:5.211ex; height:3.009ex;"/></span> (all zeros) if and only if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(x)}</annotation>
+</semantics>
+</math></span><img alt="f(x)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/202945cce41ecebb6f643f31d119c514bec7a074" style="vertical-align: -0.838ex; width:4.418ex; height:2.843ex;"/></span> is constant and will yield some other state if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(x)}</annotation>
+</semantics>
+</math></span><img alt="f(x)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/202945cce41ecebb6f643f31d119c514bec7a074" style="vertical-align: -0.838ex; width:4.418ex; height:2.843ex;"/></span> is balanced.
+</p>
+<h2><span id="Deutsch.27s_algorithm"></span><span class="mw-headline" id="Deutsch's_algorithm">Deutsch's algorithm</span><span class="mw-editsection"></span></h2>
+<p>Deutsch's algorithm is a special case of the general Deutsch–Jozsa algorithm where n = 1 in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f\colon \{0,1\}^{n}\rightarrow \{0,1\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo>:<!-- : --></mo>
+<mo fence="false" stretchy="false">{</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mn>1</mn>
+<msup>
+<mo fence="false" stretchy="false">}</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mo stretchy="false">→<!-- → --></mo>
+<mo fence="false" stretchy="false">{</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mn>1</mn>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f\colon \{0,1\}^{n}\rightarrow \{0,1\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle f\colon \{0,1\}^{n}\rightarrow \{0,1\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f713c7fab3c3cb60f59ac3ca1cafddb734b927bd" style="vertical-align: -0.838ex; width:18.513ex; height:2.843ex;"/></span>. We need to check the condition <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(0)=f(1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>0</mn>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(0)=f(1)}</annotation>
+</semantics>
+</math></span><img alt="f(0)=f(1)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cc37ee05542c1472c465dd6441c3d3a8a1adfa6d" style="vertical-align: -0.838ex; width:11.599ex; height:2.843ex;"/></span>. It is equivalent to check <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(0)\oplus f(1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>0</mn>
+<mo stretchy="false">)</mo>
+<mo>⊕<!-- ⊕ --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(0)\oplus f(1)}</annotation>
+</semantics>
+</math></span><img alt="f(0)\oplus f(1)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fcc09ccd120f8d7ba4ed1fcb2f976d804fa24b74" style="vertical-align: -0.838ex; width:11.341ex; height:2.843ex;"/></span> (where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \oplus }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>⊕<!-- ⊕ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \oplus }</annotation>
+</semantics>
+</math></span><img alt="\oplus " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8b16e2bdaefee9eed86d866e6eba3ac47c710f60" style="vertical-align: -0.505ex; width:1.808ex; height:2.176ex;"/></span> is addition modulo 2, which can also be viewed as a quantum XOR gate implemented as a Controlled NOT gate), if zero, then <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f}</annotation>
+</semantics>
+</math></span><img alt="f" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/132e57acb643253e7810ee9702d9581f159a1c61" style="vertical-align: -0.671ex; width:1.279ex; height:2.509ex;"/></span> is constant, otherwise <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f}</annotation>
+</semantics>
+</math></span><img alt="f" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/132e57acb643253e7810ee9702d9581f159a1c61" style="vertical-align: -0.671ex; width:1.279ex; height:2.509ex;"/></span> is not constant.
+</p><p>We begin with the two-qubit state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |0\rangle |1\rangle }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>0</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>1</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |0\rangle |1\rangle }</annotation>
+</semantics>
+</math></span><img alt="|0\rangle |1\rangle " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/68b498aded053bf27955d47e993ece190cd53414" style="vertical-align: -0.838ex; width:5.428ex; height:2.843ex;"/></span> and apply a Hadamard transform to each qubit. This yields
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\frac {1}{2}}(|0\rangle +|1\rangle )(|0\rangle -|1\rangle ).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>0</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>1</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>0</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo>−<!-- − --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>1</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\frac {1}{2}}(|0\rangle +|1\rangle )(|0\rangle -|1\rangle ).}</annotation>
+</semantics>
+</math></span><img alt="{\frac  {1}{2}}(|0\rangle +|1\rangle )(|0\rangle -|1\rangle )." aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ab670e74c7c082f46552e02c079a1cb86ce32955" style="vertical-align: -1.838ex; width:22.801ex; height:5.176ex;"/></span></dd></dl>
+<p>We are given a quantum implementation of the function <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f}</annotation>
+</semantics>
+</math></span><img alt="f" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/132e57acb643253e7810ee9702d9581f159a1c61" style="vertical-align: -0.671ex; width:1.279ex; height:2.509ex;"/></span> that maps <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |x\rangle |y\rangle }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>x</mi>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>y</mi>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |x\rangle |y\rangle }</annotation>
+</semantics>
+</math></span><img alt="|x\rangle |y\rangle " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/117efc81558a975a62aa4444733440ad5f65b980" style="vertical-align: -0.838ex; width:5.588ex; height:2.843ex;"/></span> to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |x\rangle |f(x)\oplus y\rangle }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>x</mi>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>⊕<!-- ⊕ --></mo>
+<mi>y</mi>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |x\rangle |f(x)\oplus y\rangle }</annotation>
+</semantics>
+</math></span><img alt="|x\rangle |f(x)\oplus y\rangle " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2c4b893c08bc8167c35760f73df73197d9cb8785" style="vertical-align: -0.838ex; width:12.846ex; height:2.843ex;"/></span>. Applying this function to our current state we obtain
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\frac {1}{2}}(|0\rangle (|f(0)\oplus 0\rangle -|f(0)\oplus 1\rangle )+|1\rangle (|f(1)\oplus 0\rangle -|f(1)\oplus 1\rangle ))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>0</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>0</mn>
+<mo stretchy="false">)</mo>
+<mo>⊕<!-- ⊕ --></mo>
+<mn>0</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo>−<!-- − --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>0</mn>
+<mo stretchy="false">)</mo>
+<mo>⊕<!-- ⊕ --></mo>
+<mn>1</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>1</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo>⊕<!-- ⊕ --></mo>
+<mn>0</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo>−<!-- − --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo>⊕<!-- ⊕ --></mo>
+<mn>1</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\frac {1}{2}}(|0\rangle (|f(0)\oplus 0\rangle -|f(0)\oplus 1\rangle )+|1\rangle (|f(1)\oplus 0\rangle -|f(1)\oplus 1\rangle ))}</annotation>
+</semantics>
+</math></span><img alt="{\frac  {1}{2}}(|0\rangle (|f(0)\oplus 0\rangle -|f(0)\oplus 1\rangle )+|1\rangle (|f(1)\oplus 0\rangle -|f(1)\oplus 1\rangle ))" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/244f9fcc7266ef9c94d5cd6d8590ebbbe7b939ae" style="vertical-align: -1.838ex; width:60.594ex; height:5.176ex;"/></span></dd>
+<dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle ={\frac {1}{2}}((-1)^{f(0)}|0\rangle (|0\rangle -|1\rangle )+(-1)^{f(1)}|1\rangle (|0\rangle -|1\rangle ))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mo stretchy="false">(</mo>
+<mo stretchy="false">(</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>0</mn>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>0</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>0</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo>−<!-- − --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>1</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mo stretchy="false">(</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>1</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>0</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo>−<!-- − --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>1</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle ={\frac {1}{2}}((-1)^{f(0)}|0\rangle (|0\rangle -|1\rangle )+(-1)^{f(1)}|1\rangle (|0\rangle -|1\rangle ))}</annotation>
+</semantics>
+</math></span><img alt="={\frac  {1}{2}}((-1)^{{f(0)}}|0\rangle (|0\rangle -|1\rangle )+(-1)^{{f(1)}}|1\rangle (|0\rangle -|1\rangle ))" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e022ba68d78379d0b8e5b612540550d040de0ca4" style="vertical-align: -1.838ex; width:50.72ex; height:5.176ex;"/></span></dd>
+<dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle =(-1)^{f(0)}{\frac {1}{2}}\left(|0\rangle +(-1)^{f(0)\oplus f(1)}|1\rangle \right)(|0\rangle -|1\rangle ).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>0</mn>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>0</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo>+</mo>
+<mo stretchy="false">(</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>0</mn>
+<mo stretchy="false">)</mo>
+<mo>⊕<!-- ⊕ --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>1</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>0</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo>−<!-- − --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>1</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle =(-1)^{f(0)}{\frac {1}{2}}\left(|0\rangle +(-1)^{f(0)\oplus f(1)}|1\rangle \right)(|0\rangle -|1\rangle ).}</annotation>
+</semantics>
+</math></span><img alt="=(-1)^{{f(0)}}{\frac  {1}{2}}\left(|0\rangle +(-1)^{{f(0)\oplus f(1)}}|1\rangle \right)(|0\rangle -|1\rangle )." aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/05ec4632e38e29af946ad483d5f664d2d3a0b587" style="vertical-align: -1.838ex; width:47.313ex; height:5.176ex;"/></span></dd></dl>
+<p>We ignore the last bit and the global phase and therefore have the state
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\frac {1}{\sqrt {2}}}(|0\rangle +(-1)^{f(0)\oplus f(1)}|1\rangle ).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<msqrt>
+<mn>2</mn>
+</msqrt>
+</mfrac>
+</mrow>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>0</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo>+</mo>
+<mo stretchy="false">(</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>0</mn>
+<mo stretchy="false">)</mo>
+<mo>⊕<!-- ⊕ --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>1</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\frac {1}{\sqrt {2}}}(|0\rangle +(-1)^{f(0)\oplus f(1)}|1\rangle ).}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\frac {1}{\sqrt {2}}}(|0\rangle +(-1)^{f(0)\oplus f(1)}|1\rangle ).}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ee4757749be23898b87f233a1d1ad9eee21f8e7e" style="vertical-align: -2.838ex; width:26.96ex; height:6.176ex;"/></span></dd></dl>
+<p>Applying a Hadamard transform to this state we have
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\frac {1}{2}}(|0\rangle +|1\rangle +(-1)^{f(0)\oplus f(1)}|0\rangle -(-1)^{f(0)\oplus f(1)}|1\rangle )}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>0</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>1</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo>+</mo>
+<mo stretchy="false">(</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>0</mn>
+<mo stretchy="false">)</mo>
+<mo>⊕<!-- ⊕ --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>0</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo>−<!-- − --></mo>
+<mo stretchy="false">(</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>0</mn>
+<mo stretchy="false">)</mo>
+<mo>⊕<!-- ⊕ --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>1</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\frac {1}{2}}(|0\rangle +|1\rangle +(-1)^{f(0)\oplus f(1)}|0\rangle -(-1)^{f(0)\oplus f(1)}|1\rangle )}</annotation>
+</semantics>
+</math></span><img alt="{\frac  {1}{2}}(|0\rangle +|1\rangle +(-1)^{{f(0)\oplus f(1)}}|0\rangle -(-1)^{{f(0)\oplus f(1)}}|1\rangle )" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/89676a0908ee6690eb83f350fa7311407229cd89" style="vertical-align: -1.838ex; width:47.788ex; height:5.176ex;"/></span></dd>
+<dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle ={\frac {1}{2}}((1+(-1)^{f(0)\oplus f(1)})|0\rangle +(1-(-1)^{f(0)\oplus f(1)})|1\rangle ).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mo stretchy="false">(</mo>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo>+</mo>
+<mo stretchy="false">(</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>0</mn>
+<mo stretchy="false">)</mo>
+<mo>⊕<!-- ⊕ --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>0</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo>+</mo>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo>−<!-- − --></mo>
+<mo stretchy="false">(</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>0</mn>
+<mo stretchy="false">)</mo>
+<mo>⊕<!-- ⊕ --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>1</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle ={\frac {1}{2}}((1+(-1)^{f(0)\oplus f(1)})|0\rangle +(1-(-1)^{f(0)\oplus f(1)})|1\rangle ).}</annotation>
+</semantics>
+</math></span><img alt="={\frac  {1}{2}}((1+(-1)^{{f(0)\oplus f(1)}})|0\rangle +(1-(-1)^{{f(0)\oplus f(1)}})|1\rangle )." aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/56f72e96bbf726c84303b72ca7dddf0853eb5414" style="vertical-align: -1.838ex; width:51.404ex; height:5.176ex;"/></span></dd></dl>
+<p><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(0)\oplus f(1)=0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>0</mn>
+<mo stretchy="false">)</mo>
+<mo>⊕<!-- ⊕ --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(0)\oplus f(1)=0}</annotation>
+</semantics>
+</math></span><img alt="f(0)\oplus f(1)=0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e77de7f3d5926f533dfc63870b15bbcfefc16247" style="vertical-align: -0.838ex; width:15.602ex; height:2.843ex;"/></span> if and only if we measure <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |0\rangle }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>0</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |0\rangle }</annotation>
+</semantics>
+</math></span><img alt="|0\rangle " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ed066a3ad158da0ad6d6a421a606b1c8a35eb95b" style="vertical-align: -0.838ex; width:2.714ex; height:2.843ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(0)\oplus f(1)=1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>0</mn>
+<mo stretchy="false">)</mo>
+<mo>⊕<!-- ⊕ --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(0)\oplus f(1)=1}</annotation>
+</semantics>
+</math></span><img alt="f(0)\oplus f(1)=1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/89a4b71e7a1a13c49f935af2c5be87f469f8948b" style="vertical-align: -0.838ex; width:15.602ex; height:2.843ex;"/></span> if and only if we measure <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |1\rangle }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mn>1</mn>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |1\rangle }</annotation>
+</semantics>
+</math></span><img alt="|1\rangle " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2f53021ca18e77477ee5bd3c1523e5830189ec5c" style="vertical-align: -0.838ex; width:2.714ex; height:2.843ex;"/></span>. So with certainty we know whether <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(x)}</annotation>
+</semantics>
+</math></span><img alt="f(x)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/202945cce41ecebb6f643f31d119c514bec7a074" style="vertical-align: -0.838ex; width:4.418ex; height:2.843ex;"/></span> is constant or balanced.
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Bernstein–Vazirani algorithm</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>Deutsch's lecture about the Deutsch-Jozsa algorithm</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2269
+Cached time: 20221224010959
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.335 seconds
+Real time usage: 0.535 seconds
+Preprocessor visited node count: 1039/1000000
+Post‐expand include size: 47657/2097152 bytes
+Template argument size: 494/2097152 bytes
+Highest expansion depth: 8/100
+Expensive parser function count: 0/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 25231/5000000 bytes
+Lua time usage: 0.128/10.000 seconds
+Lua memory usage: 4631983/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  245.790      1 -total
+ 45.69%  112.313      1 Template:Reflist
+ 37.13%   91.269      5 Template:Cite_journal
+ 26.82%   65.914      1 Template:Quantum_computing
+ 26.74%   65.716      3 Template:Navbox
+ 24.93%   61.280      1 Template:Short_description
+ 14.04%   34.511      2 Template:Pagetype
+  5.75%   14.138      3 Template:Main_other
+  4.72%   11.613      1 Template:SDcat
+  4.59%   11.282      2 Template:Icon
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:475310-0!canonical and timestamp 20221224010959 and revision id 1122661600.
+ -->
+</div></body>
+</html>

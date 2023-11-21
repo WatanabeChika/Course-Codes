@@ -1,0 +1,3125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Euclidean_traveling_salesman_problem</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p class="mw-empty-elt">
+</p>
+
+<p>The <b>travelling salesman problem</b> (also called the <b>travelling salesperson problem </b> or <b>TSP</b>) asks the following question: "Given a list of cities and the distances between each pair of cities, what is the shortest possible route that visits each city exactly once and returns to the origin city?" It is an NP-hard problem in combinatorial optimization, important in theoretical computer science and operations research.
+</p><p>The travelling purchaser problem and the vehicle routing problem are both generalizations of TSP.
+</p><p>In the theory of computational complexity, the decision version of the TSP (where given a length <i>L</i>, the task is to decide whether the graph has a tour of at most <i>L</i>) belongs to the class of NP-complete problems. Thus, it is possible that the worst-case running time for any algorithm for the TSP increases superpolynomially (but no more than exponentially) with the number of cities.
+</p><p>The problem was first formulated in 1930 and is one of the most intensively studied problems in optimization. It is used as a benchmark for many optimization methods. Even though the problem is computationally difficult, many heuristics and exact algorithms are known, so that some instances with tens of thousands of cities can be solved completely and even problems with millions of cities can be approximated within a small fraction of 1%.<sup class="reference" id="cite_ref-1">[1]</sup>
+</p><p>The TSP has several applications even in its purest formulation, such as planning, logistics, and the manufacture of microchips. Slightly modified, it appears as a sub-problem in many areas, such as DNA sequencing. In these applications, the concept <i>city</i> represents, for example, customers, soldering points, or DNA fragments, and the concept <i>distance</i> represents travelling times or cost, or a similarity measure between DNA fragments. The TSP also appears in astronomy, as astronomers observing many sources will want to minimize the time spent moving the telescope between the sources; in such problems, the TSP can be embedded inside an optimal control problem. In many applications, additional constraints such as limited resources or time windows may be imposed.
+</p>
+<style data-mw-deduplicate="TemplateStyles:r886046785">.mw-parser-output .toclimit-2 .toclevel-1 ul,.mw-parser-output .toclimit-3 .toclevel-2 ul,.mw-parser-output .toclimit-4 .toclevel-3 ul,.mw-parser-output .toclimit-5 .toclevel-4 ul,.mw-parser-output .toclimit-6 .toclevel-5 ul,.mw-parser-output .toclimit-7 .toclevel-6 ul{display:none}</style>
+<h2><span class="mw-headline" id="History">History</span><span class="mw-editsection"></span></h2>
+<p>The origins of the travelling salesman problem are unclear. A handbook for travelling salesmen from 1832 mentions the problem and includes example tours through Germany and Switzerland, but contains no mathematical treatment.<sup class="reference" id="cite_ref-2">[2]</sup>
+</p>
+
+<p>The TSP was mathematically formulated in the 19th century by the Irish mathematician William Rowan Hamilton and by the British mathematician Thomas Kirkman. Hamilton's icosian game was a recreational puzzle based on finding a Hamiltonian cycle.<sup class="reference" id="cite_ref-3">[3]</sup> The general form of the TSP appears to have been first studied by mathematicians during the 1930s in Vienna and at Harvard, notably by Karl Menger, who defines the problem, considers the obvious brute-force algorithm, and observes the non-optimality of the nearest neighbour heuristic:
+</p>
+<style data-mw-deduplicate="TemplateStyles:r996844942">.mw-parser-output .templatequote{overflow:hidden;margin:1em 0;padding:0 40px}.mw-parser-output .templatequote .templatequotecite{line-height:1.5em;text-align:left;padding-left:1.6em;margin-top:0}</style><blockquote class="templatequote"><p>
+We denote by <i>messenger problem</i> (since in practice this question should be solved by each postman, anyway also by many travelers) the task to find, for finitely many points whose pairwise distances are known, the shortest route connecting the points. Of course, this problem is solvable by finitely many trials. Rules which would push the number of trials below the number of permutations of the given points, are not known. The rule that one first should go from the starting point to the closest point, then to the point closest to this, etc., in general does not yield the shortest route.<sup class="reference" id="cite_ref-4">[4]</sup></p></blockquote>
+<p>It was first considered mathematically in the 1930s by Merrill M. Flood who was looking to solve a school bus routing problem.<sup class="reference" id="cite_ref-Wiley_5-0">[5]</sup>
+Hassler Whitney at Princeton University generated interest in the problem, which he called the "48 states problem".  The earliest publication using the phrase "travelling salesman problem" was the 1949 RAND Corporation report by Julia Robinson, "On the Hamiltonian game (a traveling salesman problem)."<sup class="reference" id="cite_ref-Robinson1949_6-0">[6]</sup><sup class="reference" id="cite_ref-Schrijver2005_7-0">[7]</sup>
+</p><p>In the 1950s and 1960s, the problem became increasingly popular in scientific circles in Europe and the United States after the RAND Corporation in Santa Monica offered prizes for steps in solving the problem.<sup class="reference" id="cite_ref-Wiley_5-1">[5]</sup> Notable contributions were made by George Dantzig, Delbert Ray Fulkerson and Selmer M. Johnson from the RAND Corporation, who expressed the problem as an integer linear program and developed the cutting plane method for its solution. They wrote what is considered the seminal paper on the subject in which with these new methods they solved an instance with 49 cities to optimality by constructing a tour and proving that no other tour could be shorter. Dantzig, Fulkerson and Johnson, however, speculated that given a near optimal solution we may be able to find optimality or prove optimality by adding a small number of extra inequalities (cuts). They used this idea to solve their initial 49 city problem using a string model. They found they only needed 26 cuts to come to a solution for their 49 city problem. While this paper did not give an algorithmic approach to TSP problems, the ideas that lay within it were indispensable to later creating exact solution methods for the TSP, though it would take 15 years to find an algorithmic approach in creating these cuts.<sup class="reference" id="cite_ref-Wiley_5-2">[5]</sup> As well as cutting plane methods, Dantzig, Fulkerson and Johnson used branch and bound algorithms perhaps for the first time.<sup class="reference" id="cite_ref-Wiley_5-3">[5]</sup>
+</p><p>In 1959, Jillian Beardwood, J.H. Halton and John Hammersley published an article entitled "The Shortest Path Through Many Points" in the journal of the Cambridge Philosophical Society.<sup class="reference" id="cite_ref-FOOTNOTEBeardwoodHaltonHammersley1959_8-0">[8]</sup> The Beardwood–Halton–Hammersley theorem provides a practical solution to the travelling salesman problem.  The authors derived an asymptotic formula to determine the length of the shortest route for a salesman who starts at a home or office and visits a fixed number of locations before returning to the start.
+</p><p>In the following decades, the problem was studied by many researchers from mathematics, computer science, chemistry, physics, and other sciences. In the 1960s, however, a new approach was created, that instead of seeking optimal solutions would produce a solution whose length is provably bounded by a multiple of the optimal length, and in doing so would create lower bounds for the problem; these lower bounds would then be used with branch and bound approaches. One method of doing this was to create a minimum spanning tree of the graph and then double all its edges, which produces the bound that the length of an optimal tour is at most twice the weight of a minimum spanning tree.<sup class="reference" id="cite_ref-Wiley_5-4">[5]</sup>
+</p><p>In 1976, Christofides and Serdyukov independently of each other made a big advance in this direction:<sup class="reference" id="cite_ref-bs20_9-0">[9]</sup> the Christofides-Serdyukov algorithm yields a solution that, in the worst case, is at most 1.5 times longer than the optimal solution. As the algorithm was simple and quick, many hoped it would give way to a near optimal solution method.  However, this hope for improvement did not immediately materialize, and Christofides-Serdyukov remained the method with the best worst-case scenario until 2011, when a (very) slightly improved approximation algorithm was developed for the subset of "graphical" TSPs.<sup class="reference" id="cite_ref-10">[10]</sup>  In 2020 this tiny improvement was extended to the full (metric) TSP.<sup class="reference" id="cite_ref-11">[11]</sup><sup class="reference" id="cite_ref-12">[12]</sup>
+</p><p>Richard M. Karp showed in 1972 that the Hamiltonian cycle problem was NP-complete, which implies the NP-hardness of TSP. This supplied a mathematical explanation for the apparent computational difficulty of finding optimal tours.
+</p><p>Great progress was made in the late 1970s and 1980, when Grötschel, Padberg, Rinaldi and others managed to exactly solve instances with up to 2,392 cities, using cutting planes and branch and bound.
+</p><p>In the 1990s, Applegate, Bixby, Chvátal, and Cook developed the program <i>Concorde</i> that has been used in many recent record solutions. Gerhard Reinelt published the TSPLIB in 1991, a collection of benchmark instances of varying difficulty, which has been used by many research groups for comparing results. In 2006, Cook and others computed an optimal tour through an 85,900-city instance given by a microchip layout problem, currently the largest solved TSPLIB instance. For many other instances with millions of cities, solutions can be found that are guaranteed to be within 2–3% of an optimal tour.<sup class="reference" id="cite_ref-rggo_13-0">[13]</sup>
+</p>
+<h2><span class="mw-headline" id="Description">Description</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="As_a_graph_problem">As a graph problem</span><span class="mw-editsection"></span></h3>
+
+<p>TSP can be modelled as an undirected weighted graph, such that cities are the graph's vertices, paths are the graph's edges, and a path's distance is the edge's weight. It is a minimization problem starting and finishing at a specified vertex after having visited each other vertex exactly once. Often, the model is a complete graph (i.e., each pair of vertices is connected by an edge). If no path exists between two cities, adding a sufficiently long edge will complete the graph without affecting the optimal tour.
+</p>
+<h3><span class="mw-headline" id="Asymmetric_and_symmetric">Asymmetric and symmetric</span><span class="mw-editsection"></span></h3>
+<p>In the <i>symmetric TSP</i>, the distance between two cities is the same in each opposite direction, forming an undirected graph. This symmetry halves the number of possible solutions. In the <i>asymmetric TSP</i>, paths may not exist in both directions or the distances might be different, forming a directed graph. Traffic collisions, one-way streets, and airfares for cities with different departure and arrival fees are examples of how this symmetry could break down.
+</p>
+<h3><span class="mw-headline" id="Related_problems">Related problems</span><span class="mw-editsection"></span></h3>
+<ul><li>An equivalent formulation in terms of graph theory is: Given a complete weighted graph (where the vertices would represent the cities, the edges would represent the roads, and the weights would be the cost or distance of that road), find a Hamiltonian cycle with the least weight.</li>
+<li>The requirement of returning to the starting city does not change the computational complexity of the problem, see Hamiltonian path problem.</li>
+<li>Another related problem is the bottleneck travelling salesman problem (bottleneck TSP): Find a Hamiltonian cycle in a weighted graph with the minimal weight of the weightiest edge. For example, avoiding narrow streets with big buses.<sup class="reference" id="cite_ref-14">[14]</sup> The problem is of considerable practical importance, apart from evident transportation and logistics areas. A classic example is in printed circuit manufacturing: scheduling of a route of the drill machine to drill holes in a PCB. In robotic machining or drilling applications, the "cities" are parts to machine or holes (of different sizes) to drill, and the "cost of travel" includes time for retooling the robot (single machine job sequencing problem).<sup class="reference" id="cite_ref-15">[15]</sup></li>
+<li>The generalized travelling salesman problem, also known as the "travelling politician problem", deals with "states" that have (one or more) "cities" and the salesman has to visit exactly one "city" from each "state". One application is encountered in ordering a solution to the cutting stock problem in order to minimize knife changes. Another is concerned with drilling in semiconductor manufacturing, see e.g., <span>U.S. Patent 7,054,798</span>. Noon and Bean demonstrated that the generalized travelling salesman problem can be transformed into a standard TSP with the same number of cities, but a modified distance matrix.</li>
+<li>The sequential ordering problem deals with the problem of visiting a set of cities where precedence relations between the cities exist.</li>
+<li>A common interview question at Google is how to route data among data processing nodes; routes vary by time to transfer the data, but nodes also differ by their computing power and storage, compounding the problem of where to send data.</li>
+<li>The travelling purchaser problem deals with a purchaser who is charged with purchasing a set of products. He can purchase these products in several cities, but at different prices and not all cities offer the same products. The objective is to find a route between a subset of the cities that minimizes total cost (travel cost + purchasing cost) and enables the purchase of all required products.</li></ul>
+<h2><span class="mw-headline" id="Integer_linear_programming_formulations">Integer linear programming formulations</span><span class="mw-editsection"></span></h2>
+<p>The TSP can be formulated as an integer linear program.<sup class="reference" id="cite_ref-16">[16]</sup><sup class="reference" id="cite_ref-17">[17]</sup><sup class="reference" id="cite_ref-18">[18]</sup> Several formulations are known. Two notable formulations are the Miller–Tucker–Zemlin (MTZ) formulation and the Dantzig–Fulkerson–Johnson (DFJ) formulation. The DFJ formulation is stronger, though the MTZ formulation is still useful in certain settings.<sup class="reference" id="cite_ref-19">[19]</sup><sup class="reference" id="cite_ref-20">[20]</sup>
+</p><p>Common to both these formulations is that one labels the cities with the numbers <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1,\ldots ,n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1,\ldots ,n}</annotation>
+</semantics>
+</math></span><img alt="1,\ldots ,n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/20d44d0ef6472db837c423f5bc86e0932eb9c288" style="vertical-align: -0.671ex; width:7.735ex; height:2.509ex;"/></span> and takes <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c_{ij}&gt;0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>&gt;</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c_{ij}&gt;0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle c_{ij}&gt;0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d2d754e494ca2548ccbf2dc5613444c9d28d6039" style="vertical-align: -1.005ex; width:6.745ex; height:2.843ex;"/></span> to be the distance from city <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span> to city <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle j}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>j</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle j}</annotation>
+</semantics>
+</math></span><img alt="j" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2f461e54f5c093e92a55547b9764291390f0b5d0" style="vertical-align: -0.671ex; margin-left: -0.027ex; width:0.985ex; height:2.509ex;"/></span>. The main variables in the formulations are:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{ij}={\begin{cases}1&amp;{\text{the path goes from city }}i{\text{ to city }}j\\0&amp;{\text{otherwise}}\end{cases}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>{</mo>
+<mtable columnalign="left left" columnspacing="1em" displaystyle="false" rowspacing=".2em">
+<mtr>
+<mtd>
+<mn>1</mn>
+</mtd>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>the path goes from city </mtext>
+</mrow>
+<mi>i</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext> to city </mtext>
+</mrow>
+<mi>j</mi>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mn>0</mn>
+</mtd>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>otherwise</mtext>
+</mrow>
+</mtd>
+</mtr>
+</mtable>
+<mo fence="true" stretchy="true" symmetric="true"></mo>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{ij}={\begin{cases}1&amp;{\text{the path goes from city }}i{\text{ to city }}j\\0&amp;{\text{otherwise}}\end{cases}}}</annotation>
+</semantics>
+</math></span><img alt="x_{ij}={\begin{cases}1&amp;{\text{the path goes from city }}i{\text{ to city }}j\\0&amp;{\text{otherwise}}\end{cases}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/210952104494d8add3acf817d00c2a1be0c97a81" style="vertical-align: -2.505ex; width:44.858ex; height:6.176ex;"/></span></dd></dl>
+<p>It is because these are 0/1 variables that the formulations become integer programs; all other constraints are purely linear. In particular, the objective in the program is to
+</p>
+<dl><dd>minimize the tour length <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sum _{i=1}^{n}\sum _{j\neq i,j=1}^{n}c_{ij}x_{ij}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</munderover>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+<mo>≠<!-- ≠ --></mo>
+<mi>i</mi>
+<mo>,</mo>
+<mi>j</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sum _{i=1}^{n}\sum _{j\neq i,j=1}^{n}c_{ij}x_{ij}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \sum _{i=1}^{n}\sum _{j\neq i,j=1}^{n}c_{ij}x_{ij}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/75b59e1c614d2a210a3c13568e8fe74fc88170ca" style="vertical-align: -3.505ex; width:15.179ex; height:7.343ex;"/></span>.</dd></dl>
+<p>Without further constraints, the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \{x_{ij}\}_{i,j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">{</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<msub>
+<mo fence="false" stretchy="false">}</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>,</mo>
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \{x_{ij}\}_{i,j}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \{x_{ij}\}_{i,j}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5f14f84a275e4aa6814978b92a7c5751b25d6722" style="vertical-align: -1.005ex; width:7.066ex; height:3.009ex;"/></span> will however effectively range over all subsets of the set of edges, which is very far from the sets of edges in a tour, and allows for a trivial minimum where all <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{ij}=0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{ij}=0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle x_{ij}=0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5d55a81f500a692d90f669339d093030e1674fbe" style="vertical-align: -1.005ex; width:7.068ex; height:2.843ex;"/></span>. Therefore, both formulations also have the constraints that there at each vertex is exactly one incoming edge and one outgoing edge, which may be expressed as the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>2</mn>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2n}</annotation>
+</semantics>
+</math></span><img alt="2n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/134afa8ff09fdddd24b06f289e92e3a045092bd1" style="vertical-align: -0.338ex; width:2.557ex; height:2.176ex;"/></span> linear equations
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sum _{i=1,i\neq j}^{n}x_{ij}=1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mi>i</mi>
+<mo>≠<!-- ≠ --></mo>
+<mi>j</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sum _{i=1,i\neq j}^{n}x_{ij}=1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \sum _{i=1,i\neq j}^{n}x_{ij}=1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9982d288a492cb05b3ae5e53ec55ca7b575fb9b1" style="vertical-align: -3.505ex; width:13.104ex; height:7.343ex;"/></span> for <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle j=1,\ldots ,n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>j</mi>
+<mo>=</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle j=1,\ldots ,n}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle j=1,\ldots ,n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c39c89dce6309ea91bb90112a6babe359d6ff7d6" style="vertical-align: -0.671ex; margin-left: -0.027ex; width:11.819ex; height:2.509ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sum _{j=1,j\neq i}^{n}x_{ij}=1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+<mo>=</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mi>j</mi>
+<mo>≠<!-- ≠ --></mo>
+<mi>i</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sum _{j=1,j\neq i}^{n}x_{ij}=1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \sum _{j=1,j\neq i}^{n}x_{ij}=1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4efe8bfe7995b32afcb0b9b64b4b332c0216f83c" style="vertical-align: -3.505ex; margin-left: -0.019ex; width:13.233ex; height:7.343ex;"/></span> for <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i=1,\ldots ,n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+<mo>=</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i=1,\ldots ,n}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle i=1,\ldots ,n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a5726d00b79af1b4666a6319c45381579dc85a9a" style="vertical-align: -0.671ex; width:11.636ex; height:2.509ex;"/></span>.</dd></dl>
+<p>These ensure that the chosen set of edges locally looks like that of a tour, but still allow for solutions violating the global requirement that there is <i>one</i> tour which visits all vertices, as the edges chosen could make up several tours each visiting only a subset of the vertices; arguably it is this global requirement that makes TSP a hard problem. The MTZ and DFJ formulations differ in how they express this final requirement as linear constraints.
+</p>
+<h3><span id="Miller.E2.80.93Tucker.E2.80.93Zemlin_formulation.5B21.5D"></span><span class="mw-headline" id="Miller–Tucker–Zemlin_formulation[21]">Miller–Tucker–Zemlin formulation<sup class="reference" id="cite_ref-21">[21]</sup></span><span class="mw-editsection"></span></h3>
+<p>In addition to the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{ij}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{ij}}</annotation>
+</semantics>
+</math></span><img alt="x_{{ij}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a27e97949cb2cc8f2d4c2a9421477a65f839db11" style="vertical-align: -1.005ex; width:2.807ex; height:2.343ex;"/></span> variables as above, there is for each <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i=2,\ldots ,n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+<mo>=</mo>
+<mn>2</mn>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i=2,\ldots ,n}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle i=2,\ldots ,n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ad940e1e624918f21629c8c9af21e8ef1c916928" style="vertical-align: -0.671ex; width:11.636ex; height:2.509ex;"/></span> a dummy variable <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{i}}</annotation>
+</semantics>
+</math></span><img alt="u_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/14f13cb025ff2e136dcbd2fc81ddf965b728e3d7" style="vertical-align: -0.671ex; width:2.129ex; height:2.009ex;"/></span> that keeps track of the order in which the cities are visited, counting from city <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1}</annotation>
+</semantics>
+</math></span><img alt="1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/92d98b82a3778f043108d4e20960a9193df57cbf" style="vertical-align: -0.338ex; width:1.162ex; height:2.176ex;"/></span>; the interpretation is that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{i}&lt;u_{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>&lt;</mo>
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{i}&lt;u_{j}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle u_{i}&lt;u_{j}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/10030fedce47cd9907d8e342023437042c77ad3e" style="vertical-align: -1.005ex; width:7.467ex; height:2.509ex;"/></span> implies city <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span> is visited before city <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle j}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>j</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle j}</annotation>
+</semantics>
+</math></span><img alt="j" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2f461e54f5c093e92a55547b9764291390f0b5d0" style="vertical-align: -0.671ex; margin-left: -0.027ex; width:0.985ex; height:2.509ex;"/></span>.  For a given tour (as encoded into values of the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{ij}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{ij}}</annotation>
+</semantics>
+</math></span><img alt="x_{{ij}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a27e97949cb2cc8f2d4c2a9421477a65f839db11" style="vertical-align: -1.005ex; width:2.807ex; height:2.343ex;"/></span> variables), one may find satisfying values for the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{i}}</annotation>
+</semantics>
+</math></span><img alt="u_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/14f13cb025ff2e136dcbd2fc81ddf965b728e3d7" style="vertical-align: -0.671ex; width:2.129ex; height:2.009ex;"/></span> variables by making <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{i}}</annotation>
+</semantics>
+</math></span><img alt="u_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/14f13cb025ff2e136dcbd2fc81ddf965b728e3d7" style="vertical-align: -0.671ex; width:2.129ex; height:2.009ex;"/></span> equal to the number of edges along that tour, when going from city <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1}</annotation>
+</semantics>
+</math></span><img alt="1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/92d98b82a3778f043108d4e20960a9193df57cbf" style="vertical-align: -0.338ex; width:1.162ex; height:2.176ex;"/></span> to city <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span>.
+</p><p>Because linear programming favours non-strict inequalities (<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \geq }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>≥<!-- ≥ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \geq }</annotation>
+</semantics>
+</math></span><img alt=" \ge " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bcef7c0e95bb77a35fd1a874ca91f425215f3c26" style="vertical-align: -0.505ex; width:1.808ex; height:2.176ex;"/></span>) over strict (<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle &gt;}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>&gt;</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle &gt;}</annotation>
+</semantics>
+</math></span><img alt=" &gt; " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1b27b77ab4e3293ea9ce65cef60fea655c398423" style="vertical-align: -0.338ex; width:1.808ex; height:1.843ex;"/></span>), we would like to impose constraints to the effect that
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{j}\geq u_{i}+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{j}\geq u_{i}+1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle u_{j}\geq u_{i}+1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1a514f7c96bdfdee2b944bb43ad50d9c058f0868" style="vertical-align: -1.005ex; width:11.47ex; height:2.843ex;"/></span> if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{ij}=1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{ij}=1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle x_{ij}=1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6981a579ea6c367da65acffecbe8445fe70ccba0" style="vertical-align: -1.005ex; width:7.068ex; height:2.843ex;"/></span>.</dd></dl>
+<p>Merely requiring <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{j}\geq u_{i}+x_{ij}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{j}\geq u_{i}+x_{ij}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle u_{j}\geq u_{i}+x_{ij}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6573471a2c93d0be18b53148347ee976ebe7b764" style="vertical-align: -1.005ex; width:13.114ex; height:2.676ex;"/></span> would <i>not</i> achieve that, because this also requires <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{j}\geq u_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{j}\geq u_{i}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle u_{j}\geq u_{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/852fbacbf5510875f559f800b2a41e27abd5f8b6" style="vertical-align: -1.005ex; width:7.467ex; height:2.676ex;"/></span> when <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{ij}=0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{ij}=0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle x_{ij}=0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5d55a81f500a692d90f669339d093030e1674fbe" style="vertical-align: -1.005ex; width:7.068ex; height:2.843ex;"/></span>, which is not correct. Instead MTZ use the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (n-1)(n-2)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (n-1)(n-2)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle (n-1)(n-2)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6ec6e02be83534b9a12de21834af4ef10d460ac9" style="vertical-align: -0.838ex; width:14.414ex; height:2.843ex;"/></span> linear constraints
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{j}+(n-2)\geq u_{i}+(n-1)x_{ij}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<mo stretchy="false">)</mo>
+<mo>≥<!-- ≥ --></mo>
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{j}+(n-2)\geq u_{i}+(n-1)x_{ij}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle u_{j}+(n-2)\geq u_{i}+(n-1)x_{ij}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/51b10b25f86a37d5cb3f9957f218931cc953266b" style="vertical-align: -1.005ex; width:30.369ex; height:3.009ex;"/></span> for all distinct <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i,j\in \{2,\dotsc ,n\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+<mo>,</mo>
+<mi>j</mi>
+<mo>∈<!-- ∈ --></mo>
+<mo fence="false" stretchy="false">{</mo>
+<mn>2</mn>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<mi>n</mi>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i,j\in \{2,\dotsc ,n\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle i,j\in \{2,\dotsc ,n\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/020a2a42a3f2198814bf08d10696a475f4aa923b" style="vertical-align: -0.838ex; width:15.695ex; height:2.843ex;"/></span></dd></dl>
+<p>where the constant term <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n-2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n-2}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n-2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ff40d66ad535411eedb9c686a9008a5089c35ac0" style="vertical-align: -0.505ex; width:5.398ex; height:2.343ex;"/></span> provides sufficient slack that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{ij}=0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{ij}=0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle x_{ij}=0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5d55a81f500a692d90f669339d093030e1674fbe" style="vertical-align: -1.005ex; width:7.068ex; height:2.843ex;"/></span> does not impose a relation between <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{j}}</annotation>
+</semantics>
+</math></span><img alt="u_{j}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/86f8d397f4684f948df846413e6d62b009718724" style="vertical-align: -1.005ex; width:2.239ex; height:2.343ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{i}}</annotation>
+</semantics>
+</math></span><img alt="u_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/14f13cb025ff2e136dcbd2fc81ddf965b728e3d7" style="vertical-align: -0.671ex; width:2.129ex; height:2.009ex;"/></span>.
+</p><p>The way that the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{i}}</annotation>
+</semantics>
+</math></span><img alt="u_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/14f13cb025ff2e136dcbd2fc81ddf965b728e3d7" style="vertical-align: -0.671ex; width:2.129ex; height:2.009ex;"/></span> variables then enforce that a single tour visits all cities is that they increase by (at least) <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1}</annotation>
+</semantics>
+</math></span><img alt="1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/92d98b82a3778f043108d4e20960a9193df57cbf" style="vertical-align: -0.338ex; width:1.162ex; height:2.176ex;"/></span> for each step along a tour, with a decrease only allowed where the tour passes through city <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1}</annotation>
+</semantics>
+</math></span><img alt="1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/92d98b82a3778f043108d4e20960a9193df57cbf" style="vertical-align: -0.338ex; width:1.162ex; height:2.176ex;"/></span>. That constraint would be violated by every tour which does not pass through city <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1}</annotation>
+</semantics>
+</math></span><img alt="1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/92d98b82a3778f043108d4e20960a9193df57cbf" style="vertical-align: -0.338ex; width:1.162ex; height:2.176ex;"/></span>, so the only way to satisfy it is that the tour passing city <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1}</annotation>
+</semantics>
+</math></span><img alt="1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/92d98b82a3778f043108d4e20960a9193df57cbf" style="vertical-align: -0.338ex; width:1.162ex; height:2.176ex;"/></span> also passes through all other cities.
+</p><p>The MTZ formulation of TSP is thus the following integer linear programming problem:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{aligned}\min \sum _{i=1}^{n}\sum _{j\neq i,j=1}^{n}c_{ij}x_{ij}&amp;\colon &amp;&amp;\\x_{ij}\in {}&amp;\{0,1\}&amp;&amp;i,j=1,\ldots ,n;\\u_{i}\in {}&amp;\mathbf {Z} &amp;&amp;i=2,\ldots ,n;\\\sum _{i=1,i\neq j}^{n}x_{ij}={}&amp;1&amp;&amp;j=1,\ldots ,n;\\\sum _{j=1,j\neq i}^{n}x_{ij}={}&amp;1&amp;&amp;i=1,\ldots ,n;\\u_{i}-u_{j}+(n-1)x_{ij}\leq {}&amp;n-2&amp;&amp;2\leq i\neq j\leq n;\\1\leq u_{i}\leq {}&amp;n-1&amp;&amp;2\leq i\leq n.\end{aligned}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="right left right left right left right left right left right left" columnspacing="0em 2em 0em 2em 0em 2em 0em 2em 0em 2em 0em" displaystyle="true" rowspacing="3pt">
+<mtr>
+<mtd>
+<mo form="prefix" movablelimits="true">min</mo>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</munderover>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+<mo>≠<!-- ≠ --></mo>
+<mi>i</mi>
+<mo>,</mo>
+<mi>j</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+</mtd>
+<mtd>
+<mi></mi>
+<mo>:<!-- : --></mo>
+</mtd>
+<mtd></mtd>
+<mtd></mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>∈<!-- ∈ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+</mrow>
+</mtd>
+<mtd>
+<mi></mi>
+<mo fence="false" stretchy="false">{</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mn>1</mn>
+<mo fence="false" stretchy="false">}</mo>
+</mtd>
+<mtd></mtd>
+<mtd>
+<mi>i</mi>
+<mo>,</mo>
+<mi>j</mi>
+<mo>=</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<mi>n</mi>
+<mo>;</mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>∈<!-- ∈ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+</mrow>
+</mtd>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="bold">Z</mi>
+</mrow>
+</mtd>
+<mtd></mtd>
+<mtd>
+<mi>i</mi>
+<mo>=</mo>
+<mn>2</mn>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<mi>n</mi>
+<mo>;</mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mi>i</mi>
+<mo>≠<!-- ≠ --></mo>
+<mi>j</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+</mrow>
+</mtd>
+<mtd>
+<mn>1</mn>
+</mtd>
+<mtd></mtd>
+<mtd>
+<mi>j</mi>
+<mo>=</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<mi>n</mi>
+<mo>;</mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+<mo>=</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mi>j</mi>
+<mo>≠<!-- ≠ --></mo>
+<mi>i</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+</mrow>
+</mtd>
+<mtd>
+<mn>1</mn>
+</mtd>
+<mtd></mtd>
+<mtd>
+<mi>i</mi>
+<mo>=</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<mi>n</mi>
+<mo>;</mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>≤<!-- ≤ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+</mrow>
+</mtd>
+<mtd>
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+</mtd>
+<mtd></mtd>
+<mtd>
+<mn>2</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>i</mi>
+<mo>≠<!-- ≠ --></mo>
+<mi>j</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>n</mi>
+<mo>;</mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mn>1</mn>
+<mo>≤<!-- ≤ --></mo>
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>≤<!-- ≤ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+</mrow>
+</mtd>
+<mtd>
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mtd>
+<mtd></mtd>
+<mtd>
+<mn>2</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>i</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>n</mi>
+<mo>.</mo>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{aligned}\min \sum _{i=1}^{n}\sum _{j\neq i,j=1}^{n}c_{ij}x_{ij}&amp;\colon &amp;&amp;\\x_{ij}\in {}&amp;\{0,1\}&amp;&amp;i,j=1,\ldots ,n;\\u_{i}\in {}&amp;\mathbf {Z} &amp;&amp;i=2,\ldots ,n;\\\sum _{i=1,i\neq j}^{n}x_{ij}={}&amp;1&amp;&amp;j=1,\ldots ,n;\\\sum _{j=1,j\neq i}^{n}x_{ij}={}&amp;1&amp;&amp;i=1,\ldots ,n;\\u_{i}-u_{j}+(n-1)x_{ij}\leq {}&amp;n-2&amp;&amp;2\leq i\neq j\leq n;\\1\leq u_{i}\leq {}&amp;n-1&amp;&amp;2\leq i\leq n.\end{aligned}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\begin{aligned}\min \sum _{i=1}^{n}\sum _{j\neq i,j=1}^{n}c_{ij}x_{ij}&amp;\colon &amp;&amp;\\x_{ij}\in {}&amp;\{0,1\}&amp;&amp;i,j=1,\ldots ,n;\\u_{i}\in {}&amp;\mathbf {Z} &amp;&amp;i=2,\ldots ,n;\\\sum _{i=1,i\neq j}^{n}x_{ij}={}&amp;1&amp;&amp;j=1,\ldots ,n;\\\sum _{j=1,j\neq i}^{n}x_{ij}={}&amp;1&amp;&amp;i=1,\ldots ,n;\\u_{i}-u_{j}+(n-1)x_{ij}\leq {}&amp;n-2&amp;&amp;2\leq i\neq j\leq n;\\1\leq u_{i}\leq {}&amp;n-1&amp;&amp;2\leq i\leq n.\end{aligned}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/123198407da60ca7fecace5bdbde929d5004d021" style="vertical-align: -16.838ex; width:48.517ex; height:34.843ex;"/></span></dd></dl>
+<p>The first set of equalities requires that each city is arrived at from exactly one other city, and the second set of equalities requires that from each city there is a departure to exactly one other city. The last constraints enforce that there is only a single tour covering all cities, and not two or more disjointed tours that only collectively cover all cities. To prove this, it is shown below (1) that every feasible solution contains only one closed sequence of cities, and (2) that for every single tour covering all cities, there are values for the dummy variables <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{i}}</annotation>
+</semantics>
+</math></span><img alt="u_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/14f13cb025ff2e136dcbd2fc81ddf965b728e3d7" style="vertical-align: -0.671ex; width:2.129ex; height:2.009ex;"/></span> that satisfy the constraints.
+</p><p>To prove that every feasible solution contains only one closed sequence of cities, it suffices to show that every subtour in a feasible solution passes through city 1 (noting that the equalities ensure there can only be one such tour). For if we sum all the inequalities corresponding to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{ij}=1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{ij}=1}</annotation>
+</semantics>
+</math></span><img alt="x_{ij}=1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6981a579ea6c367da65acffecbe8445fe70ccba0" style="vertical-align: -1.005ex; width:7.068ex; height:2.843ex;"/></span> for any subtour of <i>k</i> steps not passing through city 1, we obtain:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (n-1)k\leq (n-2)k,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mi>k</mi>
+<mo>≤<!-- ≤ --></mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<mo stretchy="false">)</mo>
+<mi>k</mi>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (n-1)k\leq (n-2)k,}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle (n-1)k\leq (n-2)k,}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f95745f139b9e4097c08077e81fb39ea6ef15c0c" style="vertical-align: -0.838ex; width:20.581ex; height:2.843ex;"/></span></dd></dl>
+<p>which is a contradiction.
+</p><p>It now must be shown that for every single tour covering all cities, there are values for the dummy variables <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{i}}</annotation>
+</semantics>
+</math></span><img alt="u_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/14f13cb025ff2e136dcbd2fc81ddf965b728e3d7" style="vertical-align: -0.671ex; width:2.129ex; height:2.009ex;"/></span> that satisfy the constraints.
+</p><p>Without loss of generality, define the tour as originating (and ending) at city 1. Choose <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{i}=t}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mi>t</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{i}=t}</annotation>
+</semantics>
+</math></span><img alt="u_{i}=t" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/10cff6a090226b65c6fde93a310d82fe8846473c" style="vertical-align: -0.671ex; width:6.067ex; height:2.343ex;"/></span> if city <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span> is visited in step <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle t(i,t=2,3,\ldots ,n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>t</mi>
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo>,</mo>
+<mi>t</mi>
+<mo>=</mo>
+<mn>2</mn>
+<mo>,</mo>
+<mn>3</mn>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle t(i,t=2,3,\ldots ,n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle t(i,t=2,3,\ldots ,n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ad4c08587c62dca500770d3f2550ea2fc5b33627" style="vertical-align: -0.838ex; width:18.355ex; height:2.843ex;"/></span>. Then
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{i}-u_{j}\leq n-2,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>≤<!-- ≤ --></mo>
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{i}-u_{j}\leq n-2,}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle u_{i}-u_{j}\leq n-2,}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/55fd02660175d08fb72866b2ffdbb1c61a49a977" style="vertical-align: -1.005ex; width:16.352ex; height:2.843ex;"/></span></dd></dl>
+<p>since <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{i}}</annotation>
+</semantics>
+</math></span><img alt="u_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/14f13cb025ff2e136dcbd2fc81ddf965b728e3d7" style="vertical-align: -0.671ex; width:2.129ex; height:2.009ex;"/></span> can be no greater than <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{j}}</annotation>
+</semantics>
+</math></span><img alt="u_{j}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/86f8d397f4684f948df846413e6d62b009718724" style="vertical-align: -1.005ex; width:2.239ex; height:2.343ex;"/></span> can be no less than 2; hence the constraints are satisfied whenever <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{ij}=0.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mn>0.</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{ij}=0.}</annotation>
+</semantics>
+</math></span><img alt="x_{ij}=0." aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/69d194d9980a187f4506c1e69ee5510f3850fac6" style="vertical-align: -1.005ex; width:7.715ex; height:2.843ex;"/></span> For <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{ij}=1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{ij}=1}</annotation>
+</semantics>
+</math></span><img alt="x_{ij}=1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6981a579ea6c367da65acffecbe8445fe70ccba0" style="vertical-align: -1.005ex; width:7.068ex; height:2.843ex;"/></span>, we have:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{i}-u_{j}+(n-1)x_{ij}=(t)-(t+1)+n-1=n-2,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<mi>t</mi>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mo stretchy="false">(</mo>
+<mi>t</mi>
+<mo>+</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo>=</mo>
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{i}-u_{j}+(n-1)x_{ij}=(t)-(t+1)+n-1=n-2,}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle u_{i}-u_{j}+(n-1)x_{ij}=(t)-(t+1)+n-1=n-2,}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4d837107a03fd8b5d67136e324c633082355a516" style="vertical-align: -1.005ex; width:52.684ex; height:3.009ex;"/></span></dd></dl>
+<p>satisfying the constraint.
+</p>
+<h3><span id="Dantzig.E2.80.93Fulkerson.E2.80.93Johnson_formulation"></span><span class="mw-headline" id="Dantzig–Fulkerson–Johnson_formulation">Dantzig–Fulkerson–Johnson formulation</span><span class="mw-editsection"></span></h3>
+<p>Label the cities with the numbers 1, …, <i>n</i> and define:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{ij}={\begin{cases}1&amp;{\text{the path goes from city }}i{\text{ to city }}j\\0&amp;{\text{otherwise}}\end{cases}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>{</mo>
+<mtable columnalign="left left" columnspacing="1em" displaystyle="false" rowspacing=".2em">
+<mtr>
+<mtd>
+<mn>1</mn>
+</mtd>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>the path goes from city </mtext>
+</mrow>
+<mi>i</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext> to city </mtext>
+</mrow>
+<mi>j</mi>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mn>0</mn>
+</mtd>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>otherwise</mtext>
+</mrow>
+</mtd>
+</mtr>
+</mtable>
+<mo fence="true" stretchy="true" symmetric="true"></mo>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{ij}={\begin{cases}1&amp;{\text{the path goes from city }}i{\text{ to city }}j\\0&amp;{\text{otherwise}}\end{cases}}}</annotation>
+</semantics>
+</math></span><img alt="x_{ij}={\begin{cases}1&amp;{\text{the path goes from city }}i{\text{ to city }}j\\0&amp;{\text{otherwise}}\end{cases}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/210952104494d8add3acf817d00c2a1be0c97a81" style="vertical-align: -2.505ex; width:44.858ex; height:6.176ex;"/></span></dd></dl>
+<p>Take <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c_{ij}&gt;0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>&gt;</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c_{ij}&gt;0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle c_{ij}&gt;0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d2d754e494ca2548ccbf2dc5613444c9d28d6039" style="vertical-align: -1.005ex; width:6.745ex; height:2.843ex;"/></span> to be the distance from city <i>i</i> to city <i>j</i>. Then TSP can be written as the following integer linear programming problem:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{aligned}\min &amp;\sum _{i=1}^{n}\sum _{j\neq i,j=1}^{n}c_{ij}x_{ij}\colon &amp;&amp;\\&amp;\sum _{i=1,i\neq j}^{n}x_{ij}=1&amp;&amp;j=1,\ldots ,n;\\&amp;\sum _{j=1,j\neq i}^{n}x_{ij}=1&amp;&amp;i=1,\ldots ,n;\\&amp;\sum _{i\in Q}{\sum _{j\neq i,j\in Q}{x_{ij}}}\leq |Q|-1&amp;&amp;\forall Q\subsetneq \{1,\ldots ,n\},|Q|\geq 2\\\end{aligned}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="right left right left right left right left right left right left" columnspacing="0em 2em 0em 2em 0em 2em 0em 2em 0em 2em 0em" displaystyle="true" rowspacing="3pt">
+<mtr>
+<mtd>
+<mo form="prefix" movablelimits="true">min</mo>
+</mtd>
+<mtd>
+<mi></mi>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</munderover>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+<mo>≠<!-- ≠ --></mo>
+<mi>i</mi>
+<mo>,</mo>
+<mi>j</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>:<!-- : --></mo>
+</mtd>
+<mtd></mtd>
+<mtd></mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mi>i</mi>
+<mo>≠<!-- ≠ --></mo>
+<mi>j</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mn>1</mn>
+</mtd>
+<mtd></mtd>
+<mtd>
+<mi>j</mi>
+<mo>=</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<mi>n</mi>
+<mo>;</mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+<mo>=</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mi>j</mi>
+<mo>≠<!-- ≠ --></mo>
+<mi>i</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mn>1</mn>
+</mtd>
+<mtd></mtd>
+<mtd>
+<mi>i</mi>
+<mo>=</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<mi>n</mi>
+<mo>;</mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<munder>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>Q</mi>
+</mrow>
+</munder>
+<mrow class="MJX-TeXAtom-ORD">
+<munder>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+<mo>≠<!-- ≠ --></mo>
+<mi>i</mi>
+<mo>,</mo>
+<mi>j</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>Q</mi>
+</mrow>
+</munder>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+</mrow>
+</mrow>
+<mo>≤<!-- ≤ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>Q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mtd>
+<mtd></mtd>
+<mtd>
+<mi mathvariant="normal">∀<!-- ∀ --></mi>
+<mi>Q</mi>
+<mo>⊊<!-- ⊊ --></mo>
+<mo fence="false" stretchy="false">{</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<mi>n</mi>
+<mo fence="false" stretchy="false">}</mo>
+<mo>,</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>Q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>≥<!-- ≥ --></mo>
+<mn>2</mn>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{aligned}\min &amp;\sum _{i=1}^{n}\sum _{j\neq i,j=1}^{n}c_{ij}x_{ij}\colon &amp;&amp;\\&amp;\sum _{i=1,i\neq j}^{n}x_{ij}=1&amp;&amp;j=1,\ldots ,n;\\&amp;\sum _{j=1,j\neq i}^{n}x_{ij}=1&amp;&amp;i=1,\ldots ,n;\\&amp;\sum _{i\in Q}{\sum _{j\neq i,j\in Q}{x_{ij}}}\leq |Q|-1&amp;&amp;\forall Q\subsetneq \{1,\ldots ,n\},|Q|\geq 2\\\end{aligned}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\begin{aligned}\min &amp;\sum _{i=1}^{n}\sum _{j\neq i,j=1}^{n}c_{ij}x_{ij}\colon &amp;&amp;\\&amp;\sum _{i=1,i\neq j}^{n}x_{ij}=1&amp;&amp;j=1,\ldots ,n;\\&amp;\sum _{j=1,j\neq i}^{n}x_{ij}=1&amp;&amp;i=1,\ldots ,n;\\&amp;\sum _{i\in Q}{\sum _{j\neq i,j\in Q}{x_{ij}}}\leq |Q|-1&amp;&amp;\forall Q\subsetneq \{1,\ldots ,n\},|Q|\geq 2\\\end{aligned}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2ce1b92fbcd82fa3a1aed05019a5c7f9d92c61dd" style="vertical-align: -13.419ex; margin-bottom: -0.252ex; width:57.599ex; height:28.509ex;"/></span></dd></dl>
+<p>The last constraint of the DFJ formulation—called a <i>subtour elimination</i> constraint—ensures no proper subset Q can form a sub-tour, so the solution returned is a single tour and not the union of smaller tours. Because this leads to an exponential number of possible constraints, in practice it is solved with row generation.<sup class="reference" id="cite_ref-22">[22]</sup>
+</p>
+<h2><span class="mw-headline" id="Computing_a_solution">Computing a solution</span><span class="mw-editsection"></span></h2>
+<p>The traditional lines of attack for the NP-hard problems are the following:
+</p>
+<ul><li>Devising exact algorithms, which work reasonably fast only for small problem sizes.</li>
+<li>Devising "suboptimal" or heuristic algorithms, i.e., algorithms that deliver approximated solutions in a reasonable time.</li>
+<li>Finding special cases for the problem ("subproblems") for which either better or exact heuristics are possible.</li></ul>
+<h3><span class="mw-headline" id="Exact_algorithms">Exact algorithms</span><span class="mw-editsection"></span></h3>
+<p>The most direct solution would be to try all permutations (ordered combinations) and see which one is cheapest (using brute-force search). The running time for this approach lies within a polynomial factor of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n!)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>!</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n!)}</annotation>
+</semantics>
+</math></span><img alt="O(n!)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/12921c489714d475a454bd39ef644d4334d97113" style="vertical-align: -0.838ex; width:5.624ex; height:2.843ex;"/></span>, the factorial of the number of cities, so this solution becomes impractical even for only 20 cities.
+</p><p>One of the earliest applications of dynamic programming is the Held–Karp algorithm that solves the problem in time <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n^{2}2^{n})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n^{2}2^{n})}</annotation>
+</semantics>
+</math></span><img alt="O(n^{2}2^{n})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7b91bfecb4bb37fa648a12cd5058e170a457d871" style="vertical-align: -0.838ex; width:8.412ex; height:3.176ex;"/></span>.<sup class="reference" id="cite_ref-23">[23]</sup> This bound has also been reached by Exclusion-Inclusion in an attempt preceding the dynamic programming approach.
+</p>
+
+<p>Improving these time bounds seems to be difficult. For example, it has not been determined whether a classical exact algorithm for TSP that runs in time <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(1.9999^{n})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mn>1.9999</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(1.9999^{n})}</annotation>
+</semantics>
+</math></span><img alt="O(1.9999^{n})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bf6429901e52750eda54f39511e7a52f109ddc74" style="vertical-align: -0.838ex; width:11.26ex; height:2.843ex;"/></span> exists.<sup class="reference" id="cite_ref-FOOTNOTEWoeginger2003_24-0">[24]</sup> The currently best quantum exact algorithm for TSP due to Ambainis et al. runs in time <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(1.728^{n})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mn>1.728</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(1.728^{n})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(1.728^{n})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/13c1c9f9e88391dd57756a3976f08b9fd3e41bfb" style="vertical-align: -0.838ex; width:10.098ex; height:2.843ex;"/></span>. <sup class="reference" id="cite_ref-25">[25]</sup>
+</p><p>Other approaches include:
+</p>
+<ul><li>Various branch-and-bound algorithms, which can be used to process TSPs containing 40–60 cities.</li></ul>
+
+<ul><li>Progressive improvement algorithms which use techniques reminiscent of linear programming. Works well for up to 200 cities.</li>
+<li>Implementations of branch-and-bound and problem-specific cut generation (branch-and-cut<sup class="reference" id="cite_ref-FOOTNOTEPadbergRinaldi1991_26-0">[26]</sup>);<sup class="reference" id="cite_ref-27">[27]</sup> this is the method of choice for solving large instances. This approach holds the current record, solving an instance with 85,900 cities, see Applegate et al. (2006).</li></ul>
+<p>An exact solution for 15,112 German towns from TSPLIB was found in 2001 using the cutting-plane method proposed by George Dantzig, Ray Fulkerson, and Selmer M. Johnson in 1954, based on linear programming. The computations were performed on a network of 110 processors located at Rice University and Princeton University. The total computation time was equivalent to 22.6 years on a single 500 MHz Alpha processor. In May 2004, the travelling salesman problem of visiting all 24,978 towns in Sweden was solved: a tour of length approximately 72,500 kilometres was found and it was proven that no shorter tour exists.<sup class="reference" id="cite_ref-28">[28]</sup>  In March 2005, the travelling salesman problem of visiting all 33,810 points in a circuit board was solved using <i>Concorde TSP Solver</i>: a tour of length 66,048,945 units was found and it was proven that no shorter tour exists. The computation took approximately 15.7 CPU-years (Cook et al. 2006). In April 2006 an instance with 85,900 points was solved using <i>Concorde TSP Solver</i>, taking over 136 CPU-years, see Applegate et al. (2006).
+</p>
+<h3><span class="mw-headline" id="Heuristic_and_approximation_algorithms">Heuristic and approximation algorithms</span><span class="mw-editsection"></span></h3>
+<p>Various heuristics and approximation algorithms, which quickly yield good solutions, have been devised. These include the Multi-fragment algorithm. Modern methods can find solutions for extremely large problems (millions of cities) within a reasonable time which are with a high probability just 2–3% away from the optimal solution.<sup class="reference" id="cite_ref-rggo_13-1">[13]</sup>
+</p><p>Several categories of heuristics are recognized.
+</p>
+<h4><span class="mw-headline" id="Constructive_heuristics">Constructive heuristics</span><span class="mw-editsection"></span></h4>
+
+<p>The nearest neighbour (NN) algorithm (a greedy algorithm) lets the salesman choose the nearest unvisited city as his next move. This algorithm quickly yields an effectively short route. For N cities randomly distributed on a plane, the algorithm on average yields a path 25% longer than the shortest possible path.<sup class="reference" id="cite_ref-johnson_29-0">[29]</sup> However, there exist many specially arranged city distributions which make the NN algorithm give the worst route.<sup class="reference" id="cite_ref-30">[30]</sup> This is true for both asymmetric and symmetric TSPs.<sup class="reference" id="cite_ref-31">[31]</sup> Rosenkrantz et al.<sup class="reference" id="cite_ref-32">[32]</sup> showed that the NN algorithm has the approximation factor <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta (\log |V|)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta (\log |V|)}</annotation>
+</semantics>
+</math></span><img alt="\Theta (\log |V|)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/83ad97a2f6e6bfef839ce3afab637b97b9eac954" style="vertical-align: -0.838ex; width:10.057ex; height:2.843ex;"/></span> for instances satisfying the triangle inequality. A variation of NN algorithm, called nearest fragment (NF) operator, which connects a group (fragment) of nearest unvisited cities, can find shorter routes with successive iterations.<sup class="reference" id="cite_ref-33">[33]</sup> The NF operator can also be applied on an initial solution obtained by NN algorithm for further improvement in an elitist model, where only better solutions are accepted.
+</p><p>The bitonic tour of a set of points is the minimum-perimeter monotone polygon that has the points as its vertices; it can be computed efficiently by dynamic programming.
+</p><p>Another constructive heuristic, Match Twice and Stitch (MTS), performs two sequential matchings, where the second matching is executed after deleting all the edges of the first matching, to yield a set of cycles. The cycles are then stitched to produce the final tour.<sup class="reference" id="cite_ref-34">[34]</sup>
+</p>
+<h4><span class="mw-headline" id="The_Algorithm_of_Christofides_and_Serdyukov">The Algorithm of Christofides and Serdyukov</span><span class="mw-editsection"></span></h4>
+
+
+<p>The algorithm of Christofides and Serdyukov follows a similar outline but combines the minimum spanning tree with a solution of another problem, minimum-weight perfect matching. This gives a TSP tour which is at most 1.5 times the optimal.  It was one of the first approximation algorithms, and was in part responsible for drawing attention to approximation algorithms as a practical approach to intractable problems. As a matter of fact, the term "algorithm" was not commonly extended to approximation algorithms until later; the Christofides algorithm was initially referred to as the Christofides heuristic.<sup class="reference" id="cite_ref-bs20_9-1">[9]</sup>
+</p><p>This algorithm looks at things differently by using a result from graph theory which helps improve on the lower bound of the TSP which originated from doubling the cost of the minimum spanning tree. Given an Eulerian graph we can find an Eulerian tour in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n)}</annotation>
+</semantics>
+</math></span><img alt="O(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34109fe397fdcff370079185bfdb65826cb5565a" style="vertical-align: -0.838ex; width:4.977ex; height:2.843ex;"/></span> time.<sup class="reference" id="cite_ref-Wiley_5-5">[5]</sup> So if we had an Eulerian graph with cities from a TSP as vertices then we can easily see that we could use such a method for finding an Eulerian tour to find a TSP solution. By triangular inequality we know that the TSP tour can be no longer than the Eulerian tour and as such we have a lower bound for the TSP. Such a method is described below.
+</p>
+<ol><li>Find a minimum spanning tree for the problem</li>
+<li>Create duplicates for every edge to create an Eulerian graph</li>
+<li>Find an Eulerian tour for this graph</li>
+<li>Convert to TSP: if a city is visited twice, create a shortcut from the city before this in the tour to the one after this.</li></ol>
+<p>To improve the lower bound, a better way of creating an Eulerian graph is needed. By triangular inequality, the best Eulerian graph must have the same cost as the best travelling salesman tour, hence finding optimal Eulerian graphs is at least as hard as TSP. One way of doing this is by minimum weight matching using algorithms of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n^{3})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n^{3})}</annotation>
+</semantics>
+</math></span><img alt="O(n^{3})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6b04f5c5cfea38f43406d9442387ad28555e2609" style="vertical-align: -0.838ex; width:6.032ex; height:3.176ex;"/></span>.<sup class="reference" id="cite_ref-Wiley_5-6">[5]</sup>
+</p><p>Making a graph into an Eulerian graph starts with the minimum spanning tree. Then all the vertices of odd order must be made even. So a matching for the odd degree vertices must be added which increases the order of every odd degree vertex by one.<sup class="reference" id="cite_ref-Wiley_5-7">[5]</sup> This leaves us with a graph where every vertex is of even order which is thus Eulerian. Adapting the above method gives the algorithm of Christofides and Serdyukov.
+</p>
+<ol><li>Find a minimum spanning tree for the problem</li>
+<li>Create a matching for the problem with the set of cities of odd order.</li>
+<li>Find an Eulerian tour for this graph</li>
+<li>Convert to TSP using shortcuts.</li></ol>
+<h4><span class="mw-headline" id="Pairwise_exchange">Pairwise exchange</span><span class="mw-editsection"></span></h4>
+
+<p>The pairwise exchange or <i>2-opt</i> technique involves iteratively removing two edges and replacing these with two different edges that reconnect the fragments created by edge removal into a new and shorter tour. Similarly, the 3-opt technique removes 3 edges and reconnects them to form a shorter tour. These are special cases of the <i>k</i>-opt method. The label <i>Lin–Kernighan</i> is an often heard misnomer for 2-opt. Lin–Kernighan is actually the more general k-opt method.
+</p><p>For Euclidean instances, 2-opt heuristics give on average solutions that are about 5% better than Christofides' algorithm. If we start with an initial solution made with a greedy algorithm, the average number of moves greatly decreases again and is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n)}</annotation>
+</semantics>
+</math></span><img alt="O(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34109fe397fdcff370079185bfdb65826cb5565a" style="vertical-align: -0.838ex; width:4.977ex; height:2.843ex;"/></span>. For random starts however, the average number of moves is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n\log(n))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n\log(n))}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(n\log(n))}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/85994022c28e938772bd858cd8281328643e8b3f" style="vertical-align: -0.838ex; width:11.54ex; height:2.843ex;"/></span>. However whilst in order this is a small increase in size, the initial number of moves for small problems is 10 times as big for a random start compared to one made from a greedy heuristic. This is because such 2-opt heuristics exploit 'bad' parts of a solution such as crossings. These types of heuristics are often used within Vehicle routing problem heuristics to reoptimize route solutions.<sup class="reference" id="cite_ref-johnson_29-1">[29]</sup>
+</p>
+<h4><span id="k-opt_heuristic.2C_or_Lin.E2.80.93Kernighan_heuristics"></span><span class="mw-headline" id="k-opt_heuristic,_or_Lin–Kernighan_heuristics"><i>k</i>-opt heuristic, or Lin–Kernighan heuristics</span><span class="mw-editsection"></span></h4>
+<p>The Lin–Kernighan heuristic is a special case of the <i>V</i>-opt or variable-opt technique. It involves the following steps:
+</p>
+<ol><li>Given a tour, delete <i>k</i> mutually disjoint edges.</li>
+<li>Reassemble the remaining fragments into a tour, leaving no disjoint subtours (that is, don't connect a fragment's endpoints together). This in effect simplifies the TSP under consideration into a much simpler problem.</li>
+<li>Each fragment endpoint can be connected to <span class="texhtml">2<i>k</i> − 2</span> other possibilities: of 2<i>k</i> total fragment endpoints available, the two endpoints of the fragment under consideration are disallowed. Such a constrained 2<i>k</i>-city TSP can then be solved with brute force methods to find the least-cost recombination of the original fragments.</li></ol>
+<p>The most popular of the <i>k</i>-opt methods are 3-opt, as introduced by Shen Lin of Bell Labs in 1965. A special case of 3-opt is where the edges are not disjoint (two of the edges are adjacent to one another). In practice, it is often possible to achieve substantial improvement over 2-opt without the combinatorial cost of the general 3-opt by restricting the 3-changes to this special subset where two of the removed edges are adjacent. This so-called two-and-a-half-opt typically falls roughly midway between 2-opt and 3-opt, both in terms of the quality of tours achieved and the time required to achieve those tours.
+</p>
+<h4><span class="mw-headline" id="V-opt_heuristic"><i>V</i>-opt heuristic</span><span class="mw-editsection"></span></h4>
+<p>The variable-opt method is related to, and a generalization of the <i>k</i>-opt method. Whereas the <i>k</i>-opt methods remove a fixed number (<i>k</i>) of edges from the original tour, the variable-opt methods do not fix the size of the edge set to remove. Instead, they grow the set as the search process continues. The best-known method in this family is the Lin–Kernighan method (mentioned above as a misnomer for 2-opt). Shen Lin and Brian Kernighan first published their method in 1972, and it was the most reliable heuristic for solving travelling salesman problems for nearly two decades. More advanced variable-opt methods were developed at Bell Labs in the late 1980s by David Johnson and his research team. These methods (sometimes called Lin–Kernighan–Johnson) build on the Lin–Kernighan method, adding ideas from tabu search and evolutionary computing. The basic Lin–Kernighan technique gives results that are guaranteed to be at least 3-opt. The Lin–Kernighan–Johnson methods compute a Lin–Kernighan tour, and then perturb the tour by what has been described as a mutation that removes at least four edges and reconnects the tour in a different way, then <i>V</i>-opting the new tour. The mutation is often enough to move the tour from the local minimum identified by Lin–Kernighan. <i>V</i>-opt methods are widely considered the most powerful heuristics for the problem, and are able to address special cases, such as the Hamilton Cycle Problem and other non-metric TSPs that other heuristics fail on. For many years Lin–Kernighan–Johnson had identified optimal solutions for all TSPs where an optimal solution was known and had identified the best-known solutions for all other TSPs on which the method had been tried.
+</p>
+<h4><span class="mw-headline" id="Randomized_improvement">Randomized improvement</span><span class="mw-editsection"></span></h4>
+<p>Optimized Markov chain algorithms which use local searching heuristic sub-algorithms can find a route extremely close to the optimal route for 700 to 800 cities.
+</p><p>TSP is a touchstone for many general heuristics devised for combinatorial optimization such as genetic algorithms, simulated annealing, tabu search, ant colony optimization, river formation dynamics (see swarm intelligence) and the cross entropy method.
+</p>
+<h5><span class="mw-headline" id="Ant_colony_optimization">Ant colony optimization</span><span class="mw-editsection"></span></h5>
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p>Artificial intelligence researcher Marco Dorigo described in 1993 a method of heuristically generating "good solutions" to the TSP using a simulation of an ant colony called <i>ACS</i> (<i>ant colony system</i>).<sup class="reference" id="cite_ref-35">[35]</sup> It models behaviour observed in real ants to find short paths between food sources and their nest, an emergent behaviour resulting from each ant's preference to follow trail pheromones deposited by other ants.
+</p><p>ACS sends out a large number of virtual ant agents to explore many possible routes on the map. Each ant probabilistically chooses the next city to visit based on a heuristic combining the distance to the city and the amount of virtual pheromone deposited on the edge to the city. The ants explore, depositing pheromone on each edge that they cross, until they have all completed a tour. At this point the ant which completed the shortest tour deposits virtual pheromone along its complete tour route (<i>global trail updating</i>). The amount of pheromone deposited is inversely proportional to the tour length: the shorter the tour, the more it deposits.
+</p>
+
+
+<h2><span class="mw-headline" id="Special_cases">Special cases</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Metric">Metric</span><span class="mw-editsection"></span></h3>
+<p>In the <i>metric TSP</i>, also known as <i>delta-TSP</i> or Δ-TSP, the intercity distances satisfy the triangle inequality.
+</p><p>A very natural restriction of the TSP is to require that the distances between cities form a metric to satisfy the triangle inequality; that is the direct connection from <i>A</i> to <i>B</i> is never farther than the route via intermediate <i>C</i>:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d_{AB}\leq d_{AC}+d_{CB}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>d</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>A</mi>
+<mi>B</mi>
+</mrow>
+</msub>
+<mo>≤<!-- ≤ --></mo>
+<msub>
+<mi>d</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>A</mi>
+<mi>C</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<msub>
+<mi>d</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>C</mi>
+<mi>B</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d_{AB}\leq d_{AC}+d_{CB}}</annotation>
+</semantics>
+</math></span><img alt="d_{AB}\leq d_{AC}+d_{CB}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/00385d6f9e2917278bef2df0d50a354852bfd940" style="vertical-align: -0.671ex; width:17.72ex; height:2.509ex;"/></span>.</dd></dl>
+<p>The edge spans then build a metric on the set of vertices. When the cities are viewed as points in the plane, many natural distance functions are metrics, and so many natural instances of TSP satisfy this constraint.
+</p><p>The following are some examples of metric TSPs for various metrics.
+</p>
+<ul><li>In the Euclidean TSP (see below) the distance between two cities is the Euclidean distance between the corresponding points.</li>
+<li>In the rectilinear TSP the distance between two cities is the sum of the absolute values of the differences of their <i>x</i>- and <i>y</i>-coordinates. This metric is often called the Manhattan distance or city-block metric.</li>
+<li>In the maximum metric, the distance between two points is the maximum of the absolute values of differences of their <i>x</i>- and <i>y</i>-coordinates.</li></ul>
+<p>The last two metrics appear, for example, in routing a machine that drills a given set of holes in a printed circuit board. The Manhattan metric corresponds to a machine that adjusts first one co-ordinate, and then the other, so the time to move to a new point is the sum of both movements. The maximum metric corresponds to a machine that adjusts both co-ordinates simultaneously, so the time to move to a new point is the slower of the two movements.
+</p><p>In its definition, the TSP does not allow cities to be visited twice, but many applications do not need this constraint. In such cases, a symmetric, non-metric instance can be reduced to a metric one. This replaces the original graph with a complete graph in which the inter-city distance <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d_{AB}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>d</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>A</mi>
+<mi>B</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d_{AB}}</annotation>
+</semantics>
+</math></span><img alt="d_{AB}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6f26084a709f3af83722ad3a65352e9a8e15e652" style="vertical-align: -0.671ex; width:3.921ex; height:2.509ex;"/></span> is replaced by the shortest path length between <i>A</i> and <i>B</i> in the original graph.
+</p>
+<h3><span class="mw-headline" id="Euclidean">Euclidean</span><span class="mw-editsection"></span></h3>
+<p>For points in the Euclidean plane, the optimal solution to the travelling salesman problem forms a simple polygon through all of the points, a polygonalization of the points.<sup class="reference" id="cite_ref-36">[36]</sup> Any non-optimal solution with crossings can be made into a shorter solution without crossings by local optimizations. The Euclidean distance obeys the triangle inequality, so the Euclidean TSP forms a special case of metric TSP. However, even when the input points have integer coordinates, their distances generally take the form of square roots, and the length of a tour is a sum of radicals, making it difficult to perform the symbolic computation needed to perform exact comparisons of the lengths of different tours.
+</p><p>Like the general TSP, the exact Euclidean TSP is NP-hard, but the issue with sums of radicals is an obstacle to proving that its decision version is in NP, and therefore NP-complete. A discretized version of the problem with distances rounded to integers is NP-complete.<sup class="reference" id="cite_ref-FOOTNOTEPapadimitriou1977_37-0">[37]</sup> With rational coordinates and the actual Euclidean metric, Euclidean TSP is known to be in the Counting Hierarchy,<sup class="reference" id="cite_ref-FOOTNOTEAllenderBürgisserKjeldgaard-PedersenMitersen2007_38-0">[38]</sup> a subclass of PSPACE. With arbitrary real coordinates, Euclidean TSP cannot be in such classes, since there are uncountably many possible inputs. Despite these complications, Euclidean TSP is much easier than the general metric case for approximation.<sup class="reference" id="cite_ref-FOOTNOTELarsonOdoni1981_39-0">[39]</sup> For example, the minimum spanning tree of the graph associated with an instance of the Euclidean TSP is a Euclidean minimum spanning tree, and so can be computed in expected O (<i>n</i> log <i>n</i>) time for <i>n</i> points (considerably less than the number of edges). This enables the simple 2-approximation algorithm for TSP with triangle inequality above to operate more quickly.
+</p><p>In general, for any <i>c</i> &gt; 0, where <i>d</i> is the number of dimensions in the Euclidean space, there is a polynomial-time algorithm that finds a tour of length at most (1 + 1/<i>c</i>) times the optimal for geometric instances of TSP in
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O\left(n(\log n)^{(O(c{\sqrt {d}}))^{d-1}}\right),}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mi>n</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">(</mo>
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>d</mi>
+</msqrt>
+</mrow>
+<mo stretchy="false">)</mo>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msup>
+</mrow>
+</msup>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O\left(n(\log n)^{(O(c{\sqrt {d}}))^{d-1}}\right),}</annotation>
+</semantics>
+</math></span><img alt="O\left(n(\log n)^{(O(c{\sqrt {d}}))^{d-1}}\right)," aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/aaa738b8a9431cc88d8ea82b88b95a5150076a70" style="vertical-align: -1.838ex; width:23.48ex; height:4.843ex;"/></span></dd></dl>
+<p>time; this is called a polynomial-time approximation scheme (PTAS).<sup class="reference" id="cite_ref-FOOTNOTEArora1998_40-0">[40]</sup> Sanjeev Arora and Joseph S. B. Mitchell were awarded the Gödel Prize in 2010 for their concurrent discovery of a PTAS for the Euclidean TSP.
+</p><p>In practice, simpler heuristics with weaker guarantees continue to be used.
+</p>
+<h3><span class="mw-headline" id="Asymmetric">Asymmetric</span><span class="mw-editsection"></span></h3>
+<p>In most cases, the distance between two nodes in the TSP network is the same in both directions. The case where the distance from <i>A</i> to <i>B</i> is not equal to the distance from <i>B</i> to <i>A</i> is called asymmetric TSP. A practical application of an asymmetric TSP is route optimization using street-level routing (which is made asymmetric by one-way streets, slip-roads, motorways, etc.).
+</p>
+<h4><span class="mw-headline" id="Conversion_to_symmetric">Conversion to symmetric</span><span class="mw-editsection"></span></h4>
+<p>Solving an asymmetric TSP graph can be somewhat complex. The following is a 3×3 matrix containing all possible path weights between the nodes <i>A</i>, <i>B</i> and <i>C</i>. One option is to turn an asymmetric matrix of size <i>N</i> into a symmetric matrix of size 2<i>N</i>.<sup class="reference" id="cite_ref-41">[41]</sup>
+</p>
+<dl><dd><table class="wikitable">
+<caption>Asymmetric path weights
+</caption>
+<tbody><tr style="text-align:center;">
+<th></th>
+<th><i>A</i></th>
+<th><i>B</i></th>
+<th><i>C</i>
+</th></tr>
+<tr style="text-align:center;">
+<th><i>A</i>
+</th>
+<td></td>
+<td>1</td>
+<td>2
+</td></tr>
+<tr style="text-align:center;">
+<th><i>B</i>
+</th>
+<td>6</td>
+<td></td>
+<td>3
+</td></tr>
+<tr style="text-align:center;">
+<th><i>C</i>
+</th>
+<td>5</td>
+<td>4</td>
+<td>
+</td></tr></tbody></table></dd></dl>
+<p>To double the size, each of the nodes in the graph is duplicated, creating a second <i>ghost node</i>, linked to the original node with a "ghost" edge of very low (possibly negative) weight, here denoted −<i>w</i>. (Alternatively, the ghost edges have weight 0, and weight w is added to all other edges.) The original 3×3 matrix shown above is visible in the bottom left and the transpose of the original in the top-right. Both copies of the matrix have had their diagonals replaced by the low-cost hop paths, represented by −<i>w</i>. In the new graph, no edge directly links original nodes and no edge directly links ghost nodes.
+</p>
+<dl><dd><table class="wikitable">
+<caption>Symmetric path weights
+</caption>
+<tbody><tr class="wikitable" style="text-align:center;">
+<th></th>
+<th><i>A</i></th>
+<th><i>B</i></th>
+<th><i>C</i></th>
+<th><i>A′</i></th>
+<th><i>B′</i></th>
+<th><i>C′</i>
+</th></tr>
+<tr style="text-align:center;">
+<th><i>A</i>
+</th>
+<td></td>
+<td></td>
+<td></td>
+<td>−<i>w</i></td>
+<td>6</td>
+<td>5
+</td></tr>
+<tr style="text-align:center;">
+<th><i>B</i>
+</th>
+<td></td>
+<td></td>
+<td></td>
+<td>1</td>
+<td>−<i>w</i></td>
+<td>4
+</td></tr>
+<tr style="text-align:center;">
+<th><i>C</i>
+</th>
+<td></td>
+<td></td>
+<td></td>
+<td>2</td>
+<td>3</td>
+<td>−<i>w</i>
+</td></tr>
+<tr style="text-align:center;">
+<th><i>A′</i>
+</th>
+<td>−<i>w</i></td>
+<td>1</td>
+<td>2</td>
+<td></td>
+<td></td>
+<td>
+</td></tr>
+<tr style="text-align:center;">
+<th><i>B′</i>
+</th>
+<td>6</td>
+<td>−<i>w</i></td>
+<td>3</td>
+<td></td>
+<td></td>
+<td>
+</td></tr>
+<tr style="text-align:center;">
+<th><i>C′</i>
+</th>
+<td>5</td>
+<td>4</td>
+<td>−<i>w</i></td>
+<td></td>
+<td></td>
+<td>
+</td></tr></tbody></table></dd></dl>
+<p>The weight −<i>w</i> of the "ghost" edges linking the ghost nodes to the corresponding original nodes must be low enough to ensure that all ghost edges must belong to any optimal symmetric TSP solution on the new graph (w=0 is not always low enough). As a consequence, in the optimal symmetric tour, each original node appears next to its ghost node (e.g. a possible path is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathrm {A\to A'\to C\to C'\to B\to B'\to A} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">A</mi>
+<mo stretchy="false">→<!-- → --></mo>
+<msup>
+<mi mathvariant="normal">A</mi>
+<mo>′</mo>
+</msup>
+<mo stretchy="false">→<!-- → --></mo>
+<mi mathvariant="normal">C</mi>
+<mo stretchy="false">→<!-- → --></mo>
+<msup>
+<mi mathvariant="normal">C</mi>
+<mo>′</mo>
+</msup>
+<mo stretchy="false">→<!-- → --></mo>
+<mi mathvariant="normal">B</mi>
+<mo stretchy="false">→<!-- → --></mo>
+<msup>
+<mi mathvariant="normal">B</mi>
+<mo>′</mo>
+</msup>
+<mo stretchy="false">→<!-- → --></mo>
+<mi mathvariant="normal">A</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathrm {A\to A'\to C\to C'\to B\to B'\to A} }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \mathrm {A\to A'\to C\to C'\to B\to B'\to A} }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8b8f572018748bd1f2daec98783ab0c1264188af" style="vertical-align: -0.338ex; width:35.615ex; height:2.509ex;"/></span>) and by merging the original and ghost nodes again we get an (optimal) solution of the original asymmetric problem (in our example, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathrm {A\to C\to B\to A} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">A</mi>
+<mo stretchy="false">→<!-- → --></mo>
+<mi mathvariant="normal">C</mi>
+<mo stretchy="false">→<!-- → --></mo>
+<mi mathvariant="normal">B</mi>
+<mo stretchy="false">→<!-- → --></mo>
+<mi mathvariant="normal">A</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathrm {A\to C\to B\to A} }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \mathrm {A\to C\to B\to A} }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d86c1f8dd7e361dedfc941630e5318edccbd6a31" style="vertical-align: -0.338ex; width:17.652ex; height:2.176ex;"/></span>).
+</p>
+<h3><span id="Analyst.27s_problem"></span><span class="mw-headline" id="Analyst's_problem">Analyst's problem</span><span class="mw-editsection"></span></h3>
+<p>There is an analogous problem in geometric measure theory which asks the following: under what conditions may a subset <i>E</i> of Euclidean space be contained in a rectifiable curve (that is, when is there a curve with finite length that visits every point in <i>E</i>)? This problem is known as the analyst's travelling salesman problem.
+</p>
+<h3><span class="mw-headline" id="Path_length_for_random_sets_of_points_in_a_square">Path length for random sets of points in a square</span><span class="mw-editsection"></span></h3>
+<p>Suppose <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle X_{1},\ldots ,X_{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle X_{1},\ldots ,X_{n}}</annotation>
+</semantics>
+</math></span><img alt="X_{1},\ldots ,X_{n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac794f5521dcce89913085a6d566e7cdb615dbb0" style="vertical-align: -0.671ex; width:11.299ex; height:2.509ex;"/></span> are <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span> independent random variables with uniform distribution in the square <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle [0,1]^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">[</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mn>1</mn>
+<msup>
+<mo stretchy="false">]</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle [0,1]^{2}}</annotation>
+</semantics>
+</math></span><img alt="[0,1]^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e2fd6e9b0db782a26c033d7c728aadac9eec363a" style="vertical-align: -0.838ex; width:5.707ex; height:3.176ex;"/></span>, and let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle L_{n}^{\ast }}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msubsup>
+<mi>L</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msubsup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle L_{n}^{\ast }}</annotation>
+</semantics>
+</math></span><img alt="L_{n}^{\ast }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/11e3fb6faab006c63e201292b500a7b396b8f0f1" style="vertical-align: -0.671ex; width:2.801ex; height:2.509ex;"/></span> be the shortest path length (i.e. TSP solution) for this set of points, according to the usual Euclidean distance. It is known<sup class="reference" id="cite_ref-FOOTNOTEBeardwoodHaltonHammersley1959_8-1">[8]</sup> that, almost surely,
+</p>
+<dl><dd><dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\frac {L_{n}^{*}}{\sqrt {n}}}\rightarrow \beta \qquad {\text{when }}n\to \infty ,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<msubsup>
+<mi>L</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msubsup>
+<msqrt>
+<mi>n</mi>
+</msqrt>
+</mfrac>
+</mrow>
+<mo stretchy="false">→<!-- → --></mo>
+<mi>β<!-- β --></mi>
+<mspace width="2em"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>when </mtext>
+</mrow>
+<mi>n</mi>
+<mo stretchy="false">→<!-- → --></mo>
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\frac {L_{n}^{*}}{\sqrt {n}}}\rightarrow \beta \qquad {\text{when }}n\to \infty ,}</annotation>
+</semantics>
+</math></span><img alt="{\frac {L_{n}^{*}}{\sqrt {n}}}\rightarrow \beta \qquad {\text{when }}n\to \infty ," aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c9c0105e9c8d067bc7f999a8d5c4f79694cfa7ee" style="vertical-align: -2.838ex; width:27.614ex; height:6.176ex;"/></span></dd></dl></dd></dl>
+<p>where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \beta }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>β<!-- β --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \beta }</annotation>
+</semantics>
+</math></span><img alt="\beta " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7ed48a5e36207156fb792fa79d29925d2f7901e8" style="vertical-align: -0.671ex; width:1.332ex; height:2.509ex;"/></span> is a positive constant that is not known explicitly. Since <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle L_{n}^{*}\leq 2{\sqrt {n}}+2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msubsup>
+<mi>L</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msubsup>
+<mo>≤<!-- ≤ --></mo>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>n</mi>
+</msqrt>
+</mrow>
+<mo>+</mo>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle L_{n}^{*}\leq 2{\sqrt {n}}+2}</annotation>
+</semantics>
+</math></span><img alt="L_{n}^{*}\leq 2{\sqrt {n}}+2" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/acf5ea9a4a4f75e9fbc038b6b47b755112181947" style="vertical-align: -1.005ex; width:14.396ex; height:3.009ex;"/></span> (see below), it follows from bounded convergence theorem that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \beta =\lim _{n\to \infty }\mathbb {E} [L_{n}^{*}]/{\sqrt {n}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>β<!-- β --></mi>
+<mo>=</mo>
+<munder>
+<mo form="prefix" movablelimits="true">lim</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo stretchy="false">→<!-- → --></mo>
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mrow>
+</munder>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">E</mi>
+</mrow>
+<mo stretchy="false">[</mo>
+<msubsup>
+<mi>L</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msubsup>
+<mo stretchy="false">]</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>n</mi>
+</msqrt>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \beta =\lim _{n\to \infty }\mathbb {E} [L_{n}^{*}]/{\sqrt {n}}}</annotation>
+</semantics>
+</math></span><img alt="\beta =\lim _{n\to \infty }\mathbb {E} [L_{n}^{*}]/{\sqrt {n}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/797ef104f2559647e6ccf80ade649f04e1e0b21a" style="vertical-align: -1.838ex; width:19.228ex; height:3.843ex;"/></span>, hence lower and upper bounds on <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \beta }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>β<!-- β --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \beta }</annotation>
+</semantics>
+</math></span><img alt="\beta " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7ed48a5e36207156fb792fa79d29925d2f7901e8" style="vertical-align: -0.671ex; width:1.332ex; height:2.509ex;"/></span> follow from bounds on <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathbb {E} [L_{n}^{*}]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">E</mi>
+</mrow>
+<mo stretchy="false">[</mo>
+<msubsup>
+<mi>L</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msubsup>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathbb {E} [L_{n}^{*}]}</annotation>
+</semantics>
+</math></span><img alt="\mathbb {E} [L_{n}^{*}]" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f4bc3bf083f708f938ee8798c74d2efffb0fe6be" style="vertical-align: -0.838ex; width:5.645ex; height:2.843ex;"/></span>.
+</p><p>The almost sure limit <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\frac {L_{n}^{*}}{\sqrt {n}}}\rightarrow \beta }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<msubsup>
+<mi>L</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msubsup>
+<msqrt>
+<mi>n</mi>
+</msqrt>
+</mfrac>
+</mrow>
+<mo stretchy="false">→<!-- → --></mo>
+<mi>β<!-- β --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\frac {L_{n}^{*}}{\sqrt {n}}}\rightarrow \beta }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\frac {L_{n}^{*}}{\sqrt {n}}}\rightarrow \beta }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/eedd1ad500dfc535d3f4b50e7626e4e656c9c6a3" style="vertical-align: -2.838ex; width:9.113ex; height:6.176ex;"/></span> as <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\to \infty }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo stretchy="false">→<!-- → --></mo>
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\to \infty }</annotation>
+</semantics>
+</math></span><img alt="n\to \infty " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a0d55d9b32f6fa8fab6a84ea444a6b5a24bb45e1" style="vertical-align: -0.338ex; width:7.333ex; height:1.843ex;"/></span> may not exist 
+if the independent locations  <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle X_{1},\ldots ,X_{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle X_{1},\ldots ,X_{n}}</annotation>
+</semantics>
+</math></span><img alt="X_{1},\ldots ,X_{n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac794f5521dcce89913085a6d566e7cdb615dbb0" style="vertical-align: -0.671ex; width:11.299ex; height:2.509ex;"/></span> are replaced with observations from a stationary ergodic process with uniform marginals.<sup class="reference" id="cite_ref-as2016_42-0">[42]</sup>
+</p>
+<h4><span class="mw-headline" id="Upper_bound">Upper bound</span><span class="mw-editsection"></span></h4>
+<ul><li>One has <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle L^{*}\leq 2{\sqrt {n}}+2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>L</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo>≤<!-- ≤ --></mo>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>n</mi>
+</msqrt>
+</mrow>
+<mo>+</mo>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle L^{*}\leq 2{\sqrt {n}}+2}</annotation>
+</semantics>
+</math></span><img alt="L^{*}\leq 2{\sqrt {n}}+2" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9d55141b55433c1d35b319b46b7c5373b2057e19" style="vertical-align: -1.005ex; width:14.231ex; height:3.009ex;"/></span>, and therefore <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \beta \leq 2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>β<!-- β --></mi>
+<mo>≤<!-- ≤ --></mo>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \beta \leq 2}</annotation>
+</semantics>
+</math></span><img alt="\beta \leq 2" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/23617cc0a29efd2bb2a613505af1c1ccf8f9889f" style="vertical-align: -0.671ex; width:5.593ex; height:2.509ex;"/></span>, by using a naive path which visits monotonically the points inside each of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\sqrt {n}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>n</mi>
+</msqrt>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\sqrt {n}}}</annotation>
+</semantics>
+</math></span><img alt="{\sqrt {n}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2a2994734eae382ce30100fb17b9447fd8e99f81" style="vertical-align: -1.005ex; width:3.331ex; height:3.009ex;"/></span> slices of width <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1/{\sqrt {n}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>n</mi>
+</msqrt>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1/{\sqrt {n}}}</annotation>
+</semantics>
+</math></span><img alt="1/{\sqrt {n}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e07670d2dac5bafa33cf25175a1374206563e22e" style="vertical-align: -1.005ex; width:5.656ex; height:3.009ex;"/></span> in the square.</li>
+<li>Few<sup class="reference" id="cite_ref-43">[43]</sup> proved <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle L_{n}^{*}\leq {\sqrt {2n}}+1.75}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msubsup>
+<mi>L</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msubsup>
+<mo>≤<!-- ≤ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mn>2</mn>
+<mi>n</mi>
+</msqrt>
+</mrow>
+<mo>+</mo>
+<mn>1.75</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle L_{n}^{*}\leq {\sqrt {2n}}+1.75}</annotation>
+</semantics>
+</math></span><img alt="L_{n}^{*}\leq {\sqrt {2n}}+1.75" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ba9356191ae03b09e369ecfaa24db046add98338" style="vertical-align: -0.671ex; width:17.367ex; height:3.009ex;"/></span>, hence <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \beta \leq {\sqrt {2}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>β<!-- β --></mi>
+<mo>≤<!-- ≤ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mn>2</mn>
+</msqrt>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \beta \leq {\sqrt {2}}}</annotation>
+</semantics>
+</math></span><img alt="\beta \leq {\sqrt {2}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9e43f5ae39a0f3d5437f671e1216ec9141d6fc61" style="vertical-align: -0.671ex; width:7.529ex; height:3.009ex;"/></span>, later improved by Karloff (1987): <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \beta \leq 0.984{\sqrt {2}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>β<!-- β --></mi>
+<mo>≤<!-- ≤ --></mo>
+<mn>0.984</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mn>2</mn>
+</msqrt>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \beta \leq 0.984{\sqrt {2}}}</annotation>
+</semantics>
+</math></span><img alt="\beta \leq 0.984{\sqrt {2}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b3732edcb6a496fdf3b0a8b009d5045fc7eef5fe" style="vertical-align: -0.671ex; width:12.825ex; height:3.009ex;"/></span>.</li>
+<li>Fietcher<sup class="reference" id="cite_ref-44">[44]</sup> showed an upper bound of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \beta \leq 0.73\dots }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>β<!-- β --></mi>
+<mo>≤<!-- ≤ --></mo>
+<mn>0.73</mn>
+<mo>…<!-- … --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \beta \leq 0.73\dots }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \beta \leq 0.73\dots }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c00e115337647d0f9d1739ba3f3bd10c35efeb07" style="vertical-align: -0.671ex; width:11.675ex; height:2.509ex;"/></span>.</li></ul>
+<h4><span class="mw-headline" id="Lower_bound">Lower bound</span><span class="mw-editsection"></span></h4>
+<ul><li>By observing that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathbb {E} [L_{n}^{*}]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">E</mi>
+</mrow>
+<mo stretchy="false">[</mo>
+<msubsup>
+<mi>L</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msubsup>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathbb {E} [L_{n}^{*}]}</annotation>
+</semantics>
+</math></span><img alt="\mathbb {E} [L_{n}^{*}]" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f4bc3bf083f708f938ee8798c74d2efffb0fe6be" style="vertical-align: -0.838ex; width:5.645ex; height:2.843ex;"/></span> is greater than <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span> times the distance between <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle X_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle X_{0}}</annotation>
+</semantics>
+</math></span><img alt="X_{0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6381fdad2b9f11954b1fc2db08bbaccf634ededa" style="vertical-align: -0.671ex; width:2.979ex; height:2.509ex;"/></span> and the closest point <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle X_{i}\neq X_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>≠<!-- ≠ --></mo>
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle X_{i}\neq X_{0}}</annotation>
+</semantics>
+</math></span><img alt="X_{i}\neq X_{0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/65dd9899e4e9034a54c5799e38db99e54b427663" style="vertical-align: -0.838ex; width:8.801ex; height:2.676ex;"/></span>, one gets (after a short computation)</li></ul>
+<dl><dd><dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathbb {E} [L_{n}^{*}]\geq {\tfrac {1}{2}}{\sqrt {n}}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">E</mi>
+</mrow>
+<mo stretchy="false">[</mo>
+<msubsup>
+<mi>L</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msubsup>
+<mo stretchy="false">]</mo>
+<mo>≥<!-- ≥ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>1</mn>
+<mn>2</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>n</mi>
+</msqrt>
+</mrow>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathbb {E} [L_{n}^{*}]\geq {\tfrac {1}{2}}{\sqrt {n}}.}</annotation>
+</semantics>
+</math></span><img alt="\mathbb {E} [L_{n}^{*}]\geq {\tfrac {1}{2}}{\sqrt {n}}." aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/84b7371bf7d7fff1a1a5ab12576c8ad55bf7105d" style="vertical-align: -1.171ex; width:14.379ex; height:3.509ex;"/></span></dd></dl></dd></dl>
+<ul><li>A better lower bound is obtained<sup class="reference" id="cite_ref-FOOTNOTEBeardwoodHaltonHammersley1959_8-2">[8]</sup> by observing that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathbb {E} [L_{n}^{*}]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">E</mi>
+</mrow>
+<mo stretchy="false">[</mo>
+<msubsup>
+<mi>L</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msubsup>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathbb {E} [L_{n}^{*}]}</annotation>
+</semantics>
+</math></span><img alt="\mathbb {E} [L_{n}^{*}]" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f4bc3bf083f708f938ee8798c74d2efffb0fe6be" style="vertical-align: -0.838ex; width:5.645ex; height:2.843ex;"/></span> is greater than <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\tfrac {1}{2}}n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>1</mn>
+<mn>2</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\tfrac {1}{2}}n}</annotation>
+</semantics>
+</math></span><img alt="{\tfrac {1}{2}}n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/23c716fd029786f63625a8b91a2f554d3bc29604" style="vertical-align: -1.171ex; width:3.053ex; height:3.509ex;"/></span> times the sum of the distances between <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle X_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle X_{0}}</annotation>
+</semantics>
+</math></span><img alt="X_{0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6381fdad2b9f11954b1fc2db08bbaccf634ededa" style="vertical-align: -0.671ex; width:2.979ex; height:2.509ex;"/></span> and the closest and second closest points <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle X_{i},X_{j}\neq X_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>≠<!-- ≠ --></mo>
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle X_{i},X_{j}\neq X_{0}}</annotation>
+</semantics>
+</math></span><img alt="X_{i},X_{j}\neq X_{0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dd25a999b993965ed3cd0e667fc73615ddabfe02" style="vertical-align: -1.005ex; width:12.669ex; height:2.843ex;"/></span>, which gives</li></ul>
+<dl><dd><dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathbb {E} [L_{n}^{*}]\geq \left({\tfrac {1}{4}}+{\tfrac {3}{8}}\right){\sqrt {n}}={\tfrac {5}{8}}{\sqrt {n}},}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">E</mi>
+</mrow>
+<mo stretchy="false">[</mo>
+<msubsup>
+<mi>L</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msubsup>
+<mo stretchy="false">]</mo>
+<mo>≥<!-- ≥ --></mo>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>1</mn>
+<mn>4</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>3</mn>
+<mn>8</mn>
+</mfrac>
+</mstyle>
+</mrow>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>n</mi>
+</msqrt>
+</mrow>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>5</mn>
+<mn>8</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>n</mi>
+</msqrt>
+</mrow>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathbb {E} [L_{n}^{*}]\geq \left({\tfrac {1}{4}}+{\tfrac {3}{8}}\right){\sqrt {n}}={\tfrac {5}{8}}{\sqrt {n}},}</annotation>
+</semantics>
+</math></span><img alt="\mathbb {E} [L_{n}^{*}]\geq \left({\tfrac {1}{4}}+{\tfrac {3}{8}}\right){\sqrt {n}}={\tfrac {5}{8}}{\sqrt {n}}," aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/db6d7b36c9d312d068b8bd0090d43c0ca0e57a13" style="vertical-align: -1.838ex; width:30.128ex; height:4.843ex;"/></span></dd></dl></dd></dl>
+<ul><li>The currently<sup class="reference" id="cite_ref-FOOTNOTESteinerberger2015_45-0">[45]</sup> best lower bound is</li></ul>
+<dl><dd><dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathbb {E} [L_{n}^{*}]\geq ({\tfrac {5}{8}}+{\tfrac {19}{5184}}){\sqrt {n}},}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">E</mi>
+</mrow>
+<mo stretchy="false">[</mo>
+<msubsup>
+<mi>L</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msubsup>
+<mo stretchy="false">]</mo>
+<mo>≥<!-- ≥ --></mo>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>5</mn>
+<mn>8</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>19</mn>
+<mn>5184</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>n</mi>
+</msqrt>
+</mrow>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathbb {E} [L_{n}^{*}]\geq ({\tfrac {5}{8}}+{\tfrac {19}{5184}}){\sqrt {n}},}</annotation>
+</semantics>
+</math></span><img alt="\mathbb {E} [L_{n}^{*}]\geq ({\tfrac {5}{8}}+{\tfrac {19}{5184}}){\sqrt {n}}," aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4e91269e8daee05893c12acdd3590f834d577568" style="vertical-align: -1.338ex; width:23.153ex; height:3.676ex;"/></span></dd></dl></dd></dl>
+<ul><li>Held and Karp<sup class="reference" id="cite_ref-46">[46]</sup> gave a polynomial-time algorithm that provides numerical lower bounds for <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle L_{n}^{*}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msubsup>
+<mi>L</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msubsup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle L_{n}^{*}}</annotation>
+</semantics>
+</math></span><img alt="L_{n}^{*}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5e826fe3edf7eae4f36d9f4b5dc7da1caba06c82" style="vertical-align: -0.671ex; width:2.801ex; height:2.509ex;"/></span>, and thus for <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \beta (\simeq L_{n}^{*}/{\sqrt {n}})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>β<!-- β --></mi>
+<mo stretchy="false">(</mo>
+<mo>≃<!-- ≃ --></mo>
+<msubsup>
+<mi>L</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msubsup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>n</mi>
+</msqrt>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \beta (\simeq L_{n}^{*}/{\sqrt {n}})}</annotation>
+</semantics>
+</math></span><img alt="\beta (\simeq L_{n}^{*}/{\sqrt {n}})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/14dab64c07b9b5c153ef800182a560fe685fe73b" style="vertical-align: -1.005ex; width:12.889ex; height:3.009ex;"/></span> which seem to be good up to more or less 1%.<sup class="reference" id="cite_ref-47">[47]</sup> In particular, David S. Johnson<sup class="reference" id="cite_ref-48">[48]</sup> obtained a lower bound by computer experiment:</li></ul>
+<dl><dd><dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle L_{n}^{*}\gtrsim 0.7080{\sqrt {n}}+0.522,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msubsup>
+<mi>L</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msubsup>
+<mo>≳<!-- ≳ --></mo>
+<mn>0.7080</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>n</mi>
+</msqrt>
+</mrow>
+<mo>+</mo>
+<mn>0.522</mn>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle L_{n}^{*}\gtrsim 0.7080{\sqrt {n}}+0.522,}</annotation>
+</semantics>
+</math></span><img alt="L_{n}^{*}\gtrsim 0.7080{\sqrt {n}}+0.522," aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ae96a8f7385553b8a348b95337e4d7ea67f3e5ec" style="vertical-align: -1.005ex; width:24.473ex; height:3.009ex;"/></span></dd></dl></dd></dl>
+<p>where 0.522 comes from the points near square boundary which have fewer neighbours,
+and Christine L. Valenzuela and Antonia J. Jones<sup class="reference" id="cite_ref-49">[49]</sup> obtained the following other numerical lower bound:
+</p>
+<dl><dd><dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle L_{n}^{*}\gtrsim 0.7078{\sqrt {n}}+0.551}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msubsup>
+<mi>L</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msubsup>
+<mo>≳<!-- ≳ --></mo>
+<mn>0.7078</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>n</mi>
+</msqrt>
+</mrow>
+<mo>+</mo>
+<mn>0.551</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle L_{n}^{*}\gtrsim 0.7078{\sqrt {n}}+0.551}</annotation>
+</semantics>
+</math></span><img alt="L_{n}^{*}\gtrsim 0.7078{\sqrt {n}}+0.551" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e14d92cb950d6fef9fca0e88b879873e1096f41a" style="vertical-align: -1.005ex; width:23.827ex; height:3.009ex;"/></span>.</dd></dl></dd></dl>
+<h2><span class="mw-headline" id="Computational_complexity">Computational complexity</span><span class="mw-editsection"></span></h2>
+<p>The problem has been shown to be NP-hard (more precisely, it is complete for the complexity class FP<sup>NP</sup>; see function problem), and the decision problem version ("given the costs and a number <i>x</i>, decide whether there is a round-trip route cheaper than <i>x</i>") is NP-complete. The bottleneck travelling salesman problem is also NP-hard. The problem remains NP-hard even for the case when the cities are in the plane with Euclidean distances, as well as in a number of other restrictive cases. Removing the condition of visiting each city "only once" does not remove the NP-hardness, since in the planar case there is an optimal tour that visits each city only once (otherwise, by the triangle inequality, a shortcut that skips a repeated visit would not increase the tour length).
+</p>
+<h3><span class="mw-headline" id="Complexity_of_approximation">Complexity of approximation</span><span class="mw-editsection"></span></h3>
+<p>In the general case, finding a shortest travelling salesman tour is NPO-complete.<sup class="reference" id="cite_ref-50">[50]</sup> If the distance measure is a metric (and thus symmetric), the problem becomes APX-complete<sup class="reference" id="cite_ref-FOOTNOTEPapadimitriouYannakakis1993_51-0">[51]</sup> and the algorithm of Christofides and Serdyukov approximates it within 1.5.<sup class="reference" id="cite_ref-FOOTNOTEChristofides1976_52-0">[52]</sup><sup class="reference" id="cite_ref-53">[53]</sup><sup class="reference" id="cite_ref-bs20_9-2">[9]</sup>
+</p><p>If the distances are restricted to 1 and 2 (but still are a metric) the approximation ratio becomes 8/7.<sup class="reference" id="cite_ref-FOOTNOTEBermanKarpinski2006_54-0">[54]</sup> In the asymmetric case with triangle inequality, up until recently only logarithmic performance guarantees were known.<sup class="reference" id="cite_ref-FOOTNOTEKaplanLewensteinShafrirSviridenko2004_55-0">[55]</sup> In 2018, a constant factor approximation was developed by Svensson, Tarnawski and Végh.<sup class="reference" id="cite_ref-56">[56]</sup>  The best current algorithm, by Traub and Vygen, achieves performance ratio of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 22+\varepsilon }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>22</mn>
+<mo>+</mo>
+<mi>ε<!-- ε --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 22+\varepsilon }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 22+\varepsilon }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/59dbc91101f9602d5140c7bd961817dacd270b9d" style="vertical-align: -0.505ex; width:6.249ex; height:2.343ex;"/></span>.<sup class="reference" id="cite_ref-57">[57]</sup> The best known inapproximability bound is 75/74.<sup class="reference" id="cite_ref-FOOTNOTEKarpinskiLampisSchmied2015_58-0">[58]</sup>
+</p><p>The corresponding maximization problem of finding the <i>longest</i> travelling salesman tour is approximable within 63/38.<sup class="reference" id="cite_ref-FOOTNOTEKosarajuParkStein1994_59-0">[59]</sup> If the distance function is symmetric, the longest tour can be approximated within 4/3 by a deterministic algorithm<sup class="reference" id="cite_ref-FOOTNOTESerdyukov1984_60-0">[60]</sup> and within <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\tfrac {1}{25}}(33+\varepsilon )}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>1</mn>
+<mn>25</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mo stretchy="false">(</mo>
+<mn>33</mn>
+<mo>+</mo>
+<mi>ε<!-- ε --></mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\tfrac {1}{25}}(33+\varepsilon )}</annotation>
+</semantics>
+</math></span><img alt="{\tfrac {1}{25}}(33+\varepsilon )" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2031804f8fa0030bdc51cc2725244a0c1ec4a4f6" style="vertical-align: -1.338ex; width:10.538ex; height:3.676ex;"/></span> by a randomized algorithm.<sup class="reference" id="cite_ref-FOOTNOTEHassinRubinstein2000_61-0">[61]</sup>
+</p>
+<h2><span class="mw-headline" id="Human_and_animal_performance">Human and animal performance</span><span class="mw-editsection"></span></h2>
+<p>The TSP, in particular the Euclidean variant of the problem, has attracted the attention of researchers in cognitive psychology. It has been observed that humans are able to produce near-optimal solutions quickly, in a close-to-linear fashion, with performance that ranges from 1% less efficient, for graphs with 10-20 nodes, to 11% less efficient for graphs with 120 nodes.<sup class="reference" id="cite_ref-62">[62]</sup><sup class="reference" id="cite_ref-63">[63]</sup> The apparent ease with which humans accurately generate near-optimal solutions to the problem has led researchers to hypothesize that humans use one or more heuristics, with the two most popular theories arguably being the convex-hull hypothesis and the crossing-avoidance heuristic.<sup class="reference" id="cite_ref-64">[64]</sup><sup class="reference" id="cite_ref-65">[65]</sup><sup class="reference" id="cite_ref-66">[66]</sup> However, additional evidence suggests that human performance is quite varied, and individual differences as well as graph geometry appear to affect performance in the task.<sup class="reference" id="cite_ref-67">[67]</sup><sup class="reference" id="cite_ref-68">[68]</sup><sup class="reference" id="cite_ref-69">[69]</sup> Nevertheless, results suggest that computer performance on the TSP may be improved by understanding and emulating the methods used by humans for these problems,<sup class="reference" id="cite_ref-70">[70]</sup> and have also led to new insights into the mechanisms of human thought.<sup class="reference" id="cite_ref-hptsp_71-0">[71]</sup> The first issue of the <i>Journal of Problem Solving</i> was devoted to the topic of human performance on TSP,<sup class="reference" id="cite_ref-72">[72]</sup> and a 2011 review listed dozens of papers on the subject.<sup class="reference" id="cite_ref-hptsp_71-1">[71]</sup>
+</p><p>A 2011 study in animal cognition titled "Let the Pigeon Drive the Bus," named after the children's book <i>Don't Let the Pigeon Drive the Bus!</i>, examined spatial cognition in pigeons by studying their flight patterns between multiple feeders in a laboratory in relation to the travelling salesman problem. In the first experiment, pigeons were placed in the corner of a lab room and allowed to fly to nearby feeders containing peas. The researchers found that pigeons largely used proximity to determine which feeder they would select next. In the second experiment, the feeders were arranged in such a way that flying to the nearest feeder at every opportunity would be largely inefficient if the pigeons needed to visit every feeder. The results of the second experiment indicate that pigeons, while still favoring proximity-based solutions, "can plan several steps ahead along the route when the differences in travel costs between efficient and less efficient routes based on proximity become larger."<sup class="reference" id="cite_ref-73">[73]</sup> These results are consistent with other experiments done with non-primates, which have proven that some non-primates were able to plan complex travel routes. This suggests non-primates may possess a relatively sophisticated spatial cognitive ability.
+</p>
+<h2><span class="mw-headline" id="Natural_computation">Natural computation</span><span class="mw-editsection"></span></h2>
+<p>When presented with a spatial configuration of food sources, the amoeboid Physarum polycephalum adapts its morphology to create an efficient path between the food sources which can also be viewed as an approximate solution to TSP.<sup class="reference" id="cite_ref-74">[74]</sup>
+</p>
+<h2><span class="mw-headline" id="Benchmarks">Benchmarks</span><span class="mw-editsection"></span></h2>
+<p>For benchmarking of TSP algorithms, TSPLIB<sup class="reference" id="cite_ref-75">[75]</sup> is a library of sample instances of the TSP and related problems is maintained, see the TSPLIB external reference. Many of them are lists of actual cities and layouts of actual printed circuits.
+</p>
+<h2><span class="mw-headline" id="Popular_culture">Popular culture</span><span class="mw-editsection"></span></h2>
+<ul><li><i>Travelling Salesman</i>, by director Timothy Lanzone, is the story of four mathematicians hired by the U.S. government to solve the most elusive problem in computer-science history: P vs. NP.<sup class="reference" id="cite_ref-:0_76-0">[76]</sup> Solutions to the problem are used by mathematician Bob Bosche in a subgenre called TSP art.<sup class="reference" id="cite_ref-77">[77]</sup></li></ul>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Canadian traveller problem</li>
+<li>Exact algorithm</li>
+<li>Route inspection problem (also known as "Chinese postman problem")</li>
+<li>Set TSP problem</li>
+<li>Seven Bridges of Königsberg</li>
+<li>Steiner travelling salesman problem</li>
+<li>Subway Challenge</li>
+<li>Tube Challenge</li>
+<li>Vehicle routing problem</li>
+<li>Graph exploration</li>
+<li>Mixed Chinese postman problem</li>
+<li>Arc routing</li>
+<li>Snow plow routing problem</li></ul>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1054258005">.mw-parser-output .refbegin{font-size:90%;margin-bottom:0.5em}.mw-parser-output .refbegin-hanging-indents>ul{margin-left:0}.mw-parser-output .refbegin-hanging-indents>ul>li{margin-left:0;padding-left:3.2em;text-indent:-3.2em}.mw-parser-output .refbegin-hanging-indents ul,.mw-parser-output .refbegin-hanging-indents ul li{list-style:none}@media(max-width:720px){.mw-parser-output .refbegin-hanging-indents>ul>li{padding-left:1.6em;text-indent:-1.6em}}.mw-parser-output .refbegin-columns{margin-top:0.3em}.mw-parser-output .refbegin-columns ul{margin-top:0}.mw-parser-output .refbegin-columns li{page-break-inside:avoid;break-inside:avoid-column}</style>
+<h2><span class="mw-headline" id="Further_reading">Further reading</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1054258005" rel="mw-deduplicated-inline-style"/>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097025294">.mw-parser-output .side-box{margin:4px 0;box-sizing:border-box;border:1px solid #aaa;font-size:88%;line-height:1.25em;background-color:#f9f9f9}.mw-parser-output .side-box-abovebelow,.mw-parser-output .side-box-text{padding:0.25em 0.9em}.mw-parser-output .side-box-image{padding:2px 0 2px 0.9em;text-align:center}.mw-parser-output .side-box-imageright{padding:2px 0.9em 2px 0;text-align:center}@media(min-width:500px){.mw-parser-output .side-box-flex{display:flex;align-items:center}.mw-parser-output .side-box-text{flex:1}}@media(min-width:720px){.mw-parser-output .side-box{width:238px}.mw-parser-output .side-box-right{clear:right;float:right;margin-left:1em}.mw-parser-output .side-box-left{margin-right:1em}}</style>
+<ul><li>Traveling Salesman Problem at the Wayback Machine (archived 17 December 2013) at University of Waterloo</li>
+<li>TSPLIB at the University of Heidelberg</li>
+<li><i>Traveling Salesman Problem</i> by Jon McLoone at the Wolfram Demonstrations Project</li>
+<li>TSP visualization tool</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2385
+Cached time: 20221223230717
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 1.091 seconds
+Real time usage: 1.339 seconds
+Preprocessor visited node count: 7670/1000000
+Post‐expand include size: 208039/2097152 bytes
+Template argument size: 4615/2097152 bytes
+Highest expansion depth: 17/100
+Expensive parser function count: 6/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 256373/5000000 bytes
+Lua time usage: 0.626/10.000 seconds
+Lua memory usage: 9228725/52428800 bytes
+Number of Wikibase entities loaded: 1/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  974.773      1 -total
+ 40.51%  394.837      1 Template:Reflist
+ 22.72%  221.465     40 Template:Citation
+ 15.20%  148.131     29 Template:Cite_journal
+ 11.51%  112.200     18 Template:Sfnp
+ 11.24%  109.583      9 Template:Cite_book
+  4.97%   48.464      1 Template:Authority_control
+  4.95%   48.219      1 Template:Short_description
+  4.35%   42.361      1 Template:Commons_category
+  4.13%   40.256      1 Template:Sister_project
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:31248-0!canonical and timestamp 20221223230716 and revision id 1128294054.
+ -->
+</div></body>
+</html>

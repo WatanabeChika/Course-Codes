@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>reservoir_sampling</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p><b>Reservoir sampling</b> is a family of randomized algorithms for choosing a simple random sample, without replacement, of <span class="texhtml mvar" style="font-style:italic;">k</span> items from a population of unknown size <span class="texhtml mvar" style="font-style:italic;">n</span> in a single pass over the items.  The size of the population <span class="texhtml mvar" style="font-style:italic;">n</span> is not known to the algorithm and is typically too large for all <span class="texhtml mvar" style="font-style:italic;">n</span> items to fit into main memory.  The population is revealed to the algorithm over time, and the algorithm cannot look back at previous items. At any point, the current state of the algorithm must permit extraction of a simple random sample without replacement of size <span class="texhtml mvar" style="font-style:italic;">k</span> over the part of the population seen so far.
+</p>
+
+<h2><span class="mw-headline" id="Motivation">Motivation</span><span class="mw-editsection"></span></h2>
+<p>Suppose we see a sequence of items, one at a time. We want to keep ten items in memory, and we want them to be selected at random from the sequence. If we know the total number of items <span class="texhtml mvar" style="font-style:italic;">n</span> and can access the items arbitrarily, then the solution is easy: select 10 distinct indices <span class="texhtml mvar" style="font-style:italic;">i</span> between 1 and <span class="texhtml mvar" style="font-style:italic;">n</span> with equal probability, and keep the <span class="texhtml mvar" style="font-style:italic;">i</span>-th elements. The problem is that we do not always know the exact <span class="texhtml mvar" style="font-style:italic;">n</span> in advance.
+</p>
+<h2><span class="mw-headline" id="Simple:_Algorithm_R">Simple: Algorithm R</span><span class="mw-editsection"></span></h2><p>
+A simple and popular but slow algorithm, <i>Algorithm R</i>, was created by Alan Waterman.<sup class="reference" id="cite_ref-vitter_1-0">[1]</sup></p><blockquote><p>Initialize an array <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>R</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R}</annotation>
+</semantics>
+</math></span><img alt="R" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4b0bfb3769bf24d80e15374dc37b0441e2616e33" style="vertical-align: -0.338ex; width:1.764ex; height:2.176ex;"/></span> indexed from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1}</annotation>
+</semantics>
+</math></span><img alt="1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/92d98b82a3778f043108d4e20960a9193df57cbf" style="vertical-align: -0.338ex; width:1.162ex; height:2.176ex;"/></span> to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k}</annotation>
+</semantics>
+</math></span><img alt="k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3c9a2c7b599b37105512c5d570edc034056dd40" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span>, containing the first <span class="texhtml mvar" style="font-style:italic;">k</span> items of the input <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{1},...,x_{k}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>,</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{1},...,x_{k}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle x_{1},...,x_{k}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2b83bf0a25e29a5395cc534f35edc8fa7e2d18ca" style="vertical-align: -0.671ex; width:9.972ex; height:2.009ex;"/></span>. This is the <i>reservoir</i>. 
+</p><p>For each new input <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{i}}</annotation>
+</semantics>
+</math></span><img alt="x_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e87000dd6142b81d041896a30fe58f0c3acb2158" style="vertical-align: -0.671ex; width:2.129ex; height:2.009ex;"/></span>, generate a random number <span class="texhtml mvar" style="font-style:italic;">j</span> uniformly in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \{1,...,i\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">{</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>,</mo>
+<mi>i</mi>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \{1,...,i\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \{1,...,i\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/763124923928d4d701e86bc350548fbbe415c9c7" style="vertical-align: -0.838ex; width:9.46ex; height:2.843ex;"/></span>. If <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle j\in \{1,...,k\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>j</mi>
+<mo>∈<!-- ∈ --></mo>
+<mo fence="false" stretchy="false">{</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>,</mo>
+<mi>k</mi>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle j\in \{1,...,k\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle j\in \{1,...,k\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0f0e8c63eb6f1ee180132d5af86206b1c7c6622f" style="vertical-align: -0.838ex; margin-left: -0.027ex; width:13.694ex; height:2.843ex;"/></span>, then set <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R[j]:=x_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>R</mi>
+<mo stretchy="false">[</mo>
+<mi>j</mi>
+<mo stretchy="false">]</mo>
+<mo>:=</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R[j]:=x_{i}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle R[j]:=x_{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/899dced873ca2340244c1e59ac764a29afca7a51" style="vertical-align: -0.838ex; width:9.89ex; height:2.843ex;"/></span>, otherwise, discard <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{i}}</annotation>
+</semantics>
+</math></span><img alt="x_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e87000dd6142b81d041896a30fe58f0c3acb2158" style="vertical-align: -0.671ex; width:2.129ex; height:2.009ex;"/></span>. 
+</p><p>
+Return <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>R</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R}</annotation>
+</semantics>
+</math></span><img alt="R" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4b0bfb3769bf24d80e15374dc37b0441e2616e33" style="vertical-align: -0.338ex; width:1.764ex; height:2.176ex;"/></span> after all inputs are processed.</p></blockquote><p>This algorithm works by induction on <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i\geq k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+<mo>≥<!-- ≥ --></mo>
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i\geq k}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle i\geq k}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c197ec0731e6da5fde586e7aa69d1fbcfc2afb00" style="vertical-align: -0.505ex; width:5.112ex; height:2.343ex;"/></span>.
+<style data-mw-deduplicate="TemplateStyles:r1037201836">.mw-parser-output .math_proof{border:thin solid #aaa;margin:1em 2em;padding:0.5em 1em 0.4em;text-align:justify}@media(max-width:500px){.mw-parser-output .math_proof{margin:1em 0;padding:0.5em 0.5em 0.4em}}</style></p>
+<p>While conceptually simple and easy to understand, this algorithm needs to generate a random number for each item of the input, including the items that are discarded. The algorithm's asymptotic running time is thus <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n)}</annotation>
+</semantics>
+</math></span><img alt="O(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34109fe397fdcff370079185bfdb65826cb5565a" style="vertical-align: -0.838ex; width:4.977ex; height:2.843ex;"/></span>. Generating this amount of randomness and the linear run time causes the algorithm to be unnecessarily slow if the input population is large.
+</p><p>This is <i>Algorithm R,</i> implemented as follows:
+</p>
+
+<h2><span class="mw-headline" id="Optimal:_Algorithm_L">Optimal: Algorithm L</span><span class="mw-editsection"></span></h2>
+<p>If we generate <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span> random numbers <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{1},...,u_{n}\sim U[0,1]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>,</mo>
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mo>∼<!-- ∼ --></mo>
+<mi>U</mi>
+<mo stretchy="false">[</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mn>1</mn>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{1},...,u_{n}\sim U[0,1]}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle u_{1},...,u_{n}\sim U[0,1]}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f594c6c9844a93042bad13e86244913ed9b819de" style="vertical-align: -0.838ex; width:19.635ex; height:2.843ex;"/></span> independently, then the indices of the smallest <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k}</annotation>
+</semantics>
+</math></span><img alt="k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3c9a2c7b599b37105512c5d570edc034056dd40" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> of them is a uniform sample of the k-subsets of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \{1,...,n\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">{</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>,</mo>
+<mi>n</mi>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \{1,...,n\}}</annotation>
+</semantics>
+</math></span><img alt="\{1,...,n\}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b58586317e220f0d1f11815600f8d9063dc41863" style="vertical-align: -0.838ex; width:10.052ex; height:2.843ex;"/></span>. 
+</p><p>
+The process can be done without knowing <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span>: </p><blockquote><p>Keep the smallest <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k}</annotation>
+</semantics>
+</math></span><img alt="k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3c9a2c7b599b37105512c5d570edc034056dd40" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{1},...,u_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>,</mo>
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{1},...,u_{i}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle u_{1},...,u_{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/25e072cd1b695907a3255dcb07a1d2fb8ed870c3" style="vertical-align: -0.671ex; width:9.683ex; height:2.009ex;"/></span> that has been seen so far, as well as <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>w</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w_{i}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle w_{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fe22f0329d3ecb2e1880d44d191aba0e5475db68" style="vertical-align: -0.671ex; width:2.464ex; height:2.009ex;"/></span>, the index of the largest among them. 
+For each new <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{i+1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{i+1}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle u_{i+1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dd47f1ea9aec21254e764eeb3e4929e2e83dc121" style="vertical-align: -0.671ex; width:4.23ex; height:2.009ex;"/></span>, compare it with <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{w_{i}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>w</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{w_{i}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle u_{w_{i}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a8f8edf8a397febeb03c7897d24fc9c9a74e3cd2" style="vertical-align: -1.005ex; width:3.364ex; height:2.343ex;"/></span>. If <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{i+1}&lt;u_{w_{i}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>&lt;</mo>
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>w</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{i+1}&lt;u_{w_{i}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle u_{i+1}&lt;u_{w_{i}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac8c5c1475afe46c3de7f2f17c695dc05f8704d5" style="vertical-align: -1.005ex; width:10.692ex; height:2.509ex;"/></span>, then discard <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{w_{i}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>w</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{w_{i}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle u_{w_{i}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a8f8edf8a397febeb03c7897d24fc9c9a74e3cd2" style="vertical-align: -1.005ex; width:3.364ex; height:2.343ex;"/></span>, store <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{i+1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{i+1}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle u_{i+1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dd47f1ea9aec21254e764eeb3e4929e2e83dc121" style="vertical-align: -0.671ex; width:4.23ex; height:2.009ex;"/></span>, and set <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w_{i+1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>w</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w_{i+1}}</annotation>
+</semantics>
+</math></span><img alt="w_{{i+1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0cf2e8d6b99c30f597d5c2e1ace5149f7cce4e0c" style="vertical-align: -0.671ex; width:4.564ex; height:2.009ex;"/></span> to be the index of the largest among them. Otherwise, discard <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{i+1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{i+1}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle u_{i+1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dd47f1ea9aec21254e764eeb3e4929e2e83dc121" style="vertical-align: -0.671ex; width:4.23ex; height:2.009ex;"/></span>, and set <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w_{i+1}=w_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>w</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<msub>
+<mi>w</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w_{i+1}=w_{i}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle w_{i+1}=w_{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9c6dfd9594e1585d1bbafe5d0ab9552dab84a6bc" style="vertical-align: -0.671ex; width:10.127ex; height:2.009ex;"/></span>.</p></blockquote><p>Now couple this with the stream of inputs <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{1},...,x_{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>,</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{1},...,x_{n}}</annotation>
+</semantics>
+</math></span><img alt="x_{1},...,x_{n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5f979c14353ba9d99b39d68265ad6db58c5faaae" style="vertical-align: -0.671ex; width:10.102ex; height:2.009ex;"/></span>. Every time some <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{i}}</annotation>
+</semantics>
+</math></span><img alt="u_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/14f13cb025ff2e136dcbd2fc81ddf965b728e3d7" style="vertical-align: -0.671ex; width:2.129ex; height:2.009ex;"/></span> is accepted, store the corresponding <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{i}}</annotation>
+</semantics>
+</math></span><img alt="x_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e87000dd6142b81d041896a30fe58f0c3acb2158" style="vertical-align: -0.671ex; width:2.129ex; height:2.009ex;"/></span>. Every time some <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{i}}</annotation>
+</semantics>
+</math></span><img alt="u_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/14f13cb025ff2e136dcbd2fc81ddf965b728e3d7" style="vertical-align: -0.671ex; width:2.129ex; height:2.009ex;"/></span> is discarded, discard the corresponding <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{i}}</annotation>
+</semantics>
+</math></span><img alt="x_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e87000dd6142b81d041896a30fe58f0c3acb2158" style="vertical-align: -0.671ex; width:2.129ex; height:2.009ex;"/></span>.
+</p><p>This algorithm still needs <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n)}</annotation>
+</semantics>
+</math></span><img alt="O(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34109fe397fdcff370079185bfdb65826cb5565a" style="vertical-align: -0.838ex; width:4.977ex; height:2.843ex;"/></span> random numbers, thus taking <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n)}</annotation>
+</semantics>
+</math></span><img alt="O(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34109fe397fdcff370079185bfdb65826cb5565a" style="vertical-align: -0.838ex; width:4.977ex; height:2.843ex;"/></span> time. But it can be simplified.
+</p><p>First simplification: it is unnecessary to test new <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{i+1},u_{i+2},...}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{i+1},u_{i+2},...}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle u_{i+1},u_{i+2},...}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d87e7b4145d1dcbc3d3a0b558190649030652f8b" style="vertical-align: -0.671ex; width:13.242ex; height:2.009ex;"/></span> one by one, since the probability that the next acceptance happens at <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{i+l}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mi>l</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{i+l}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle u_{i+l}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bfa8c8d492163c4d3cc67a49fbc2f90ea0ccae34" style="vertical-align: -0.671ex; width:3.898ex; height:2.009ex;"/></span> is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (1-u_{w_{i}})^{l-1}-(1-u_{w_{i}})^{l}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>w</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mrow>
+</msub>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>l</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mo>−<!-- − --></mo>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>w</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mrow>
+</msub>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>l</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (1-u_{w_{i}})^{l-1}-(1-u_{w_{i}})^{l}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle (1-u_{w_{i}})^{l-1}-(1-u_{w_{i}})^{l}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4e6bafd79321b8a53874a300af300adb60f11cae" style="vertical-align: -1.005ex; width:24.737ex; height:3.343ex;"/></span>, that is, the interval <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle l}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>l</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle l}</annotation>
+</semantics>
+</math></span><img alt="l" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/829091f745070b9eb97a80244129025440a1cfac" style="vertical-align: -0.338ex; width:0.693ex; height:2.176ex;"/></span> of acceptance follows a geometric distribution.
+</p><p>Second simplification: it's unnecessary to remember the entire array of the smallest <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k}</annotation>
+</semantics>
+</math></span><img alt="k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3c9a2c7b599b37105512c5d570edc034056dd40" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{1},...,u_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>,</mo>
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{1},...,u_{i}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle u_{1},...,u_{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/25e072cd1b695907a3255dcb07a1d2fb8ed870c3" style="vertical-align: -0.671ex; width:9.683ex; height:2.009ex;"/></span> that has been seen so far, but merely <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w}</annotation>
+</semantics>
+</math></span><img alt="w" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/88b1e0c8e1be5ebe69d18a8010676fa42d7961e6" style="vertical-align: -0.338ex; width:1.664ex; height:1.676ex;"/></span>, the largest among them. This is based on three observations:
+</p>
+<ul><li>Every time some new <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{i+1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{i+1}}</annotation>
+</semantics>
+</math></span><img alt="x_{i+1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bc56fe176df2317239339ad413c58d09cd1c187b" style="vertical-align: -0.671ex; width:4.23ex; height:2.009ex;"/></span> is selected to be entered into storage, a uniformly random entry in storage is discarded.</li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{i+1}\sim U[0,w]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>∼<!-- ∼ --></mo>
+<mi>U</mi>
+<mo stretchy="false">[</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mi>w</mi>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{i+1}\sim U[0,w]}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle u_{i+1}\sim U[0,w]}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e2e82dd0b747864148dbb248c2d7cd2fbd4c31b2" style="vertical-align: -0.838ex; width:14.265ex; height:2.843ex;"/></span></li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w_{i+1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>w</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w_{i+1}}</annotation>
+</semantics>
+</math></span><img alt="w_{{i+1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0cf2e8d6b99c30f597d5c2e1ace5149f7cce4e0c" style="vertical-align: -0.671ex; width:4.564ex; height:2.009ex;"/></span> has the same distribution as <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \max\{u_{1},...,u_{k}\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo form="prefix" movablelimits="true">max</mo>
+<mo fence="false" stretchy="false">{</mo>
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>,</mo>
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \max\{u_{1},...,u_{k}\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \max\{u_{1},...,u_{k}\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/599afa40acb91ca1518b314cdc0b3c972edcaa0a" style="vertical-align: -0.838ex; width:16.623ex; height:2.843ex;"/></span>, where all <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{1},...,u_{k}\sim U[0,w]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>,</mo>
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo>∼<!-- ∼ --></mo>
+<mi>U</mi>
+<mo stretchy="false">[</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mi>w</mi>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{1},...,u_{k}\sim U[0,w]}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle u_{1},...,u_{k}\sim U[0,w]}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34564cf9af298da8fb7e317c6d0cb030b80cf0db" style="vertical-align: -0.838ex; width:20.007ex; height:2.843ex;"/></span> independently. This can be sampled by first sampling <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u\sim U[0,1]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>u</mi>
+<mo>∼<!-- ∼ --></mo>
+<mi>U</mi>
+<mo stretchy="false">[</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mn>1</mn>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u\sim U[0,1]}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle u\sim U[0,1]}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/50f9a9a9063bed2b98e466f60381e3b5f306eb77" style="vertical-align: -0.838ex; width:10.863ex; height:2.843ex;"/></span>, then taking <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w\cdot u^{\frac {1}{k}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<msup>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<mi>k</mi>
+</mfrac>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w\cdot u^{\frac {1}{k}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle w\cdot u^{\frac {1}{k}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d0aba347fcb17f7694dcfc5c9c347cd93da0d739" style="vertical-align: -0.338ex; width:6.437ex; height:3.509ex;"/></span>.</li></ul>
+<p>This is <i>Algorithm L</i>,<sup class="reference" id="cite_ref-li_2-0">[2]</sup> which is implemented as follows:
+</p>
+
+<p>This algorithm computes three random numbers for each item that becomes part of the reservoir, and does not spend any time on items that do not.  Its expected running time is thus <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(k(1+\log(n/k)))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo>+</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(k(1+\log(n/k)))}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(k(1+\log(n/k)))}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/297e6733c834935521a0400e11e9d9817d9eb500" style="vertical-align: -0.838ex; width:19.155ex; height:2.843ex;"/></span>,<sup class="reference" id="cite_ref-li_2-1">[2]</sup> which is optimal.<sup class="reference" id="cite_ref-vitter_1-1">[1]</sup>  At the same time, it is simple to implement efficiently and does not depend on random deviates from exotic or hard-to-compute distributions.
+</p>
+<h2><span class="mw-headline" id="With_random_sort">With random sort</span><span class="mw-editsection"></span></h2>
+<p>If we associate with each item of the input a uniformly generated random number, the <span class="texhtml mvar" style="font-style:italic;">k</span> items with the largest (or, equivalently, smallest) associated values form a simple random sample.<sup class="reference" id="cite_ref-fan_3-0">[3]</sup>  A simple reservoir-sampling thus maintains the <span class="texhtml mvar" style="font-style:italic;">k</span> items with the currently largest associated values in a priority queue.
+</p>
+
+<p>The expected running time of this algorithm is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n+k\log k\log(n/k))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>+</mo>
+<mi>k</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>k</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n+k\log k\log(n/k))}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(n+k\log k\log(n/k))}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f2514ee1850f891fc696162f655f5efee07a3bab" style="vertical-align: -0.838ex; width:22.923ex; height:2.843ex;"/></span> and it is relevant mainly because it can easily be extended to items with weights.
+</p>
+<h2><span class="mw-headline" id="Weighted_random_sampling">Weighted random sampling</span><span class="mw-editsection"></span></h2>
+<p>This method, also called sequential sampling, is incorrect in the sense that it does not allow to obtain a priori fixed inclusion probabilities.
+Some applications require items' sampling probabilities to be according to weights associated with each item. For example, it might be required to sample queries in a search engine with weight as number of times they were performed so that the sample can be analyzed for overall impact on user experience. Let the weight of item <span class="texhtml mvar" style="font-style:italic;">i</span> be <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>w</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w_{i}}</annotation>
+</semantics>
+</math></span><img alt="w_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fe22f0329d3ecb2e1880d44d191aba0e5475db68" style="vertical-align: -0.671ex; width:2.464ex; height:2.009ex;"/></span>, and the sum of all weights be <span class="texhtml mvar" style="font-style:italic;">W</span>. There are two ways to interpret weights assigned to each item in the set:<sup class="reference" id="cite_ref-efraimidis_4-0">[4]</sup>
+</p>
+<ol><li>In each round, the probability of every <i>unselected</i> item to be selected in that round is proportional to its weight relative to the weights of all unselected items.  If <span class="texhtml mvar" style="font-style:italic;">X</span> is the current sample, then the probability of an item <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i\notin X}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+<mo>∉<!-- ∉ --></mo>
+<mi>X</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i\notin X}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle i\notin X}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a4e88ed03aeae15b7638fd00acffeaf6302899ef" style="vertical-align: -0.838ex; width:5.623ex; height:2.676ex;"/></span> to be selected in the current round is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \textstyle w_{i}/(W-\sum _{j\in X}{w_{j}})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mstyle displaystyle="false" scriptlevel="0">
+<msub>
+<mi>w</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>W</mi>
+<mo>−<!-- − --></mo>
+<munder>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>X</mi>
+</mrow>
+</munder>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>w</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \textstyle w_{i}/(W-\sum _{j\in X}{w_{j}})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \textstyle w_{i}/(W-\sum _{j\in X}{w_{j}})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f5c86c58130dbee7d73d19379750ed9066a20d8e" style="vertical-align: -1.338ex; width:19.532ex; height:3.343ex;"/></span>.</li>
+<li>The probability of each item to be included in the random sample is not proportional to its relative weight, i.e., <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w_{i}/W}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>w</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>W</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w_{i}/W}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle w_{i}/W}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/486cd463082b32ce5a10de17419e10bc731a653a" style="vertical-align: -0.838ex; width:6.062ex; height:2.843ex;"/></span>. A simple counter-example is the case, e.g., <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k=n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+<mo>=</mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k=n}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle k=n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c4b8cc6fcba0c0b24656b0fb33414d2e6cffb83c" style="vertical-align: -0.338ex; width:5.704ex; height:2.176ex;"/></span>.</li></ol>
+<h3><span class="mw-headline" id="Algorithm_A-Res">Algorithm A-Res</span><span class="mw-editsection"></span></h3><p>
+The following algorithm was given by Efraimidis and Spirakis that uses interpretation 1:<sup class="reference" id="cite_ref-EfrSpi_5-0">[5]</sup></p><p>This algorithm is identical to the algorithm given in Reservoir Sampling with Random Sort except for the generation of the items' keys. The algorithm is equivalent to assigning each item a key <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r^{1/w_{i}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<msub>
+<mi>w</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r^{1/w_{i}}}</annotation>
+</semantics>
+</math></span><img alt="r^{1/w_{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/df9d03514a4f58863221ba52eb5870054fcec3ae" style="vertical-align: -0.338ex; width:4.726ex; height:2.843ex;"/></span> where <span class="texhtml mvar" style="font-style:italic;">r</span> is the random number and then selecting the <span class="texhtml mvar" style="font-style:italic;">k</span> items with the largest keys.  Equivalently, a more numerically stable formulation of this algorithm computes the keys as <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle -\ln(r)/w_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>−<!-- − --></mo>
+<mi>ln</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>r</mi>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<msub>
+<mi>w</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle -\ln(r)/w_{i}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle -\ln(r)/w_{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3f9e09c18831f63083819261e4aa8fec396ddc67" style="vertical-align: -0.838ex; width:10.619ex; height:2.843ex;"/></span> and select the <span class="texhtml mvar" style="font-style:italic;">k</span> items with the <i>smallest</i> keys.<sup class="reference" id="cite_ref-6">[6]</sup><sup class="noprint Inline-Template" style="white-space:nowrap;">[<i><span title="The statement is correct, I think; however the source cited mentions the exponential distribution (Sect.1.3, p.6) but doesn't seem to mention any relationship with the Efraimidis and Spirakis algorithm, or anything about stability. (December 2020)">failed verification</span></i>]</sup>
+</p><h3><span class="mw-headline" id="Algorithm_A-ExpJ">Algorithm A-ExpJ</span><span class="mw-editsection"></span></h3>
+<p>The following algorithm is a more efficient version of A-Res, also given by Efraimidis and Spirakis:<sup class="reference" id="cite_ref-EfrSpi_5-1">[5]</sup>
+</p>
+
+<p>This algorithm follows the same mathematical properties that are used in A-Res, but instead of calculating the key for each item and checking whether that item should be inserted or not, it calculates an exponential jump to the next item which will be inserted. This avoids having to create random variates for each item, which may be expensive. The number of random variates required is reduced from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n)}</annotation>
+</semantics>
+</math></span><img alt="O(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34109fe397fdcff370079185bfdb65826cb5565a" style="vertical-align: -0.838ex; width:4.977ex; height:2.843ex;"/></span> to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(k\log(n/k))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(k\log(n/k))}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(k\log(n/k))}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/971d9c995d44968a0affdb5eb8e24d4f91ae531e" style="vertical-align: -0.838ex; width:13.73ex; height:2.843ex;"/></span> in expectation, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k}</annotation>
+</semantics>
+</math></span><img alt="k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3c9a2c7b599b37105512c5d570edc034056dd40" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> is the reservoir size, and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span> is the number of items in the stream.<sup class="reference" id="cite_ref-EfrSpi_5-2">[5]</sup>
+</p>
+<h3><span class="mw-headline" id="Algorithm_A-Chao">Algorithm A-Chao</span><span class="mw-editsection"></span></h3><p>
+Following algorithm was given by M. T. Chao uses interpretation 2:<sup class="reference" id="cite_ref-:1_7-0">[7]</sup></p><p>For each item, its relative weight is calculated and used to randomly decide if the item will be added into the reservoir. If the item is selected, then one of the existing items of the reservoir is uniformly selected and replaced with the new item. The trick here is that, if the probabilities of all items in the reservoir are already proportional to their weights, then by selecting uniformly which item to replace, the probabilities of all items remain proportional to their weight after the replacement.
+</p><p>Note that Chao doesn't specify how to sample the first <i>k</i> elements.
+He simple assumes we have some other way of picking them in proportion to their weight.
+Chao: "Assume that we have a sampling plan of fixed size with respect to <i>S_k</i> at time <i>A</i>; such that its first-order inclusion probability of <i>X_t</i> is <i>π(k; i)</i>".
+</p>
+<h4><span class="mw-headline" id="Algorithm_A-Chao_with_Jumps">Algorithm A-Chao with Jumps</span><span class="mw-editsection"></span></h4>
+<p>Similar to the other algorithms, it is possible to compute a random weight <code>j</code> and subtract items' probability mass values, skipping them while <code>j &gt; 0</code>, reducing the number of random numbers that have to be generated.<sup class="reference" id="cite_ref-efraimidis_4-1">[4]</sup>
+</p>
+
+<h2><span id="Relation_to_Fisher.E2.80.93Yates_shuffle"></span><span class="mw-headline" id="Relation_to_Fisher–Yates_shuffle">Relation to Fisher–Yates shuffle</span><span class="mw-editsection"></span></h2>
+<p>Suppose one wanted to draw <span class="texhtml mvar" style="font-style:italic;">k</span> random cards from a deck of cards.
+A natural approach would be to shuffle the deck and then take the top <span class="texhtml mvar" style="font-style:italic;">k</span> cards.
+In the general case, the shuffle also needs to work even if the number of cards in the deck is not known in advance, a condition which is satisfied by the inside-out version of the Fisher–Yates shuffle:<sup class="reference" id="cite_ref-8">[8]</sup>
+</p>
+
+<p>Note that although the rest of the cards are shuffled, only the first <span class="texhtml mvar" style="font-style:italic;">k</span> are important in the present context.
+Therefore, the array <span class="texhtml mvar" style="font-style:italic;">R</span> need only track the cards in the first <span class="texhtml mvar" style="font-style:italic;">k</span> positions while performing the shuffle, reducing the amount of memory needed.
+Truncating <span class="texhtml mvar" style="font-style:italic;">R</span> to length <span class="texhtml mvar" style="font-style:italic;">k</span>, the algorithm is modified accordingly:
+</p>
+
+<p>Since the order of the first <span class="texhtml mvar" style="font-style:italic;">k</span> cards is immaterial, the first loop can be removed and <span class="texhtml mvar" style="font-style:italic;">R</span> can be initialized to be the first <span class="texhtml mvar" style="font-style:italic;">k</span> items of the input.
+This yields <i>Algorithm R</i>.
+</p>
+<h2><span class="mw-headline" id="Statistical_properties">Statistical properties</span><span class="mw-editsection"></span></h2>
+<p>Probabilities of selection of the reservoir methods are discussed in Chao (1982)<sup class="reference" id="cite_ref-:1_7-1">[7]</sup> and Tillé (2006).<sup class="reference" id="cite_ref-9">[9]</sup> While the first-order selection probabilities are equal to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k/n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k/n}</annotation>
+</semantics>
+</math></span><img alt="k/n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/df39d254fa80db61cf468fed3a8c4dbb10e7e7d2" style="vertical-align: -0.838ex; width:3.768ex; height:2.843ex;"/></span> (or, in case of Chao's procedure, to an arbitrary set of unequal probabilities), the second order selection probabilities depend on the order in which the records are sorted in the original reservoir. The problem is overcome by the cube sampling method of Deville and Tillé (2004).<sup class="reference" id="cite_ref-10">[10]</sup>
+</p>
+<h2><span class="mw-headline" id="Limitations">Limitations</span><span class="mw-editsection"></span></h2>
+<p>Reservoir sampling makes the assumption that the desired sample fits into main memory, often implying that <span class="texhtml mvar" style="font-style:italic;">k</span> is a constant independent of <span class="texhtml mvar" style="font-style:italic;">n</span>. In applications where we would like to select a large subset of the input list (say a third, i.e. <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k=n/3}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+<mo>=</mo>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>3</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k=n/3}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle k=n/3}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/783039bb5adcaeab56baf2ca269caa933de47a96" style="vertical-align: -0.838ex; width:8.029ex; height:2.843ex;"/></span>), other methods need to be adopted. Distributed implementations for this problem have been proposed.<sup class="reference" id="cite_ref-11">[11]</sup>
+</p>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<!-- 
+NewPP limit report
+Parsed by mw2409
+Cached time: 20221224030144
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.277 seconds
+Real time usage: 0.392 seconds
+Preprocessor visited node count: 1542/1000000
+Post‐expand include size: 29895/2097152 bytes
+Template argument size: 5159/2097152 bytes
+Highest expansion depth: 12/100
+Expensive parser function count: 10/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 64428/5000000 bytes
+Lua time usage: 0.100/10.000 seconds
+Lua memory usage: 5010396/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  216.462      1 -total
+ 51.65%  111.803      1 Template:Reflist
+ 40.09%   86.770      8 Template:Cite_journal
+ 21.28%   46.066      1 Template:Short_description
+ 15.55%   33.669      1 Template:Not_in_source
+ 12.91%   27.951      1 Template:Fix
+ 11.52%   24.932      2 Template:Pagetype
+  6.46%   13.987      1 Template:Category_handler
+  5.34%   11.558      3 Template:Main_other
+  5.18%   11.207      1 Template:Delink
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:25190127-0!canonical and timestamp 20221224030143 and revision id 1126316743.
+ -->
+</div></body>
+</html>

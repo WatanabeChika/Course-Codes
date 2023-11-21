@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>select_and_partition</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-More_footnotes plainlinks metadata ambox ambox-style ambox-More_footnotes" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<p>In computer science, a <b>selection algorithm</b> is an algorithm for finding the <i>k</i>th smallest number in a list or array; such a number is called the <i>k</i>th <i>order statistic</i>. This includes the cases of finding the minimum, maximum, and median elements. There are O(<i>n</i>)-time (worst-case linear time) selection algorithms, and sublinear performance is possible for structured data; in the extreme, O(1) for an array of sorted data. Selection is a subproblem of more complex problems like the nearest neighbor and shortest path problems. Many selection algorithms are derived by generalizing a sorting algorithm, and conversely some sorting algorithms can be derived as repeated application of selection.
+</p><p>The simplest case of a selection algorithm is finding the minimum (or maximum) element by iterating through the list, keeping track of the running minimum – the minimum so far – (or maximum) and can be seen as related to the selection sort. Conversely, the hardest case of a selection algorithm is finding the median. In fact, a specialized median-selection algorithm can be used to build a general selection algorithm, as in median of medians. The best-known selection algorithm is Quickselect, which is related to Quicksort; like Quicksort, it has (asymptotically) optimal average performance, but poor worst-case performance, though it can be modified to give optimal worst-case performance as well.
+</p>
+
+<h2><span class="mw-headline" id="Selection_by_sorting">Selection by sorting</span><span class="mw-editsection"></span></h2>
+<p>By sorting the list or array then selecting the desired element, selection can be reduced to sorting. This method is inefficient for selecting a single element, but is efficient when many selections need to be made from an array, in which case only one initial, expensive sort is needed, followed by many cheap selection operations – O(1) for an array, though selection is O(<i>n</i>) in a linked list, even if sorted, due to lack of random access. In general, sorting requires O(<i>n</i> log <i>n</i>) time, where <i>n</i> is the length of the list, although a lower bound is possible with non-comparative sorting algorithms like radix sort and counting sort.
+</p><p>Rather than sorting the whole list or array, one can instead use partial sorting to select the <i>k</i> smallest or <i>k</i> largest elements. The <i>k</i>th smallest (resp., <i>k</i>th largest element) is then the largest (resp., smallest element) of the partially sorted list – this then takes O(1) to access in an array and O(<i>k</i>) to access in a list.
+</p>
+<h3><span class="mw-headline" id="Unordered_partial_sorting">Unordered partial sorting</span><span class="mw-editsection"></span></h3>
+<p>If partial sorting is relaxed so that the <i>k</i> smallest elements are returned, but not in order, the factor of O(<i>k</i> log <i>k</i>) can be eliminated. An additional maximum selection (taking O(<i>k</i>) time) is required, but since <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k\leq n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k\leq n}</annotation>
+</semantics>
+</math></span><img alt="k\leq n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/621f658bb51d7caac329d29e9bf435361813777f" style="vertical-align: -0.505ex; width:5.704ex; height:2.343ex;"/></span>, this still yields asymptotic complexity of O(<i>n</i>). In fact, partition-based selection algorithms yield both the <i>k</i>th smallest element itself and the <i>k</i> smallest elements (with other elements not in order). This can be done in O(<i>n</i>) time – average complexity of Quickselect, and worst-case complexity of refined partition-based selection algorithms.
+</p><p>Conversely, given a selection algorithm, one can easily get an unordered partial sort (<i>k</i> smallest elements, not in order) in O(<i>n</i>) time by iterating through the list and recording all elements less than the <i>k</i>th element. If this results in fewer than <i>k</i> − 1 elements, any remaining elements equal the <i>k</i>th element. Care must be taken, due to the possibility of equality of elements: one must not include all elements less than <i>or equal to</i> the <i>k</i>th element, as elements greater than the <i>k</i>th element may also be equal to it.
+</p><p>Thus unordered partial sorting (lowest <i>k</i> elements, but not ordered) and selection of the <i>k</i>th element are very similar problems. Not only do they have the same asymptotic complexity, O(<i>n</i>), but a solution to either one can be converted into a solution to the other by a straightforward algorithm (finding a max of <i>k</i> elements, or filtering elements of a list below a cutoff of the value of the <i>k</i>th element).
+</p>
+<h3><span class="mw-headline" id="Partial_selection_sort">Partial selection sort</span><span class="mw-editsection"></span></h3>
+<p>A simple example of selection by partial sorting is to use the partial selection sort.
+</p><p>The obvious linear time algorithm to find the minimum (resp. maximum) – iterating over the list and keeping track of the minimum (resp. maximum) element so far – can be seen as a partial selection sort that selects the 1 smallest element. However, many other partial sorts also reduce to this algorithm for the case <i>k</i> =1, such as a partial heap sort.
+</p><p>More generally, a partial selection sort yields a simple selection algorithm which takes O(<i>kn</i>) time. This is asymptotically inefficient, but can be sufficiently efficient if <i>k</i> is small, and is easy to implement. Concretely, we simply find the minimum value and move it to the beginning, repeating on the remaining list until we have accumulated <i>k</i> elements, and then return the <i>k</i>th element. Here is partial selection sort-based algorithm:
+</p>
+<pre><b>function</b> select(list[1..n], k)
+    <b>for</b> i <b>from</b> 1 <b>to</b> k
+        minIndex = i
+        minValue = list[i]
+        <b>for</b> j <b>from</b> i+1 <b>to</b> n <b>do</b>
+            <b>if</b> list[j] &lt; minValue <b>then</b>
+                minIndex = j
+                minValue = list[j]
+        swap list[i] and list[minIndex]
+    <b>return</b> list[k]
+</pre>
+<h2><span class="mw-headline" id="Partition-based_selection">Partition-based selection</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>Linear performance can be achieved by a partition-based selection algorithm, most basically Quickselect. Quickselect is a variant of Quicksort – in both one chooses a pivot and then partitions the data by it, but while Quicksort recurses on both sides of the partition, Quickselect only recurses on one side, namely the side on which the desired <i>k</i>th element is. As with Quicksort, this has optimal average performance, in this case linear, but poor worst-case performance, in this case quadratic. This occurs for instance by taking the first element as the pivot and searching for the maximum element, if the data is already sorted. In practice this can be avoided by choosing a random element as pivot, which yields almost certain linear performance. Alternatively, a more careful deterministic pivot strategy can be used, such as median of medians. These are combined in the hybrid introselect algorithm (analogous to introsort), which starts with Quickselect but falls back to median of medians if progress is slow, resulting in both fast average performance and optimal worst-case performance of O(<i>n</i>).
+</p><p>The partition-based algorithms are generally done in place, which thus results in partially sorting the data. They can be done out of place, not changing the original data, at the cost of O(<i>n</i>) additional space.
+</p>
+<h3><span class="mw-headline" id="Median_selection_as_pivot_strategy">Median selection as pivot strategy</span><span class="mw-editsection"></span></h3>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>A median-selection algorithm can be used to yield a general selection algorithm or sorting algorithm, by applying it as the pivot strategy in Quickselect or Quicksort; if the median-selection algorithm is asymptotically optimal (linear-time), the resulting selection or sorting algorithm is as well. In fact, an exact median is not necessary – an approximate median is sufficient. In the median of medians selection algorithm, the pivot strategy computes an approximate median and uses this as pivot, recursing on a smaller set to compute this pivot. In practice the overhead of pivot computation is significant, so these algorithms are generally not used, but this technique is of theoretical interest in relating selection and sorting algorithms.
+</p><p>In detail, given a median-selection algorithm, one can use it as a pivot strategy in Quickselect, obtaining a selection algorithm. If the median-selection algorithm is optimal, meaning O(<i>n</i>), then the resulting general selection algorithm is also optimal, again meaning linear. This is because Quickselect is a divide and conquer algorithm, and using the median at each pivot means that at each step the search set decreases by half in size, so the overall complexity is a geometric series times the complexity of each step, and thus simply a constant times the complexity of a single step, in fact <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2=1/(1-(1/2))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>2</mn>
+<mo>=</mo>
+<mn>1</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo>−<!-- − --></mo>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>2</mn>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2=1/(1-(1/2))}</annotation>
+</semantics>
+</math></span><img alt="2=1/(1-(1/2))" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8d81d39ce37dd088c559b31c4a17c9da116bb264" style="vertical-align: -0.838ex; width:17.695ex; height:2.843ex;"/></span> times (summing the series).
+</p><p>Similarly, given a median-selection algorithm or general selection algorithm applied to find the median, one can use it as a pivot strategy in Quicksort, obtaining a sorting algorithm. If the selection algorithm is optimal, meaning O(<i>n</i>), then the resulting sorting algorithm is optimal, meaning O(<i>n</i> log <i>n</i>). The median is the best pivot for sorting, as it evenly divides the data, and thus guarantees optimal sorting, assuming the selection algorithm is optimal. A sorting analog to median of medians exists, using the pivot strategy (approximate median) in Quicksort, and similarly yields an optimal Quicksort.
+</p>
+<h2><span class="mw-headline" id="Incremental_sorting_by_selection">Incremental sorting by selection</span><span class="mw-editsection"></span></h2>
+<p>Converse to selection by sorting, one can incrementally sort by repeated selection. Abstractly, selection only yields a single element, the <i>k</i>th element. However, practical selection algorithms frequently involve partial sorting, or can be modified to do so. Selecting by partial sorting naturally does so, sorting the elements up to <i>k</i>, and selecting by partitioning also sorts some elements: the pivots are sorted to the correct positions, with the <i>k</i>th element being the final pivot, and the elements between the pivots have values between the pivot values. The difference between partition-based selection and partition-based sorting, as in Quickselect versus Quicksort, is that in selection one recurses on only one side of each pivot, sorting only the pivots (an average of log(<i>n</i>) pivots are used), rather than recursing on both sides of the pivot.
+</p><p>This can be used to speed up subsequent selections on the same data; in the extreme, a fully sorted array allows O(1) selection. Further, compared with first doing a full sort, incrementally sorting by repeated selection amortizes the sorting cost over multiple selections.
+</p><p>For partially sorted data (up to <i>k</i>), so long as the partially sorted data and the index <i>k</i> up to which the data is sorted are recorded, subsequent selections of <i>j</i> less than or equal to <i>k</i> can simply select the <i>j</i>th element, as it is already sorted, while selections of <i>j</i> greater than <i>k</i> only need to sort the elements above the <i>k</i>th position.
+</p><p>For partitioned data, if the list of pivots is stored (for example, in a sorted list of the indices), then subsequent selections only need to select in the interval between two pivots (the nearest pivots below and above). The biggest gain is from the top-level pivots, which eliminate costly large partitions: a single pivot near the middle of the data cuts the time for future selections in half. The pivot list will grow over subsequent selections, as the data becomes more sorted, and can even be passed to a partition-based sort as the basis of a full sort.
+</p>
+<h2><span class="mw-headline" id="Using_data_structures_to_select_in_sublinear_time">Using data structures to select in sublinear time</span><span class="mw-editsection"></span></h2>
+<p>Given an unorganized list of data, linear time (Ω(<i>n</i>)) is required to find the minimum element, because we have to examine every element (otherwise, we might miss it). If we organize the list, for example by keeping it sorted at all times, then selecting the <i>k</i>th largest element is trivial, but then insertion requires linear time, as do other operations such as combining two lists.
+</p><p>The strategy to find an order statistic in sublinear time is to store the data in an organized fashion using suitable data structures that facilitate the selection. Two such data structures are tree-based structures and frequency tables.
+</p><p>When only the minimum (or maximum) is needed, a good approach is to use a heap, which is able to find the minimum (or maximum) element in constant time, while all other operations, including insertion, are O(log <i>n</i>) or better. More generally, a self-balancing binary search tree can easily be augmented to make it possible to both insert an element and find the <i>k</i>th largest element in O(log <i>n</i>) time; this is called an <i>order statistic tree.</i> We simply store in each node a count of how many descendants it has, and use this to determine which path to follow. The information can be updated efficiently since adding a node only affects the counts of its O(log <i>n</i>) ancestors, and tree rotations only affect the counts of the nodes involved in the rotation.
+</p><p>Another simple strategy is based on some of the same concepts as the hash table. When we know the range of values beforehand, we can divide that range into <i>h</i> subintervals and assign these to <i>h</i> buckets. When we insert an element, we add it to the bucket corresponding to the interval it falls in. To find the minimum or maximum element, we scan from the beginning or end for the first nonempty bucket and find the minimum or maximum element in that bucket. In general, to find the <i>k</i>th element, we maintain a count of the number of elements in each bucket, then scan the buckets from left to right adding up counts until we find the bucket containing the desired element, then use the expected linear-time algorithm to find the correct element in that bucket.
+</p><p>If we choose <i>h</i> of size roughly sqrt(<i>n</i>), and the input is close to uniformly distributed, this scheme can perform selections in expected O(sqrt(<i>n</i>)) time. Unfortunately, this strategy is also sensitive to clustering of elements in a narrow interval, which may result in buckets with large numbers of elements (clustering can be eliminated through a good hash function, but finding the element with the <i>k</i>th largest hash value isn't very useful). Additionally, like hash tables this structure requires table resizings to maintain efficiency as elements are added and <i>n</i> becomes much larger than <i>h</i><sup>2</sup>. A useful case of this is finding an order statistic or extremum in a finite range of data. Using above table with bucket interval 1 and maintaining counts in each bucket is much superior to other methods. Such hash tables are like frequency tables used to classify the data in descriptive statistics.
+</p>
+<h2><span class="mw-headline" id="Lower_bounds">Lower bounds</span><span class="mw-editsection"></span></h2>
+<p><span class="anchor" id="Tournament_Algorithm"></span>
+In <i>The Art of Computer Programming</i>, Donald E. Knuth discussed a number of lower bounds for the number of comparisons required to locate the <i>t</i> smallest entries of an unorganized list of <i>n</i> items (using only comparisons). There is a trivial lower bound of <i>n</i> − 1 for the minimum or maximum entry. To see this, consider a tournament where each game represents one comparison. Since every player except the winner of the tournament must lose a game before we know the winner, we have a lower bound of <i>n</i> − 1 comparisons.
+</p><p>The story becomes more complex for other indexes. We define <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle W_{t}(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>W</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle W_{t}(n)}</annotation>
+</semantics>
+</math></span><img alt="W_{t}(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/94a6500f05af81f6d0a26edcda12cabe2fa1e295" style="vertical-align: -0.838ex; width:6.224ex; height:2.843ex;"/></span> as the minimum number of comparisons required to find the <i>t</i> smallest values. Knuth references a paper published by S. S. Kislitsyn, which shows an upper bound on this value:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle W_{t}(n)\leq n-t+\sum _{n+1-t&lt;j\leq n}\lceil {\log _{2}\,j}\rceil \quad {\text{for}}\,n\geq t}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>W</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mi>t</mi>
+<mo>+</mo>
+<munder>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo>+</mo>
+<mn>1</mn>
+<mo>−<!-- − --></mo>
+<mi>t</mi>
+<mo>&lt;</mo>
+<mi>j</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>n</mi>
+</mrow>
+</munder>
+<mo fence="false" stretchy="false">⌈<!-- ⌈ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mspace width="thinmathspace"></mspace>
+<mi>j</mi>
+</mrow>
+<mo fence="false" stretchy="false">⌉<!-- ⌉ --></mo>
+<mspace width="1em"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>for</mtext>
+</mrow>
+<mspace width="thinmathspace"></mspace>
+<mi>n</mi>
+<mo>≥<!-- ≥ --></mo>
+<mi>t</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle W_{t}(n)\leq n-t+\sum _{n+1-t&lt;j\leq n}\lceil {\log _{2}\,j}\rceil \quad {\text{for}}\,n\geq t}</annotation>
+</semantics>
+</math></span><img alt="W_{t}(n)\leq n-t+\sum _{n+1-t&lt;j\leq n}\lceil {\log _{2}\,j}\rceil \quad {\text{for}}\,n\geq t" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f3bbb5254d283765af48668572246ebdff15b80e" style="vertical-align: -3.338ex; width:45.068ex; height:5.843ex;"/></span></dd></dl>
+<p>This bound is achievable for <i>t</i>=2 but better, more complex bounds are known for larger <i>t</i>.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (April 2018)">citation needed</span></i>]</sup>
+</p>
+<h2><span class="mw-headline" id="Space_complexity">Space complexity</span><span class="mw-editsection"></span></h2>
+<p>The required space complexity of selection is O(1) additional storage, in addition to storing the array in which selection is being performed. Such space complexity can be achieved while preserving optimal O(n) time complexity.<sup class="reference" id="cite_ref-1">[1]</sup>
+</p>
+<link href="mw-data:TemplateStyles:r1097763485" rel="mw-deduplicated-inline-style"/><table class="box-Expand_section plainlinks metadata ambox mbox-small-left ambox-content" role="presentation"><tbody><tr><td class="mbox-image"><img alt="[icon]" data-file-height="31" data-file-width="44" decoding="async" height="14" src="//upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Wiki_letter_w_cropped.svg/20px-Wiki_letter_w_cropped.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Wiki_letter_w_cropped.svg/30px-Wiki_letter_w_cropped.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Wiki_letter_w_cropped.svg/40px-Wiki_letter_w_cropped.svg.png 2x" width="20"/></td><td class="mbox-text"></td></tr></tbody></table>
+<h2><span class="mw-headline" id="Online_selection_algorithm">Online selection algorithm</span><span class="mw-editsection"></span></h2>
+<p>Online selection may refer narrowly to computing the <i>k</i>th smallest element of a stream, in which case partial sorting algorithms — with <i>k</i> + O(1) space for the <i>k</i> smallest elements so far — can be used, but partition-based algorithms cannot be.
+</p><p>Alternatively, selection itself may be required to be online, that is, an element can only be selected from a sequential input at the instance of observation and each selection, respectively refusal, is irrevocable. The problem is to select, under these constraints, a specific element of the input sequence (as for example the largest or the smallest value)	with largest probability. This problem can be tackled by the Odds algorithm, which yields the optimal under an independence condition; it is also optimal itself as an algorithm with the number of computations being linear in the length of input.
+</p><p>The simplest example is the secretary problem of choosing the maximum with high probability, in which case optimal strategy (on random data) is to track the running maximum of the first <i>n</i>/<i>e</i> elements and reject them, and then select the first element that is higher than this maximum.
+</p>
+<h2><span class="mw-headline" id="Related_problems">Related problems</span><span class="mw-editsection"></span></h2>
+<p>One may generalize the selection problem to apply to ranges within a list, yielding the problem of range queries. The question of range median queries (computing the medians of multiple ranges) has been analyzed.
+</p>
+<h2><span class="mw-headline" id="Language_support">Language support</span><span class="mw-editsection"></span></h2>
+<p>Very few languages have built-in support for general selection, although many provide facilities for finding the smallest or largest element of a list. A notable exception is C++, which provides a templated <code>nth_element</code> method with a guarantee of expected linear time, and also partitions the data, requiring that the <i>n</i>th element be sorted into its correct place, elements before the <i>n</i>th element are less than it, and elements after the <i>n</i>th element are greater than it. It is implied but not required that it is based on Hoare's algorithm (or some variant) by its requirement of expected linear time and partitioning of data.<sup class="reference" id="cite_ref-2">[2]</sup><sup class="reference" id="cite_ref-3">[3]</sup>
+</p><p>For Perl, the module Sort::Key::Top, available from CPAN, provides a set of functions to select the top n elements from a list using several orderings and custom key extraction procedures. Furthermore, the Statistics::CaseResampling module provides a function to calculate quantiles using Quickselect.
+</p><p>Python's standard library (since 2.4) includes <code>heapq.nsmallest()</code> and <code>nlargest()</code>, returning sorted lists, in O(<i>n</i> log <i>k</i>) time.<sup class="reference" id="cite_ref-4">[4]</sup> Numpy has the <code>partition()</code> function.
+</p><p>Matlab includes <code>maxk()</code> and <code>mink()</code> functions, which return the maximal (minimal) k values in a vector as well as their indices.
+</p><p>Because language support for sorting is more ubiquitous, the simplistic approach of sorting followed by indexing is preferred in many environments despite its disadvantage in speed. Indeed, for lazy languages, this simplistic approach can even achieve the best complexity possible for the <i>k</i> smallest/greatest sorted (with maximum/minimum as a special case) if the sort is lazy enough<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (April 2014)">citation needed</span></i>]</sup>.
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Ordinal optimization</li>
+<li>Search algorithm</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<style data-mw-deduplicate="TemplateStyles:r1054258005">.mw-parser-output .refbegin{font-size:90%;margin-bottom:0.5em}.mw-parser-output .refbegin-hanging-indents>ul{margin-left:0}.mw-parser-output .refbegin-hanging-indents>ul>li{margin-left:0;padding-left:3.2em;text-indent:-3.2em}.mw-parser-output .refbegin-hanging-indents ul,.mw-parser-output .refbegin-hanging-indents ul li{list-style:none}@media(max-width:720px){.mw-parser-output .refbegin-hanging-indents>ul>li{padding-left:1.6em;text-indent:-1.6em}}.mw-parser-output .refbegin-columns{margin-top:0.3em}.mw-parser-output .refbegin-columns ul{margin-top:0}.mw-parser-output .refbegin-columns li{page-break-inside:avoid;break-inside:avoid-column}</style>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>"Lecture notes for January 25, 1996: Selection and order statistics", <i>ICS 161: Design and Analysis of Algorithms,</i> David Eppstein</li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw2375
+Cached time: 20221224053149
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.291 seconds
+Real time usage: 0.430 seconds
+Preprocessor visited node count: 1721/1000000
+Post‐expand include size: 28300/2097152 bytes
+Template argument size: 2418/2097152 bytes
+Highest expansion depth: 17/100
+Expensive parser function count: 8/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 20490/5000000 bytes
+Lua time usage: 0.168/10.000 seconds
+Lua memory usage: 5315938/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  345.954      1 -total
+ 26.16%   90.493      1 Template:Reflist
+ 21.38%   73.980      1 Template:Cite_web
+ 17.30%   59.839      1 Template:More_footnotes
+ 16.02%   55.409      2 Template:Ambox
+ 13.81%   47.765      1 Template:Short_description
+  9.27%   32.053      2 Template:Citation_needed
+  7.60%   26.279      2 Template:Pagetype
+  7.55%   26.131      2 Template:Fix
+  6.21%   21.467      1 Template:DADS
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:552786-0!canonical and timestamp 20221224053149 and revision id 1110849589.
+ -->
+</div></body>
+</html>

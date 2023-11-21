@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>tabulation_hashing</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p>In computer science, <b>tabulation hashing</b> is a method for constructing universal families of hash functions by combining table lookup with exclusive or operations. It was first studied in the form of Zobrist hashing for computer games; later work by Carter and Wegman extended this method to arbitrary fixed-length keys. Generalizations of tabulation hashing have also been developed that can handle variable-length keys such as text strings.
+</p><p>Despite its simplicity, tabulation hashing has strong theoretical properties that distinguish it from some other hash functions. In particular, it is 3-independent: every 3-tuple of keys is equally likely to be mapped to any 3-tuple of hash values. However, it is not 4-independent. More sophisticated but slower variants of tabulation hashing extend the method to higher degrees of independence.
+</p><p>Because of its high degree of independence, tabulation hashing is usable with hashing methods that require a high-quality hash function, including hopscotch hashing, cuckoo hashing, and the MinHash technique for estimating the size of set intersections.
+</p>
+
+<h2><span class="mw-headline" id="Method">Method</span><span class="mw-editsection"></span></h2>
+<p>The basic idea is as follows:
+</p><p>First, divide the key to be hashed into smaller "blocks" of a chosen length. Then, create a set of lookup tables, one for each block, and fill them with random values. Finally, use the tables to compute a hash value for each block, and combine all of these hashes into a final hash value using the bitwise exclusive or operation.<sup class="reference" id="cite_ref-texts_1-0">[1]</sup>
+</p><p>More formally:
+</p><p>Let <i>p</i> be the number of bits in a key to be hashed, and <i>q</i> be the number of bits desired in an output hash function. Choose a block size <i>r</i> ≤ <i>p</i>; the choice of block size controls the tradeoff between time and memory usage, so it should be made so that the tables are not too large, e.g., so that the tables fit into the computer's cache memory.<sup class="reference" id="cite_ref-FOOTNOTEMitzenmacherUpfal2014_2-0">[2]</sup> Smaller blocks use less memory but slow down the hash function. Compute <i>t</i> = ceil(<i>p</i>/<i>r</i>), the number of <i>r</i>-bit blocks needed to represent a key.
+</p><p>Create a two-dimensional 2<sup><i>r</i></sup> × <i>t</i> array, <i>T</i>, and fill it with random <i>q</i>-bit numbers. Now <i>T</i> can be used to compute the hash value <i>h</i>(<i>x</i>) of any given key <i>x</i>. To do so, partition <i>x</i> into <i>r</i>-bit values, where <i>x</i><sub>0</sub> consists of the lowest <i>r</i> bits of <i>x</i>, <i>x</i><sub>1</sub> consists of the next <i>r</i> bits, etc. For example, if <i>r</i> = 8, then <i>x</i><sub><i>i</i></sub> is just the <i>i</i>th byte of <i>x</i>. Then, use these <i>r</i>-bit and position values as indices into <i>T</i>, and combine the results using the exclusive or operation:<sup class="reference" id="cite_ref-texts_1-1">[1]</sup>
+</p>
+<dl><dd><i>h</i>(<i>x</i>) = <i>T</i>[0][<i>x</i><sub>0</sub>] ⊕ <i>T</i>[1][<i>x</i><sub>1</sub>] ⊕ <i>T</i>[2][<i>x</i><sub>2</sub>] ⊕ ... ⊕ <i>T</i>[t-1][<i>x</i><sub>t-1</sub>].</dd></dl>
+<p>Note that it is not valid to use the same table (e.g. <i>T[0]</i>) for each <i>x</i><sub>i</sub>, since then the hash function would not be able to distinguish between strings with the same <i>x</i><sub>i</sub>s, but permuted differently.
+</p><p>Code for a typical example with <i>r</i> = <i>t</i> = 8 and <i>q</i> = <i>p</i> = 64 is given below.
+</p>
+
+<h2><span class="mw-headline" id="History">History</span><span class="mw-editsection"></span></h2>
+<p>The first instance of tabulation hashing is Zobrist hashing, a method for hashing positions in abstract board games such as chess named after Albert Lindsey Zobrist, who published it in 1970.<sup class="reference" id="cite_ref-FOOTNOTEThorup2013_3-0">[3]</sup> In this method, a random bitstring is generated for each game feature such as a combination of a chess piece and a square of the chessboard. Then, to hash any game position, the bitstrings for the features of that position are combined by a bitwise exclusive or. The resulting hash value can then be used as an index into a transposition table. Because each move typically changes only a small number of game features, the Zobrist value of the position after a move can be updated quickly from the value of the position before the move, without needing to loop over all of the features of the position.<sup class="reference" id="cite_ref-FOOTNOTEZobrist1970_4-0">[4]</sup>
+</p><p>Tabulation hashing in greater generality, for arbitrary binary values, was later rediscovered by Carter &amp; Wegman (1979) and studied in more detail by Pătraşcu &amp; Thorup (2012).
+</p>
+<h2><span class="mw-headline" id="Universality">Universality</span><span class="mw-editsection"></span></h2>
+<p>Carter &amp; Wegman (1979) define a randomized scheme for generating hash functions to be universal if, for any two keys, the probability that they collide (that is, they are mapped to the same value as each other) is 1/<i>m</i>, where <i>m</i> is the number of values that the keys can take on. They defined a stronger property in the subsequent paper Wegman &amp; Carter (1981): a randomized scheme for generating hash functions is <i>k</i>-independent<i></i> if, for every <i>k</i>-tuple of keys, and each possible <i>k</i>-tuple of values, the probability that those keys are mapped to those values is 1/<i>m</i><sup><i>k</i></sup>. 2-independent hashing schemes are automatically universal, and any universal hashing scheme can be converted into a 2-independent scheme by storing a random number <i>x</i> as part of the initialization phase of the algorithm and adding <i>x</i> to each hash value. Thus, universality is essentially the same as 2-independence. However, <i>k</i>-independence for larger values of <i>k</i> is a stronger property, held by fewer hashing algorithms.
+</p><p>As Pătraşcu &amp; Thorup (2012) observe, tabulation hashing is 3-independent but not 4-independent.  For any single key <i>x</i>, <i>T</i>[<i>x</i><sub>0</sub>,0] is equally likely to take on any hash value, and the exclusive or of <i>T</i>[<i>x</i><sub>0</sub>,0] with the remaining table values does not change this property. For any two keys <i>x</i> and <i>y</i>, <i>x</i> is equally likely to be mapped to any hash value as before, and there is at least one position <i>i</i> where <i>x<sub>i</sub></i> ≠ <i>y<sub>i</sub></i>; the table value <i>T</i>[<i>y</i><sub><i>i</i></sub>,<i>i</i>] is used in the calculation of <i>h</i>(<i>y</i>) but not in the calculation of <i>h</i>(<i>x</i>), so even after the value of <i>h</i>(<i>x</i>) has been determined, <i>h</i>(<i>y</i>) is equally likely to be any valid hash value. Similarly, for any three keys <i>x</i>, <i>y</i>, and <i>z</i>, at least one of the three keys has a position <i>i</i> where its value <i>z</i><sub><i>i</i></sub> differs from the other two, so that even after the values of <i>h</i>(<i>x</i>) and <i>h</i>(<i>y</i>) are determined, <i>h</i>(<i>z</i>) is equally likely to be any valid hash value.<sup class="reference" id="cite_ref-independence_5-0">[5]</sup>
+</p><p>However, this reasoning breaks down for four keys because there are sets of keys <i>w</i>, <i>x</i>, <i>y</i>, and <i>z</i> where none of the four has a byte value that it does not share with at least one of the other keys. For instance, if the keys have two bytes each, and <i>w</i>, <i>x</i>, <i>y</i>, and <i>z</i> are the four keys that have either zero or one as their byte values, then each byte value in each position is shared by exactly two of the four keys. For these four keys, the hash values computed by tabulation hashing will always satisfy the equation <span class="nowrap"><i>h</i>(<i>w</i>) ⊕ <i>h</i>(<i>x</i>) ⊕ <i>h</i>(<i>y</i>) ⊕ <i>h</i>(<i>z</i>) = 0</span>, whereas for a 4-independent hashing scheme the same equation would only be satisfied with probability 1/<i>m</i>. Therefore, tabulation hashing is not 4-independent.<sup class="reference" id="cite_ref-independence_5-1">[5]</sup>
+</p>
+<h2><span class="mw-headline" id="Application">Application</span><span class="mw-editsection"></span></h2>
+<p>Because tabulation hashing is a universal hashing scheme, it can be used in any hashing-based algorithm in which universality is sufficient. For instance, in hash chaining, the expected time per operation is proportional to the sum of collision probabilities, which is the same for any universal scheme as it would be for truly random hash functions, and is constant whenever the load factor of the hash table is constant. Therefore, tabulation hashing can be used to compute hash functions for hash chaining with a theoretical guarantee of constant expected time per operation.<sup class="reference" id="cite_ref-FOOTNOTECarterWegman1979_6-0">[6]</sup>
+</p><p>However, universal hashing is not strong enough to guarantee the performance of some other hashing algorithms. For instance, for linear probing, 5-independent hash functions are strong enough to guarantee constant time operation, but there are 4-independent hash functions that fail.<sup class="reference" id="cite_ref-7">[7]</sup> Nevertheless, despite only being 3-independent, tabulation hashing provides the same constant-time guarantee for linear probing.<sup class="reference" id="cite_ref-FOOTNOTEPătraşcuThorup2012_8-0">[8]</sup>
+</p><p>Cuckoo hashing, another technique for implementing hash tables, guarantees constant time per lookup (regardless of the hash function). Insertions into a cuckoo hash table may fail, causing the entire table to be rebuilt, but such failures are sufficiently unlikely that the expected time per insertion (using either a truly random hash function or a hash function with logarithmic independence) is constant. With tabulation hashing, on the other hand, the best bound known on the failure probability is higher, high enough that insertions cannot be guaranteed to take constant expected time. Nevertheless, tabulation hashing is adequate to ensure the linear-expected-time construction of a cuckoo hash table for a static set of keys that does not change as the table is used.<sup class="reference" id="cite_ref-FOOTNOTEPătraşcuThorup2012_8-1">[8]</sup>
+</p>
+<h2><span class="mw-headline" id="Extensions">Extensions</span><span class="mw-editsection"></span></h2>
+<p>Although tabulation hashing as described above ("simple tabulation hashing") is only 3-independent, variations of this method can be used to obtain hash functions with much higher degrees of independence. 
+Siegel (2004) uses the same idea of using exclusive or operations to combine random values from a table, with a more complicated algorithm based on expander graphs for transforming the key bits into table indices, to define hashing schemes that are <i>k</i>-independent for any constant or even logarithmic value of <i>k</i>. However, the number of table lookups needed to compute each hash value using Siegel's variation of tabulation hashing, while constant, is still too large to be practical, and the use of expanders in Siegel's technique also makes it not fully constructive.
+Thorup (2013) provides a scheme based on tabulation hashing that reaches high degrees of independence more quickly, in a more constructive way.
+He observes that using one round of simple tabulation hashing to expand the input keys to six times their original length, and then a second round of simple tabulation hashing on the expanded keys, results in a hashing scheme whose independence number is exponential in the parameter <i>r</i>, the number of bits per block in the partition of the keys into blocks.
+</p><p>Simple tabulation is limited to keys of a fixed length, because a different table of random values needs to be initialized for each position of a block in the keys.
+Lemire (2012) studies variations of tabulation hashing suitable for variable-length keys such as character strings. The general type of hashing scheme studied by Lemire uses a single table <i>T</i> indexed by the value of a block, regardless of its position within the key.
+However, the values from this table may be combined by a more complicated function than bitwise exclusive or.
+Lemire shows that no scheme of this type can be 3-independent. Nevertheless, he shows that it is still possible to achieve 2-independence. In particular, a tabulation scheme that interprets the values <i>T</i>[<i>x</i><sub><i>i</i></sub>] (where <i>x</i><sub><i>i</i></sub> is, as before, the <i>i</i>th block of the input) as the coefficients of a polynomial over a finite field and then takes the remainder of the resulting polynomial modulo another polynomial, gives a 2-independent hash function.
+</p>
+<h3><span class="mw-headline" id="Mixed_Tabulation">Mixed Tabulation</span><span class="mw-editsection"></span></h3>
+<p>Mixed Tabulation hashing (and the less general Twisted Tabulation) were introduced by Dahlgaard and Thorup<sup class="reference" id="cite_ref-9">[9]</sup> as a way to strengthen the properties of Tabulation hashing while keeping nearly the same performance. 
+Mixed tabulation can be seen as a xor'ing a "Double Tabulation" Thorup (2013) hash function with a simple tabulation hash function.
+This turns out to have many nice properties even when parameters are chosen to make the mixed tabulation much faster than double tabulation<sup class="reference" id="cite_ref-10">[10]</sup>
+</p><p>The idea is to pick a number <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d}</annotation>
+</semantics>
+</math></span><img alt="d" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e85ff03cbe0c7341af6b982e47e9f90d235c66ab" style="vertical-align: -0.338ex; width:1.216ex; height:2.176ex;"/></span> and hash to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{rd+q}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>r</mi>
+<mi>d</mi>
+<mo>+</mo>
+<mi>q</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{rd+q}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 2^{rd+q}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/777ae3dc828bf5de4edbb9e53b2ce4d61b93ee85" style="vertical-align: -0.338ex; width:5.031ex; height:2.676ex;"/></span> bits rather than just <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{q}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>q</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{q}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 2^{q}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3226e1b4bea01bbc0972d2f3978481610471fe85" style="vertical-align: -0.338ex; width:2.151ex; height:2.343ex;"/></span>.
+This gives <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d}</annotation>
+</semantics>
+</math></span><img alt="d" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e85ff03cbe0c7341af6b982e47e9f90d235c66ab" style="vertical-align: -0.338ex; width:1.216ex; height:2.176ex;"/></span> new "derived characters" which are hashed by a second hash function and the two values are xor'ed together.
+Formally we have <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{1}:[2^{p}]\to [2^{rd}]\times [2^{q}]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>:</mo>
+<mo stretchy="false">[</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>p</mi>
+</mrow>
+</msup>
+<mo stretchy="false">]</mo>
+<mo stretchy="false">→<!-- → --></mo>
+<mo stretchy="false">[</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>r</mi>
+<mi>d</mi>
+</mrow>
+</msup>
+<mo stretchy="false">]</mo>
+<mo>×<!-- × --></mo>
+<mo stretchy="false">[</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>q</mi>
+</mrow>
+</msup>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{1}:[2^{p}]\to [2^{rd}]\times [2^{q}]}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h_{1}:[2^{p}]\to [2^{rd}]\times [2^{q}]}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/24851ac44ccebddf31faa9587e9604fa3fb9725d" style="vertical-align: -0.838ex; width:22.035ex; height:3.176ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{2}:[2^{rd}]\to [2^{q}]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>:</mo>
+<mo stretchy="false">[</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>r</mi>
+<mi>d</mi>
+</mrow>
+</msup>
+<mo stretchy="false">]</mo>
+<mo stretchy="false">→<!-- → --></mo>
+<mo stretchy="false">[</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>q</mi>
+</mrow>
+</msup>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{2}:[2^{rd}]\to [2^{q}]}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h_{2}:[2^{rd}]\to [2^{q}]}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2bcf99f6316d349f55486327a1b2db0373f09fc4" style="vertical-align: -0.838ex; width:15.679ex; height:3.176ex;"/></span>, both simple tabulation functions.
+If <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (v_{1},v_{2})=h_{1}(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (v_{1},v_{2})=h_{1}(x)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle (v_{1},v_{2})=h_{1}(x)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0a5112d89919907395be5487e6942abcda3a60c8" style="vertical-align: -0.838ex; width:15.838ex; height:2.843ex;"/></span>, then the mixed tabulation hash is defined to be <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h(x)=h_{2}(v_{1})\oplus v_{2}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>⊕<!-- ⊕ --></mo>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h(x)=h_{2}(v_{1})\oplus v_{2}.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h(x)=h_{2}(v_{1})\oplus v_{2}.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2f8fa735d85b9808a9abde648161d49ff875deb7" style="vertical-align: -0.838ex; width:19.63ex; height:2.843ex;"/></span>
+</p><p>The following example shows the algorithm with <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p=q=64}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>p</mi>
+<mo>=</mo>
+<mi>q</mi>
+<mo>=</mo>
+<mn>64</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p=q=64}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle p=q=64}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6344120e52217f3df0bf092efb9ff010fb35d29b" style="vertical-align: -0.671ex; margin-left: -0.089ex; width:10.85ex; height:2.509ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r=8}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>r</mi>
+<mo>=</mo>
+<mn>8</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r=8}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle r=8}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/680836fe0508353d1ae1afc17e14d896ac33d9d6" style="vertical-align: -0.338ex; width:5.31ex; height:2.176ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d=2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+<mo>=</mo>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d=2}</annotation>
+</semantics>
+</math></span><img alt="d=2" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c28d2048804ba61b4fc8761e42223f561e0a7ce6" style="vertical-align: -0.338ex; width:5.477ex; height:2.176ex;"/></span>:
+</p>
+
+<p>Mixed Tabulation was shown in 2016<sup class="reference" id="cite_ref-11">[11]</sup> to have strong concentration with regards to <i>k</i>-partitions, which are useful in algorithms for counting distinct elements, such as the classical method by Flajolet and Martin.
+</p>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<dl><dt>Secondary sources</dt></dl>
+<ul><li><style data-mw-deduplicate="TemplateStyles:r1067248974">.mw-parser-output cite.citation{font-style:inherit;word-wrap:break-word}.mw-parser-output .citation q{quotes:"\"""\"""'""'"}.mw-parser-output .citation:target{background-color:rgba(0,127,255,0.133)}.mw-parser-output .id-lock-free a,.mw-parser-output .citation .cs1-lock-free a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/6/65/Lock-green.svg")right 0.1em center/9px no-repeat}.mw-parser-output .id-lock-limited a,.mw-parser-output .id-lock-registration a,.mw-parser-output .citation .cs1-lock-limited a,.mw-parser-output .citation .cs1-lock-registration a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/d/d6/Lock-gray-alt-2.svg")right 0.1em center/9px no-repeat}.mw-parser-output .id-lock-subscription a,.mw-parser-output .citation .cs1-lock-subscription a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/a/aa/Lock-red-alt-2.svg")right 0.1em center/9px no-repeat}.mw-parser-output .cs1-ws-icon a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/4/4c/Wikisource-logo.svg")right 0.1em center/12px no-repeat}.mw-parser-output .cs1-code{color:inherit;background:inherit;border:none;padding:inherit}.mw-parser-output .cs1-hidden-error{display:none;color:#d33}.mw-parser-output .cs1-visible-error{color:#d33}.mw-parser-output .cs1-maint{display:none;color:#3a3;margin-left:0.3em}.mw-parser-output .cs1-format{font-size:95%}.mw-parser-output .cs1-kern-left{padding-left:0.2em}.mw-parser-output .cs1-kern-right{padding-right:0.2em}.mw-parser-output .citation .mw-selflink{font-weight:inherit}</style><cite class="citation cs2" id="CITEREFMorin2014">Morin, Pat (February 22, 2014), "Section 5.2.3: Tabulation hashing", <i>Open Data Structures (in pseudocode)</i> (0.1G<i>β</i> ed.), pp. 115–116<span class="reference-accessdate">, retrieved <span class="nowrap">2016-01-08</span></span></cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Section+5.2.3%3A+Tabulation+hashing&amp;rft.btitle=Open+Data+Structures+%28in+pseudocode%29&amp;rft.pages=115-116&amp;rft.edition=0.1G%27%27%CE%B2%27%27&amp;rft.date=2014-02-22&amp;rft.aulast=Morin&amp;rft.aufirst=Pat&amp;rft_id=http%3A%2F%2Fopendatastructures.org%2F&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ATabulation+hashing"></span>.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFMitzenmacherUpfal2014">Mitzenmacher, Michael; Upfal, Eli (2014), "Some practical randomized algorithms and data structures",  in Tucker, Allen; Gonzalez, Teofilo; Diaz-Herrera, Jorge (eds.), <i>Computing Handbook: Computer Science and Software Engineering</i> (3rd ed.), CRC Press, pp. 11-1 – 11-23, ISBN <bdi>9781439898529</bdi></cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Some+practical+randomized+algorithms+and+data+structures&amp;rft.btitle=Computing+Handbook%3A+Computer+Science+and+Software+Engineering&amp;rft.pages=pp.+11-1+-+11-23&amp;rft.edition=3rd&amp;rft.pub=CRC+Press&amp;rft.date=2014&amp;rft.isbn=9781439898529&amp;rft.aulast=Mitzenmacher&amp;rft.aufirst=Michael&amp;rft.au=Upfal%2C+Eli&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ATabulation+hashing"></span>. See in particular Section 11.1.1: Tabulation hashing, pp. 11-3 – 11-4.</li></ul>
+<dl><dt>Primary sources</dt></dl>
+<style data-mw-deduplicate="TemplateStyles:r1054258005">.mw-parser-output .refbegin{font-size:90%;margin-bottom:0.5em}.mw-parser-output .refbegin-hanging-indents>ul{margin-left:0}.mw-parser-output .refbegin-hanging-indents>ul>li{margin-left:0;padding-left:3.2em;text-indent:-3.2em}.mw-parser-output .refbegin-hanging-indents ul,.mw-parser-output .refbegin-hanging-indents ul li{list-style:none}@media(max-width:720px){.mw-parser-output .refbegin-hanging-indents>ul>li{padding-left:1.6em;text-indent:-1.6em}}.mw-parser-output .refbegin-columns{margin-top:0.3em}.mw-parser-output .refbegin-columns ul{margin-top:0}.mw-parser-output .refbegin-columns li{page-break-inside:avoid;break-inside:avoid-column}</style>
+<!-- 
+NewPP limit report
+Parsed by mw2387
+Cached time: 20221224040225
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.269 seconds
+Real time usage: 0.542 seconds
+Preprocessor visited node count: 1687/1000000
+Post‐expand include size: 29927/2097152 bytes
+Template argument size: 1117/2097152 bytes
+Highest expansion depth: 8/100
+Expensive parser function count: 2/500
+Unstrip recursion depth: 0/20
+Unstrip post‐expand size: 37836/5000000 bytes
+Lua time usage: 0.150/10.000 seconds
+Lua memory usage: 5502280/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  262.797      1 -total
+ 45.95%  120.755     11 Template:Citation
+ 18.48%   48.566      1 Template:Short_description
+ 15.95%   41.922      6 Template:Sfnp
+ 10.14%   26.644      2 Template:Pagetype
+  8.07%   21.196      1 Template:Reflist
+  6.46%   16.976     15 Template:Harvtxt
+  4.95%   13.011      9 Template:Main_other
+  3.89%   10.228      1 Template:SDcat
+  3.06%    8.053      1 Template:Refbegin
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:33467978-0!canonical and timestamp 20221224040225 and revision id 1078929262.
+ -->
+</div></body>
+</html>

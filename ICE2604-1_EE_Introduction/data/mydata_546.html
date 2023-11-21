@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Las_Vegas_algorithm</title>
+</head>
+<body>
+<div class="mw-parser-output"><p>In computing, a <b>Las Vegas algorithm</b> is a randomized algorithm that always gives correct results; that is, it always produces the correct result or it informs about the failure. However, the runtime of a Las Vegas algorithm differs depending on the input. The usual definition of a Las Vegas algorithm includes the restriction that the <i>expected</i> runtime be finite, where the expectation is carried out over the space of random information, or entropy, used in the algorithm. An alternative definition requires that a Las Vegas algorithm always terminates (is effective), but may output a symbol not part of the solution space to indicate failure in finding a solution.<sup class="reference" id="cite_ref-Galbraith201222_1-0">[1]</sup> The nature of Las Vegas algorithms makes them suitable in situations where the number of possible solutions is limited, and where verifying the correctness of a candidate solution is relatively easy while finding a solution is complex.
+</p><p>Las Vegas algorithms are prominent in the field of artificial intelligence, and in other areas of computer science and operations research. In AI, stochastic local search (SLS) algorithms are considered to be of Las Vegas type<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (February 2021)">citation needed</span></i>]</sup>. SLS algorithms have been used to address NP-complete decision problems and NP-hard combinatorial optimization problems.<sup class="reference" id="cite_ref-2">[2]</sup> However, some systematic search methods, such as modern variants of the Davis–Putnam algorithm for propositional satisfiability (SAT), also utilize non-deterministic decisions, and can thus also be considered Las Vegas algorithms.<sup class="reference" id="cite_ref-3">[3]</sup>
+</p>
+
+<h2><span class="mw-headline" id="History">History</span><span class="mw-editsection"></span></h2>
+<p>Las Vegas algorithms were introduced by László Babai in 1979, in the context of the graph isomorphism problem, as a dual to Monte Carlo algorithms.<sup class="reference" id="cite_ref-4">[4]</sup> Babai<sup class="reference" id="cite_ref-5">[5]</sup> introduced the term "Las Vegas algorithm" alongside an example involving coin flips: the algorithm depends on a series of independent coin flips, and there is a small chance of failure (no result). However, in contrast to Monte Carlo algorithms, the Las Vegas algorithm can guarantee the correctness of any reported result.
+</p>
+<h2><span class="mw-headline" id="Example">Example</span><span class="mw-editsection"></span></h2>
+
+<p>As mentioned above, Las Vegas algorithms always return correct results. The code above illustrates this property. A variable <i>k</i> is generated randomly; after <i>k</i> is generated, <i>k</i> is used to index the array <i>A</i>. If this index contains the value 1, then <i>k</i> is returned; otherwise, the algorithm repeats this process until it finds 1. Although this Las Vegas algorithm is guaranteed to find the correct answer, it does not have a fixed runtime; due to the randomization (in <i>line 3</i> of the above code), it is possible for arbitrarily much time to elapse before the algorithm terminates.
+</p>
+<h2><span class="mw-headline" id="Definition">Definition</span><span class="mw-editsection"></span></h2>
+<p>This section provides the conditions that characterize an algorithm's being of Las Vegas type.
+</p><p>An algorithm A is a Las Vegas algorithm for problem class X, if<sup class="reference" id="cite_ref-6">[6]</sup>
+</p>
+<ol><li>whenever for a given problem instance x∈X it returns a solution s, s is guaranteed to be a valid solution of x</li>
+<li>on each given instance x, the run-time of A is a random variable RT<sub>A,x</sub></li></ol>
+<p>There are three notions of <i>completeness</i> for Las Vegas algorithms:
+</p>
+<ul><li><i>complete Las Vegas algorithms</i> can be guaranteed to solve each solvable problem within run-time t<small>max,</small> where t<small>max</small> is an instance-dependent constant.</li></ul>
+<p>Let P(RT<sub>A,x</sub> ≤ t) denote the probability that A finds a solution for a soluble instance x in time within t, then A is complete exactly if for each x there exists
+</p><p>some t<small>max</small> such that  P(RT<sub>A,x</sub> ≤ t<sub>max</sub>) = 1.
+</p>
+<ul><li><i>approximately complete Las Vegas algorithms</i> solve each problem with a probability converging to 1 as the run-time approaches infinity. Thus, A is approximately complete, if for each instance x, lim<sub>t→∞</sub> P(RT<sub>A,x</sub> ≤ t)  = 1.</li>
+<li><i>essentially incomplete Las Vegas algorithms</i> are Las Vegas algorithms that are not approximately complete.</li></ul>
+<p>Approximate completeness is primarily of theoretical interest, as the time limits for finding solutions are usually too large to be of practical use.
+</p>
+<h3><span class="mw-headline" id="Application_scenarios">Application scenarios</span><span class="mw-editsection"></span></h3>
+<p>Las Vegas algorithms have different criteria for the evaluation based on the problem setting. These criteria are divided into three categories with different time limits since Las Vegas algorithms do not have set time complexity. Here are some possible application scenarios:
+</p>
+<ul><li>Type 1: There are no time limits, which means the algorithm runs until it finds the solution.</li>
+<li>Type 2: There is a time limit t<sub>max</sub> for finding the outcome.</li>
+<li>Type 3: The utility of a solution is determined by the time required to find the solution.</li></ul>
+<p>(Type 1 and Type 2 are special cases of Type 3.)
+</p><p>For Type 1 where there is no time limit, the average run-time can represent the run-time behavior. This is not the same case for Type 2.
+</p><p>Here, <i>P</i>(<i>RT</i> ≤ <i>t<sub>max</sub></i>), which is the probability of finding a solution within time, describes its run-time behavior.
+</p><p>In case of Type 3, its run-time behavior can only be represented by the run-time distribution function <i>rtd</i>: <i>R</i> → [0,1] defined as <i>rtd</i>(<i>t</i>) = <i>P</i>(<i>RT</i> ≤ <i>t</i>) or its approximation.
+</p><p>The run-time distribution (RTD) is the distinctive way to describe the run-time behavior of a Las Vegas algorithm.
+</p><p>With this data, we can easily get other criteria such as the mean run-time, standard deviation, median, percentiles, or success probabilities <i>P</i>(<i>RT</i> ≤ <i>t</i>) for arbitrary time-limits <i>t</i>.
+</p>
+<h2><span class="mw-headline" id="Applications">Applications</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Analogy">Analogy</span><span class="mw-editsection"></span></h3>
+<p>Las Vegas algorithms arise frequently in search problems. For example, one looking for some information online might search related websites for the desired information. The time complexity thus ranges from getting "lucky" and finding the content immediately, to being "unlucky" and spending large amounts of time. Once the right website is found, then there is no possibility of error.<sup class="reference" id="cite_ref-7">[7]</sup>
+</p>
+<h3><span class="mw-headline" id="Randomized_QuickSort">Randomized QuickSort</span><span class="mw-editsection"></span></h3>
+
+<p>A simple example is randomized QuickSort, where the pivot is chosen randomly, and divides the elements into three partitions: elements less than pivot, elements equal to pivot, and elements greater than pivot. The randomized QuickSort require a lot of resources but always generate the sorted array as an output.<sup class="reference" id="cite_ref-8">[8]</sup>
+</p><p>It is obvious that QuickSort always generates the solution, which in this case the sorted array. Unfortunately, the time complexity is not that obvious. It turns out that the runtime depends on which element we pick as a pivot.
+</p>
+<ul><li>The worst case Θ(<i>n</i><sup>2</sup>) when the pivot is the smallest or the largest element.</li></ul>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T(n)=T(0)+T(n-1)+\Theta (n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<mn>0</mn>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T(n)=T(0)+T(n-1)+\Theta (n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle T(n)=T(0)+T(n-1)+\Theta (n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b650bf52cf6019fa6de91fe9cf62e9849f2f0fb0" style="vertical-align: -0.838ex; width:32.083ex; height:2.843ex;"/></span></dd>
+<dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T(n)=\Theta (1)+T(n-1)+\Theta (n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T(n)=\Theta (1)+T(n-1)+\Theta (n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle T(n)=\Theta (1)+T(n-1)+\Theta (n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/abc68139aa0d3eeb20203df8aa8b1989dd7c3491" style="vertical-align: -0.838ex; width:32.255ex; height:2.843ex;"/></span></dd>
+<dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T(n)=T(n-1)+\Theta (n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T(n)=T(n-1)+\Theta (n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle T(n)=T(n-1)+\Theta (n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/235189e3ef95f0c33ac7bf5b3e5b6329adf108fb" style="vertical-align: -0.838ex; width:24.634ex; height:2.843ex;"/></span></dd>
+<dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T(n)=\Theta (n^{2})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T(n)=\Theta (n^{2})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle T(n)=\Theta (n^{2})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6947b4c91cf407f46637c54c3dc0288b93e51f35" style="vertical-align: -0.838ex; width:14.005ex; height:3.176ex;"/></span></dd></dl>
+<ul><li>However, through randomization, where the pivot is randomly picked and is exactly a middle value each time, the QuickSort can be done in Θ(<i>n</i>log<i>n</i>).</li></ul>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T(n)\leq 2*T(n/2)+\Theta (n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mn>2</mn>
+<mo>∗<!-- ∗ --></mo>
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>2</mn>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T(n)\leq 2*T(n/2)+\Theta (n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle T(n)\leq 2*T(n/2)+\Theta (n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e90652ba5a3417aae326e7b43fe2b1ccc4649d69" style="vertical-align: -0.838ex; width:26.314ex; height:2.843ex;"/></span></dd>
+<dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T(n)=\Theta (n\log(n))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T(n)=\Theta (n\log(n))}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle T(n)=\Theta (n\log(n))}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/07cff1beea6570a7f4e6ca8ff0a47d0b6620415c" style="vertical-align: -0.838ex; width:19.514ex; height:2.843ex;"/></span></dd></dl>
+<p>The runtime of QuickSort depends heavily on how well the pivot is selected. If a value of pivot is either too big or small, the partition will be unbalanced, resulting in a poor runtime efficiency. However, if the value of pivot is near the middle of the array, then the split will be reasonably well balanced, yielding a faster runtime. Since the pivot is randomly picked, the running time will be good most of the time and bad occasionally.
+</p><p>In the case of average case, it is hard to determine since the analysis does not depend on the input distribution but on the random choices that the algorithm makes. The average of QuickSort is computed over all possible random choices that the algorithm might make when choosing the pivot.
+</p><p>Although the worst-case runtime is Θ(<i>n</i><sup>2</sup>), the average-case runtime is Θ(<i>n</i>log<i>n</i>). It turns out that the worst-case does not happen often. For large values of <i>n</i>, the runtime is Θ(<i>n</i>log<i>n</i>) with a high probability.
+</p><p>Note that the probability that the pivot is the middle value element each time is one out of <i>n</i> numbers, which is very rare. However, it is still the same runtime when the split is 10%-90% instead of a 50%–50% because the depth of the recursion tree will still be <i>O</i>(log<i>n</i>) with <i>O</i>(<i>n</i>) times taken each level of recursion.
+</p>
+<h3><span class="mw-headline" id="Randomized_Greedy_Algorithm_for_Eight_Queens_Problem">Randomized Greedy Algorithm for Eight Queens Problem</span><span class="mw-editsection"></span></h3>
+<p>The eight queens problem is usually solved with a backtracking algorithm. However, a Las Vegas algorithm can be applied; in fact, it is more efficient than backtracking.
+</p><p>Place 8 queens on a chessboard so that no one attacks another. Remember that a queen attacks other pieces on the same row, column and diagonals.
+</p><p>Assume that <i>k</i> rows, 0 ≤ <i>k</i> ≤  8, are successfully occupied by queens.
+</p><p>If <i>k</i> = 8, then stop with success. Otherwise, proceed to occupy row <i>k</i> + 1.
+</p><p>Calculate all positions on this row not attacked by existing queens. If there are none, then fail. Otherwise, pick one at random, increment <i>k</i> and repeat.
+</p><p>Note that the algorithm simply fails if a queen cannot be placed. But the process can be repeated and every time will generate different arrangement.<sup class="reference" id="cite_ref-9">[9]</sup>
+</p>
+<h2><span class="mw-headline" id="Complexity_class">Complexity class</span><span class="mw-editsection"></span></h2>
+<p>The complexity class of decision problems that have Las Vegas algorithms with expected polynomial runtime is ZPP.
+</p><p>It turns out that
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\textsf {ZPP}}={\textsf {RP}}\cap {\textsf {co-RP}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext mathvariant="sans-serif">ZPP</mtext>
+</mrow>
+</mrow>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext mathvariant="sans-serif">RP</mtext>
+</mrow>
+</mrow>
+<mo>∩<!-- ∩ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext mathvariant="sans-serif">co-RP</mtext>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\textsf {ZPP}}={\textsf {RP}}\cap {\textsf {co-RP}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\textsf {ZPP}}={\textsf {RP}}\cap {\textsf {co-RP}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9223c18ceef162a448a54bc3ede774a5371f92aa" style="vertical-align: -0.338ex; width:19.015ex; height:2.176ex;"/></span></dd></dl>
+<p>which is intimately connected with the way Las Vegas algorithms are sometimes constructed. Namely the class RP consists of all decision problems for which a randomized polynomial-time algorithm exists that always answers correctly when the correct answer is "no", but is allowed to be wrong with a certain probability bounded away from one when the answer is "yes". When such an algorithm exists for both a problem and its complement (with the answers "yes" and "no" swapped), the two algorithms can be run simultaneously and repeatedly: run each for a constant number of steps, taking turns, until one of them returns a definitive answer. This is the standard way to construct a Las Vegas algorithm that runs in expected polynomial time. Note that in general there is no worst case upper bound on the run time of a Las Vegas algorithm.
+</p>
+<h2><span class="mw-headline" id="Optimal_Las_Vegas_Algorithm">Optimal Las Vegas Algorithm</span><span class="mw-editsection"></span></h2>
+<p>In order to make a Las Vegas algorithm optimal, the expected run time should be minimized. This can be done by:
+</p>
+<ol><li>The Las Vegas algorithm <i>A</i>(<i>x</i>) runs repeatedly for some number <i>t</i><sub>1</sub> steps. If <i>A</i>(<i>x</i>) stops during the run time then <i>A</i>(<i>x</i>) is done; otherwise, repeat the process from the beginning for another <i>t</i><sub>2</sub> steps, and so on.</li>
+<li>Designing a strategy that is optimal among all strategies for <i>A</i>(<i>x</i>), given the full information about the distribution of <i>T<sub>A</sub></i>(<i>x</i>).</li></ol>
+<p>The existence of the optimal strategy might be a fascinating theoretical observation. However, it is not practical in real life because it is not easy to find the information of distribution of <i>T<sub>A</sub></i>(<i>x</i>). Furthermore, there is no point of running the experiment repeatedly to obtain the information about the distribution since most of the time, the answer is needed only once for any <i>x</i>.<sup class="reference" id="cite_ref-10">[10]</sup>
+</p>
+<h2><span class="mw-headline" id="Relation_to_Monte_Carlo_algorithms">Relation to Monte Carlo algorithms</span><span class="mw-editsection"></span></h2>
+<p>Las Vegas algorithms can be contrasted with Monte Carlo algorithms, in which the resources used are bounded but the answer may be incorrect with a certain (typically small) probability. A Las Vegas algorithm can be converted into a Monte Carlo algorithm by running it for set time and generating a random answer when it fails to terminate. By an application of Markov's inequality, we can set the bound on the probability that the Las Vegas algorithm would go over the fixed limit.
+</p><p>Here is a table comparing Las Vegas and Monte Carlo algorithms:<sup class="reference" id="cite_ref-11">[11]</sup>
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>
+</th>
+<th>Running Time
+</th>
+<th>Correctness
+</th></tr>
+<tr>
+<td>Las Vegas Algorithm
+</td>
+<td>probabilistic
+</td>
+<td>certain
+</td></tr>
+<tr>
+<td>Monte Carlo Algorithm
+</td>
+<td>certain
+</td>
+<td>probabilistic
+</td></tr></tbody></table>
+<p>If a deterministic way to test for correctness is available, then it is possible to turn a Monte Carlo algorithm into a Las Vegas algorithm. However, it is hard to convert a Monte Carlo algorithm to a Las Vegas algorithm without a way to test the algorithm. On the other hand, changing a Las Vegas algorithm to a Monte Carlo algorithm is easy. This can be done by running a Las Vegas algorithm for a specific period of time given by confidence parameter. If the algorithm finds the solution within the time, then it is success and if not then output can simply be "sorry".
+</p><p>This is an example of Las Vegas and Monte Carlo algorithms for comparison:<sup class="reference" id="cite_ref-12">[12]</sup>
+</p><p>Assume that there is an array with the length of even <i>n</i>. Half of the entries in the array are 0's and the remaining half are 1's. The goal here is to find an index that contains a 1.
+</p>
+
+<p>Since Las Vegas does not end until it finds 1 in the array, it does not gamble with the correctness but run-time. On the other hand, Monte Carlo runs 300 times, which means it is impossible to know that Monte Carlo will find "1" in the array within 300 times of loops until it actually executes the code. It might find the solution or not. Therefore, unlike Las Vegas, Monte Carlo does not gamble with run-time but correctness.
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Monte Carlo algorithm</li>
+<li>Atlantic City algorithm</li>
+<li>Randomness</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Citations">Citations</span><span class="mw-editsection"></span></h3>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h3><span class="mw-headline" id="Sources">Sources</span><span class="mw-editsection"></span></h3>
+<style data-mw-deduplicate="TemplateStyles:r1054258005">.mw-parser-output .refbegin{font-size:90%;margin-bottom:0.5em}.mw-parser-output .refbegin-hanging-indents>ul{margin-left:0}.mw-parser-output .refbegin-hanging-indents>ul>li{margin-left:0;padding-left:3.2em;text-indent:-3.2em}.mw-parser-output .refbegin-hanging-indents ul,.mw-parser-output .refbegin-hanging-indents ul li{list-style:none}@media(max-width:720px){.mw-parser-output .refbegin-hanging-indents>ul>li{padding-left:1.6em;text-indent:-1.6em}}.mw-parser-output .refbegin-columns{margin-top:0.3em}.mw-parser-output .refbegin-columns ul{margin-top:0}.mw-parser-output .refbegin-columns li{page-break-inside:avoid;break-inside:avoid-column}</style>
+<!-- 
+NewPP limit report
+Parsed by mw1418
+Cached time: 20221214135232
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.196 seconds
+Real time usage: 1.083 seconds
+Preprocessor visited node count: 642/1000000
+Post‐expand include size: 11047/2097152 bytes
+Template argument size: 686/2097152 bytes
+Highest expansion depth: 12/100
+Expensive parser function count: 4/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 24007/5000000 bytes
+Lua time usage: 0.086/10.000 seconds
+Lua memory usage: 4074762/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00% 1005.278      1 -total
+ 11.13%  111.898      1 Template:Reflist
+  6.57%   66.029      1 Template:Cite_book
+  6.25%   62.811      1 Template:Citation_needed
+  4.03%   40.556      1 Template:Fix
+  2.78%   27.971      2 Template:Category_handler
+  0.95%    9.582      1 Template:Webarchive
+  0.81%    8.188      2 Template:Cite_web
+  0.79%    7.977      1 Template:Refbegin
+  0.69%    6.930      1 Template:Delink
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:537519-0!canonical and timestamp 20221214135231 and revision id 1117496650.
+ -->
+</div></body>
+</html>

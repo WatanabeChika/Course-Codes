@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>P-complete</title>
+</head>
+<body>
+<div class="mw-parser-output"><p>In computational complexity theory,  a decision problem is <b>P-complete</b> (complete for the  complexity class <b>P</b>) if it is in <b>P</b> and every problem in <b>P</b> can be reduced to it by an appropriate reduction.
+</p><p>The notion of <b>P-complete</b> decision problems is useful in the analysis of:
+</p>
+<ul><li>which problems are difficult to parallelize effectively,</li>
+<li>which problems are difficult to solve in limited space.</li></ul>
+<p>specifically when stronger notions of reducibility than polytime-reducibility are considered.
+</p><p>The specific type of reduction used varies and may affect the exact set of problems. Generically, reductions stronger than polynomial-time reductions are used, since all languages in <b>P</b> (except the empty language and the language of all strings) are <b>P</b>-complete under polynomial-time reductions. If we use <b>NC</b> reductions, that is, reductions which can operate in polylogarithmic time on a parallel computer with a polynomial number of processors, then all <b>P</b>-complete problems lie outside <b>NC</b> and so cannot be effectively parallelized, under the unproven assumption that <b>NC</b> ≠ <b>P</b>. If we use the stronger log-space reduction, this remains true, but additionally we learn that all <b>P</b>-complete problems lie outside L under the weaker unproven assumption that <b>L</b> ≠ <b>P</b>. In this latter case the set <b>P</b>-complete may be smaller.
+</p>
+
+<h2><span class="mw-headline" id="Motivation">Motivation</span><span class="mw-editsection"></span></h2>
+<p>The class <b>P</b>, typically taken to consist of all the "tractable" problems for a sequential computer, contains the class <b>NC</b>, which consists of those problems which can be efficiently solved on a parallel computer. This is because parallel computers can be simulated on a sequential machine. 
+It is not known whether <b>NC</b> = <b>P</b>.  In other words, it is not known whether there are any tractable problems that are inherently sequential.  Just as it is widely suspected that <b>P</b> does not equal <b>NP</b>, so it is widely suspected that <b>NC</b> does not equal <b>P</b>.
+</p><p>Similarly, the class <b>L</b> contains all problems that can be solved by a sequential computer in logarithmic space. Such machines run in polynomial time because they can have a polynomial number of configurations. It is suspected that <b>L</b> ≠ <b>P</b>; that is, that some problems that can be solved in polynomial time also require more than logarithmic space.
+</p><p>Similarly to the use of NP-complete problems to analyze the <b>P</b> = <b>NP</b> question, the <b>P</b>-complete problems, viewed as the "probably not parallelizable" or "probably inherently sequential" problems, serves in a similar manner to study the <b>NC</b> = <b>P</b> question. Finding an efficient way to parallelize the solution to some <b>P</b>-complete problem would show that <b>NC</b> = <b>P</b>. It can also be thought of as the "problems requiring superlogarithmic space"; a log-space solution to a <b>P</b>-complete problem (using the definition based on log-space reductions) would imply <b>L</b> = <b>P</b>.
+</p><p>The logic behind this is analogous to the logic that a polynomial-time solution to an <b>NP</b>-complete problem would prove <b>P</b> = <b>NP</b>: if we have a <b>NC</b> reduction from any problem in <b>P</b> to a problem A, and an <b>NC</b> solution for A, then <b>NC</b> = <b>P</b>. Similarly, if we have a log-space reduction from any problem in <b>P</b> to a problem A, and a log-space solution for A, then <b>L</b> = <b>P</b>.
+</p>
+<h2><span class="mw-headline" id="P-complete_problems">P-complete problems</span><span class="mw-editsection"></span></h2>
+<p>The most basic <b>P</b>-complete problem under logspace many-one reductions is following: given a Turing machine <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span>, an input for that machine x, and a number <i>T</i> (written in unary), <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \langle M,x,T\rangle }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">⟨<!-- ⟨ --></mo>
+<mi>M</mi>
+<mo>,</mo>
+<mi>x</mi>
+<mo>,</mo>
+<mi>T</mi>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \langle M,x,T\rangle }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \langle M,x,T\rangle }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a455f268443798bf79043b26ff7e8c839372346f" style="vertical-align: -0.838ex; width:9.285ex; height:2.843ex;"/></span> does that machine halt on that input within the first <i>T</i> steps?  For any x in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle L}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>L</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle L}</annotation>
+</semantics>
+</math></span><img alt="L" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/103168b86f781fe6e9a4a87b8ea1cebe0ad4ede8" style="vertical-align: -0.338ex; width:1.583ex; height:2.176ex;"/></span> in P, output the encoding of the Turing machine which accepts it in polynomial-time, the encoding of x itself, and a number of steps <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T=p(|x|)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+<mo>=</mo>
+<mi>p</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T=p(|x|)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle T=p(|x|)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/70256ff9f86e4ebe868383e16d3dd58da93ea32b" style="vertical-align: -0.838ex; width:10.337ex; height:2.843ex;"/></span> corresponding to the p which is there polynomial-time bound on the operation of the Turing Machine <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M_{L}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>M</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>L</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M_{L}}</annotation>
+</semantics>
+</math></span><img alt="M_L" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a51380c10c3ca778e845d3a7cead1152798f8da8" style="vertical-align: -0.671ex; width:3.606ex; height:2.509ex;"/></span> deciding <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle L}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>L</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle L}</annotation>
+</semantics>
+</math></span><img alt="L" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/103168b86f781fe6e9a4a87b8ea1cebe0ad4ede8" style="vertical-align: -0.338ex; width:1.583ex; height:2.176ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \langle M,x,p(|x|)\rangle }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">⟨<!-- ⟨ --></mo>
+<mi>M</mi>
+<mo>,</mo>
+<mi>x</mi>
+<mo>,</mo>
+<mi>p</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \langle M,x,p(|x|)\rangle }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \langle M,x,p(|x|)\rangle }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/539f77dff399d08c3204f771ebf33dc6818ef240" style="vertical-align: -0.838ex; width:13.251ex; height:2.843ex;"/></span>. The machine M halts on x within <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p(|x|)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>p</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p(|x|)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle p(|x|)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ccbfe5aebe09c72d9a87ef3ee82a425653b999d8" style="vertical-align: -0.838ex; margin-left: -0.089ex; width:5.692ex; height:2.843ex;"/></span> steps if and only if x is in L. Clearly, if we can parallelize a general simulation of a sequential computer (ie. The Turing machine simulation of a Turing machine), then we will be able to parallelize any program that runs on that computer.  If this problem is in <b>NC</b>, then so is every other problem in <b>P</b>. If the number of steps is written in binary, the problem is EXPTIME-complete.
+This problem illustrates a common trick in the theory of <b>P</b>-completeness.  We aren't really interested in whether a problem can be solved quickly on a parallel machine.  We're just interested in whether a parallel machine solves it <i>much more</i> quickly than a sequential machine.  Therefore, we have to reword the problem so that the sequential version is in <b>P</b>.  That is why this problem required <i>T</i> to be written in unary.  If a number <i>T</i> is written as a binary number (a string of <i>n</i> ones and zeros, where <i>n</i> = log <i>T</i>), then the obvious sequential algorithm can take time 2<sup><i>n</i></sup>.  On the other hand, if <i>T</i> is written as a unary number (a string of <i>n</i> ones, where <i>n</i> = <i>T</i>), then it only takes time <i>n</i>.  By writing <i>T</i> in unary rather than binary, we have reduced the obvious sequential algorithm from exponential time to linear time.  That puts the sequential problem in <b>P</b>.  Then, it will be in <b>NC</b> if and only if it is parallelizable.
+</p><p>Many other problems have been proved to be <b>P</b>-complete, and therefore are widely believed to be inherently sequential.  These include the 
+following problems which are <b>P</b>-complete under at least logspace reductions, either as given, or in a decision-problem form:
+</p>
+<ul><li>Circuit Value Problem (CVP) – Given a circuit, the inputs to the circuit, and one gate in the circuit, calculate the output of that gate.</li>
+<li>Restricted Case of CVP – Like CVP, except each gate has two inputs and two outputs (F and Not F), every other layer is just AND gates, the rest are OR gates (or, equivalently, all gates are NAND gates, or all gates are NOR gates), the inputs of a gate come from the immediately preceding layer</li>
+<li>Linear programming – Maximize a linear function subject to linear inequality constraints</li>
+<li>Lexicographically First Depth First Search Ordering – Given a graph with fixed ordered adjacency lists, and nodes <i>u</i> and <i>v</i>, is vertex <i>u</i> visited before vertex <i>v</i> in a depth-first search induced by the order of the adjacency lists?</li>
+<li>Context Free Grammar Membership – Given a context-free grammar and a string, can that string be generated by that grammar?</li>
+<li>Horn-satisfiability – given a set of Horn clauses, is there a variable assignment which satisfies them? This is <b>P'</b>s version of the boolean satisfiability problem.</li>
+<li>Game of Life – Given an initial configuration of Conway's Game of Life, a particular cell, and a time <i>T</i> (in unary), is that cell alive after <i>T</i> steps?</li>
+<li>LZW (algorithm) (1978 paradigm) Data Compression – given strings <i>s</i> and <i>t</i>, will compressing <i>s</i> with an LZ78 method add <i>t</i> to the dictionary? (Note that for LZ77 compression such as gzip, this is much easier, as the problem reduces to "Is <i>t</i> in <i>s</i>?".)</li>
+<li>Type inference for partial types – Given an untyped term from the lambda calculus, determine whether this term has a partial type.</li></ul>
+<p>Most of the languages above are <b>P</b>-complete under even stronger notions of reduction, such as uniform <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle AC^{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+<msup>
+<mi>C</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle AC^{0}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle AC^{0}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7f24e4566dba2f6d902ddf04c539ea8477164a25" style="vertical-align: -0.338ex; width:4.595ex; height:2.676ex;"/></span> many-one reductions, DLOGTIME reductions, or polylogarithmic projections.
+</p><p>In order to prove that a given problem in <b>P</b> is <b>P</b>-complete, one typically tries to reduce a known <b>P</b>-complete problem to the given one.
+</p><p>In 1999, Jin-Yi Cai and D. Sivakumar, building on work by Ogihara, showed that if there exists a sparse language that is <b>P</b>-complete, then <b>L</b> = <b>P</b>.<sup class="reference" id="cite_ref-1">[1]</sup>
+</p><p><b>P</b>-complete problems may be solvable with different time complexities. For instance, the Circuit Value Problem can be solved in linear time by a topological sort. Of course, because the reductions to a <b>P</b>-complete problem may have different time complexities, this fact does not imply that all the problems in <b>P</b> can also be solved in linear time.
+</p>
+<h2><span class="mw-headline" id="Problems_not_known_to_be_P-complete">Problems not known to be P-complete</span><span class="mw-editsection"></span></h2>
+<p>Some <b>NP</b>-problems are not known to be either <b>NP</b>-complete or in <b>P</b>. These problems (e.g. factoring, graph isomorphism, parity games) are suspected to be difficult<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (October 2022)">citation needed</span></i>]</sup>. Similarly there are problems in <b>P</b> that are not known to be either <b>P</b>-complete or <b>NC</b>, but are thought to be difficult to parallelize. Examples include the decision problem forms of finding the greatest common divisor of two numbers, determining what answer the extended Euclidean algorithm would return when given two numbers, and computing the Maximum weight matching of a graph with large integer weights.
+</p>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<ul><li>Greenlaw, Raymond, James Hoover, and Walter Ruzzo. 1995. <i>Limits To Parallel computation; P-Completeness Theory</i>. <link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/>ISBN 0-19-508591-4. — Develops the theory, then catalogs 96 P-Complete problems.</li>
+<li>Satoru Miyano, Shuji Shiraishi, and Takayoshi Shoudai. <i>A List of P-Complete Problems</i>. Kyushu University, RIFIS-TR-CS-17. December 1990.</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2388
+Cached time: 20221220213155
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.160 seconds
+Real time usage: 0.275 seconds
+Preprocessor visited node count: 585/1000000
+Post‐expand include size: 15418/2097152 bytes
+Template argument size: 714/2097152 bytes
+Highest expansion depth: 14/100
+Expensive parser function count: 1/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 8240/5000000 bytes
+Lua time usage: 0.092/10.000 seconds
+Lua memory usage: 2939539/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  188.655      1 -total
+ 35.05%   66.128      1 Template:Citation
+ 31.99%   60.345      1 Template:Citation_needed
+ 22.80%   43.015      1 Template:Fix
+ 22.80%   43.005      1 Template:ComplexityClasses
+ 20.92%   39.460      1 Template:Navbox
+ 17.17%   32.400      2 Template:Category_handler
+  9.34%   17.618      1 Template:Isbn
+  5.17%    9.759      1 Template:Catalog_lookup_link
+  2.96%    5.592      1 Template:Delink
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:54683-0!canonical and timestamp 20221220213155 and revision id 1117913638.
+ -->
+</div></body>
+</html>

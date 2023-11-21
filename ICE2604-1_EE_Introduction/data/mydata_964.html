@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Steiner_tree</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p class="mw-empty-elt">
+</p>
+
+
+<p>In combinatorial mathematics, the <b>Steiner tree problem</b>, or <b>minimum Steiner tree problem</b>, named after Jakob Steiner, is an umbrella term for a class of problems in combinatorial optimization. While Steiner tree problems may be formulated in a number of settings, they all require an optimal interconnect for a given set of objects and a predefined objective function.  One well-known variant, which is often used synonymously with the term Steiner tree problem, is the <b>Steiner tree problem in graphs</b>. Given an undirected graph with non-negative edge weights and a subset of vertices, usually referred to as <b>terminals,</b> the Steiner tree problem in graphs requires a tree of minimum weight that contains all terminals (but may include additional vertices). Further well-known variants are the <i>Euclidean Steiner tree problem</i> and the <i>rectilinear minimum Steiner tree problem</i>.
+</p><p>The Steiner tree problem in graphs can be seen as a generalization of two other famous combinatorial optimization problems: the (non-negative) shortest path problem and the minimum spanning tree problem. If a Steiner tree problem in graphs contains exactly two terminals, it reduces to finding the shortest path. If, on the other hand, all vertices are terminals, the Steiner tree problem in graphs is equivalent to the minimum spanning tree. However, while both the non-negative shortest path and the minimum spanning tree problem are solvable in polynomial time, the decision variant of the Steiner tree problem in graphs is NP-complete (which implies that the optimization variant is NP-hard); in fact, the decision variant was among Karp's original 21 NP-complete problems. The Steiner tree problem in graphs has applications in circuit layout or network design. However, practical applications usually require variations, giving rise to a multitude of Steiner tree problem variants.
+</p><p>Most versions of the Steiner tree problem are NP-hard, but some restricted cases can be solved in polynomial time. Despite the pessimistic worst-case complexity, several Steiner tree problem variants, including the Steiner tree problem in graphs and the rectilinear Steiner tree problem, can be solved efficiently in practice, even for large-scale real-world problems.<sup class="reference" id="cite_ref-1">[1]</sup><sup class="reference" id="cite_ref-FOOTNOTEJuhlWarmeWinterZachariasen2014_2-0">[2]</sup>
+</p>
+
+<h2><span class="mw-headline" id="Euclidean_Steiner_tree">Euclidean Steiner tree</span><span class="mw-editsection"></span></h2>
+
+<p>The original problem was stated in the form that has become known as the <b>Euclidean Steiner tree problem</b> or <b>geometric Steiner tree problem</b>: Given <i>N</i> points in the plane, the goal is to connect them by lines of minimum total length in such a way that any two points may be interconnected by line segments either directly or via other points and line segments. It may be shown that the connecting line segments do not intersect each other except at the endpoints and form a tree, hence the name of the problem.
+</p><p>The problem for <i>N</i> = 3 has long been considered, and quickly extended to the problem of finding a star network with a single hub connecting to all of the <i>N</i> given points, of minimum total length.
+However, although the full Steiner tree problem was formulated in a letter by Gauss, its first serious treatment was in a 1934 paper written in Czech by Vojtěch Jarník and Miloš Kössler<span class="noprint" style="font-size:85%; font-style: normal;"> [cs]</span>. This paper was long overlooked, but it already contains "virtually all general properties of Steiner trees" later attributed to other researchers, including the generalization of the problem from the plane to higher dimensions.<sup class="reference" id="cite_ref-3">[3]</sup>
+</p><p>For the Euclidean Steiner problem, points added to the graph (Steiner points) must have a degree of three, and the three edges incident to such a point must form three 120 degree angles (see Fermat point). It follows that the maximum number of Steiner points that a Steiner tree can have is <i>N</i> − 2, where <i>N</i> is the initial number of given points.
+</p><p>For <i>N</i> = 3 there are two possible cases: if the triangle formed by the given points has all angles which are less than 120 degrees, the solution is given by a Steiner point located at the Fermat point; otherwise the solution is given by the two sides of the triangle which meet on the angle with 120 or more degrees.
+</p><p>For general <i>N</i>, the Euclidean Steiner tree problem is NP-hard, and hence it is not known whether an optimal solution can be found by using a polynomial-time algorithm. However, there is a polynomial-time approximation scheme (PTAS) for Euclidean Steiner trees, i.e., a <i>near-optimal</i> solution can be found in polynomial time.<sup class="reference" id="cite_ref-FOOTNOTECrescenziKannHalldórssonKarpinski2000_4-0">[4]</sup> It is not known whether the Euclidean Steiner tree problem is NP-complete, since membership to the complexity class NP is not known.
+</p>
+<h2><span class="mw-headline" id="Rectilinear_Steiner_tree">Rectilinear Steiner tree</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p>The rectilinear Steiner tree problem is a variant of the geometric Steiner tree problem in the plane, in which the Euclidean distance is replaced with the rectilinear distance. The problem arises in the physical design of electronic design automation. In VLSI circuits, wire routing is carried out by wires that are often constrained by design rules to run only in vertical and horizontal directions, so the rectilinear Steiner tree problem can be used to model the routing of nets with more than two terminals.<sup class="reference" id="cite_ref-FOOTNOTESherwani1993228_5-0">[5]</sup>
+</p>
+<h2><span class="mw-headline" id="Steiner_tree_in_graphs_and_variants">Steiner tree in graphs and variants</span><span class="mw-editsection"></span></h2>
+<p>Steiner trees have been extensively studied in the context of weighted graphs. The prototype is, arguably, the <b>Steiner tree problem</b> <b>in graphs</b>. Let <i>G</i> = (<i>V</i>, <i>E</i>) be an undirected graph with non-negative edge weights c and let <i>S</i> ⊆ <i>V</i> be a subset of vertices, called <b>terminals</b>. A <b>Steiner tree</b> is a tree in <i>G</i> that spans <i>S</i>. There are two versions of the problem: in the optimization problem associated with Steiner trees, the task is to find a minimum-weight Steiner tree; in the decision problem the edge weights are integers and the task is to determine whether a Steiner tree exists whose total weight does not exceed a predefined natural number <i>k</i>. The decision problem is one of Karp's 21 NP-complete problems; hence the optimization problem is NP-hard. Steiner tree problems in graphs are applied to various problems in research and industry,<sup class="reference" id="cite_ref-6">[6]</sup> including multicast routing<sup class="reference" id="cite_ref-7">[7]</sup> and bioinformatics.<sup class="reference" id="cite_ref-8">[8]</sup>
+</p><p>A special case of this problem is when <i>G</i> is a complete graph, each vertex <i>v</i> ∈ <i>V</i> corresponds to a point in a metric space, and the edge weights <i>w</i>(<i>e</i>) for each <i>e</i> ∈ <i>E</i> correspond to distances in the space. Put otherwise, the edge weights satisfy the triangle inequality. This variant is known as the <b>metric Steiner tree problem</b>. Given an instance of the (non-metric) Steiner tree problem, we can transform it in polynomial time into an equivalent instance of the metric Steiner tree problem; the transformation preserves the approximation factor.<sup class="reference" id="cite_ref-FOOTNOTEVazirani200327–28_9-0">[9]</sup>
+</p><p>While the Euclidean version admits a PTAS, it is known that the metric Steiner tree problem is APX-complete, i.e., unless P = NP, it is impossible to achieve approximation ratios that are arbitrarily close to 1 in polynomial time. There is a polynomial-time algorithm that approximates the minimum Steiner tree to within a factor of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \ln(4)+\varepsilon \approx 1.386}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>ln</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mn>4</mn>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>ε<!-- ε --></mi>
+<mo>≈<!-- ≈ --></mo>
+<mn>1.386</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \ln(4)+\varepsilon \approx 1.386}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \ln(4)+\varepsilon \approx 1.386}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a707490b210490b5892339dc7eabef084dbfe578" style="vertical-align: -0.838ex; width:17.23ex; height:2.843ex;"/></span>;<sup class="reference" id="cite_ref-FOOTNOTEByrkaGrandoniRothvoßSanita2010_10-0">[10]</sup>
+however, approximating within a factor <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 96/95\approx 1.0105}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>96</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>95</mn>
+<mo>≈<!-- ≈ --></mo>
+<mn>1.0105</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 96/95\approx 1.0105}</annotation>
+</semantics>
+</math></span><img alt="96/95\approx 1.0105" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8d0d13bac72ceaf4d79bc95d1f14455ea2bfb216" style="vertical-align: -0.838ex; width:15.37ex; height:2.843ex;"/></span> is NP-hard.<sup class="reference" id="cite_ref-FOOTNOTEChlebíkChlebíková2008_11-0">[11]</sup> For the restricted case of Steiner Tree problem with distances 1 and 2, a 1.25-approximation algorithm is known.<sup class="reference" id="cite_ref-FOOTNOTEBermanKarpinskiZelikovsky2009_12-0">[12]</sup> Karpinski and Alexander Zelikovsky constructed PTAS for the dense instances of Steiner Tree problems.<sup class="reference" id="cite_ref-FOOTNOTEKarpinskiZelikovsky1998_13-0">[13]</sup>
+</p><p>In a special case of the graph problem, the Steiner tree problem for quasi-bipartite graphs, <i>S</i> is required to include at least one endpoint of every edge in <i>G</i>.
+</p><p>The Steiner tree problem has also been investigated in higher dimensions and on various surfaces. Algorithms to find the Steiner minimal tree have been found on the sphere, torus, projective plane, wide and narrow cones, and others.<sup class="reference" id="cite_ref-FOOTNOTESmithWinter1995361_14-0">[14]</sup>
+</p><p>Other generalizations of the Steiner tree problem are the <b><i>k</i>-edge-connected Steiner network problem</b> and the <b><i>k</i>-vertex-connected Steiner network problem</b>, where the goal is to find a <i>k</i>-edge-connected graph or a <i>k</i>-vertex-connected graph rather than any connected graph.
+</p><p>The Steiner problem has also been stated in the general setting of metric spaces and for possibly infinitely many points.<sup class="reference" id="cite_ref-FOOTNOTEPaoliniStepanov2012_15-0">[15]</sup>
+</p>
+<h2><span class="mw-headline" id="Approximating_the_Steiner_tree">Approximating the Steiner tree</span><span class="mw-editsection"></span></h2>
+<p>The general graph Steiner tree problem can be approximated by computing the minimum spanning tree of the subgraph of the metric closure of the graph induced by the terminal vertices, as first published in 1981 by Kou et al.<sup class="reference" id="cite_ref-FOOTNOTEKouMarkowskyBerman1981_16-0">[16]</sup> The metric closure of a graph <i>G</i> is the complete graph in which each edge is weighted by the shortest path distance between the nodes in <i>G</i>. This algorithm produces a tree whose weight is within a 2 − 2/<i>t</i> factor of the weight of the optimal Steiner tree where <i>t</i> is the number of leaves in the optimal Steiner tree; this can be proven by considering a traveling salesperson tour on the optimal Steiner tree. This approximate solution is computable in O(|S| |V|²) polynomial time by first solving the all-pairs shortest paths problem to compute the metric closure, then by solving the minimum spanning tree problem.
+</p><p>Another popular algorithm to approximate the Steiner tree in graphs was published by Takahashi and Matsuyama in 1980.<sup class="reference" id="cite_ref-FOOTNOTETakahashiMatsuyama1980_17-0">[17]</sup> Their solution incrementally builds up the Steiner tree by starting from an arbitrary vertex, and repeatedly adding the shortest path from the tree to the nearest vertex in <i>S</i> that has not yet been added. This algorithm also has O(|<i>S</i>| |<i>V</i>|²) running time, and produces a tree whose weight is within 2 − 2/|<i>S</i>| of optimal.
+</p><p>In 1986, Wu et al.<sup class="reference" id="cite_ref-FOOTNOTEWuWidmayerWong1986_18-0">[18]</sup> improved dramatically on the running time by avoiding precomputation of the all-pairs shortest paths. Instead, they take a similar approach to Kruskal's algorithm for computing a minimum spanning tree, by starting from a forest of |<i>S</i>| disjoint trees, and "growing" them simultaneously using a breadth-first search resembling Dijkstra's algorithm but starting from multiple initial vertices. When the search encounters a vertex that does not belong to the current tree, the two trees are merged into one. This process is repeated until only one tree remains. By using a Heap (data structure) to implement the priority queue and a disjoint-set data structure to track to which tree each visited vertex belongs, this algorithm achieves O(|<i>E</i>| log |<i>V</i>|) running time, although it does not improve on the 2 − 2/<i>t</i> cost ratio from Kou et al..
+</p><p>A series of papers provided approximation algorithms for the minimum Steiner tree problem with approximation ratios that improved upon the 2 − 2/<i>t</i> ratio. This sequence culminated with Robins and Zelikovsky's algorithm in 2000 which improved the ratio to 1.55 by iteratively improving upon the minimum cost terminal spanning tree. More recently, however, Jaroslaw Byrka et al. proved an <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \ln(4)+\varepsilon \leq 1.39}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>ln</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mn>4</mn>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>ε<!-- ε --></mi>
+<mo>≤<!-- ≤ --></mo>
+<mn>1.39</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \ln(4)+\varepsilon \leq 1.39}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \ln(4)+\varepsilon \leq 1.39}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8c24912143c50ce5492ca929ffb3e5c406e2df78" style="vertical-align: -0.838ex; width:16.068ex; height:2.843ex;"/></span> approximation using a linear programming relaxation and a technique called iterative, randomized rounding.<sup class="reference" id="cite_ref-FOOTNOTEByrkaGrandoniRothvoßSanita2010_10-1">[10]</sup>
+</p>
+<h2><span class="mw-headline" id="Parameterized_complexity_of_Steiner_tree">Parameterized complexity of Steiner tree</span><span class="mw-editsection"></span></h2>
+<p>The general graph Steiner tree problem is known to be fixed-parameter tractable, with the number of terminals as a parameter, by the Dreyfus-Wagner algorithm.<sup class="reference" id="cite_ref-FOOTNOTEDreyfusWagner1971_19-0">[19]</sup><sup class="reference" id="cite_ref-FOOTNOTELevin1971_20-0">[20]</sup> The running time of the Dreyfus-Wagner algorithm is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 3^{|S|}{\text{poly}}(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>3</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>poly</mtext>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 3^{|S|}{\text{poly}}(n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 3^{|S|}{\text{poly}}(n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3f5e47d8d4c8581ff5ea999f0ebb754cf705c550" style="vertical-align: -0.838ex; width:10.903ex; height:3.343ex;"/></span>, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span> is the number of vertices of the graph and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>S</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S}</annotation>
+</semantics>
+</math></span><img alt="S" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4611d85173cd3b508e67077d4a1252c9c05abca2" style="vertical-align: -0.338ex; width:1.499ex; height:2.176ex;"/></span> is the set of terminals. Faster algorithms exist, running in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c^{|S|}{\text{poly}}(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>poly</mtext>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c^{|S|}{\text{poly}}(n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle c^{|S|}{\text{poly}}(n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/86c57ab64c74eb3c35df9a632ac0288cebfbe48a" style="vertical-align: -0.838ex; width:10.747ex; height:3.343ex;"/></span> time for any <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c&gt;2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+<mo>&gt;</mo>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c&gt;2}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle c&gt;2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/23589bfa9e6bcefa64f663a435c2338fee9eca15" style="vertical-align: -0.338ex; width:5.268ex; height:2.176ex;"/></span> or, in the case of small weights, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{|S|}{\text{poly}}(n)W}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>poly</mtext>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mi>W</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{|S|}{\text{poly}}(n)W}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 2^{|S|}{\text{poly}}(n)W}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0f5d0c937923932abb05612c658a2cf0e40dbc5a" style="vertical-align: -0.838ex; width:13.338ex; height:3.343ex;"/></span> time, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle W}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>W</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle W}</annotation>
+</semantics>
+</math></span><img alt="W" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/54a9c4c547f4d6111f81946cad242b18298d70b7" style="vertical-align: -0.338ex; width:2.435ex; height:2.176ex;"/></span> is the maximum weight of any edge.<sup class="reference" id="cite_ref-FOOTNOTEFuchsKernMölleRichter2007_21-0">[21]</sup><sup class="reference" id="cite_ref-FOOTNOTEBjörklundHusfeldtKaskiKoivisto2007_22-0">[22]</sup> A disadvantage of the aforementioned algorithms is that they use exponential space; there exist polynomial-space algorithms running in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{|S|}{\text{poly}}(n)W}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>poly</mtext>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mi>W</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{|S|}{\text{poly}}(n)W}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 2^{|S|}{\text{poly}}(n)W}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0f5d0c937923932abb05612c658a2cf0e40dbc5a" style="vertical-align: -0.838ex; width:13.338ex; height:3.343ex;"/></span> time and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (7.97)^{|S|}{\text{poly}}(n)\log W}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mn>7.97</mn>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>poly</mtext>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>W</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (7.97)^{|S|}{\text{poly}}(n)\log W}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle (7.97)^{|S|}{\text{poly}}(n)\log W}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1f0b3e624ff4ae121915c7ce0d3602f357d5e938" style="vertical-align: -0.838ex; width:21.865ex; height:3.343ex;"/></span> time.<sup class="reference" id="cite_ref-FOOTNOTELokshtanovNederlof2010_23-0">[23]</sup><sup class="reference" id="cite_ref-FOOTNOTEFominKaskiLokshtanovPanolan2015_24-0">[24]</sup>
+</p><p>It is known that the general graph Steiner tree problem does not have a parameterized algorithm running in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{\epsilon t}{\text{poly}}(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>ϵ<!-- ϵ --></mi>
+<mi>t</mi>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>poly</mtext>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{\epsilon t}{\text{poly}}(n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 2^{\epsilon t}{\text{poly}}(n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f5a3f5f4b85d99a0f6895a3e688772bfae7f5e11" style="vertical-align: -0.838ex; width:10.189ex; height:3.009ex;"/></span> time for any <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \epsilon &lt;1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>ϵ<!-- ϵ --></mi>
+<mo>&lt;</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \epsilon &lt;1}</annotation>
+</semantics>
+</math></span><img alt="\epsilon &lt; 1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7417f4c8125c318b0f6d8cb3588901b846b3b095" style="vertical-align: -0.338ex; width:5.205ex; height:2.176ex;"/></span>, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle t}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>t</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle t}</annotation>
+</semantics>
+</math></span><img alt="t" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/65658b7b223af9e1acc877d848888ecdb4466560" style="vertical-align: -0.338ex; width:0.84ex; height:2.009ex;"/></span> is the number of edges of the optimal Steiner tree, unless the Set cover problem has an algorithm running in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{\epsilon n}{\text{poly}}(m)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>ϵ<!-- ϵ --></mi>
+<mi>n</mi>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>poly</mtext>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>m</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{\epsilon n}{\text{poly}}(m)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 2^{\epsilon n}{\text{poly}}(m)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/24ae870fe541238a6c6a96815bf5cfad45fb2424" style="vertical-align: -0.838ex; width:11.228ex; height:2.843ex;"/></span> time for some <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \epsilon &lt;1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>ϵ<!-- ϵ --></mi>
+<mo>&lt;</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \epsilon &lt;1}</annotation>
+</semantics>
+</math></span><img alt="\epsilon &lt; 1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7417f4c8125c318b0f6d8cb3588901b846b3b095" style="vertical-align: -0.338ex; width:5.205ex; height:2.176ex;"/></span>, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle m}</annotation>
+</semantics>
+</math></span><img alt="m" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0a07d98bb302f3856cbabc47b2b9016692e3f7bc" style="vertical-align: -0.338ex; width:2.04ex; height:1.676ex;"/></span> are the number of elements and the number of sets, respectively, of the instance of the set cover problem.<sup class="reference" id="cite_ref-FOOTNOTECyganDellLokshtanovMarx2016_25-0">[25]</sup>
+Furthermore, it is known that the problem does not admit a polynomial kernel unless <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\text{coNP}}\subseteq {\text{NP/poly}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>coNP</mtext>
+</mrow>
+<mo>⊆<!-- ⊆ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>NP/poly</mtext>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\text{coNP}}\subseteq {\text{NP/poly}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\text{coNP}}\subseteq {\text{NP/poly}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/30711c7efa49771cb98168011a0cdf0e4c57b41b" style="vertical-align: -0.838ex; width:17.437ex; height:2.843ex;"/></span>, even parameterized by the number of edges of the optimal Steiner tree and if all edge weights are 1.<sup class="reference" id="cite_ref-FOOTNOTEDomLokshtanovSaurabh2014_26-0">[26]</sup>
+</p>
+<h2><span class="mw-headline" id="Steiner_ratio">Steiner ratio</span><span class="mw-editsection"></span></h2>
+<p>The <b>Steiner ratio</b> is the supremum of the ratio of the total length of the minimum spanning tree to the minimum Steiner tree for a set of points in the Euclidean plane.<sup class="reference" id="cite_ref-FOOTNOTEGanley2004_27-0">[27]</sup>
+</p><p>In the Euclidean Steiner tree problem, the Steiner ratio is conjectured to be <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\tfrac {2}{\sqrt {3}}}\approx 1.1547}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>2</mn>
+<msqrt>
+<mn>3</mn>
+</msqrt>
+</mfrac>
+</mstyle>
+</mrow>
+<mo>≈<!-- ≈ --></mo>
+<mn>1.1547</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\tfrac {2}{\sqrt {3}}}\approx 1.1547}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\tfrac {2}{\sqrt {3}}}\approx 1.1547}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/53f10a3ec0e09cbde59b752a21304f5d59688038" style="vertical-align: -1.838ex; width:12.585ex; height:4.176ex;"/></span>, the ratio that is achieved by three points in an equilateral triangle with a spanning tree that uses two sides of the triangle and a Steiner tree that connects the points through the centroid of the triangle. Despite earlier claims of a proof,<sup class="reference" id="cite_ref-28">[28]</sup> the conjecture is still open.<sup class="reference" id="cite_ref-FOOTNOTEIvanovTuzhilin2012_29-0">[29]</sup> The best widely accepted upper bound for the problem is 1.2134, by Chung &amp; Graham (1985).
+</p><p>For the rectilinear Steiner tree problem, the Steiner ratio is exactly <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\tfrac {3}{2}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>3</mn>
+<mn>2</mn>
+</mfrac>
+</mstyle>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\tfrac {3}{2}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\tfrac {3}{2}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/631d66184353d37ebfe470a07a6a61487da227ac" style="vertical-align: -1.171ex; width:1.658ex; height:3.509ex;"/></span>, the ratio that is achieved by four points in a square with a spanning tree that uses three sides of the square and a Steiner tree that connects the points through the center of the square.<sup class="reference" id="cite_ref-FOOTNOTEHwang1976_30-0">[30]</sup> More precisely, for <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle L_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>L</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle L_{1}}</annotation>
+</semantics>
+</math></span><img alt="L_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0e79dc1b001f8b923df475ed14de023cbc456013" style="vertical-align: -0.671ex; width:2.637ex; height:2.509ex;"/></span> distance the square should be tilted at <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 45^{\circ }}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>45</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∘<!-- ∘ --></mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 45^{\circ }}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 45^{\circ }}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c28223ddedeb94a84bb15474cc64b5ce436cbe50" style="vertical-align: -0.338ex; width:3.379ex; height:2.343ex;"/></span> with respect to the coordinate axes, while for <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle L_{\infty }}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>L</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle L_{\infty }}</annotation>
+</semantics>
+</math></span><img alt="L_{\infty }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a5ecf05fae003abbd91bc8c749d5a8a807d6efd8" style="vertical-align: -0.671ex; width:3.458ex; height:2.509ex;"/></span> distance the square should be axis-aligned.
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Opaque forest problem</li>
+<li>Travelling salesman problem</li></ul>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1054258005">.mw-parser-output .refbegin{font-size:90%;margin-bottom:0.5em}.mw-parser-output .refbegin-hanging-indents>ul{margin-left:0}.mw-parser-output .refbegin-hanging-indents>ul>li{margin-left:0;padding-left:3.2em;text-indent:-3.2em}.mw-parser-output .refbegin-hanging-indents ul,.mw-parser-output .refbegin-hanging-indents ul li{list-style:none}@media(max-width:720px){.mw-parser-output .refbegin-hanging-indents>ul>li{padding-left:1.6em;text-indent:-1.6em}}.mw-parser-output .refbegin-columns{margin-top:0.3em}.mw-parser-output .refbegin-columns ul{margin-top:0}.mw-parser-output .refbegin-columns li{page-break-inside:avoid;break-inside:avoid-column}</style>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097025294">.mw-parser-output .side-box{margin:4px 0;box-sizing:border-box;border:1px solid #aaa;font-size:88%;line-height:1.25em;background-color:#f9f9f9}.mw-parser-output .side-box-abovebelow,.mw-parser-output .side-box-text{padding:0.25em 0.9em}.mw-parser-output .side-box-image{padding:2px 0 2px 0.9em;text-align:center}.mw-parser-output .side-box-imageright{padding:2px 0.9em 2px 0;text-align:center}@media(min-width:500px){.mw-parser-output .side-box-flex{display:flex;align-items:center}.mw-parser-output .side-box-text{flex:1}}@media(min-width:720px){.mw-parser-output .side-box{width:238px}.mw-parser-output .side-box-right{clear:right;float:right;margin-left:1em}.mw-parser-output .side-box-left{margin-right:1em}}</style>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFHazewinkel2001">Hazewinkel, M. (2001) [1994], "Steiner tree problem", <i>Encyclopedia of Mathematics</i>, EMS Press</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Steiner+tree+problem&amp;rft.btitle=Encyclopedia+of+Mathematics&amp;rft.pub=EMS+Press&amp;rft.date=2001&amp;rft.aulast=Hazewinkel&amp;rft.aufirst=M.&amp;rft_id=https%3A%2F%2Fwww.encyclopediaofmath.org%2Findex.php%3Ftitle%3DSteiner_tree_problem&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASteiner+tree+problem"></span></li>
+<li>M. Hauptmann, M. Karpinski (2013): A Compendium on Steiner Tree Problems</li>
+<li>GeoSteiner (Euclidean and rectilinear Steiner tree solver; Source available, for non commercial use)</li>
+<li>SCIP-Jack (Solver for the Steiner tree problem in graphs and 14 variants, e.g., prize-collecting Steiner tree problem; Source available, free for academic use)</li>
+<li>https://archive.org/details/RonaldLG1988 (Movie: Ronald L Graham: The Shortest Network Problem (1988)</li>
+<li>Fortran subroutine for finding the Steiner vertex of a triangle (i.e., Fermat point), its distances from the triangle vertices, and the relative vertex weights.</li>
+<li>Phylomurka (Solver for small-scale Steiner tree problems in graphs)</li>
+<li>https://www.youtube.com/watch?v=PI6rAOWu-Og (Movie: solving the Steiner tree problem with water and soap)</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFNoormohammadpourRaghavendraRaoKandula2017">Noormohammadpour, Mohammad; Raghavendra, Cauligi S.; Rao, Sriram; Kandula, Srikanth (2017), "Using Steiner Trees to Minimize Average Completion Times of Bulk Data Transfers", <i>DCCast: Efficient Point to Multipoint Transfers Across Datacenters</i>, USENIX Association, arXiv:<span class="cs1-lock-free" title="Freely accessible">1707.02096</span></cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Using+Steiner+Trees+to+Minimize+Average+Completion+Times+of+Bulk+Data+Transfers&amp;rft.btitle=DCCast%3A+Efficient+Point+to+Multipoint+Transfers+Across+Datacenters&amp;rft.pub=USENIX+Association&amp;rft.date=2017&amp;rft_id=info%3Aarxiv%2F1707.02096&amp;rft.aulast=Noormohammadpour&amp;rft.aufirst=Mohammad&amp;rft.au=Raghavendra%2C+Cauligi+S.&amp;rft.au=Rao%2C+Sriram&amp;rft.au=Kandula%2C+Srikanth&amp;rft_id=https%3A%2F%2Fwww.researchgate.net%2Fpublication%2F316921061&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASteiner+tree+problem"></span></li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw1369
+Cached time: 20221223231320
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.639 seconds
+Real time usage: 0.784 seconds
+Preprocessor visited node count: 4472/1000000
+Post‐expand include size: 100821/2097152 bytes
+Template argument size: 3488/2097152 bytes
+Highest expansion depth: 13/100
+Expensive parser function count: 3/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 100177/5000000 bytes
+Lua time usage: 0.402/10.000 seconds
+Lua memory usage: 8804845/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  615.930      1 -total
+ 22.40%  137.971     25 Template:Sfnp
+ 17.06%  105.055      1 Template:Reflist
+ 14.00%   86.225     17 Template:Cite_journal
+ 10.35%   63.751      2 Template:Cite_web
+  9.28%   57.146      1 Template:Short_description
+  8.55%   52.652     11 Template:Cite_book
+  7.95%   48.969      9 Template:Cite_conference
+  5.50%   33.892      1 Template:Commons_category
+  5.21%   32.080      1 Template:Sister_project
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:498304-0!canonical and timestamp 20221223231319 and revision id 1089623996.
+ -->
+</div></body>
+</html>

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>8_queens</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p class="mw-empty-elt">
+</p>
+
+<p>The <b>eight queens puzzle</b> is the problem of placing eight chess queens on an 8×8 chessboard so that no two queens threaten each other; thus, a solution requires that no two queens share the same row, column, or diagonal.  There are 92 solutions.  The problem was first posed in the mid-19th century.  In the modern era, it is often used as an example problem for various computer programming techniques.
+</p><p>The eight queens puzzle is a special case of the more general <b><i>n</i> queens problem</b> of placing <i>n</i> non-attacking queens on an <i>n</i>×<i>n</i> chessboard.  Solutions exist for all natural numbers <i>n</i> with the exception of <i>n</i> = 2 and <i>n</i> = 3.  Although the exact number of solutions is only known for <i>n</i> ≤ 27, the asymptotic growth rate of the number of solutions is (0.143 <i>n</i>)<sup><i>n</i></sup>.
+</p>
+
+<h2><span class="mw-headline" id="History">History</span><span class="mw-editsection"></span></h2>
+<p>Chess composer Max Bezzel published the eight queens puzzle in 1848. Franz Nauck published the first solutions in 1850.<sup class="reference" id="cite_ref-rouse_ball_1960_1-0">[1]</sup> Nauck also extended the puzzle to the <i>n</i> queens problem, with <i>n</i> queens on a chessboard of <i>n</i>×<i>n</i> squares.
+</p><p>Since then, many mathematicians, including Carl Friedrich Gauss, have worked on both the eight queens puzzle and its generalized <i>n</i>-queens version. In 1874, S. Gunther proposed a method using determinants to find solutions.<sup class="reference" id="cite_ref-rouse_ball_1960_1-1">[1]</sup> J.W.L. Glaisher refined Gunther's approach.
+</p><p>In 1972, Edsger Dijkstra used this problem to illustrate the power of what he called structured programming. He published a highly detailed description of a depth-first backtracking algorithm.<sup class="reference" id="cite_ref-2">[2]</sup>
+</p>
+<h2><span id="Constructing_and_counting_solutions_when_n_.3D_8"></span><span class="mw-headline" id="Constructing_and_counting_solutions_when_n_=_8">Constructing and counting solutions when <i>n</i> = 8</span><span class="mw-editsection"></span></h2>
+<p>The problem of finding all solutions to the 8-queens problem can be quite computationally expensive, as there are 4,426,165,368 possible arrangements of eight queens on an 8×8 board,<sup class="reference" id="cite_ref-3">[a]</sup> but only 92 solutions. It is possible to use shortcuts that reduce computational requirements or rules of thumb that avoids brute-force computational techniques. For example, by applying a simple rule that chooses one queen from each column, it is possible to reduce the number of possibilities to 16,777,216 (that is, 8<sup>8</sup>) possible combinations. Generating permutations further reduces the possibilities to just 40,320 (that is, 8!), which can then be checked for diagonal attacks.
+</p><p>The eight queens puzzle has 92 distinct solutions. If solutions that differ only by the symmetry operations of rotation and reflection of the board are counted as one, the puzzle has 12 solutions.  These are called <i>fundamental</i> solutions; representatives of each are shown below.
+</p><p>A fundamental solution usually has eight variants (including its original form) obtained by rotating 90, 180, or 270° and then reflecting each of the four rotational variants in a mirror in a fixed position. However, one of the 12 fundamental solutions (solution 12 below) is identical to its own 180° rotation, so has only four variants (itself and its reflection, its 90° rotation and the reflection of that).<sup class="reference" id="cite_ref-4">[b]</sup> Such solutions have only two variants (itself and its reflection).  Thus, the total number of distinct solutions is 11×8 + 1×4 = 92.
+</p><p>All fundamental solutions are presented below:
+</p>
+
+
+
+<p>Solution 10 has the additional property that no three queens are in a straight line.  Solutions 1 and 8 have a 4-queen line.
+</p>
+<h2><span class="mw-headline" id="Existence_of_solutions">Existence of solutions</span><span class="mw-editsection"></span></h2>
+<p>Brute-force algorithms to count the number of solutions are computationally manageable for <span class="texhtml"><i>n</i> = 8</span>, but would be intractable for problems of <span class="texhtml"><i>n</i> ≥ 20</span>, as 20! = 2.433 × 10<sup>18</sup>.  If the goal is to find a single solution, one can show solutions exist for all <i>n</i> ≥ 4 with no search whatsoever.<sup class="reference" id="cite_ref-bernhardsson_5-0">[3]</sup><sup class="reference" id="cite_ref-6">[4]</sup>
+These solutions exhibit stair-stepped patterns, as in the following examples for <i>n</i> = 8, 9 and 10:
+</p>
+
+<p>The examples above can be obtained with the following formulas.<sup class="reference" id="cite_ref-bernhardsson_5-1">[3]</sup> Let (<i>i</i>, <i>j</i>) be the square in column <i>i</i> and row <i>j</i> on the <i>n</i> × <i>n</i> chessboard, <i>k</i> an integer.
+</p><p>One approach<sup class="reference" id="cite_ref-bernhardsson_5-2">[3]</sup> is
+</p>
+<ol><li>If the remainder from dividing <i>n</i> by 6 is not 2 or 3 then the list is simply all even numbers followed by all odd numbers not greater than <i>n</i>.</li>
+<li>Otherwise, write separate lists of even and odd numbers (2, 4, 6, 8 – 1, 3, 5, 7).</li>
+<li>If the remainder is 2, swap 1 and 3 in odd list and move 5 to the end (<b>3, 1</b>, 7, <b>5</b>).</li>
+<li>If the remainder is 3, move 2 to the end of even list and 1,3 to the end of odd list (4, 6, 8, <b>2</b> – 5, 7, <b>1, 3</b>).</li>
+<li>Append odd list to the even list and place queens in the rows given by these numbers, from left to right (a2, b4, c6, d8, e3, f1, g7, h5).</li></ol>
+<p>For <span class="texhtml"><i>n</i> = 8</span> this results in fundamental solution 1 above. A few more examples follow.
+</p>
+<ul><li>14 queens (remainder 2): 2, 4, 6, 8, 10, 12, 14, 3, 1, 7, 9, 11, 13, 5.</li>
+<li>15 queens (remainder 3): 4, 6, 8, 10, 12, 14, 2, 5, 7, 9, 11, 13, 15, 1, 3.</li>
+<li>20 queens (remainder 2): 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 3, 1, 7, 9, 11, 13, 15, 17, 19, 5.</li></ul>
+<h2><span class="mw-headline" id="Counting_solutions_for_other_sizes_n">Counting solutions for other sizes <i>n</i></span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Exact_enumeration">Exact enumeration</span><span class="mw-editsection"></span></h3>
+<p>There is no known formula for the exact number of solutions for placing <i>n</i> queens on an <span class="texhtml"><i>n</i> × <i>n</i></span> board i.e. the number of independent sets of size <i>n</i> in an <span class="texhtml"><i>n</i> × <i>n</i></span> queen's graph. The 27×27 board is the highest-order board that has been completely enumerated.<sup class="reference" id="cite_ref-7">[5]</sup>  The following tables give the number of solutions to the <i>n</i> queens problem, both fundamental (sequence <span class="nowrap external">A002562</span> in the OEIS) and all (sequence <span class="nowrap external">A000170</span> in the OEIS), for all known cases.
+</p>
+<table class="wikitable" style="text-align:right;">
+<tbody><tr>
+<th style="padding: 0em .5em;"><i>n</i>
+</th>
+<td>fundamental
+</td>
+<td>all
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">1
+</th>
+<td>1
+</td>
+<td>1
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">2
+</th>
+<td>0
+</td>
+<td>0
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">3
+</th>
+<td>0
+</td>
+<td>0
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">4
+</th>
+<td>1
+</td>
+<td>2
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">5
+</th>
+<td>2
+</td>
+<td>10
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">6
+</th>
+<td>1
+</td>
+<td>4
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">7
+</th>
+<td>6
+</td>
+<td>40
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">8
+</th>
+<td>12
+</td>
+<td>92
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">9
+</th>
+<td>46
+</td>
+<td>352
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">10
+</th>
+<td>92
+</td>
+<td>724
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">11
+</th>
+<td>341
+</td>
+<td>2,680
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">12
+</th>
+<td>1,787
+</td>
+<td>14,200
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">13
+</th>
+<td>9,233
+</td>
+<td>73,712
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">14
+</th>
+<td>45,752
+</td>
+<td>365,596
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">15
+</th>
+<td>285,053
+</td>
+<td>2,279,184
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">16
+</th>
+<td>1,846,955
+</td>
+<td>14,772,512
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">17
+</th>
+<td>11,977,939
+</td>
+<td>95,815,104
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">18
+</th>
+<td>83,263,591
+</td>
+<td>666,090,624
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">19
+</th>
+<td>621,012,754
+</td>
+<td>4,968,057,848
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">20
+</th>
+<td>4,878,666,808
+</td>
+<td>39,029,188,884
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">21
+</th>
+<td>39,333,324,973
+</td>
+<td>314,666,222,712
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">22
+</th>
+<td>336,376,244,042
+</td>
+<td>2,691,008,701,644
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">23
+</th>
+<td>3,029,242,658,210
+</td>
+<td>24,233,937,684,440
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">24
+</th>
+<td>28,439,272,956,934
+</td>
+<td>227,514,171,973,736
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">25
+</th>
+<td>275,986,683,743,434
+</td>
+<td>2,207,893,435,808,352
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">26
+</th>
+<td>2,789,712,466,510,289
+</td>
+<td>22,317,699,616,364,044
+</td></tr>
+<tr>
+<th style="padding: 0em .5em;">27
+</th>
+<td>29,363,495,934,315,694
+</td>
+<td>234,907,967,154,122,528
+</td></tr></tbody></table>
+<h3><span class="mw-headline" id="Asymptotic_enumeration">Asymptotic enumeration</span><span class="mw-editsection"></span></h3>
+<p>In 2021, Michael Simkin proved that for large numbers <i>n</i>, the number of solutions of the <i>n</i> queens problem is approximately <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (0.143n)^{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mn>0.143</mn>
+<mi>n</mi>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (0.143n)^{n}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle (0.143n)^{n}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a74093778dfbf2c99a622c9065ba22699b259173" style="vertical-align: -0.838ex; width:9.719ex; height:2.843ex;"/></span>.<sup class="reference" id="cite_ref-8">[6]</sup>  More precisely, the number <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {Q}}(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">Q</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {Q}}(n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\mathcal {Q}}(n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0d2e354ef4158e91c6df114776e4c295fdc1540c" style="vertical-align: -0.838ex; width:5.103ex; height:2.843ex;"/></span> of solutions has asymptotic growth
+</p>
+where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \alpha }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>α<!-- α --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \alpha }</annotation>
+</semantics>
+</math></span><img alt="\alpha " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b79333175c8b3f0840bfb4ec41b8072c83ea88d3" style="vertical-align: -0.338ex; width:1.488ex; height:1.676ex;"/></span> is a constant that lies between 1.939 and 1.945.<sup class="reference" id="cite_ref-9">[7]</sup> (Here <i>o</i>(1) represents little o notation.)
+<p>If one instead considers a toroidal chessboard (where diagonals "wrap around" from the top edge to the bottom and from the left edge to the right), it is only possible to place <i>n</i> queens on an <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\times n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>×<!-- × --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\times n}</annotation>
+</semantics>
+</math></span><img alt="n\times n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/59d2b4cb72e304526cf5b5887147729ea259da78" style="vertical-align: -0.338ex; width:5.63ex; height:1.676ex;"/></span> board if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\equiv 1,5\mod 6.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>≡<!-- ≡ --></mo>
+<mn>1</mn>
+<mo>,</mo>
+<mn>5</mn>
+<mspace width="1em"></mspace>
+<mi>mod</mi>
+<mspace width="thinmathspace"></mspace>
+<mspace width="thinmathspace"></mspace>
+<mn>6.</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\equiv 1,5\mod 6.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n\equiv 1,5\mod 6.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/44d83b19d55aa25566ec85d2818a26e09ddc7665" style="vertical-align: -0.671ex; width:17.923ex; height:2.509ex;"/></span>  In this case, the asymptotic number of solutions is<sup class="reference" id="cite_ref-10">[8]</sup><sup class="reference" id="cite_ref-11">[9]</sup>
+</p>
+<h2><span class="mw-headline" id="Related_problems">Related problems</span><span class="mw-editsection"></span></h2>
+<dl><dt>Higher dimensions</dt></dl>
+<p>Find the number of non-attacking queens that can be placed in a <i>d</i>-dimensional chess <dfn id=""><span class="glossary-link" style="color:inherit;" title="See entry at: Glossary of board games § gamespace">space</span></dfn> of size <i>n</i>.  More than <i>n</i> queens can be placed in some higher dimensions (the smallest example is four non-attacking queens in a 3×3×3 chess space), and it is in fact known that for any <i>k</i>, there are higher dimensions where <i>n</i><sup><i>k</i></sup> queens do not suffice to attack all spaces.<sup class="reference" id="cite_ref-12">[10]</sup><sup class="reference" id="cite_ref-13">[11]</sup>
+</p>
+<dl><dt>Using pieces other than queens</dt></dl>
+<p>On an 8×8 board one can place 32 knights, or 14 bishops, 16 kings or eight rooks, so that no two pieces attack each other. In the case of knights, an easy solution is to place one on each square of a given color, since they move only to the opposite color. The solution is also easy for rooks and kings. Sixteen kings can be placed on the board by dividing it into 2-by-2 squares and placing the kings at equivalent points on each square.  Placements of <i>n</i> rooks on an <i>n</i>×<i>n</i> board are in direct correspondence with order-<i>n</i> permutation matrices.
+</p>
+<dl><dt>Chess variations</dt></dl>
+<p>Related problems can be asked for chess variations such as shogi. For instance, the <i>n</i>+<i>k</i> dragon kings problem asks to place <i>k</i> shogi pawns and <i>n</i>+<i>k</i> mutually nonattacking dragon kings on an <i>n</i>×<i>n</i> shogi board.<sup class="reference" id="cite_ref-14">[12]</sup>
+</p>
+<dl><dt>Nonstandard boards</dt></dl>
+<p>Pólya studied the <i>n</i> queens problem on a toroidal ("donut-shaped") board and showed that there is a solution on an <i>n</i>×<i>n</i> board if and only if <i>n</i> is not divisible by 2 or 3.<sup class="reference" id="cite_ref-15">[13]</sup> In 2009 Pearson and Pearson algorithmically populated three-dimensional boards (<i>n</i>×<i>n</i>×<i>n</i>) with <i>n</i><sup>2</sup> queens, and proposed that multiples of these can yield solutions for a four-dimensional version of the puzzle.<sup class="reference" id="cite_ref-16">[14]</sup><sup class="noprint Inline-Template noprint noexcerpt Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to better sources. (March 2019)">better source needed</span></i>]</sup>
+</p>
+<dl><dt>Domination</dt></dl>
+<p>Given an <i>n</i>×<i>n</i> board, the <b>domination number</b> is the minimum number of queens (or other pieces) needed to attack or occupy every square. For <i>n</i> = 8 the queen's domination number is 5.<sup class="reference" id="cite_ref-17">[15]</sup><sup class="reference" id="cite_ref-18">[16]</sup>
+</p>
+<dl><dt>Queens and other pieces</dt></dl>
+<p>Variants include mixing queens with other pieces; for example, placing <i>m</i> queens and <i>m</i> knights on an <i>n</i>×<i>n</i> board so that no piece attacks another<sup class="reference" id="cite_ref-19">[17]</sup> or placing queens and pawns so that no two queens attack each other.<sup class="reference" id="cite_ref-20">[18]</sup><sup class="noprint Inline-Template noprint noexcerpt Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to better sources. (March 2019)">better source needed</span></i>]</sup>
+</p>
+<dl><dt>Magic squares</dt></dl>
+<p>In 1992, Demirörs, Rafraf, and Tanik published a method for converting some magic squares into <i>n</i>-queens solutions, and vice versa.<sup class="reference" id="cite_ref-21">[19]</sup>
+</p>
+<dl><dt>Latin squares</dt></dl>
+<p>In an <i>n</i>×<i>n</i> matrix, place each digit 1 through <i>n</i> in <i>n</i> locations in the matrix so that no two instances of the same digit are in the same row or column.
+</p>
+<dl><dt>Exact cover</dt></dl>
+<p>Consider a matrix with one primary column for each of the <i>n</i> ranks of the board, one primary column for each of the <i>n</i> files, and one secondary column for each of the 4<i>n</i> − 6 nontrivial diagonals of the board.  The matrix has <i>n</i><sup>2</sup> rows: one for each possible queen placement, and each row has a 1 in the columns corresponding to that square's rank, file, and diagonals and a 0 in all the other columns.  Then the <i>n</i> queens problem is equivalent to choosing a subset of the rows of this matrix such that every primary column has a 1 in precisely one of the chosen rows and every secondary column has a 1 in at most one of the chosen rows; this is an example of a generalized exact cover problem, of which sudoku is another example.
+</p>
+<dl><dt><i>n</i>-queens completion</dt></dl>
+<p>The completion problem asks whether, given an <i>n</i>×<i>n</i> chessboard on which some queens are already placed, it is possible to place a queen in every remaining row so that no two queens attack each other.  This and related questions are NP-complete and #P-complete.<sup class="reference" id="cite_ref-22">[20]</sup>
+Any placement of at most <i>n</i>/60 queens can be completed, while there are partial configurations of roughly <i>n</i>/4 queens that cannot be completed.<sup class="reference" id="cite_ref-23">[21]</sup>
+</p>
+<h2><span class="mw-headline" id="Exercise_in_algorithm_design">Exercise in algorithm design</span><span class="mw-editsection"></span></h2>
+<p>Finding all solutions to the eight queens puzzle is a good example of a simple but nontrivial problem. For this reason, it is often used as an example problem for various programming techniques, including nontraditional approaches such as constraint programming, logic programming or genetic algorithms. Most often, it is used as an example of a problem that can be solved with a recursive algorithm, by phrasing the <i>n</i> queens problem inductively in terms of adding a single queen to any solution to the problem of placing <i>n</i>−1 queens on an <i>n</i>×<i>n</i> chessboard. The induction bottoms out with the solution to the 'problem' of placing 0 queens on the chessboard, which is the empty chessboard.
+</p><p>This technique can be used in a way that is much more efficient than the naïve brute-force search algorithm, which considers all 64<sup>8</sup> = 2<sup>48</sup> = 281,474,976,710,656 possible blind placements of eight queens, and then filters these to remove all placements that place two queens either on the same square (leaving only 64!/56! = 178,462,987,637,760 possible placements) or in mutually attacking positions. This very poor algorithm will, among other things, produce the same results over and over again in all the different permutations of the assignments of the eight queens, as well as repeating the same computations over and over again for the different sub-sets of each solution. A better brute-force algorithm places a single queen on each row, leading to only 8<sup>8</sup> = 2<sup>24</sup> = 16,777,216 blind placements.
+</p><p>It is possible to do much better than this.
+One algorithm solves the eight rooks puzzle by generating the permutations of the numbers 1 through 8 (of which there are 8! = 40,320), and uses the elements of each permutation as indices to place a queen on each row.
+Then it rejects those boards with diagonal attacking positions.
+</p>
+
+<p>The backtracking depth-first search program, a slight improvement on the permutation method, constructs the search tree by considering one row of the board at a time, eliminating most nonsolution board positions at a very early stage in their construction.
+Because it rejects rook and diagonal attacks even on incomplete boards, it examines only 15,720 possible queen placements.
+A further improvement, which examines only 5,508 possible queen
+placements, is to combine the permutation based method with the early
+pruning method: the permutations are generated depth-first, and
+the search space is pruned if the partial permutation produces a
+diagonal attack.
+Constraint programming can also be very effective on this problem.
+</p>
+
+<p>An alternative to exhaustive search is an 'iterative repair' algorithm, which typically starts with all queens on the board, for example with one queen per column.<sup class="reference" id="cite_ref-24">[22]</sup> It then counts the number of conflicts (attacks), and uses a heuristic to determine how to improve the placement of the queens. The 'minimum-conflicts' heuristic – moving the piece with the largest number of conflicts to the square in the same column where the number of conflicts is smallest – is particularly effective: it easily finds a solution to even the 1,000,000 queens problem.<sup class="reference" id="cite_ref-25">[23]</sup><sup class="reference" id="cite_ref-26">[24]</sup>
+</p><p>Unlike the backtracking search outlined above, iterative repair does not guarantee a solution: like all greedy procedures, it may get stuck on a local optimum.  (In such a case, the algorithm may be restarted with a different initial configuration.) On the other hand, it can solve problem sizes that are several orders of magnitude beyond the scope of a depth-first search.
+</p><p>As an alternative to backtracking, solutions can be counted by recursively enumerating valid partial solutions, one row at a time. Rather than constructing entire board positions, blocked diagonals and columns are tracked with bitwise operations. This does not allow the recovery of individual solutions.<sup class="reference" id="cite_ref-27">[25]</sup><sup class="reference" id="cite_ref-28">[26]</sup>
+</p>
+<h2><span class="mw-headline" id="Sample_program">Sample program</span><span class="mw-editsection"></span></h2>
+<p>The following program is a translation of Niklaus Wirth's solution into the Python programming language, but does without the index arithmetic found in the original and instead uses lists to keep the program code as simple as possible. By using a coroutine in the form of a generator function, both versions of the original can be unified to compute either one or all of the solutions. Only 15,720 possible queen placements are examined.<sup class="reference" id="cite_ref-29">[27]</sup><sup class="reference" id="cite_ref-30">[28]</sup>
+</p>
+
+<h2><span class="mw-headline" id="In_popular_culture">In popular culture</span><span class="mw-editsection"></span></h2>
+<ul><li>In the game <i>The 7th Guest</i>, the 8th Puzzle: "The Queen's Dilemma" in the game room of the Stauf mansion is the de facto eight queens puzzle.<sup class="reference" id="cite_ref-31">[29]</sup><sup class="reference nowrap"><span title="Pages: 48–49, 289–290">: 48–49, 289–290 </span></sup></li>
+<li>In the game Professor Layton and the Curious Village, the 130th puzzle: "Too Many Queens 5"(<span title="Japanese-language text"><span lang="ja">クイーンの問題5</span></span> ) is an eight queens puzzle.<sup class="reference" id="cite_ref-32">[30]</sup></li></ul>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Mathematical game</li>
+<li>Mathematical puzzle</li>
+<li>No-three-in-line problem</li>
+<li>Rook polynomial</li>
+<li>Costas array</li></ul>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1011085734" rel="mw-deduplicated-inline-style"/>
+<h2><span class="mw-headline" id="Further_reading">Further reading</span><span class="mw-editsection"></span></h2>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFBellStevens2009">Bell, Jordan; Stevens, Brett (2009). "A survey of known results and research areas for <b>n</b>-queens". <i>Discrete Mathematics</i>. <b>309</b> (1): 1–31. doi:<span class="cs1-lock-free" title="Freely accessible">10.1016/j.disc.2007.12.043</span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Discrete+Mathematics&amp;rft.atitle=A+survey+of+known+results+and+research+areas+for+n-queens&amp;rft.volume=309&amp;rft.issue=1&amp;rft.pages=1-31&amp;rft.date=2009&amp;rft_id=info%3Adoi%2F10.1016%2Fj.disc.2007.12.043&amp;rft.aulast=Bell&amp;rft.aufirst=Jordan&amp;rft.au=Stevens%2C+Brett&amp;rft_id=%2F%2Fdoi.org%2F10.1016%252Fj.disc.2007.12.043&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AEight+queens+puzzle"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFWatkins2004">Watkins, John J. (2004). <span class="cs1-lock-registration" title="Free registration required"><i>Across the Board: The Mathematics of Chess Problems</i></span>. Princeton: Princeton University Press. ISBN <bdi>978-0-691-11503-0</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Across+the+Board%3A+The+Mathematics+of+Chess+Problems&amp;rft.place=Princeton&amp;rft.pub=Princeton+University+Press&amp;rft.date=2004&amp;rft.isbn=978-0-691-11503-0&amp;rft.aulast=Watkins&amp;rft.aufirst=John+J.&amp;rft_id=https%3A%2F%2Farchive.org%2Fdetails%2Facrossboardma00watk&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AEight+queens+puzzle"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation web cs1" id="CITEREFAllisonYeeMcGaughey1988">Allison, L.; Yee, C.N.; McGaughey, M. (1988). "Three Dimensional NxN-Queens Problems". Department of Computer Science, Monash University, Australia.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=Three+Dimensional+NxN-Queens+Problems&amp;rft.place=Department+of+Computer+Science%2C+Monash+University%2C+Australia&amp;rft.date=1988&amp;rft.aulast=Allison&amp;rft.aufirst=L.&amp;rft.au=Yee%2C+C.N.&amp;rft.au=McGaughey%2C+M.&amp;rft_id=http%3A%2F%2Fwww.csse.monash.edu.au%2F~lloyd%2FtildeAlgDS%2FRecn%2FQueens3D%2F&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AEight+queens+puzzle"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFNudelman1995">Nudelman, S. (1995). "The Modular N-Queens Problem in Higher Dimensions". <i>Discrete Mathematics</i>. <b>146</b> (1–3): 159–167. doi:<span class="cs1-lock-free" title="Freely accessible">10.1016/0012-365X(94)00161-5</span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Discrete+Mathematics&amp;rft.atitle=The+Modular+N-Queens+Problem+in+Higher+Dimensions&amp;rft.volume=146&amp;rft.issue=1%E2%80%933&amp;rft.pages=159-167&amp;rft.date=1995&amp;rft_id=info%3Adoi%2F10.1016%2F0012-365X%2894%2900161-5&amp;rft.aulast=Nudelman&amp;rft.aufirst=S.&amp;rft_id=%2F%2Fdoi.org%2F10.1016%252F0012-365X%252894%252900161-5&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AEight+queens+puzzle"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFEngelhardt2010">Engelhardt, M. (August 2010). "Der Stammbaum der Lösungen des Damenproblems (in German, means The pedigree chart of solutions to the 8-queens problem". <i>Spektrum der Wissenschaft</i>: 68–71.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Spektrum+der+Wissenschaft&amp;rft.atitle=Der+Stammbaum+der+L%C3%B6sungen+des+Damenproblems+%28in+German%2C+means+The+pedigree+chart+of+solutions+to+the+8-queens+problem&amp;rft.pages=68-71&amp;rft.date=2010-08&amp;rft.aulast=Engelhardt&amp;rft.aufirst=M.&amp;rft_id=http%3A%2F%2Fwww.spektrum.de%2Fartikel%2F1037434%26_z%3D798888&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AEight+queens+puzzle"></span></li>
+<li><i>On The Modular N-Queen Problem in Higher Dimensions</i>, Ricardo Gomez, Juan Jose Montellano and Ricardo Strausz (2004), Instituto de Matematicas, Area de la Investigacion Cientifica, Circuito Exterior, Ciudad Universitaria, Mexico.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFBudd2002">Budd, Timothy (2002). "A Case Study: The Eight Queens Puzzle" <span class="cs1-format">(PDF)</span>. <i>An Introduction to Object-Oriented Programming</i> (3rd ed.). Addison Wesley Longman. pp. 125–145. ISBN <bdi>0-201-76031-2</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=A+Case+Study%3A+The+Eight+Queens+Puzzle&amp;rft.btitle=An+Introduction+to+Object-Oriented+Programming&amp;rft.pages=125-145&amp;rft.edition=3rd&amp;rft.pub=Addison+Wesley+Longman&amp;rft.date=2002&amp;rft.isbn=0-201-76031-2&amp;rft.aulast=Budd&amp;rft.aufirst=Timothy&amp;rft_id=https%3A%2F%2Fweb.engr.oregonstate.edu%2F~budd%2FBooks%2Foopintro3e%2Finfo%2Fchap06.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AEight+queens+puzzle"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFWirth2004">Wirth, Niklaus (2004) [updated 2012]. "The Eight Queens Problem". <i>Algorithms and Data Structures</i> <span class="cs1-format">(PDF)</span>. Oberon version with corrections and authorized modifications. pp. 114–118.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=The+Eight+Queens+Problem&amp;rft.btitle=Algorithms+and+Data+Structures&amp;rft.series=Oberon+version+with+corrections+and+authorized+modifications&amp;rft.pages=114-118&amp;rft.date=2004&amp;rft.aulast=Wirth&amp;rft.aufirst=Niklaus&amp;rft_id=https%3A%2F%2Fpeople.inf.ethz.ch%2Fwirth%2FAD.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AEight+queens+puzzle"></span></li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097025294">.mw-parser-output .side-box{margin:4px 0;box-sizing:border-box;border:1px solid #aaa;font-size:88%;line-height:1.25em;background-color:#f9f9f9}.mw-parser-output .side-box-abovebelow,.mw-parser-output .side-box-text{padding:0.25em 0.9em}.mw-parser-output .side-box-image{padding:2px 0 2px 0.9em;text-align:center}.mw-parser-output .side-box-imageright{padding:2px 0.9em 2px 0;text-align:center}@media(min-width:500px){.mw-parser-output .side-box-flex{display:flex;align-items:center}.mw-parser-output .side-box-text{flex:1}}@media(min-width:720px){.mw-parser-output .side-box{width:238px}.mw-parser-output .side-box-right{clear:right;float:right;margin-left:1em}.mw-parser-output .side-box-left{margin-right:1em}}</style>
+<ul><li><span class="citation mathworld" id="Reference-Mathworld-Queens_Problem"><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation web cs1" id="CITEREFWeisstein">Weisstein, Eric W. "Queens Problem". <i>MathWorld</i>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=unknown&amp;rft.jtitle=MathWorld&amp;rft.atitle=Queens+Problem&amp;rft.au=Weisstein%2C+Eric+W.&amp;rft_id=https%3A%2F%2Fmathworld.wolfram.com%2FQueensProblem.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AEight+queens+puzzle"></span></span></li>
+<li>queens-cpm on GitHub Eight Queens Puzzle in Turbo Pascal for CP/M</li>
+<li>eight-queens.py on GitHub Eight Queens Puzzle one line solution in Python</li>
+<li>Solutions in more than 100 different programming languages (on Rosetta Code)</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2375
+Cached time: 20221223230903
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.757 seconds
+Real time usage: 0.957 seconds
+Preprocessor visited node count: 5828/1000000
+Post‐expand include size: 288923/2097152 bytes
+Template argument size: 4306/2097152 bytes
+Highest expansion depth: 16/100
+Expensive parser function count: 3/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 94342/5000000 bytes
+Lua time usage: 0.329/10.000 seconds
+Lua memory usage: 26988385/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  619.478      1 -total
+ 30.05%  186.171      2 Template:Reflist
+ 14.62%   90.582      1 Template:Lang
+ 13.36%   82.765     10 Template:Cite_journal
+  8.02%   49.679      1 Template:Short_description
+  6.36%   39.389     13 Template:Chess_diagram_small
+  6.30%   39.035      1 Template:Magic_polygons
+  5.99%   37.103      1 Template:Navbox
+  5.31%   32.879      6 Template:Cite_book
+  5.18%   32.071      1 Template:ISBN
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:10474-0!canonical and timestamp 20221223230902 and revision id 1127072022.
+ -->
+</div></body>
+</html>

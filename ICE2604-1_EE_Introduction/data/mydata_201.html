@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>coalesced_chaining</title>
+</head>
+<body>
+<div class="mw-parser-output"><style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-Lead_too_long plainlinks metadata ambox ambox-style ambox-lead_too_long" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+
+<p><b>Coalesced hashing</b>, also called <b>coalesced chaining</b>, is a strategy of collision resolution in a hash table that forms a hybrid of separate chaining and open addressing.
+</p>
+
+<h2><span class="mw-headline" id="Separate_chaining_hash_table">Separate chaining hash table</span><span class="mw-editsection"></span></h2>
+<p>In a separate chaining hash table, items that hash to the same address are placed on a list (or "chain") at that address. This technique can result in a great deal of wasted memory because the table itself must be large enough to maintain a load factor that performs well (typically twice the expected number of items), and extra memory must be used for all but the first item in a chain (unless list headers are used, in which case extra memory must be used for all items in a chain).
+</p>
+<h2><span class="mw-headline" id="Example">Example</span><span class="mw-editsection"></span></h2>
+<p>Given a sequence "qrj," "aty," "qur," "dim," "ofu," "gcl," "rhv," "clq," "ecd," "qsu" of randomly generated three character long strings, the following table would be generated (using  Bob Jenkins' One-at-a-Time hash algorithm) with a table of size 10:
+</p>
+<table border="1">
+<tbody><tr>
+<td>(null)
+</td></tr>
+<tr>
+<td>"clq"
+</td></tr>
+<tr>
+<td>"qur"
+</td></tr>
+<tr>
+<td>(null)
+</td></tr>
+<tr>
+<td>(null)
+</td></tr>
+<tr>
+<td>"dim"
+</td></tr>
+<tr>
+<td>"aty"</td>
+<td>"qsu"
+</td></tr>
+<tr>
+<td>"rhv"
+</td></tr>
+<tr>
+<td>"qrj"</td>
+<td>"ofu"</td>
+<td>"gcl"</td>
+<td>"ecd"
+</td></tr>
+<tr>
+<td>(null)
+</td></tr></tbody></table>
+<p>This strategy is effective, efficient, and very easy to implement. However, sometimes the extra memory use might be prohibitive, and the most common alternative, open addressing, has uncomfortable disadvantages that decrease performance.  The primary disadvantage of open addressing is primary and secondary clustering, in which searches may access long sequences of used buckets that contain items with different hash addresses; items with one hash address can thus lengthen searches for items with other hash addresses.  
+</p><p>One solution to these issues is coalesced hashing. Coalesced hashing uses a similar technique as separate chaining, but instead of allocating new nodes for the linked list, buckets in the actual table are used. The first empty bucket in the table at the time of a collision is considered the collision bucket. When a collision occurs anywhere in the table, the item is placed in the collision bucket and a link is made between the chain and the collision bucket. It is possible for a newly inserted item to collide with items with a different hash address, such as the case in the example in the image when item "clq" is inserted.  The chain for "clq" is said to "coalesce" with the chain of "qrj," hence the name of the algorithm.  However, the extent of coalescing is minor compared with the clustering exhibited by open addressing.  For example, when coalescing occurs, the length of the chain grows by only 1, whereas in open addressing, search sequences of arbitrary length may combine.
+</p>
+<h2><span class="mw-headline" id="The_cellar">The cellar</span><span class="mw-editsection"></span></h2>
+<p>An important optimization, to reduce the effect of coalescing, is to restrict the address space of the hash function to only a subset of the table.  For example, if the table has size <i>M</i> with buckets numbered from 0 to <i>M − 1</i>, we can restrict the address space so that the hash function only assigns addresses to the first <i>N</i> locations in the table.  The remaining <i>M − N</i> buckets, called the <i>cellar</i>, are used exclusively for storing items that collide during insertion.  No coalescing can occur until the cellar is exhausted.  
+</p><p>The optimal choice of <i>N</i> relative to <i>M</i> depends upon the load factor (or fullness) of the table.  A careful analysis shows that the value <i>N = 0.86 × M</i> yields near-optimum performance for most load factors.<sup class="reference" id="cite_ref-VitterChen_1-0">[1]</sup><sup class="reference" id="cite_ref-2">[2]</sup>
+</p>
+<h2><span class="mw-headline" id="Variants">Variants</span><span class="mw-editsection"></span></h2>
+<p>Other variants for insertion are also possible that have improved search time.  Deletion algorithms have been developed that preserve randomness, and thus the average search time analysis still holds after deletions.<sup class="reference" id="cite_ref-VitterChen_1-1">[1]</sup>
+</p>
+<h2><span class="mw-headline" id="Implementation">Implementation</span><span class="mw-editsection"></span></h2>
+<p>Insertion in C:
+</p>
+
+<p>One benefit of this strategy is that the search algorithm for separate chaining can be used without change in a coalesced hash table.
+</p><p>Lookup in C:
+</p>
+
+<h2><span class="mw-headline" id="Performance">Performance</span><span class="mw-editsection"></span></h2>
+<p>Deletion may be hard.<sup class="reference" id="cite_ref-3">[3]</sup><sup class="reference" id="cite_ref-4">[4]</sup>
+</p><p>Coalesced chaining avoids the effects of primary and secondary clustering, and as a result can take advantage of the efficient search algorithm for separate chaining. If the chains are short, this strategy is very efficient and can be highly condensed, memory-wise. As in open addressing, deletion from a coalesced hash table is awkward and potentially expensive, and resizing the table is terribly expensive and should be done rarely, if ever.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (July 2016)">citation needed</span></i>]</sup>
+</p>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+
+<!-- 
+NewPP limit report
+Parsed by mw1367
+Cached time: 20221213004408
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [show‐toc]
+CPU time usage: 0.133 seconds
+Real time usage: 0.618 seconds
+Preprocessor visited node count: 503/1000000
+Post‐expand include size: 7563/2097152 bytes
+Template argument size: 714/2097152 bytes
+Highest expansion depth: 15/100
+Expensive parser function count: 5/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 16599/5000000 bytes
+Lua time usage: 0.041/10.000 seconds
+Lua memory usage: 1532217/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  512.460      1 -total
+ 12.39%   63.485      1 Template:Lead_too_long
+  9.73%   49.874      1 Template:Ambox
+  7.86%   40.280      1 Template:ISBN
+  6.40%   32.810      1 Template:Catalog_lookup_link
+  4.97%   25.446      1 Template:Fact
+  3.35%   17.171      1 Template:Fix
+  1.25%    6.415      1 Template:Delink
+  1.04%    5.330      2 Template:Category_handler
+  0.85%    4.375      3 Template:Yesno-no
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:2381605-0!canonical and timestamp 20221213004408 and revision id 1059159848.
+ -->
+</div></body>
+</html>

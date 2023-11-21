@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>deterministic_finite_automata_string_search</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p>In computer science, <b>string-searching algorithms</b>, sometimes called <b>string-matching algorithms</b>, are an important class of string algorithms that try to find a place where one or several strings (also called patterns) are found within a larger string or text.
+</p><p>A basic example of string searching is when the pattern and the searched text are arrays of elements of an alphabet (finite set) Σ.  Σ may be a human language alphabet, for example, the letters <i>A</i> through <i>Z</i> and other applications may use a <i>binary alphabet</i> (Σ = {0,1}) or a <i>DNA alphabet</i> (Σ = {A,C,G,T}) in bioinformatics.
+</p><p>In practice, the method of feasible string-search algorithm may be affected by the string encoding. In particular, if a variable-width encoding is in use, then it may be slower to find the <i>N</i>th character, perhaps requiring time proportional to <i>N</i>. This may significantly slow some search algorithms. One of many possible solutions is to search for the sequence of code units instead, but doing so may produce false matches unless the encoding is specifically designed to avoid it.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (August 2017)">citation needed</span></i>]</sup>
+</p>
+
+<h2><span class="mw-headline" id="Overview">Overview</span><span class="mw-editsection"></span></h2>
+<p>The most basic case of string searching involves one (often very long) string, sometimes called the <i>haystack</i>, and one (often very short) string, sometimes called the <i>needle</i>. The goal is to find one or more occurrences of the needle within the haystack.  For example, one might search for <i>to</i> within:
+</p>
+<pre>Some books are to be tasted, others to be swallowed, and some few to be chewed and digested.
+</pre>
+<p>One might request the first occurrence of "to", which is the fourth word; or all occurrences, of which there are 3; or the last, which is the fifth word from the end.
+</p><p>Very commonly, however, various constraints are added. For example, one might want to match the "needle" only where it consists of one (or more) complete words—perhaps defined as <i>not</i> having other letters immediately adjacent on either side. In that case a search for "hew" or "low" should fail for the example sentence above, even though those literal strings do occur.
+</p><p>Another common example involves "normalization". For many purposes, a search for a phrase such as "to be" should succeed even in places where there is something else intervening between the "to" and the "be":
+</p>
+<ul><li>More than one space</li>
+<li>Other "whitespace" characters such as tabs, non-breaking spaces, line-breaks, etc.</li>
+<li>Less commonly, a hyphen or soft hyphen</li>
+<li>In structured texts, tags or even arbitrarily large but "parenthetical" things such as footnotes, list-numbers or other markers, embedded images, and so on.</li></ul>
+<p>Many symbol systems include characters that are synonymous (at least for some purposes):
+</p>
+<ul><li>Latin-based alphabets distinguish lower-case from upper-case, but for many purposes string search is expected to ignore the distinction.</li>
+<li>Many languages include ligatures, where one composite character is equivalent to two or more other characters.</li>
+<li>Many writing systems involve diacritical marks such as accents or vowel points, which may vary in their usage, or be of varying importance in matching.</li>
+<li>DNA sequences can involve non-coding segments which may be ignored for some purposes, or polymorphisms that lead to no change in the encoded proteins, which may not count as a true difference for some other purposes.</li>
+<li>Some languages have rules where a different character or form of character must be used at the start, middle, or end of words.</li></ul>
+<p>Finally, for strings that represent natural language, aspects of the language itself become involved. For example, one might wish to find all occurrences of a "word" despite it having alternate spellings, prefixes or suffixes, etc.
+</p><p>Another more complex type of search is regular expression searching, where the user constructs a pattern of characters or other symbols, and any match to the pattern should fulfill the search. For example, to catch both the American English word "color" and the British equivalent "colour", instead of searching for two different literal strings, one might use a regular expression such as:
+</p>
+<pre>colou?r
+</pre>
+<p>where the "?" conventionally makes the preceding character ("u") optional.
+</p><p>This article mainly discusses algorithms for the simpler kinds of string searching.
+</p><p>A similar problem introduced in the field of bioinformatics and genomics is the maximal exact matching (MEM).<sup class="reference" id="cite_ref-1">[1]</sup> Given two strings, MEMs are common substrings that cannot be extended left or right without causing a mismatch.<sup class="reference" id="cite_ref-2">[2]</sup>
+</p>
+<h2><span class="mw-headline" id="Examples_of_search_algorithms">Examples of search algorithms</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Naive_string_search">Naive string search</span><span class="mw-editsection"></span></h3>
+<p>A simple and inefficient way to see where one string occurs inside another is to check at each index, one by one. First, we see if there's a copy of the needle starting at the first character of the haystack; if not, we look to see if there's a copy of the needle starting at the second character of the haystack, and so forth. In the normal case, we only have to look at one or two characters for each wrong position to see that it is a wrong position, so in the average case, this takes O(<i>n</i> + <i>m</i>) steps, where <i>n</i> is the length of the haystack and <i>m</i> is the length of the needle; but in the worst case, searching for a string like "aaaab" in a string like "aaaaaaaaab", it takes O(<i>nm</i>)
+</p>
+<h3><span class="mw-headline" id="Finite-state-automaton-based_search">Finite-state-automaton-based search</span><span class="mw-editsection"></span></h3>
+
+<p>In this approach, backtracking is avoided by constructing a deterministic finite automaton (DFA) that recognizes stored search string. These are expensive to construct—they are usually created using the powerset construction—but are very quick to use. For example, the DFA shown to the right recognizes the word "MOMMY". This approach is frequently generalized in practice to search for arbitrary regular expressions.
+</p>
+<h3><span class="mw-headline" id="Stubs">Stubs</span><span class="mw-editsection"></span></h3>
+<p>Knuth–Morris–Pratt computes a DFA that recognizes inputs with the string to search for as a suffix, Boyer–Moore starts searching from the end of the needle, so it can usually jump ahead a whole needle-length at each step. Baeza–Yates keeps track of whether the previous <i>j</i> characters were a prefix of the search string, and is therefore adaptable to fuzzy string searching. The bitap algorithm is an application of Baeza–Yates' approach.
+</p>
+<h3><span class="mw-headline" id="Index_methods">Index methods</span><span class="mw-editsection"></span></h3>
+<p>Faster search algorithms preprocess the text. After building a substring index, for example a suffix tree or suffix array, the occurrences of a pattern can be found quickly. As an example, a suffix tree can be built in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta (n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta (n)}</annotation>
+</semantics>
+</math></span><img alt="\Theta (n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a6351206e27071559aa4472579095994f650d76b" style="vertical-align: -0.838ex; width:5.012ex; height:2.843ex;"/></span> time, and all <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle z}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>z</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle z}</annotation>
+</semantics>
+</math></span><img alt="z" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bf368e72c009decd9b6686ee84a375632e11de98" style="vertical-align: -0.338ex; width:1.088ex; height:1.676ex;"/></span> occurrences of a pattern can be found in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(m)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>m</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(m)}</annotation>
+</semantics>
+</math></span><img alt="O(m)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a0ffd498cf521ce19814e6b7053f1f8ebb1d3c88" style="vertical-align: -0.838ex; width:5.623ex; height:2.843ex;"/></span> time under the assumption that the alphabet has a constant size and all inner nodes in the suffix tree know what leaves are underneath them. The latter can be accomplished by running a DFS algorithm from the root of the suffix tree.
+</p>
+<h3><span class="mw-headline" id="Other_variants">Other variants</span><span class="mw-editsection"></span></h3>
+<p>Some search methods, for instance trigram search, are intended to find a "closeness" score between the search string and the text rather than a "match/non-match". These are sometimes called "fuzzy" searches.
+</p>
+<h2><span class="mw-headline" id="Classification_of_search_algorithms">Classification of search algorithms</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Classification_by_a_number_of_patterns">Classification by a number of patterns</span><span class="mw-editsection"></span></h3>
+<p>The various algorithms can be classified by the number of patterns each uses.
+</p>
+<h4><span class="mw-headline" id="Single-pattern_algorithms">Single-pattern algorithms</span><span class="mw-editsection"></span></h4>
+<p>In the following compilation, <i>m</i> is the length of the pattern, <i>n</i> the length of the searchable text, and <i>k</i> = |Σ| is the size of the alphabet.
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>Algorithm
+</th>
+<th>Preprocessing time
+</th>
+<th>Matching time<sup class="reference plainlinks nourlexpansion" id="ref_Asymptotic_times">[1]</sup>
+</th>
+<th>Space
+</th></tr>
+<tr>
+<th>Naïve algorithm
+</th>
+<td>none
+</td>
+<td>Θ(mn)
+</td>
+<td>none
+</td></tr>
+<tr>
+<th>Rabin–Karp
+</th>
+<td>Θ(m)
+</td>
+<td>Θ(n) in average,<br/> O(mn) at worst
+</td>
+<td>O(1)
+</td></tr>
+<tr>
+<th>Knuth–Morris–Pratt
+</th>
+<td>Θ(m)
+</td>
+<td>Θ(n)
+</td>
+<td>Θ(m)
+</td></tr>
+<tr>
+<th>Boyer–Moore
+</th>
+<td>Θ(m + k)
+</td>
+<td>Ω(n/m) at best,<br/> O(mn) at worst
+</td>
+<td>Θ(k)
+</td></tr>
+<tr>
+<th>Two-way algorithm<sup class="reference" id="cite_ref-3">[3]</sup><sup class="reference plainlinks nourlexpansion" id="ref_libc">[2]</sup>
+</th>
+<td>Θ(m)
+</td>
+<td>O(n)
+</td>
+<td>O(1)
+</td></tr>
+<tr>
+<th>Backward Non-Deterministic DAWG Matching (BNDM)<sup class="reference" id="cite_ref-4">[4]</sup><sup class="reference plainlinks nourlexpansion" id="ref_fuzzy+regexp">[3]</sup>
+</th>
+<td>O(m)
+</td>
+<td>Ω(n/m) at best,<br/> O(mn) at worst
+</td>
+<td>
+</td></tr>
+<tr>
+<th>Backward Oracle Matching (BOM)<sup class="reference" id="cite_ref-5">[5]</sup>
+</th>
+<td>O(m)
+</td>
+<td>O(mn)
+</td>
+<td>
+</td></tr></tbody></table>
+<dl><dd>1.<style data-mw-deduplicate="TemplateStyles:r1041539562">.mw-parser-output .citation{word-wrap:break-word}.mw-parser-output .citation:target{background-color:rgba(0,127,255,0.133)}</style><span class="citation wikicite" id="endnote_Asymptotic_times"><b>^</b></span> Asymptotic times are expressed using O, Ω, and Θ notation.</dd>
+<dd>2.<link href="mw-data:TemplateStyles:r1041539562" rel="mw-deduplicated-inline-style"/><span class="citation wikicite" id="endnote_libc"><b>^</b></span> Used to implement the <i>memmem</i> and <i>strstr</i> search functions in the glibc<sup class="reference" id="cite_ref-6">[6]</sup> and musl<sup class="reference" id="cite_ref-7">[7]</sup> C standard libraries.</dd>
+<dd>3.<link href="mw-data:TemplateStyles:r1041539562" rel="mw-deduplicated-inline-style"/><span class="citation wikicite" id="endnote_fuzzy+regexp"><b>^</b></span> Can be extended to handle approximate string matching and (potentially-infinite) sets of patterns represented as regular languages.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="No reference found for the 2-way algorithm (March 2022)">citation needed</span></i>]</sup></dd></dl>
+<p>The <b>Boyer–Moore string-search algorithm</b> has been the standard benchmark for the practical string-search literature.<sup class="reference" id="cite_ref-:0_8-0">[8]</sup>
+</p>
+<h4><span class="mw-headline" id="Algorithms_using_a_finite_set_of_patterns">Algorithms using a finite set of patterns</span><span class="mw-editsection"></span></h4>
+<p>In the following compilation, <i>M</i> is the length of the longest pattern, <i>m</i> their total length, <i>n</i> the length of the searchable text, <i>o</i> the number of occurrences.
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>Algorithm
+</th>
+<th>Extension of
+</th>
+<th>Preprocessing time
+</th>
+<th>Matching time<sup class="reference plainlinks nourlexpansion" id="ref_Asymptotic_times">[4]</sup>
+</th>
+<th>Space
+</th></tr>
+<tr>
+<th>Aho–Corasick
+</th>
+<td>Knuth–Morris–Pratt
+</td>
+<td>Θ(m)
+</td>
+<td>Θ(n + o)
+</td>
+<td>Θ(m)
+</td></tr>
+<tr>
+<th>Commentz-Walter
+</th>
+<td>Boyer-Moore
+</td>
+<td>Θ(m)
+</td>
+<td>Θ(M * n) worst case <br/> sublinear in average<sup class="reference" id="cite_ref-Commentz-Walter_9-0">[9]</sup>
+</td>
+<td>Θ(m)
+</td></tr>
+<tr>
+<th>Set-BOM
+</th>
+<td>Backward Oracle Matching
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td></tr></tbody></table>
+<h4><span class="mw-headline" id="Algorithms_using_an_infinite_number_of_patterns">Algorithms using an infinite number of patterns</span><span class="mw-editsection"></span></h4>
+<p>Naturally, the patterns can not be enumerated finitely in this case. They are represented usually by a regular grammar or regular expression.
+</p>
+<h3><span class="mw-headline" id="Classification_by_the_use_of_preprocessing_programs">Classification by the use of preprocessing programs</span><span class="mw-editsection"></span></h3>
+<p>Other classification approaches are possible. One of the most common uses preprocessing as main criteria.
+</p>
+<table class="wikitable">
+<caption>Classes of string searching algorithms<sup class="reference" id="cite_ref-10">[10]</sup>
+</caption>
+<tbody><tr>
+<th>
+</th>
+<th>Text not preprocessed
+</th>
+<th>Text preprocessed
+</th></tr>
+<tr>
+<th>Patterns not preprocessed
+</th>
+<td>Elementary algorithms
+</td>
+<td>Index methods
+</td></tr>
+<tr>
+<th>Patterns preprocessed
+</th>
+<td>Constructed search engines
+</td>
+<td>Signature methods :<sup class="reference" id="cite_ref-11">[11]</sup>
+</td></tr></tbody></table>
+<h3><span class="mw-headline" id="Classification_by_matching_strategies">Classification by matching strategies</span><span class="mw-editsection"></span></h3>
+<p>Another one classifies the algorithms by their matching strategy:<sup class="reference" id="cite_ref-12">[12]</sup>
+</p>
+<ul><li>Match the prefix first (Knuth–Morris–Pratt, Shift-And, Aho–Corasick)</li>
+<li>Match the suffix first (Boyer–Moore and variants, Commentz-Walter)</li>
+<li>Match the best factor first (BNDM, BOM, Set-BOM)</li>
+<li>Other strategy (Naïve, Rabin–Karp)</li></ul>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Sequence alignment</li>
+<li>Graph matching</li>
+<li>Pattern matching</li>
+<li>Compressed pattern matching</li>
+<li>Matching wildcards</li>
+<li>Full-text search</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+
+<ul><li>R. S. Boyer and J. S. Moore, <i>A fast string searching algorithm,</i> Carom. ACM 20, (10), 262–272(1977).</li>
+<li>Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, and Clifford Stein. <i>Introduction to Algorithms</i>, Third Edition. MIT Press and McGraw-Hill, 2009. <link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/>ISBN 0-262-03293-7. Chapter 32: String Matching, pp. 985–1013.</li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097025294">.mw-parser-output .side-box{margin:4px 0;box-sizing:border-box;border:1px solid #aaa;font-size:88%;line-height:1.25em;background-color:#f9f9f9}.mw-parser-output .side-box-abovebelow,.mw-parser-output .side-box-text{padding:0.25em 0.9em}.mw-parser-output .side-box-image{padding:2px 0 2px 0.9em;text-align:center}.mw-parser-output .side-box-imageright{padding:2px 0.9em 2px 0;text-align:center}@media(min-width:500px){.mw-parser-output .side-box-flex{display:flex;align-items:center}.mw-parser-output .side-box-text{flex:1}}@media(min-width:720px){.mw-parser-output .side-box{width:238px}.mw-parser-output .side-box-right{clear:right;float:right;margin-left:1em}.mw-parser-output .side-box-left{margin-right:1em}}</style>
+<ul><li>Huge list of pattern matching links  Last updated: 12/27/2008 20:18:38</li>
+<li>Large (maintained) list of string-matching algorithms</li>
+<li>NIST list of string-matching algorithms</li>
+<li>StringSearch – high-performance pattern matching algorithms in Java – Implementations of many String-Matching-Algorithms in Java (BNDM, Boyer-Moore-Horspool, Boyer-Moore-Horspool-Raita, Shift-Or)</li>
+<li>StringsAndChars – Implementations of many String-Matching-Algorithms (for single and multiple patterns) in Java</li>
+<li>Exact String Matching Algorithms — Animation in Java, Detailed description and C implementation of many algorithms.</li>
+<li>(PDF) Improved Single and Multiple Approximate String Matching</li>
+<li>Kalign2: high-performance multiple alignment of protein and nucleotide sequences allowing external features</li>
+<li>NyoTengu – high-performance pattern matching algorithm in C – Implementations of Vector and Scalar String-Matching-Algorithms in C</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2339
+Cached time: 20221223235429
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.307 seconds
+Real time usage: 0.436 seconds
+Preprocessor visited node count: 1727/1000000
+Post‐expand include size: 50851/2097152 bytes
+Template argument size: 2318/2097152 bytes
+Highest expansion depth: 14/100
+Expensive parser function count: 2/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 45792/5000000 bytes
+Lua time usage: 0.174/10.000 seconds
+Lua memory usage: 6282837/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  346.288      1 -total
+ 25.35%   87.785      6 Template:Cite_journal
+ 17.65%   61.135      1 Template:Short_description
+ 11.57%   40.081      1 Template:Commonscat
+ 11.56%   40.030      1 Template:Strings
+ 11.22%   38.854      2 Template:Citation_needed
+ 11.02%   38.174      1 Template:Navbox
+ 10.64%   36.839      1 Template:Sister_project
+ 10.16%   35.172      1 Template:Side_box
+  9.11%   31.563      2 Template:Pagetype
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:28648-0!canonical and timestamp 20221223235429 and revision id 1128920188.
+ -->
+</div></body>
+</html>

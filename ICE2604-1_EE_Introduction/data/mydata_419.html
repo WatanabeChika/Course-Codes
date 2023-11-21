@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>fully_polynomial_approximation_scheme</title>
+</head>
+<body>
+<div class="mw-parser-output"><p>A <b>fully polynomial-time approximation scheme (FPTAS)</b> is an algorithm for finding approximate solutions to function problems, especially optimization problems.  An FPTAS takes as input an instance of the problem and a parameter ε &gt; 0. It returns as output a value is at least <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1-\epsilon }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mo>−<!-- − --></mo>
+<mi>ϵ<!-- ϵ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1-\epsilon }</annotation>
+</semantics>
+</math></span><img alt="1-\epsilon " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/57f9b07affe80ff61cdc4f2e47977c8421a59c73" style="vertical-align: -0.505ex; width:4.947ex; height:2.343ex;"/></span> times the correct value, and at most <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1+\epsilon }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mo>+</mo>
+<mi>ϵ<!-- ϵ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1+\epsilon }</annotation>
+</semantics>
+</math></span><img alt="1+\epsilon " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d0a9509a716b94626789c0045ba24d98dc3a02d4" style="vertical-align: -0.505ex; width:4.947ex; height:2.343ex;"/></span> times the correct value.
+</p><p>In the context of optimization problems, the correct value is understood to be the value of the optimal solution, and it is often implied that an FPTAS should produce a valid solution (and not just the value of the solution). Returning a value and finding a solution with that value are equivalent assuming that the problem possesses self reducibility.
+</p><p>Importantly, the run-time of an FPTAS is polynomial in the problem size and in 1/ε. This is in contrast to a general polynomial-time approximation scheme (PTAS). The run-time of a general PTAS is polynomial in the problem size for each specific ε, but might be exponential in 1/ε.<sup class="reference" id="cite_ref-1">[1]</sup>
+</p><p>The term FPTAS may also be used to refer to the class of problems that have an FPTAS.  FPTAS is a subset of PTAS, and unless P = NP, it is a strict subset.<sup class="reference" id="cite_ref-Jansen3_2-0">[2]</sup>
+</p>
+
+<h2><span class="mw-headline" id="Relation_to_other_complexity_classes">Relation to other complexity classes</span><span class="mw-editsection"></span></h2>
+<p>All problems in FPTAS are fixed-parameter tractable with respect to the standard parameterization.<sup class="reference" id="cite_ref-3">[3]</sup>
+</p><p>Any strongly NP-hard optimization problem with a polynomially bounded objective function cannot have an FPTAS unless P=NP.<sup class="reference" id="cite_ref-vvv_4-0">[4]</sup> However, the converse fails: e.g. if P does not equal NP,  knapsack with two constraints is not strongly NP-hard, but has no FPTAS even when the optimal objective is polynomially bounded.<sup class="reference" id="cite_ref-5">[5]</sup>
+</p>
+<h2><span class="mw-headline" id="Converting_a_dynamic_program_to_an_FPTAS">Converting a dynamic program to an FPTAS</span><span class="mw-editsection"></span></h2>
+<p>Woeginger<sup class="reference" id="cite_ref-:0_6-0">[6]</sup> presented a general scheme for converting a certain class of dynamic programs to an FPTAS.
+</p>
+<h3><span class="mw-headline" id="Input">Input</span><span class="mw-editsection"></span></h3>
+<p>The scheme handles optimization problems in which the input is defined as follows:
+</p>
+<ul><li>The input is made of <i>n</i> vectors, <i>x</i><sub>1</sub>,...,<i>x<sub>n</sub></i>.</li>
+<li>Each input vector is made of some <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a}</annotation>
+</semantics>
+</math></span><img alt="a" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ffd2487510aa438433a2579450ab2b3d557e5edc" style="vertical-align: -0.338ex; width:1.23ex; height:1.676ex;"/></span> non-negative integers, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a}</annotation>
+</semantics>
+</math></span><img alt="a" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ffd2487510aa438433a2579450ab2b3d557e5edc" style="vertical-align: -0.338ex; width:1.23ex; height:1.676ex;"/></span> may depend on the input.</li>
+<li>All components of the input vectors are encoded in binary. So the size of the problem is O(<i>n</i>+log(<i>X</i>)), where X is the sum of all components in all vectors.</li></ul>
+<h3><span class="mw-headline" id="Extremely-simple_dynamic_program">Extremely-simple dynamic program</span><span class="mw-editsection"></span></h3>
+<p>It is assumed that the problem has a dynamic-programming (DP) algorithm using <i>states</i>. Each state is a vector made of some <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle b}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>b</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle b}</annotation>
+</semantics>
+</math></span><img alt="b" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f11423fbb2e967f986e36804a8ae4271734917c3" style="vertical-align: -0.338ex; width:0.998ex; height:2.176ex;"/></span> non-negative integers, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle b}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>b</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle b}</annotation>
+</semantics>
+</math></span><img alt="b" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f11423fbb2e967f986e36804a8ae4271734917c3" style="vertical-align: -0.338ex; width:0.998ex; height:2.176ex;"/></span> is independent of the input. The DP works in <i>n</i> steps. At each step <i>i</i>, it processes the input <i>x<sub>i</sub></i>, and constructs a set of states <i>S<sub>i</sub></i>. Each state encodes a partial solution to the problem, using inputs <i>x</i><sub>1</sub>,...,<i>x<sub>i</sub></i>. The components of the DP are:
+</p>
+<ul><li>A set <i>S</i><sub>0</sub> of <i>initial states</i>.</li>
+<li>A set <i>F</i> of <i>transition functions.</i> Each function <i>f</i> in <i>F</i> maps a pair (state,input) to a new state.</li>
+<li>An objective function g, mapping a state to its value.</li></ul>
+<p>The algorithm of the DP is:
+</p>
+<ul><li>Let <i>S</i><sub>0</sub> := the set of initial states.</li>
+<li>For <i>k</i> = 1 to <i>n</i> do:
+<ul><li>Let <i>S<sub>k</sub></i> := {<i>f</i>(<i>s</i>,<i>x<sub>k</sub></i>) | <i>f</i> in <i>F</i>, <i>s</i> in <i>S<sub>k</sub></i><sub>−1</sub>}</li></ul></li>
+<li>Output min/max {g(s) | s in <i>S<sub>n</sub></i>}.</li></ul>
+<p>The run-time of the DP is linear in the number of possible states. In general, this number can be exponential in the size of the input problem: it can be in O(<i>n V<sup>b</sup></i>), where <i>V</i> is the largest integer than can appear in a state. If <i>V</i> is in O(<i>X</i>), then the run-time is in O(<i>n X<sup>b</sup></i>), which is only pseudo-polynomial time, since it is exponential in the problem size which is in O(log <i>X</i>).
+</p><p>The way to make it polynomial is to <i>trim the state-space</i>: instead of keeping all possible states in each step, keep only a subset of the states; remove states that are "sufficiently close" to other states. Under certain conditions, this trimming can be done in a way that does not change the objective value by too much.
+</p><p>To formalize this, we assume that the problem at hand has a non-negative integer vector <i>d</i> = (<i>d</i><sub>1</sub>,...,<i>d<sub>b</sub></i>), called the <i>degree vector</i> of the problem. For every real number <i>r</i>&gt;1, we say that two state-vectors <i>s</i><sub>1</sub>,<i>s</i><sub>2</sub> are <i>(d,r)-close</i> if, for each coordinate <i>j</i> in 1,...,<i>b</i>:  <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r^{-d_{j}}\cdot s_{1,j}\leq s_{2,j}\leq r^{d_{j}}\cdot s_{1,j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<msub>
+<mi>d</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mrow>
+</msup>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+<mo>,</mo>
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>≤<!-- ≤ --></mo>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+<mo>,</mo>
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>≤<!-- ≤ --></mo>
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>d</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mrow>
+</msup>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+<mo>,</mo>
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r^{-d_{j}}\cdot s_{1,j}\leq s_{2,j}\leq r^{d_{j}}\cdot s_{1,j}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle r^{-d_{j}}\cdot s_{1,j}\leq s_{2,j}\leq r^{d_{j}}\cdot s_{1,j}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/77b5ace63137d9bbc240497ada120367596c4f2c" style="vertical-align: -1.005ex; width:26.372ex; height:3.343ex;"/></span> (in particular, if <i>d<sub>j</sub></i>=0 for some <i>j</i>, then <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{1,j}=s_{2,j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+<mo>,</mo>
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+<mo>,</mo>
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{1,j}=s_{2,j}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle s_{1,j}=s_{2,j}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1b18e59bc9eaa641e5ce8bc2371d1e78443a9c55" style="vertical-align: -1.005ex; width:9.658ex; height:2.343ex;"/></span>).
+</p><p>A problem is called <b>extremely-benevolent</b> if it satisfies the following three conditions:
+</p>
+<ol><li><i>Proximity is preserved by the transition functions</i>: For any <i>r</i>&gt;1, for any transition function <i>f</i> in <i>F</i>, for any input-vector <i>x</i>, and for any two state-vectors <i>s</i><sub>1</sub>,<i>s</i><sub>2</sub>, the following holds: if <i>s</i><sub>1</sub> is (<i>d,r</i>)-close to <i>s<sub>2</sub></i>, then <i>f</i>(<i>s</i><sub>1</sub>,<i>x</i>) is (<i>d,r</i>)-close to <i>f</i>(<i>s<sub>2</sub>,x</i>).
+<ul><li>A sufficient condition for this can be checked as follows. For every function <i>f</i>(<i>s</i>,<i>x</i>) in <i>F</i>, and for every coordinate <i>j</i> in 1,...,<i>b</i>, denote by <i>f<sub>j</sub></i>(s,x) the <i>j</i>-th coordinate of <i>f</i>. This <i>f<sub>j</sub></i> can be seen as an integer function in <i>b</i>+<i>a</i> variables. Suppose that every such <i>f<sub>j</sub></i> is a polynomial with non-negative coefficients. Convert it to a polynomial of a single variable <i>z</i>, by substituting <i>s</i>=(z<sup>d1</sup>,...,z<sup>db</sup>) and <i>x</i>=(1,...,1). If the degree of the resulting polynomial in <i>z</i> is at most <i>d<sub>j</sub></i>, then condition 1 is satisfied.</li></ul></li>
+<li><i>Proximity is preserved by the value function:</i> There exists an integer <i>G</i> ≥ 0 (which is a function of the value function <i>g</i> and the degree vector <i>d</i>), such that for any <i>r</i>&gt;1, and for any two state-vectors <i>s</i><sub>1</sub>,<i>s</i><sub>2</sub>, the following holds: if <i>s</i><sub>1</sub> is (<i>d,r</i>)-close to <i>s<sub>2</sub></i>, then: <i>g</i>(<i>s</i><sub>1</sub>) ≤ <i>r<sup>G</sup></i> · <i>g</i>(<i>s<sub>2</sub></i>) (in minimization problems);  <i>g</i>(<i>s</i><sub>1</sub>) ≥ <i>r<sup>(-G)</sup></i> · <i>g</i>(<i>s<sub>2</sub></i>) (in maximization problems).
+<ul><li>A sufficient condition for this is that the function <i>g</i> is a polynomial function (of <i>b</i> variables) with non-negative coefficients.</li></ul></li>
+<li><i>Technical conditions</i>:
+<ul><li>All transition functions <i>f</i> in <i>F</i> and the value function <i>g</i> can be evaluated in polytime.</li>
+<li>The number |<i>F</i>| of transition functions is polynomial in <i>n</i> and log(<i>X</i>).</li>
+<li>The set <i>S</i><sub>0</sub> of initial states can be computed in time polynomial in <i>n</i> and log(<i>X</i>).</li>
+<li>Let <i>V<sub>j</sub></i> be the set of all values that can appear in coordinate <i>j</i> in a state. Then, the ln of every value in <i>V<sub>j</sub></i> is at most a polynomial P<sub>1</sub>(n,log(X)).</li>
+<li>If <i>d<sub>j</sub></i>=0, the cardinality of <i>V<sub>j</sub></i>  is at most a polynomial P<sub>2</sub>(<i>n</i>,log(<i>X</i>)).</li></ul></li></ol>
+<p>For every extremely-benevolent problem, the dynamic program can be converted into an FPTAS. Define:
+</p>
+<ul><li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \epsilon }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>ϵ<!-- ϵ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \epsilon }</annotation>
+</semantics>
+</math></span><img alt="\epsilon " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3837cad72483d97bcdde49c85d3b7b859fb3fd2" style="vertical-align: -0.338ex; width:0.944ex; height:1.676ex;"/></span> := the required approximation ratio.</li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r:=1+{\frac {\epsilon }{2Gn}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>r</mi>
+<mo>:=</mo>
+<mn>1</mn>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>ϵ<!-- ϵ --></mi>
+<mrow>
+<mn>2</mn>
+<mi>G</mi>
+<mi>n</mi>
+</mrow>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r:=1+{\frac {\epsilon }{2Gn}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle r:=1+{\frac {\epsilon }{2Gn}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/201533973b210782778e6a547973fc450f7d0f58" style="vertical-align: -2.005ex; width:14.017ex; height:4.843ex;"/></span>, where <i>G</i> is the constant from condition 2. Note that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\frac {1}{\ln {r}}}\leq 1+{\frac {2Gn}{\epsilon }}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<mrow>
+<mi>ln</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>r</mi>
+</mrow>
+</mrow>
+</mfrac>
+</mrow>
+<mo>≤<!-- ≤ --></mo>
+<mn>1</mn>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mn>2</mn>
+<mi>G</mi>
+<mi>n</mi>
+</mrow>
+<mi>ϵ<!-- ϵ --></mi>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\frac {1}{\ln {r}}}\leq 1+{\frac {2Gn}{\epsilon }}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\frac {1}{\ln {r}}}\leq 1+{\frac {2Gn}{\epsilon }}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a54b2ebf79059498f39c3d0db7c7a27d08002c60" style="vertical-align: -2.005ex; width:16.533ex; height:5.509ex;"/></span>.</li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle L:=\left\lceil {\frac {P_{1}(n,\log(X))}{\ln(r)}}\right\rceil }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>L</mi>
+<mo>:=</mo>
+<mrow>
+<mo>⌈</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<msub>
+<mi>P</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>,</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>X</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mrow>
+<mrow>
+<mi>ln</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>r</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</mfrac>
+</mrow>
+<mo>⌉</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle L:=\left\lceil {\frac {P_{1}(n,\log(X))}{\ln(r)}}\right\rceil }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle L:=\left\lceil {\frac {P_{1}(n,\log(X))}{\ln(r)}}\right\rceil }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2ffb9bd5ba9570b6a3702d076467a79220aab380" style="vertical-align: -2.671ex; width:22.42ex; height:6.509ex;"/></span>, where <i>P</i><sub>1</sub> is the polynomial from condition 3 (an upper bound on the ln of every value that can appear in a state vector). Note that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle L\leq \left\lceil \left(1+{\frac {2Gn}{\epsilon }}\right)P_{1}(n,\log {X})\right\rceil }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>L</mi>
+<mo>≤<!-- ≤ --></mo>
+<mrow>
+<mo>⌈</mo>
+<mrow>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mn>1</mn>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mn>2</mn>
+<mi>G</mi>
+<mi>n</mi>
+</mrow>
+<mi>ϵ<!-- ϵ --></mi>
+</mfrac>
+</mrow>
+</mrow>
+<mo>)</mo>
+</mrow>
+<msub>
+<mi>P</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>,</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>X</mi>
+</mrow>
+<mo stretchy="false">)</mo>
+</mrow>
+<mo>⌉</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle L\leq \left\lceil \left(1+{\frac {2Gn}{\epsilon }}\right)P_{1}(n,\log {X})\right\rceil }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle L\leq \left\lceil \left(1+{\frac {2Gn}{\epsilon }}\right)P_{1}(n,\log {X})\right\rceil }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d3caee1c4f5c5b3ae306e0c797ee25f584350dc4" style="vertical-align: -2.505ex; width:32.546ex; height:6.176ex;"/></span>, so it is polynomial in the size of the input and in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1/\epsilon }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>ϵ<!-- ϵ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1/\epsilon }</annotation>
+</semantics>
+</math></span><img alt="1/\epsilon " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/656e71e33c17e6e344d005ee2fadfed2d4f2a7b0" style="vertical-align: -0.838ex; width:3.269ex; height:2.843ex;"/></span>. Also, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r^{L}=e^{\ln {r}}\cdot L\geq e^{P_{1}(n,\log {x})}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>L</mi>
+</mrow>
+</msup>
+<mo>=</mo>
+<msup>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>ln</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>r</mi>
+</mrow>
+</mrow>
+</msup>
+<mo>⋅<!-- ⋅ --></mo>
+<mi>L</mi>
+<mo>≥<!-- ≥ --></mo>
+<msup>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>P</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>,</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>x</mi>
+</mrow>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r^{L}=e^{\ln {r}}\cdot L\geq e^{P_{1}(n,\log {x})}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle r^{L}=e^{\ln {r}}\cdot L\geq e^{P_{1}(n,\log {x})}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ca23f06fdbbdb2da42ca0f1b266ababafcb671de" style="vertical-align: -0.505ex; width:25.029ex; height:3.009ex;"/></span>, so by definition of <i>P</i><sub>1</sub>, every integer that can appear in a state-vector is in the range [0,<i>r<sup>L</sup></i>].</li>
+<li>Partition the range [0,<i>r<sup>L</sup></i>] into <i>L</i>+1 <i>r</i>-intervals: <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle I_{0}=[0];I_{1}=[1,r);I_{2}=[r,r^{2});\ldots ;I_{L}=[r^{L-1},r^{L}]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>I</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mo stretchy="false">[</mo>
+<mn>0</mn>
+<mo stretchy="false">]</mo>
+<mo>;</mo>
+<msub>
+<mi>I</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mo stretchy="false">[</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mi>r</mi>
+<mo stretchy="false">)</mo>
+<mo>;</mo>
+<msub>
+<mi>I</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mo stretchy="false">[</mo>
+<mi>r</mi>
+<mo>,</mo>
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+<mo>;</mo>
+<mo>…<!-- … --></mo>
+<mo>;</mo>
+<msub>
+<mi>I</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>L</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mo stretchy="false">[</mo>
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>L</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mo>,</mo>
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>L</mi>
+</mrow>
+</msup>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle I_{0}=[0];I_{1}=[1,r);I_{2}=[r,r^{2});\ldots ;I_{L}=[r^{L-1},r^{L}]}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle I_{0}=[0];I_{1}=[1,r);I_{2}=[r,r^{2});\ldots ;I_{L}=[r^{L-1},r^{L}]}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5e477b3b0c9f5b732919e77949862d97cc3c2157" style="vertical-align: -0.838ex; width:50.465ex; height:3.176ex;"/></span>.</li>
+<li>Partition the state space into <i>r-boxes</i>: each coordinate <i>k</i> with degree <i>d<sub>k</sub></i> ≥ 1 is partitioned into the <i>L</i>+1 intervals above; each coordinate with <i>d<sub>k</sub></i> = 0 is partitioned into P<sub>2</sub>(<i>n</i>,log(<i>X</i>)) singleton intervals - an interval for each possible value of coordinate <i>k</i> (where <i>P</i><sub>2</sub> is the polynomial from condition 3 above).
+<ul><li>Note that every possible state is contained in exactly one <i>r</i>-box; if two states are in the same <i>r</i>-box, then they are (<i>d</i>,<i>r</i>)-close.</li></ul></li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R:=(L+1+P_{2}(n,\log {X}))^{b}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>R</mi>
+<mo>:=</mo>
+<mo stretchy="false">(</mo>
+<mi>L</mi>
+<mo>+</mo>
+<mn>1</mn>
+<mo>+</mo>
+<msub>
+<mi>P</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>,</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>X</mi>
+</mrow>
+<mo stretchy="false">)</mo>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>b</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R:=(L+1+P_{2}(n,\log {X}))^{b}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle R:=(L+1+P_{2}(n,\log {X}))^{b}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0af82d294d0bd19abee3eb03ed1e146394b4871e" style="vertical-align: -0.838ex; width:28.806ex; height:3.176ex;"/></span>.
+<ul><li>Note that the number of <i>r</i>-boxes is at most <i>R</i>. Since <i>b</i> is a fixed constant, this <i>R</i> is polynomial in the size of the input and in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1/\epsilon }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>ϵ<!-- ϵ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1/\epsilon }</annotation>
+</semantics>
+</math></span><img alt="1/\epsilon " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/656e71e33c17e6e344d005ee2fadfed2d4f2a7b0" style="vertical-align: -0.838ex; width:3.269ex; height:2.843ex;"/></span>.</li></ul></li></ul>
+<p>The FPTAS runs similarly to the DP, but in each step, it <i>trims</i> the state set into a smaller set <i>T<sub>k</sub></i>, that contains exactly one state in each <i>r</i>-box. The algorithm of the FPTAS is:
+</p>
+<ul><li>Let <i>T</i><sub>0</sub> := <i>S</i><sub>0</sub> = the set of initial states.</li>
+<li>For <i>k</i> = 1 to <i>n</i> do:
+<ul><li>Let <i>U<sub>k</sub></i> := {<i>f</i>(<i>s</i>,<i>x<sub>k</sub></i>) | <i>f</i> in <i>F</i>, <i>s</i> in <i>T<sub>k</sub></i><sub>−1</sub>}</li>
+<li>Let <i>T<sub>k</sub></i> := a trimmed copy of <i>U<sub>k</sub></i>: for each <i>r</i>-box that contains one or more states of <i>U<sub>k</sub></i>, keep exactly one state in <i>T</i><sub>k</sub>.</li></ul></li>
+<li>Output min/max {g(s) | s in <i>T<sub>n</sub></i>}.</li></ul>
+<p>The run-time of the FPTAS is polynomial in the total number of possible states in each <i>T<sub>i</sub></i>, which is at most the total number of <i>r</i>-boxes, which is at most <i>R</i>, which is polynomial in <i>n</i>, log(<i>X</i>), and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1/\epsilon }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>ϵ<!-- ϵ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1/\epsilon }</annotation>
+</semantics>
+</math></span><img alt="1/\epsilon " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/656e71e33c17e6e344d005ee2fadfed2d4f2a7b0" style="vertical-align: -0.838ex; width:3.269ex; height:2.843ex;"/></span>.
+</p><p>
+Note that, for each state <i>s<sub>u</sub></i> in <i>U<sub>k</sub></i>, its subset <i>T<sub>k</sub></i> contains at least one state <i>s<sub>t</sub></i> that is (d,r)-close to <i>s<sub>u</sub></i>. Also, each <i>U<sub>k</sub></i> is a subset of the <i>S<sub>k</sub></i> in the original (untrimmed) DP. The main lemma for proving the correctness of the FPTAS is:<sup class="reference" id="cite_ref-:0_6-1">[6]</sup><sup class="reference nowrap"><span title="Location: Lem.3.3">: Lem.3.3 </span></sup> </p><blockquote><p>
+For every step <i>k</i> in 0,...,<i>n</i>, for every state <i>s<sub>s</sub></i> in <i>S<sub>k</sub></i>, there is a state <i>s<sub>t</sub></i> in <i>T<sub>k</sub></i> that is (<i>d</i>,<i>r<sup>k</sup></i>)-close to <i>s<sub>s</sub></i>.   </p></blockquote>
+<p>The proof is by induction on <i>k</i>. For <i>k</i>=0 we have <i>T<sub>k</sub></i>=<i>S<sub>k</sub></i>; every state is (<i>d</i>,1)-close to itself. Suppose the lemma holds for <i>k</i>-1. For every state <i>s<sub>s</sub></i> in <i>S<sub>k</sub></i>, let <i>s<sub>s-</sub></i> be one of its predecessors in <i>S<sub>k-1</sub></i>, so that <i>f</i>(<i>s<sub>s</sub></i><sub>−</sub>,<i>x</i>)=<i>s<sub>s</sub></i>. By the induction assumption, there is a state <i>s<sub>t-</sub></i> in <i>T<sub>k-1</sub></i>, that is (<i>d</i>,<i>r<sup>k-1</sup></i>)-close to <i>s<sub>s</sub></i><sub>−</sub>. Since proximity is preserved by transitions (Condition 1 above), <i>f</i>(<i>s<sub>t</sub></i><sub>−</sub>,<i>x</i>) is (<i>d</i>,<i>r<sup>k-1</sup></i>)-close to <i>f</i>(<i>s<sub>s</sub></i><sub>−</sub>,<i>x</i>)=<i>s<sub>s</sub></i>.  This <i>f</i>(<i>s<sub>t</sub></i><sub>−</sub>,<i>x</i>) is in <i>U<sub>k</sub></i>. After the trimming, there is a state <i>s<sub>t</sub></i> in <i>T<sub>k</sub></i> that is (<i>d</i>,<i>r</i>)-close to <i>f(s<sub>t-</sub>,x)</i>. This <i>s<sub>t</sub></i> is (<i>d</i>,<i>r<sup>k</sup></i>)-close to <i>s<sub>s</sub></i>.
+</p><p>Consider now the state <i>s</i><sup>*</sup> in <i>S<sub>n</sub></i>, which corresponds to the optimal solution (that is, <i>g</i>(<i>s*</i>)=OPT). By the lemma above, there is a state <i>t</i>* in <i>T<sub>n</sub></i>, which is (<i>d</i>,<i>r<sup>n</sup></i>)-close to <i>s<sup>*</sup></i>.  Since proximity is preserved by the value function, <i>g</i>(t*) ≥ <i>r<sup>(-Gn)</sup></i> · <i>g</i>(<i>s*</i>) for a maximization problem. By definition of <i>r</i>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r^{-Gn}\geq (1-\epsilon )}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>G</mi>
+<mi>n</mi>
+</mrow>
+</msup>
+<mo>≥<!-- ≥ --></mo>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo>−<!-- − --></mo>
+<mi>ϵ<!-- ϵ --></mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r^{-Gn}\geq (1-\epsilon )}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle r^{-Gn}\geq (1-\epsilon )}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/aa3ec545317d8deaea71afa7fd6532a8efd4b8b1" style="vertical-align: -0.838ex; width:14.692ex; height:3.176ex;"/></span>. So <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle g(t^{*})\geq (1-\epsilon )\cdot OPT}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>g</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+<mo>≥<!-- ≥ --></mo>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo>−<!-- − --></mo>
+<mi>ϵ<!-- ϵ --></mi>
+<mo stretchy="false">)</mo>
+<mo>⋅<!-- ⋅ --></mo>
+<mi>O</mi>
+<mi>P</mi>
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle g(t^{*})\geq (1-\epsilon )\cdot OPT}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle g(t^{*})\geq (1-\epsilon )\cdot OPT}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac83b891ab9b100d0b72a09f8e7a31e77d58569d" style="vertical-align: -0.838ex; width:21.508ex; height:2.843ex;"/></span>. A similar argument works for a minimization problem.
+</p>
+<h4><span class="mw-headline" id="Examples">Examples</span><span class="mw-editsection"></span></h4>
+<p>Here are some examples of extremely-benevolent problems, that have an FPTAS by the above theorem.<sup class="reference" id="cite_ref-:0_6-2">[6]</sup>
+</p><p>1. Multiway number partitioning (equivalently, Identical-machines scheduling) with the goal of minimizing the largest sum is extremely-benevolent. Here, we have <i>a</i> = 1 (the inputs are integers) and <i>b</i> = the number of bins (which is considered fixed). Each state is a vector of <i>b</i> integers representing the sums of the <i>b</i> bins. There are <i>b</i> functions: each function <i>j</i> represents inserting the next input into bin <i>j</i>. The function <i>g</i>(<i>s</i>) picks the largest element of <i>s</i>. <i>S</i><sub>0</sub> = {(0,...,0)}. The conditions for extreme-benevolence are satisfied with degree-vector <i>d</i>=(1,...,1) and <i>G</i>=1. The result extends to Uniform-machines scheduling and Unrelated-machines scheduling whenever the number of machines is fixed (this is required because <i>R</i> - the number of <i>r</i>-boxes - is exponential in <i>b</i>). Denoted Pm||<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \max C_{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo form="prefix" movablelimits="true">max</mo>
+<msub>
+<mi>C</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \max C_{j}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \max C_{j}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/405482afaa064e50d8bdee9dcc0a4209cd8b28d7" style="vertical-align: -1.005ex; width:7.284ex; height:2.843ex;"/></span> or Qm||<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \max C_{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo form="prefix" movablelimits="true">max</mo>
+<msub>
+<mi>C</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \max C_{j}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \max C_{j}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/405482afaa064e50d8bdee9dcc0a4209cd8b28d7" style="vertical-align: -1.005ex; width:7.284ex; height:2.843ex;"/></span> or Rm||<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \max C_{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo form="prefix" movablelimits="true">max</mo>
+<msub>
+<mi>C</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \max C_{j}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \max C_{j}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/405482afaa064e50d8bdee9dcc0a4209cd8b28d7" style="vertical-align: -1.005ex; width:7.284ex; height:2.843ex;"/></span>.
+</p>
+<ul><li><i>Note</i>: consider the special case <i>b</i>=2, where the goal is to minimize the <i>square of the difference</i> between the two part sums. The same DP can be used, but this time with value function <i>g</i>(<i>s</i>) = (<i>s</i><sub>1</sub>-<i>s</i><sub>2</sub>)<sup>2</sup>. Now, condition 2 is violated: the states (<i>s</i><sub>1</sub>,<i>s</i><sub>1</sub>) and (<i>s</i><sub>1</sub>,<i>s</i><sub>2</sub>) may be (<i>d,r</i>)-close, but <i>g</i>(<i>s</i><sub>1</sub>,<i>s</i><sub>1</sub>) = 0 while <i>g</i>(<i>s</i><sub>1</sub>,<i>s</i><sub>2</sub>) &gt; 0. so the above theorem cannot be applied. Indeed, the problem does not have an FPTAS unless P=NP, since an FPTAS could be used to decide in polytime whether the optimal value is 0.</li></ul>
+<p>2. Sum of cubed job completion time on any fixed number of identical or uniform machines - the latter denoted by Qm||<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sum C_{j}^{3}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>∑<!-- ∑ --></mo>
+<msubsup>
+<mi>C</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msubsup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sum C_{j}^{3}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \sum C_{j}^{3}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9367dca043808aec8fdc0ba1ca3fac219bb7ada1" style="vertical-align: -1.338ex; width:6.594ex; height:3.843ex;"/></span> - is ex-benevolent with <i>a</i>=1, <i>b</i>=3, d=(1,1,3).  It can be extended to any fixed power of the completion time.
+</p><p>3. Sum of weighted completion time on any fixed number of identical or uniform machines - the latter denoted by Qm||<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sum w_{j}C_{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>∑<!-- ∑ --></mo>
+<msub>
+<mi>w</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<msub>
+<mi>C</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sum w_{j}C_{j}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \sum w_{j}C_{j}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9116323741b8856cbbe37c1217eeeb233599d1f6" style="vertical-align: -1.338ex; width:8.887ex; height:3.843ex;"/></span>.
+</p><p>4. Sum of completion time on any fixed number of identical or uniform machines, with time-dependent processing times: Qm|time-dep|<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sum C_{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>∑<!-- ∑ --></mo>
+<msub>
+<mi>C</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sum C_{j}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \sum C_{j}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/706dcb607f7d899397a1af57c829a3466e448990" style="vertical-align: -1.338ex; width:6.314ex; height:3.843ex;"/></span>. This holds even for <i>weighted</i> sum of completion time.
+</p><p>5. Weighted earliness-tardiness about a common due-date on any fixed number of machines: m||<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sum w_{j}|C_{j}|}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>∑<!-- ∑ --></mo>
+<msub>
+<mi>w</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>C</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sum w_{j}|C_{j}|}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \sum w_{j}|C_{j}|}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/caf75b72d2b56067bef2453d193131a6fd2ead6f" style="vertical-align: -1.338ex; width:10.181ex; height:3.843ex;"/></span>.
+</p>
+<h3><span class="mw-headline" id="Simple_dynamic_program">Simple dynamic program</span><span class="mw-editsection"></span></h3>
+<p>Simple dynamic programs add to the above formulation the following components:
+</p>
+<ul><li>A set <i>H</i> of <i>filtering functions</i>, of the same cardinality as <i>F</i>. Each function <i>h<sub>i</sub></i> in <i>H</i> maps a pair (state,input) to a Boolean value. The value should be "true" if and only if activating the transition <i>f<sub>i</sub></i> on this pair would lead to a valid state.</li>
+<li>A <i>dominance relation</i>, which is a partial order on states (no indifferences, not all pairs are comparable), and a <i>quasi-dominance relation</i> which is a total preorder on states (indifferences allowed, all pairs are comparable).</li></ul>
+<p>The original DP is modified as follows:
+</p>
+<ul><li>Let <i>S</i><sub>0</sub> := the set of initial states.</li>
+<li>For <i>k</i> = 1 to <i>n</i> do:
+<ul><li>Let S<sub>k</sub> := {<i>f<sub>j</sub></i>(<i>s</i>,<i>x<sub>k</sub></i>) | <i>f<sub>j</sub></i> in <i>F</i>, <i>s</i> in <i>S<sub>k</sub></i><sub>−1</sub>, <b><i>h<sub>j</sub></i>(<i>s</i>,<i>x<sub>k</sub></i>)=True</b> }, where <i>h<sub>j</sub></i> is the filter function corresponding to the transition function <i>f<sub>j</sub></i>.</li></ul></li>
+<li>Output min/max {g(s) | s in <i>S<sub>n</sub></i>}.</li></ul>
+<p>A problem is called <b>benevolent</b> if it satisfies the following conditions (which extend conditions 1, 2, 3 above):
+</p>
+<ol><li><i>Proximity is preserved by the transition functions</i>: For any <i>r</i>&gt;1, for any transition function <i>f</i> in <i>F</i>, for any input-vector <i>x</i>, and for any two state-vectors <i>s</i><sub>1</sub>,<i>s</i><sub>2</sub>, the following holds:
+<ul><li>if <b><i>s</i><sub>1</sub> is (<i>d,r</i>)-close to <i>s<sub>2</sub></i>,</b> <b>and <i>s</i><sub>1</sub> quasi-dominates <i>s<sub>2</sub></i></b>, then either (a) <b><i>f</i>(<i>s</i><sub>1</sub>,<i>x</i>) is (<i>d,r</i>)-close to <i>f</i>(<i>s<sub>2</sub>,x</i>), and <i>f</i>(<i>s</i><sub>1</sub>,<i>x</i>) quasi-dominates <i>f</i>(<i>s<sub>2</sub>,x</i>)</b>, or (b) <i>f</i>(<i>s</i><sub>1</sub>,<i>x</i>) dominates <i>f</i>(<i>s<sub>2</sub>,x</i>).</li>
+<li>if <i>s</i><sub>1</sub> dominates <i>s<sub>2</sub></i>, then <i>f</i>(<i>s</i><sub>1</sub>,<i>x</i>) dominates <i>f</i>(<i>s<sub>2</sub>,x</i>).</li></ul></li>
+<li><i>Proximity is preserved by the value function:</i> There exists an integer <i>G</i> ≥ 0 (a function of the value function <i>g</i> and the degree vector <i>d</i>), such that for any <i>r</i>&gt;1, and for any two state-vectors <i>s</i><sub>1</sub>,<i>s</i><sub>2</sub>, the following holds:
+<ul><li>if <b><i>s</i><sub>1</sub> is (<i>d,r</i>)-close to <i>s<sub>2</sub></i>, and <i>s</i><sub>1</sub> quasi-dominates <i>s<sub>2</sub></i></b><i>,</i> then: <i>g</i>(<i>s</i><sub>1</sub>) ≤ <i>r<sup>G</sup></i> · <i>g</i>(<i>s<sub>2</sub></i>) (in minimization problems);  <i>g</i>(<i>s</i><sub>1</sub>) ≥ <i>r<sup>(-G)</sup></i> · <i>g</i>(<i>s<sub>2</sub></i>) (in maximization problems).</li>
+<li>if <i>s</i><sub>1</sub> dominates <i>s<sub>2</sub></i>, then <i>g</i>(<i>s</i><sub>1</sub>) ≤ <i>g</i>(<i>s<sub>2</sub></i>) (in minimization problems);  <i>g</i>(<i>s</i><sub>1</sub>) ≥ <i>g</i>(<i>s<sub>2</sub></i>) (in maximization problems).</li></ul></li>
+<li><i>Technical conditions</i> (in addition to the above):
+<ul><li>The quasi-dominance relation can be decided in polynomial time.</li></ul></li>
+<li><i>Conditions on the filter functions</i>: For any <i>r</i>&gt;1, for any filter function <i>h</i> in <i>H</i>, for any input-vector <i>x</i>, and for any two state-vectors <i>s</i><sub>1</sub>,<i>s</i><sub>2</sub>, the following holds:
+<ul><li>if <b><i>s</i><sub>1</sub> is (<i>d,r</i>)-close to <i>s<sub>2</sub></i>,</b> <b>and <i>s</i><sub>1</sub> quasi-dominates <i>s<sub>2</sub></i></b>, then <b><i>h</i>(<i>s</i><sub>1</sub>,<i>x</i>) ≥ <i>h</i>(<i>s</i><sub>2</sub>,<i>x</i>)</b>.</li>
+<li>if <i>s</i><sub>1</sub> dominates <i>s<sub>2</sub></i>, then <i>h</i>(<i>s</i><sub>1</sub>,<i>x</i>) ≥ <i>h</i>(<i>s</i><sub>2</sub>,<i>x</i>).</li></ul></li></ol>
+<p>For every benevolent problem, the dynamic program can be converted into an FPTAS similarly to the one above, with two changes (boldfaced):
+</p>
+<ul><li>Let <i>T</i><sub>0</sub> := <i>S</i><sub>0</sub> = the set of initial states.</li>
+<li>For <i>k</i> = 1 to <i>n</i> do:
+<ul><li>Let <i>U</i><sub>k</sub> := {<i>f<sub>j</sub></i>(<i>s</i>,<i>x<sub>k</sub></i>) | <i>f<sub>j</sub></i> in <i>F</i>, <i>s</i> in <i>T<sub>k</sub></i><sub>−1</sub>, <b><i>h<sub>j</sub></i>(<i>s</i>,<i>x<sub>k</sub></i>)=True</b> }, where <i>h<sub>j</sub></i> is the filter function corresponding to the transition function <i>f<sub>j</sub></i>.</li>
+<li>Let <i>T<sub>k</sub></i> := a trimmed copy of <i>U<sub>k</sub></i>: for each <i>r</i>-box that contains one or more states of <i>U<sub>k</sub></i>, choose a single element <b>that quasi-dominates all other elements in <i>U<sub>k</sub></i>,</b> and insert it into <i>T</i><sub>k</sub>.</li></ul></li>
+<li>Output min/max {g(s) | s in <i>T<sub>n</sub></i>}.</li></ul>
+<h4><span class="mw-headline" id="Examples_2">Examples</span><span class="mw-editsection"></span></h4>
+<p>Here are some examples of benevolent problems, that have an FPTAS by the above theorem.<sup class="reference" id="cite_ref-:0_6-3">[6]</sup>
+</p><p>1. The 0-1 knapsack problem is benevolent. Here, we have <i>a</i>=2: each input is a 2-vector (weight, value). There is a DP with <i>b</i>=2: each state encodes (current weight, current value). There are two transition functions: <i>f</i><sub>1</sub> corresponds to adding the next input item, and <i>f</i><sub>2</sub> corresponds to not adding it. The corresponding filter functions are: <i>h</i><sub>1</sub> verifies that the weight with the next input item is at most the knapsack capacity; <i>h</i><sub>2</sub> always returns True. The value function <i>g</i>(<i>s</i>) returns <i>s</i><sub>2</sub>.  The initial state-set is {(0,0)}. The degree vector is (1,1). The dominance relation is trivial. The quasi-dominance relation compares only the weight coordinate: <i>s</i> quasi-dominates <i>t</i> iff <i>s</i><sub>1</sub> ≤ <i>t</i><sub>1</sub>. The implication of this is that, if state <i>t</i> has a higher weight than state <i>s</i>, then the transition functions are allowed to not preserve the proximity between <i>t</i> and <i>s</i> (it is possible, for example, that <i>s</i> has a successor and <i>t</i> does not have a corresponding successor). A similar algorithm was presented earlier by Ibarra and Kim.<sup class="reference" id="cite_ref-7">[7]</sup> The run-time of this FPTAS can be improved to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n\log {1/\epsilon }+1/\epsilon ^{4})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>ϵ<!-- ϵ --></mi>
+</mrow>
+<mo>+</mo>
+<mn>1</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<msup>
+<mi>ϵ<!-- ϵ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>4</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n\log {1/\epsilon }+1/\epsilon ^{4})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(n\log {1/\epsilon }+1/\epsilon ^{4})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9c8d2f987ea9b8c3d6cd8dd405921a5d882345ed" style="vertical-align: -0.838ex; width:19.156ex; height:3.176ex;"/></span> operations on integers.<sup class="reference" id="cite_ref-8">[8]</sup> The exponent was later improved to 2.5.<sup class="reference" id="cite_ref-9">[9]</sup>
+</p>
+<ul><li><i>Note</i>: consider In the <i>2-weighted knapsack problem</i>, where each item has two weights and a value, and the goal is to maximize the value such that the <i>sum of squares of the total weights</i> is at most the knapsack capacity:  <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \left(\sum _{k\in K}w_{1,k}\right)^{2}+\left(\sum _{k\in K}w_{2,k}\right)^{2}\leq W}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mrow>
+<mo>(</mo>
+<mrow>
+<munder>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>K</mi>
+</mrow>
+</munder>
+<msub>
+<mi>w</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+<mo>,</mo>
+<mi>k</mi>
+</mrow>
+</msub>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>+</mo>
+<msup>
+<mrow>
+<mo>(</mo>
+<mrow>
+<munder>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>K</mi>
+</mrow>
+</munder>
+<msub>
+<mi>w</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+<mo>,</mo>
+<mi>k</mi>
+</mrow>
+</msub>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>≤<!-- ≤ --></mo>
+<mi>W</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \left(\sum _{k\in K}w_{1,k}\right)^{2}+\left(\sum _{k\in K}w_{2,k}\right)^{2}\leq W}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \left(\sum _{k\in K}w_{1,k}\right)^{2}+\left(\sum _{k\in K}w_{2,k}\right)^{2}\leq W}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8fbf4e31f4fa3150a6d0ba8cbbf7e21c02b83cf8" style="vertical-align: -3.171ex; width:33.511ex; height:8.009ex;"/></span>. We could solve it using a similar DP, where each state is (current weight 1, current weight 2, value). The quasi-dominance relation should be modified to: <i>s</i> quasi-dominates <i>t</i> iff (<i>s</i><sub>1</sub><sup>2</sup> + <i>s</i><sub>2</sub><sup>2</sup>) ≤ (<i>t</i><sub>1</sub><sup>2</sup> + <i>t</i><sub>2</sub><sup>2</sup>). But it violates Condition 1 above: quasi-dominance is not preserved by transition functions [for example, the state (2,2,..) quasi-dominates (1,3,..); but after adding the input (2,0,..) to both states, the result (4,2,..) does not quasi-dominate (3,3,..)]. So the theorem cannot be used. Indeed, this problem does not have an FPTAS unless P=NP. The same is true for the two-dimensional knapsack problem. The same is true for the multiple subset sum problem: the quasi-dominance relation should be: <i>s</i> quasi-dominates <i>t</i> iff max(<i>s</i><sub>1,</sub><i>s</i><sub>2</sub>) ≤ max(<i>t</i><sub>1,</sub><i>t</i><sub>2</sub>), but it is not preserved by transitions, by the same example as above.</li></ul>
+<p>2. Minimizing the weighted number of tardy jobs, or maximizing the weighted number of early jobs, on a single machine; denoted 1||<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sum w_{j}U_{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>∑<!-- ∑ --></mo>
+<msub>
+<mi>w</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<msub>
+<mi>U</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sum w_{j}U_{j}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \sum w_{j}U_{j}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a38ee5df658cc123cf09c5e2793eb8fb83e29ddd" style="vertical-align: -1.338ex; width:8.813ex; height:3.843ex;"/></span>.
+</p><p>3. Batch scheduling for minimizing the weighted number of tardy jobs: 1|batch|<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sum w_{j}U_{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>∑<!-- ∑ --></mo>
+<msub>
+<mi>w</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<msub>
+<mi>U</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sum w_{j}U_{j}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \sum w_{j}U_{j}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a38ee5df658cc123cf09c5e2793eb8fb83e29ddd" style="vertical-align: -1.338ex; width:8.813ex; height:3.843ex;"/></span>.
+</p><p>4. Makespan of deteriorating jobs on a single machine: 1|deteriorate|<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \max C_{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo form="prefix" movablelimits="true">max</mo>
+<msub>
+<mi>C</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \max C_{j}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \max C_{j}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/405482afaa064e50d8bdee9dcc0a4209cd8b28d7" style="vertical-align: -1.005ex; width:7.284ex; height:2.843ex;"/></span>.
+</p><p>5. Total late work on a single machine: 1||<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sum V_{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>∑<!-- ∑ --></mo>
+<msub>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sum V_{j}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \sum V_{j}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c86ad0cea6713aa32bb4069b1431fff6fc9324c7" style="vertical-align: -1.338ex; width:6.007ex; height:3.843ex;"/></span>.
+</p><p>6. Total weighted late work on a single machine: 1||<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sum w_{j}V_{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>∑<!-- ∑ --></mo>
+<msub>
+<mi>w</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<msub>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sum w_{j}V_{j}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \sum w_{j}V_{j}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ef24b82fc4a0966829ba1d356cd72beb0e40082b" style="vertical-align: -1.338ex; width:8.581ex; height:3.843ex;"/></span>.
+</p>
+<h3><span class="mw-headline" id="Non-examples">Non-examples</span><span class="mw-editsection"></span></h3>
+<p>Despite the generality of the above result, there are cases in which it cannot be used.
+</p><p>1. In the total tardiness problem 1||<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sum T_{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>∑<!-- ∑ --></mo>
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sum T_{j}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \sum T_{j}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3ff6de6973152e65210f51994f582e4e0fbe279e" style="vertical-align: -1.338ex; width:6.009ex; height:3.843ex;"/></span>, the dynamic programming formulation of Lawler<sup class="reference" id="cite_ref-10">[10]</sup> requires to update all states in the old state space some <i>B</i> times, where <i>B</i> is of the order of <i>X</i> (the maximum input size). The same is true for a DP for economic lot-sizing.<sup class="reference" id="cite_ref-11">[11]</sup> In these cases, the number of transition functions in <i>F</i> is <i>B</i>, which is exponential in the log(<i>X</i>), so the second technical condition is violated. The state-trimming technique is not useful, but another technique - input-rounding - has been used to design an FPTAS.<sup class="reference" id="cite_ref-12">[12]</sup><sup class="reference" id="cite_ref-13">[13]</sup>
+</p><p>2. In the variance minimization problem 1||<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle CTV}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>C</mi>
+<mi>T</mi>
+<mi>V</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle CTV}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle CTV}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e2ac8bdd568ce7a96b082a76f940c1047a5b2706" style="vertical-align: -0.338ex; width:5.19ex; height:2.176ex;"/></span>, the objective function is  <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle g(s)=s_{5}-(s_{4}-s_{3})^{2}/n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>g</mi>
+<mo stretchy="false">(</mo>
+<mi>s</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>5</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>4</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle g(s)=s_{5}-(s_{4}-s_{3})^{2}/n}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle g(s)=s_{5}-(s_{4}-s_{3})^{2}/n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9b8ea3cfd6e6e5db5e3d121c5b03c2e94f0461d9" style="vertical-align: -0.838ex; width:24.65ex; height:3.176ex;"/></span>, which violates Condition 2, so the theorem cannot be used. But different techniques have been used to design an FPTAS.<sup class="reference" id="cite_ref-14">[14]</sup><sup class="reference" id="cite_ref-15">[15]</sup>
+</p>
+<h2><span class="mw-headline" id="Some_other_problems_that_have_an_FPTAS">Some other problems that have an FPTAS</span><span class="mw-editsection"></span></h2>
+<ul><li>The knapsack problem,<sup class="reference" id="cite_ref-16">[16]</sup><sup class="reference" id="cite_ref-17">[17]</sup> as well as some of its variants:
+<ul><li>0-1 knapsack problem.<sup class="reference" id="cite_ref-18">[18]</sup></li>
+<li>Unbounded knapsack problem.<sup class="reference" id="cite_ref-19">[19]</sup></li>
+<li>Multi-dimensional knapsack problem with Delta-modular constraints.<sup class="reference" id="cite_ref-20">[20]</sup></li>
+<li>Multi-objective 0-1 knapsack problem.<sup class="reference" id="cite_ref-21">[21]</sup></li>
+<li>Parametric knapsack problem.<sup class="reference" id="cite_ref-22">[22]</sup></li>
+<li>Symmetric quadratic knapsack problem.<sup class="reference" id="cite_ref-23">[23]</sup></li></ul></li>
+<li>Count-subset-sum (#SubsetSum) - finding the number of distinct subsets with a sum of at most <i>C</i>.<sup class="reference" id="cite_ref-24">[24]</sup></li>
+<li>Restricted shortest path: finding a minimum-cost path between two nodes in a graph, subject to a delay constraint.<sup class="reference" id="cite_ref-25">[25]</sup></li>
+<li>Shortest paths and non-linear objectives.<sup class="reference" id="cite_ref-26">[26]</sup></li>
+<li>Counting edge-covers.<sup class="reference" id="cite_ref-27">[27]</sup></li>
+<li>Vector subset search problem where the dimension is fixed.<sup class="reference" id="cite_ref-28">[28]</sup></li></ul>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>The "benevolent dynamic programs", that admit an FPTAS, also admit an evolutionary algorithm.<sup class="reference" id="cite_ref-29">[29]</sup></li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>Complexity Zoo: FPTAS</li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw1371
+Cached time: 20221214145021
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.460 seconds
+Real time usage: 0.539 seconds
+Preprocessor visited node count: 2010/1000000
+Post‐expand include size: 67458/2097152 bytes
+Template argument size: 280/2097152 bytes
+Highest expansion depth: 16/100
+Expensive parser function count: 0/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 98185/5000000 bytes
+Lua time usage: 0.252/10.000 seconds
+Lua memory usage: 5113428/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  387.808      1 -total
+ 86.04%  333.665      1 Template:Reflist
+ 33.63%  130.424     19 Template:Cite_journal
+ 28.90%  112.074      3 Template:Citation
+ 10.23%   39.682      1 Template:Rp
+  9.46%   36.680      1 Template:R/superscript
+  6.28%   24.340      4 Template:Cite_book
+  6.20%   24.037      3 Template:R/where
+  1.75%    6.780      1 Template:Cite_arXiv
+  1.47%    5.697      1 Template:Cite_thesis
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:2047521-0!canonical and timestamp 20221214145020 and revision id 1122326805.
+ -->
+</div></body>
+</html>

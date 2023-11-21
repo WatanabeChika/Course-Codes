@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>absolute_performance_guarantee</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p>In computer science and operations research, <b>approximation algorithms</b> are efficient algorithms that find approximate solutions to optimization problems (in particular NP-hard problems) with <b>provable guarantees</b> on the distance of the returned solution to the optimal one.<sup class="reference" id="cite_ref-Bernard._2011_1-0">[1]</sup> Approximation algorithms naturally arise in the field of theoretical computer science as a consequence of the widely believed P ≠ NP conjecture. Under this conjecture, a wide class of optimization problems cannot be solved exactly in polynomial time. The field of approximation algorithms, therefore, tries to understand how closely it is possible to approximate optimal solutions to such problems in polynomial time. In an overwhelming majority of the cases, the guarantee of such algorithms is a multiplicative one expressed as an approximation ratio or approximation factor i.e., the optimal solution is always guaranteed to be within a (predetermined) multiplicative factor of the returned solution. However, there are also many approximation algorithms that provide an additive guarantee on the quality of the returned solution. A notable example of an approximation algorithm that provides <i>both</i> is the classic approximation algorithm of Lenstra, Shmoys and Tardos<sup class="reference" id="cite_ref-2">[2]</sup> for scheduling on unrelated parallel machines.
+</p><p>The design and analysis of approximation algorithms crucially involves a mathematical proof certifying the quality of the returned solutions in the worst case.<sup class="reference" id="cite_ref-Bernard._2011_1-1">[1]</sup> This distinguishes them from heuristics such as annealing or genetic algorithms, which find reasonably good solutions on some inputs, but provide no clear indication at the outset on when they may succeed or fail.
+</p><p>There is widespread interest in theoretical computer science to better understand the limits to which we can approximate certain famous optimization problems. For example, one of the long-standing open questions in computer science is to determine whether there is an algorithm that outperforms the 1.5 approximation algorithm of Christofides to the metric traveling salesman problem. The desire to understand hard optimization problems from the perspective of approximability is motivated by the discovery of surprising mathematical connections and broadly applicable techniques to design algorithms for hard optimization problems. One well-known example of the former is the Goemans–Williamson algorithm for maximum cut, which solves a graph theoretic problem using high dimensional geometry.<sup class="reference" id="cite_ref-3">[3]</sup>
+</p>
+
+<h2><span class="mw-headline" id="Introduction">Introduction</span><span class="mw-editsection"></span></h2>
+<p>A simple example of an approximation algorithm is one for the minimum vertex cover problem, where the goal is to choose the smallest set of vertices such that every edge in the input graph contains at least one chosen vertex. One way to find a vertex cover is to repeat the following process: find an uncovered edge, add both its endpoints to the cover, and remove all edges incident to either vertex from the graph. As any vertex cover of the input graph must use a distinct vertex to cover each edge that was considered in the process (since it forms a matching), the vertex cover produced, therefore, is at most twice as large as the optimal one. In other words, this is a constant factor approximation algorithm with an approximation factor of 2. Under the recent unique games conjecture, this factor is even the best possible one.<sup class="reference" id="cite_ref-4">[4]</sup>
+</p><p>NP-hard problems vary greatly in their approximability; some, such as the knapsack problem, can be approximated within a multiplicative factor <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1+\epsilon }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mo>+</mo>
+<mi>ϵ<!-- ϵ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1+\epsilon }</annotation>
+</semantics>
+</math></span><img alt="1+\epsilon " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d0a9509a716b94626789c0045ba24d98dc3a02d4" style="vertical-align: -0.505ex; width:4.947ex; height:2.343ex;"/></span>, for any fixed <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \epsilon &gt;0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>ϵ<!-- ϵ --></mi>
+<mo>&gt;</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \epsilon &gt;0}</annotation>
+</semantics>
+</math></span><img alt="\epsilon &gt;0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/568095ad3924314374a5ab68fae17343661f2a71" style="vertical-align: -0.338ex; width:5.205ex; height:2.176ex;"/></span>, and therefore produce solutions arbitrarily close to the optimum (such a family of approximation algorithms is called a polynomial time approximation scheme or PTAS). Others are impossible to approximate within any constant, or even polynomial, factor unless P = NP, as in the case of the maximum clique problem. Therefore, an important benefit of studying approximation algorithms is a fine-grained classification of the difficulty of various NP-hard problems beyond the one afforded by the theory of NP-completeness. In other words, although NP-complete problems may be equivalent (under polynomial time reductions) to each other from the perspective of exact solutions, the corresponding optimization problems behave very differently from the perspective of approximate solutions.
+</p>
+<h2><span class="mw-headline" id="Algorithm_design_techniques">Algorithm design techniques</span><span class="mw-editsection"></span></h2>
+<p>By now there are several established techniques to design approximation algorithms. These include the following ones.
+</p>
+<ol><li>Greedy algorithm</li>
+<li>Local search</li>
+<li>Enumeration and dynamic programming</li>
+<li>Solving a convex programming relaxation to get a fractional solution. Then converting this fractional solution into a feasible solution by some appropriate rounding. The popular relaxations include the following.
+<ul><li>Linear programming relaxations</li>
+<li>Semidefinite programming relaxations</li></ul></li>
+<li>Primal-dual methods</li>
+<li>Dual fitting</li>
+<li>Embedding the problem in some metric and then solving the problem on the metric. This is also known as metric embedding.</li>
+<li>Random sampling and the use of randomness in general in conjunction with the methods above.</li></ol>
+<h2><span class="mw-headline" id="A_posteriori_guarantees">A posteriori guarantees</span><span class="mw-editsection"></span></h2>
+<p>While approximation algorithms always provide an a priori worst case guarantee (be it additive or multiplicative), in some cases they also provide an a posteriori guarantee that is often much better. This is often the case for algorithms that work by solving a convex relaxation of the optimization problem on the given input. For example, there is a different approximation algorithm for minimum vertex cover that solves a linear programming relaxation to find a vertex cover that is at most twice the value of the relaxation. Since the value of the relaxation is never larger than the size of the optimal vertex cover, this yields another 2-approximation algorithm. While this is similar to the a priori guarantee of the previous approximation algorithm, the guarantee of the latter can be much better (indeed when the value of the LP relaxation is far from the size of the optimal vertex cover).
+</p>
+<h2><span class="mw-headline" id="Hardness_of_approximation">Hardness of approximation</span><span class="mw-editsection"></span></h2>
+<p>Approximation algorithms as a research area is closely related to and informed by inapproximability theory where the non-existence of efficient algorithms with certain approximation ratios is proved (conditioned on widely believed hypotheses such as the P ≠ NP conjecture) by means of reductions. In the case of the metric traveling salesman problem, the best known inapproximability result rules out algorithms with an approximation ratio less than 123/122 ≈ 1.008196 unless P = NP, Karpinski, Lampis, Schmied.<sup class="reference" id="cite_ref-5">[5]</sup> Coupled with the knowledge of the existence of Christofides' 1.5 approximation algorithm, this tells us that the threshold of approximability for metric traveling salesman (if it exists) is somewhere between 123/122 and 1.5.
+</p><p>While inapproximability results have been proved since the 1970s, such results were obtained by ad hoc means and no systematic understanding was available at the time. It is only since the 1990 result of Feige, Goldwasser, Lovász, Safra and Szegedy on the inapproximability of Independent Set<sup class="reference" id="cite_ref-6">[6]</sup> and the famous PCP theorem,<sup class="reference" id="cite_ref-7">[7]</sup> that modern tools for proving inapproximability results were uncovered. The PCP theorem, for example, shows that Johnson's 1974 approximation algorithms for Max SAT, set cover, independent set and coloring all achieve the optimal approximation ratio, assuming P ≠ NP.<sup class="reference" id="cite_ref-8">[8]</sup>
+</p>
+<h2><span class="mw-headline" id="Practicality">Practicality</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p>Not all approximation algorithms are suitable for direct practical applications. Some involve solving non-trivial linear programming/semidefinite relaxations (which may themselves invoke the ellipsoid algorithm), complex data structures, or sophisticated algorithmic techniques, leading to difficult implementation issues or improved running time performance (over exact algorithms) only on impractically large inputs. Implementation and running time issues aside, the guarantees provided by approximation algorithms may themselves not be strong enough to justify their consideration in practice. Despite their inability to be used "out of the box" in practical applications, the ideas and insights behind the design of such algorithms can often be incorporated in other ways in practical algorithms. In this way, the study of even very expensive algorithms is not a completely theoretical pursuit as they can yield valuable insights.
+</p><p>In other cases, even if the initial results are of purely theoretical interest, over time, with an improved understanding, the algorithms may be refined to become more practical. One such example is the initial PTAS for Euclidean TSP by Sanjeev Arora (and independently by Joseph Mitchell) which had a prohibitive running time of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{O(1/\epsilon )}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>ϵ<!-- ϵ --></mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{O(1/\epsilon )}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n^{O(1/\epsilon )}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a3ceb3173fa796750158d3566b743d43b0f30f9b" style="vertical-align: -0.338ex; width:6.472ex; height:2.843ex;"/></span> for a <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1+\epsilon }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mo>+</mo>
+<mi>ϵ<!-- ϵ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1+\epsilon }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 1+\epsilon }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d0a9509a716b94626789c0045ba24d98dc3a02d4" style="vertical-align: -0.505ex; width:4.947ex; height:2.343ex;"/></span> approximation.<sup class="reference" id="cite_ref-9">[9]</sup> Yet, within a year these ideas were incorporated into a near-linear time <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n\log n)}</annotation>
+</semantics>
+</math></span><img alt="O(n\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9d2320768fb54880ca4356e61f60eb02a3f9d9f1" style="vertical-align: -0.838ex; width:10.118ex; height:2.843ex;"/></span> algorithm for any constant <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \epsilon &gt;0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>ϵ<!-- ϵ --></mi>
+<mo>&gt;</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \epsilon &gt;0}</annotation>
+</semantics>
+</math></span><img alt="\epsilon &gt;0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/568095ad3924314374a5ab68fae17343661f2a71" style="vertical-align: -0.338ex; width:5.205ex; height:2.176ex;"/></span>.<sup class="reference" id="cite_ref-10">[10]</sup>
+</p>
+<h2><span class="mw-headline" id="Performance_guarantees">Performance guarantees</span><span class="mw-editsection"></span></h2>
+<p>For some approximation algorithms it is possible to prove certain properties about the approximation of the optimum result. For example, a <b><i>ρ</i>-approximation algorithm</b> <i>A</i> is defined to be an algorithm for which it has been proven that the value/cost, <i>f</i>(<i>x</i>), of the approximate solution <i>A</i>(<i>x</i>) to an instance <i>x</i> will not be more (or less, depending on the situation) than a factor <i>ρ</i> times the value, OPT, of an optimum solution.
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{cases}\mathrm {OPT} \leq f(x)\leq \rho \mathrm {OPT} ,\qquad {\mbox{if }}\rho &gt;1;\\\rho \mathrm {OPT} \leq f(x)\leq \mathrm {OPT} ,\qquad {\mbox{if }}\rho &lt;1.\end{cases}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>{</mo>
+<mtable columnalign="left left" columnspacing="1em" displaystyle="false" rowspacing=".2em">
+<mtr>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">O</mi>
+<mi mathvariant="normal">P</mi>
+<mi mathvariant="normal">T</mi>
+</mrow>
+<mo>≤<!-- ≤ --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mi>ρ<!-- ρ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">O</mi>
+<mi mathvariant="normal">P</mi>
+<mi mathvariant="normal">T</mi>
+</mrow>
+<mo>,</mo>
+<mspace width="2em"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mtext>if </mtext>
+</mstyle>
+</mrow>
+<mi>ρ<!-- ρ --></mi>
+<mo>&gt;</mo>
+<mn>1</mn>
+<mo>;</mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mi>ρ<!-- ρ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">O</mi>
+<mi mathvariant="normal">P</mi>
+<mi mathvariant="normal">T</mi>
+</mrow>
+<mo>≤<!-- ≤ --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">O</mi>
+<mi mathvariant="normal">P</mi>
+<mi mathvariant="normal">T</mi>
+</mrow>
+<mo>,</mo>
+<mspace width="2em"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mtext>if </mtext>
+</mstyle>
+</mrow>
+<mi>ρ<!-- ρ --></mi>
+<mo>&lt;</mo>
+<mn>1.</mn>
+</mtd>
+</mtr>
+</mtable>
+<mo fence="true" stretchy="true" symmetric="true"></mo>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{cases}\mathrm {OPT} \leq f(x)\leq \rho \mathrm {OPT} ,\qquad {\mbox{if }}\rho &gt;1;\\\rho \mathrm {OPT} \leq f(x)\leq \mathrm {OPT} ,\qquad {\mbox{if }}\rho &lt;1.\end{cases}}}</annotation>
+</semantics>
+</math></span><img alt="{\begin{cases}\mathrm {OPT} \leq f(x)\leq \rho \mathrm {OPT} ,\qquad {\mbox{if }}\rho &gt;1;\\\rho \mathrm {OPT} \leq f(x)\leq \mathrm {OPT} ,\qquad {\mbox{if }}\rho &lt;1.\end{cases}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d994a747b373509565531a3a90f73c8297824427" style="vertical-align: -2.505ex; width:38.177ex; height:6.176ex;"/></span></dd></dl>
+<p>The factor <i>ρ</i> is called the <i>relative performance guarantee</i>. An approximation algorithm has an <i>absolute performance guarantee</i> or <i>bounded error</i> <i>c</i>, if it has been proven for every instance <i>x</i> that
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (\mathrm {OPT} -c)\leq f(x)\leq (\mathrm {OPT} +c).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">O</mi>
+<mi mathvariant="normal">P</mi>
+<mi mathvariant="normal">T</mi>
+</mrow>
+<mo>−<!-- − --></mo>
+<mi>c</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">O</mi>
+<mi mathvariant="normal">P</mi>
+<mi mathvariant="normal">T</mi>
+</mrow>
+<mo>+</mo>
+<mi>c</mi>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (\mathrm {OPT} -c)\leq f(x)\leq (\mathrm {OPT} +c).}</annotation>
+</semantics>
+</math></span><img alt="(\mathrm {OPT} -c)\leq f(x)\leq (\mathrm {OPT} +c)." aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1e9d1c2884e673516af7e506f4710d375832fb33" style="vertical-align: -0.838ex; width:32.713ex; height:2.843ex;"/></span></dd></dl>
+<p>Similarly, the <i>performance guarantee</i>, <i>R</i>(<i>x,y</i>), of a solution <i>y</i> to an instance <i>x</i> is defined as
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R(x,y)=\max \left({\frac {OPT}{f(y)}},{\frac {f(y)}{OPT}}\right),}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>R</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo>,</mo>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mo form="prefix" movablelimits="true">max</mo>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mi>O</mi>
+<mi>P</mi>
+<mi>T</mi>
+</mrow>
+<mrow>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</mfrac>
+</mrow>
+<mo>,</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+<mrow>
+<mi>O</mi>
+<mi>P</mi>
+<mi>T</mi>
+</mrow>
+</mfrac>
+</mrow>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R(x,y)=\max \left({\frac {OPT}{f(y)}},{\frac {f(y)}{OPT}}\right),}</annotation>
+</semantics>
+</math></span><img alt="R(x,y)=\max \left({\frac {OPT}{f(y)}},{\frac {f(y)}{OPT}}\right)," aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/df47f6cb9d044eac8550fe4465aa4189e734a46b" style="vertical-align: -2.671ex; width:32.375ex; height:6.509ex;"/></span></dd></dl>
+<p>where <i>f</i>(<i>y</i>) is the value/cost of the solution <i>y</i> for the instance <i>x</i>. Clearly, the performance guarantee is greater than or equal to 1 and equal to 1 if and only if <i>y</i> is an optimal solution. If an algorithm <i>A</i> guarantees to return solutions with a performance guarantee of at most <i>r</i>(<i>n</i>), then <i>A</i> is said to be an <i>r</i>(<i>n</i>)-approximation algorithm and has an <i>approximation ratio</i> of <i>r</i>(<i>n</i>). Likewise, a problem with an <i>r</i>(<i>n</i>)-approximation algorithm is said to be r<i>(</i>n<i>)</i>-<i>approximable</i> or have an approximation ratio of <i>r</i>(<i>n</i>).<sup class="reference" id="cite_ref-ausiello99complexity_11-0">[11]</sup><sup class="reference" id="cite_ref-kann92onthe_12-0">[12]</sup>
+</p><p>For minimization problems, the two different guarantees provide the same result and that for maximization problems, a relative performance guarantee of ρ is equivalent to a performance guarantee of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r=\rho ^{-1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>r</mi>
+<mo>=</mo>
+<msup>
+<mi>ρ<!-- ρ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r=\rho ^{-1}}</annotation>
+</semantics>
+</math></span><img alt="r=\rho ^{-1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/398f47c8b7c4ec6c6336b23555d63fb50aaa1832" style="vertical-align: -0.838ex; width:7.682ex; height:3.176ex;"/></span>. In the literature, both definitions are common but it is clear which definition is used since, for maximization problems, as ρ ≤ 1 while r ≥ 1.
+</p><p>The <i>absolute performance guarantee</i> <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathrm {P} _{A}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">P</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>A</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathrm {P} _{A}}</annotation>
+</semantics>
+</math></span><img alt="\mathrm {P} _{A}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/29afbd79c33a5d1ec8780205292049d80a79d3e5" style="vertical-align: -0.671ex; width:3.048ex; height:2.509ex;"/></span> of some approximation algorithm <i>A</i>, where <i>x</i> refers to an instance of a problem, and where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R_{A}(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>A</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R_{A}(x)}</annotation>
+</semantics>
+</math></span><img alt="R_{A}(x)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4e937c44f7baf168bfce95a7ffaa38f5be525d47" style="vertical-align: -0.838ex; width:6.368ex; height:2.843ex;"/></span> is the performance guarantee of <i>A</i> on <i>x</i> (i.e. ρ for problem instance <i>x</i>) is:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathrm {P} _{A}=\inf\{r\geq 1\mid R_{A}(x)\leq r,\forall x\}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">P</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>A</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mo form="prefix" movablelimits="true">inf</mo>
+<mo fence="false" stretchy="false">{</mo>
+<mi>r</mi>
+<mo>≥<!-- ≥ --></mo>
+<mn>1</mn>
+<mo>∣<!-- ∣ --></mo>
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>A</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mi>r</mi>
+<mo>,</mo>
+<mi mathvariant="normal">∀<!-- ∀ --></mi>
+<mi>x</mi>
+<mo fence="false" stretchy="false">}</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathrm {P} _{A}=\inf\{r\geq 1\mid R_{A}(x)\leq r,\forall x\}.}</annotation>
+</semantics>
+</math></span><img alt="\mathrm {P} _{A}=\inf\{r\geq 1\mid R_{A}(x)\leq r,\forall x\}." aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/76ae7e8b631ed0ead74532ac84f37e09d85efc1a" style="vertical-align: -0.838ex; width:33.187ex; height:2.843ex;"/></span></dd></dl>
+<p>That is to say that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathrm {P} _{A}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">P</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>A</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathrm {P} _{A}}</annotation>
+</semantics>
+</math></span><img alt="\mathrm {P} _{A}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/29afbd79c33a5d1ec8780205292049d80a79d3e5" style="vertical-align: -0.671ex; width:3.048ex; height:2.509ex;"/></span> is the largest bound on the approximation ratio, <i>r</i>, that one sees over all possible instances of the problem. Likewise, the <i>asymptotic performance ratio</i> <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R_{A}^{\infty }}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msubsup>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>A</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mrow>
+</msubsup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R_{A}^{\infty }}</annotation>
+</semantics>
+</math></span><img alt="R_{A}^{\infty }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b90ef343c32c5c68c9e078d0402864306f40be14" style="vertical-align: -1.005ex; width:3.639ex; height:2.843ex;"/></span> is:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R_{A}^{\infty }=\inf\{r\geq 1\mid \exists n\in \mathbb {Z} ^{+},R_{A}(x)\leq r,\forall x,|x|\geq n\}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msubsup>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>A</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mrow>
+</msubsup>
+<mo>=</mo>
+<mo form="prefix" movablelimits="true">inf</mo>
+<mo fence="false" stretchy="false">{</mo>
+<mi>r</mi>
+<mo>≥<!-- ≥ --></mo>
+<mn>1</mn>
+<mo>∣<!-- ∣ --></mo>
+<mi mathvariant="normal">∃<!-- ∃ --></mi>
+<mi>n</mi>
+<mo>∈<!-- ∈ --></mo>
+<msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">Z</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>+</mo>
+</mrow>
+</msup>
+<mo>,</mo>
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>A</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mi>r</mi>
+<mo>,</mo>
+<mi mathvariant="normal">∀<!-- ∀ --></mi>
+<mi>x</mi>
+<mo>,</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>≥<!-- ≥ --></mo>
+<mi>n</mi>
+<mo fence="false" stretchy="false">}</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R_{A}^{\infty }=\inf\{r\geq 1\mid \exists n\in \mathbb {Z} ^{+},R_{A}(x)\leq r,\forall x,|x|\geq n\}.}</annotation>
+</semantics>
+</math></span><img alt="R_{A}^{\infty }=\inf\{r\geq 1\mid \exists n\in \mathbb {Z} ^{+},R_{A}(x)\leq r,\forall x,|x|\geq n\}." aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4ba11045c201534bf3ca6af3de5479f4b2f4accd" style="vertical-align: -1.005ex; width:51.552ex; height:3.176ex;"/></span></dd></dl>
+<p>That is to say that it is the same as the <i>absolute performance ratio</i>, with a lower bound <i>n</i> on the size of problem instances. These two types of ratios are used because there exist algorithms where the difference between these two is significant.
+</p>
+<table class="wikitable">
+<caption>Performance guarantees
+</caption>
+<tbody><tr>
+<th></th>
+<th><i>r</i>-approx<sup class="reference" id="cite_ref-ausiello99complexity_11-1">[11]</sup><sup class="reference" id="cite_ref-kann92onthe_12-1">[12]</sup></th>
+<th><i>ρ</i>-approx</th>
+<th>rel. error<sup class="reference" id="cite_ref-kann92onthe_12-2">[12]</sup></th>
+<th>rel. error<sup class="reference" id="cite_ref-ausiello99complexity_11-2">[11]</sup></th>
+<th>norm. rel. error<sup class="reference" id="cite_ref-ausiello99complexity_11-3">[11]</sup><sup class="reference" id="cite_ref-kann92onthe_12-3">[12]</sup></th>
+<th>abs. error<sup class="reference" id="cite_ref-ausiello99complexity_11-4">[11]</sup><sup class="reference" id="cite_ref-kann92onthe_12-4">[12]</sup>
+</th></tr>
+<tr>
+<th>max: <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(x)\geq }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>≥<!-- ≥ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(x)\geq }</annotation>
+</semantics>
+</math></span><img alt="f(x)\geq " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5c1e4f0ff2b8b646c481ba7fc3ddef6c68f768fb" style="vertical-align: -0.838ex; width:6.871ex; height:2.843ex;"/></span>
+</th>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r^{-1}\mathrm {OPT} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">O</mi>
+<mi mathvariant="normal">P</mi>
+<mi mathvariant="normal">T</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r^{-1}\mathrm {OPT} }</annotation>
+</semantics>
+</math></span><img alt="r^{-1}\mathrm {OPT} " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/de8b7b90513b322fd6a89cf06ba8094d6788f7e5" style="vertical-align: -0.338ex; width:8.45ex; height:2.676ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \rho \mathrm {OPT} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>ρ<!-- ρ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">O</mi>
+<mi mathvariant="normal">P</mi>
+<mi mathvariant="normal">T</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \rho \mathrm {OPT} }</annotation>
+</semantics>
+</math></span><img alt="\rho \mathrm {OPT} " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/710eb2beaa790ad445c50199d983d0ff9dec6d0b" style="vertical-align: -0.838ex; width:6.271ex; height:2.676ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (1-c)\mathrm {OPT} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo>−<!-- − --></mo>
+<mi>c</mi>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">O</mi>
+<mi mathvariant="normal">P</mi>
+<mi mathvariant="normal">T</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (1-c)\mathrm {OPT} }</annotation>
+</semantics>
+</math></span><img alt="(1-c)\mathrm {OPT} " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3844fbfb9697a432950a14d4d078f6d87f032ebc" style="vertical-align: -0.838ex; width:11.888ex; height:2.843ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (1-c)\mathrm {OPT} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo>−<!-- − --></mo>
+<mi>c</mi>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">O</mi>
+<mi mathvariant="normal">P</mi>
+<mi mathvariant="normal">T</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (1-c)\mathrm {OPT} }</annotation>
+</semantics>
+</math></span><img alt="(1-c)\mathrm {OPT} " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3844fbfb9697a432950a14d4d078f6d87f032ebc" style="vertical-align: -0.838ex; width:11.888ex; height:2.843ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (1-c)\mathrm {OPT} +c\mathrm {WORST} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo>−<!-- − --></mo>
+<mi>c</mi>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">O</mi>
+<mi mathvariant="normal">P</mi>
+<mi mathvariant="normal">T</mi>
+</mrow>
+<mo>+</mo>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">W</mi>
+<mi mathvariant="normal">O</mi>
+<mi mathvariant="normal">R</mi>
+<mi mathvariant="normal">S</mi>
+<mi mathvariant="normal">T</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (1-c)\mathrm {OPT} +c\mathrm {WORST} }</annotation>
+</semantics>
+</math></span><img alt="(1-c)\mathrm {OPT} +c\mathrm {WORST} " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c2fabb5c077ccda3b338a7b5af4aea953a47cecb" style="vertical-align: -0.838ex; width:24.613ex; height:2.843ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathrm {OPT} -c}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">O</mi>
+<mi mathvariant="normal">P</mi>
+<mi mathvariant="normal">T</mi>
+</mrow>
+<mo>−<!-- − --></mo>
+<mi>c</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathrm {OPT} -c}</annotation>
+</semantics>
+</math></span><img alt="\mathrm {OPT} -c" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2e0683282c02a35a16cd39887934648c1f18cf3a" style="vertical-align: -0.505ex; width:8.916ex; height:2.343ex;"/></span>
+</td></tr>
+<tr>
+<th>min: <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(x)\leq }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(x)\leq }</annotation>
+</semantics>
+</math></span><img alt="f(x)\leq " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/74dbd0a04719363164b4120843543898b8dc6457" style="vertical-align: -0.838ex; width:6.871ex; height:2.843ex;"/></span>
+</th>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r\mathrm {OPT} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">O</mi>
+<mi mathvariant="normal">P</mi>
+<mi mathvariant="normal">T</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r\mathrm {OPT} }</annotation>
+</semantics>
+</math></span><img alt="r\mathrm {OPT} " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5e0497c9c001cceb1e018cc2f0667e0fab235d27" style="vertical-align: -0.338ex; width:6.118ex; height:2.176ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \rho \mathrm {OPT} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>ρ<!-- ρ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">O</mi>
+<mi mathvariant="normal">P</mi>
+<mi mathvariant="normal">T</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \rho \mathrm {OPT} }</annotation>
+</semantics>
+</math></span><img alt="\rho \mathrm {OPT} " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/710eb2beaa790ad445c50199d983d0ff9dec6d0b" style="vertical-align: -0.838ex; width:6.271ex; height:2.676ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (1+c)\mathrm {OPT} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo>+</mo>
+<mi>c</mi>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">O</mi>
+<mi mathvariant="normal">P</mi>
+<mi mathvariant="normal">T</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (1+c)\mathrm {OPT} }</annotation>
+</semantics>
+</math></span><img alt="(1+c)\mathrm {OPT} " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/df1645cfca65b1c3484bfdc287cbf19c44516d75" style="vertical-align: -0.838ex; width:11.888ex; height:2.843ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (1-c)^{-1}\mathrm {OPT} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo>−<!-- − --></mo>
+<mi>c</mi>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">O</mi>
+<mi mathvariant="normal">P</mi>
+<mi mathvariant="normal">T</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (1-c)^{-1}\mathrm {OPT} }</annotation>
+</semantics>
+</math></span><img alt="(1-c)^{-1}\mathrm {OPT} " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d125e35568444feb5eb57aba061a38004c102132" style="vertical-align: -0.838ex; width:14.221ex; height:3.176ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (1-c)^{-1}\mathrm {OPT} +c\mathrm {WORST} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo>−<!-- − --></mo>
+<mi>c</mi>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">O</mi>
+<mi mathvariant="normal">P</mi>
+<mi mathvariant="normal">T</mi>
+</mrow>
+<mo>+</mo>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">W</mi>
+<mi mathvariant="normal">O</mi>
+<mi mathvariant="normal">R</mi>
+<mi mathvariant="normal">S</mi>
+<mi mathvariant="normal">T</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (1-c)^{-1}\mathrm {OPT} +c\mathrm {WORST} }</annotation>
+</semantics>
+</math></span><img alt="(1-c)^{-1}\mathrm {OPT} +c\mathrm {WORST} " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/296b5fb138d595b38a0feecc8ebdaf0fdd0c5487" style="vertical-align: -0.838ex; width:26.946ex; height:3.176ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathrm {OPT} +c}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">O</mi>
+<mi mathvariant="normal">P</mi>
+<mi mathvariant="normal">T</mi>
+</mrow>
+<mo>+</mo>
+<mi>c</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathrm {OPT} +c}</annotation>
+</semantics>
+</math></span><img alt="\mathrm {OPT} +c" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/884aff39a96fad23c42ed8347bf494d52ba9f7e7" style="vertical-align: -0.505ex; width:8.916ex; height:2.343ex;"/></span>
+</td></tr>
+</tbody></table>
+<h2><span class="mw-headline" id="Epsilon_terms">Epsilon terms</span><span class="mw-editsection"></span></h2>
+<p>In the literature, an approximation ratio for a maximization (minimization) problem of <i>c</i> - ϵ (min: <i>c</i> + ϵ) means that the algorithm has an approximation ratio of <i>c</i> ∓ ϵ  for arbitrary ϵ &gt; 0 but that the ratio has not (or cannot) be shown for ϵ = 0. An example of this is the optimal inapproximability — inexistence of approximation — ratio of 7 / 8 + ϵ for satisfiable MAX-3SAT instances due to Johan Håstad.<sup class="reference" id="cite_ref-hastad99someoptimal_13-0">[13]</sup> As mentioned previously, when <i>c</i> = 1, the problem is said to have a polynomial-time approximation scheme.
+</p><p>An ϵ-term may appear when an approximation algorithm introduces a multiplicative error and a constant error while the minimum optimum of instances of size <i>n</i> goes to infinity as <i>n</i> does. In this case, the approximation ratio is <i>c</i> ∓ <i>k</i> / OPT = <i>c</i> ∓ o(1) for some constants <i>c</i> and <i>k</i>. Given arbitrary ϵ &gt; 0, one can choose a large enough <i>N</i> such that the term <i>k</i> / OPT &lt; ϵ for every <i>n ≥ N</i>. For every fixed ϵ, instances of size <i>n &lt; N</i> can be solved by brute force, thereby showing an approximation ratio — existence of approximation algorithms with a guarantee — of <i>c</i> ∓ ϵ for every ϵ &gt; 0.
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Domination analysis considers guarantees in terms of the rank of the computed solution.</li>
+<li>PTAS - a type of approximation algorithm that takes the approximation ratio as a parameter</li>
+<li>APX is the class of problems with some constant-factor approximation algorithm</li>
+<li>Approximation-preserving reduction</li>
+<li>Exact algorithm</li></ul>
+<h2><span class="mw-headline" id="Citations">Citations</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-More_footnotes plainlinks metadata ambox ambox-style ambox-More_footnotes" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFVazirani2003">Vazirani, Vijay V. (2003). <i>Approximation Algorithms</i>. Berlin: Springer. ISBN <bdi>978-3-540-65367-7</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Approximation+Algorithms&amp;rft.place=Berlin&amp;rft.pub=Springer&amp;rft.date=2003&amp;rft.isbn=978-3-540-65367-7&amp;rft.aulast=Vazirani&amp;rft.aufirst=Vijay+V.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AApproximation+algorithm"></span></li>
+<li>Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, and Clifford Stein. <i>Introduction to Algorithms</i>, Second Edition. MIT Press and McGraw-Hill, 2001. <link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/>ISBN 0-262-03293-7. Chapter 35: Approximation Algorithms, pp. 1022–1056.</li>
+<li>Dorit S. Hochbaum, ed. <i>Approximation Algorithms for NP-Hard problems</i>, PWS Publishing Company, 1997. <link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/>ISBN 0-534-94968-1. Chapter 9: Various Notions of Approximations: Good, Better, Best, and More</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFWilliamsonShmoys2011">Williamson, David P.; Shmoys, David B. (April 26, 2011), <i>The Design of Approximation Algorithms</i>, Cambridge University Press, ISBN <bdi>978-0521195270</bdi></cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=The+Design+of+Approximation+Algorithms&amp;rft.pub=Cambridge+University+Press&amp;rft.date=2011-04-26&amp;rft.isbn=978-0521195270&amp;rft.aulast=Williamson&amp;rft.aufirst=David+P.&amp;rft.au=Shmoys%2C+David+B.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AApproximation+algorithm"></span></li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>Pierluigi Crescenzi, Viggo Kann, Magnús Halldórsson, Marek Karpinski and Gerhard Woeginger, <i>A compendium of NP optimization problems</i>.</li></ul>
+
+
+<!-- 
+NewPP limit report
+Parsed by mw2314
+Cached time: 20221224003826
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.366 seconds
+Real time usage: 0.561 seconds
+Preprocessor visited node count: 2088/1000000
+Post‐expand include size: 98412/2097152 bytes
+Template argument size: 1251/2097152 bytes
+Highest expansion depth: 14/100
+Expensive parser function count: 6/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 61487/5000000 bytes
+Lua time usage: 0.204/10.000 seconds
+Lua memory usage: 6430581/52428800 bytes
+Number of Wikibase entities loaded: 1/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  372.746      1 -total
+ 36.17%  134.816      1 Template:Reflist
+ 21.89%   81.608      6 Template:Cite_book
+ 15.62%   58.218      1 Template:Optimization_algorithms
+ 14.88%   55.455      1 Template:Navbox_with_collapsible_groups
+ 13.53%   50.429      1 Template:Short_description
+ 12.76%   47.565      1 Template:More_footnotes
+ 10.97%   40.897      1 Template:Ambox
+  9.85%   36.713      8 Template:Cite_journal
+  7.16%   26.693      1 Template:Authority_control
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:563105-0!canonical and timestamp 20221224003825 and revision id 1118311023.
+ -->
+</div></body>
+</html>

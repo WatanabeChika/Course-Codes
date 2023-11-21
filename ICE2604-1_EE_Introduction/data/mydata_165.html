@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>BV-tree</title>
+</head>
+<body>
+<div class="mw-parser-output">
+
+<p>A <b>bounding volume hierarchy</b> (<b>BVH</b>) is a tree structure on a set of geometric objects. All geometric objects, that form the leaf nodes of the tree, are wrapped in bounding volumes. These nodes are then grouped as small sets and enclosed within larger bounding volumes. These, in turn, are also grouped and enclosed within other larger bounding volumes in a recursive fashion, eventually resulting in a tree structure with a single bounding volume at the top of the tree. Bounding volume hierarchies are used to support several operations on sets of geometric objects efficiently, such as in collision detection and ray tracing.
+</p><p>Although wrapping objects in bounding volumes and performing collision tests on them before testing the object geometry itself simplifies the tests and can result in significant performance improvements, the same number of pairwise tests between bounding volumes are still being performed. By arranging the bounding volumes into a bounding volume hierarchy, the time complexity (the number of tests performed) can be reduced to logarithmic in the number of objects. With such a hierarchy in place, during collision testing, children volumes do not have to be examined if their parent volumes are not intersected (for example, if the bounding volumes of two bumper cars do not intersect, the bounding volumes of the bumpers themselves would not have to be checked for collision).
+</p>
+
+<h2><span class="mw-headline" id="BVH_design_issues">BVH design issues</span><span class="mw-editsection"></span></h2>
+<p>The choice of bounding volume is determined by a trade-off between two objectives. On the one hand, we would like to use bounding volumes that have a very simple shape. Thus, we need only a few bytes to store them, and intersection tests and distance computations are simple and fast. On the other hand, we would like to have bounding volumes that fit the corresponding data objects very tightly. One of the most commonly used bounding volumes is an axis-aligned minimum bounding box. The axis-aligned minimum bounding box for a given set of data objects is easy to compute, needs only few bytes of storage, and robust intersection tests are easy to implement and extremely fast.
+</p><p>There are several desired properties for a BVH that should be taken into consideration when designing one for a specific application:<sup class="reference" id="cite_ref-1">[1]</sup>
+</p>
+<ul><li>The nodes contained in any given sub-tree should be near each other. The lower down the tree, the nearer the nodes should be to each other.</li>
+<li>Each node in the BVH should be of minimum volume.</li>
+<li>The sum of all bounding volumes should be minimal.</li>
+<li>Greater attention should be paid to nodes near the root of the BVH. Pruning a node near the root of the tree removes more objects from further consideration.</li>
+<li>The volume of overlap of sibling nodes should be minimal.</li>
+<li>The BVH should be balanced with respect to both its node structure and its content. Balancing allows as much of the BVH as possible to be pruned whenever a branch is not traversed into.</li></ul>
+<p>In terms of the structure of BVH, it has to be decided what degree (the number of children) and height to use in the tree representing the BVH. A tree of a low degree will be of greater height. That increases root-to-leaf traversal time. On the other hand, less work has to be expended at each visited node to check its children for overlap. The opposite holds for a high-degree tree: although the tree will be of smaller height, more work is spent at each node. In practice, binary trees (degree = 2) are by far the most common. One of the main reasons is that binary trees are easier to build.<sup class="reference" id="cite_ref-2">[2]</sup>
+</p>
+<h2><span class="mw-headline" id="Construction">Construction</span><span class="mw-editsection"></span></h2>
+<p>There are three primary categories of tree construction methods: top-down, bottom-up, and insertion methods. 
+</p><p><i>Top-down methods</i> proceed by partitioning the input set into two (or more) subsets, bounding them in the chosen bounding volume, then keep partitioning (and bounding) recursively until each subset consists of only a single primitive (leaf nodes are reached). Top-down methods are easy to implement, fast to construct and by far the most popular, but do not result in the best possible trees in general. 
+</p><p><i>Bottom-up methods</i> start with the input set as the leaves of the tree and then group two (or more) of them to form a new (internal) node, proceed in the same manner until everything has been grouped under a single node (the root of the tree). Bottom-up methods are more difficult to implement, but likely to produce better trees in general.  Some recent studies (e.g. <sup class="reference" id="cite_ref-AAC_3-0">[3]</sup>) indicate that in low-dimensional space, the construction speed can be largely improved (which matches or outperforms the top-down approaches) by sorting objects using space-filling curve and applying approximate clustering based on this sequential order.
+</p><p>Both top-down and bottom-up methods are considered <i>off-line methods</i> as they both require all primitives to be available before construction starts. <i>Insertion methods</i> build the tree by inserting one object at a time, starting from an empty tree. The insertion location should be chosen that causes the tree to grow as little as possible according to a cost metric. Insertion methods are considered <i>on-line methods</i> since they do not require all primitives to be available before construction starts and thus allow updates to be performed at runtime.
+</p>
+<h2><span class="mw-headline" id="Usage">Usage</span><span class="mw-editsection"></span></h2>
+<p>BVHs are often used in ray tracing to eliminate potential intersection candidates within a scene by omitting geometric objects located in bounding volumes which are not intersected by the current ray.<sup class="reference" id="cite_ref-4">[4]</sup> Additionally, as common performance optimization, when only closest intersection of the ray is of interest, as the ray tracing traversal algorithm is descending nodes, and multiple child nodes are intersecting the ray, traversal algorithm will consider the closer volume first, and if it finds intersection there, which is definitively closer than any possible intersection in second (or other) volume (i.e. volumes are non-overlapping), it can safely ignore the second volume. Similar optimizations during BVH traversal can be employed when descending into child volumes of the second volume, to restrict further search space and thus reduce traversal time.
+</p><p>Additionally, many specialized methods were developed for BVHs, especially ones based on AABB (axis-aligned bounding boxes), such as parallel building, SIMD accelerated traversal, good split heuristics (SAH - surface-area heuristic is often used in ray tracing), wide trees (4-ary and 16-ary trees provide some performance benefits, both in build and query performance for practical scenes), and quick structure update (in real time applications objects might be moving or deforming spatially relatively slowly or be still, and same BVH can be updated to be still valid without doing a full rebuild from scratch).
+</p><p>BVHs also naturally support inserting and removing objects without full rebuild, but with resulting BVH having usually worse query performance compared to full rebuild. To solve these problems (as well as quick structure update being sub-optimal), the new BVH could be built asynchronously in parallel or synchronously, after sufficient change is detected (leaf overlap is big, number of insertions and removals crossed the threshold, and other more refined heuristics).
+</p><p>BVHs can also be combined with scene graph methods, and geometry instancing, to reduce memory usage, improve structure update and full rebuild performance, as well as guide better object or primitive splitting.
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Binary space partitioning, octree, <i>k</i>-d tree</li>
+<li>R-tree, R+-tree, R*-tree and X-tree</li>
+<li>M-tree</li>
+<li>Scene graph</li>
+<li>Sweep and prune</li>
+<li>Hierarchical clustering</li>
+<li>Optix</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>BVH in Javascript.</li>
+<li>Dynamic BVH in C#</li>
+<li>Intel Embree open source BVH library</li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw2312
+Cached time: 20221223231505
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.127 seconds
+Real time usage: 0.182 seconds
+Preprocessor visited node count: 440/1000000
+Post‐expand include size: 9857/2097152 bytes
+Template argument size: 390/2097152 bytes
+Highest expansion depth: 8/100
+Expensive parser function count: 0/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 12221/5000000 bytes
+Lua time usage: 0.077/10.000 seconds
+Lua memory usage: 4373553/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  161.772      1 -total
+ 66.35%  107.341      1 Template:Reflist
+ 42.92%   69.431      3 Template:Cite_book
+ 32.34%   52.314      1 Template:Short_description
+ 16.37%   26.486      2 Template:Pagetype
+ 13.63%   22.047      1 Template:Harvnb
+ 10.05%   16.262      3 Template:Main_other
+  8.97%   14.507      1 Template:SDcat
+  1.22%    1.977      1 Template:Short_description/lowercasecheck
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:3950612-0!canonical and timestamp 20221223231505 and revision id 1094757939.
+ -->
+</div></body>
+</html>

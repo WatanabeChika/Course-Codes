@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>random_search</title>
+</head>
+<body>
+<div class="mw-parser-output"><p><b>Random search (RS)</b> is a family of numerical optimization methods that do not require the gradient of the problem to be optimized, and RS can hence be used on functions that are not continuous or differentiable. Such optimization methods are also known as direct-search, derivative-free, or black-box methods.
+</p><p>Anderson in 1953 reviewed the progress of methods in finding maximum or minimum of problems using a series of guesses distributed with a certain order or pattern in the parameter searching space, e.g. a confounded design with exponentially distributed spacings/steps.<sup class="reference" id="cite_ref-Anderson_1953_JASA_random_search_1-0">[1]</sup> This search goes on sequentially on each parameter and refines iteratively on the best guesses from the last sequence. The pattern can be a grid (factorial) search of all parameters, a sequential search on each parameter, or a combination of both. The method was developed to screen the experimental conditions in chemical reactions by a number of scientists listed in Anderson's paper. A MATLAB code reproducing the sequential procedure for the general non-linear regression of an example mathematical model can be found here (FitNGuess @ GitHub).<sup class="reference" id="cite_ref-nkchenjx_FigNGuess_GitHub_2-0">[2]</sup>
+</p><p>The name "random search" is attributed to Rastrigin<sup class="reference" id="cite_ref-rastrigin63convergence_3-0">[3]</sup> who made an early presentation of RS along with basic mathematical analysis. RS works by iteratively moving to better positions in the search space, which are sampled from a hypersphere surrounding the current position.
+</p><p>The algorithm described herein is a type of local random search, where every iteration is dependent on the prior iteration's candidate solution. There are alternative random search methods that sample from the entirety of the search space (for example pure random search or uniform global random search), but these are not described in this article. 
+</p><p>Random search has been used in artificial neural network for hyper-parameter optimization.<sup class="reference" id="cite_ref-BergstraBengiio2012JMLR_RS_4-0">[4]</sup>
+</p><p>If good parts of the search space occupy 5% of the volume the chances of hitting a good configuration in search space is 5%. The probability of finding at least one good configuration is above 95% after trying out 60 configurations (<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1-0.95^{60}=0.953&gt;0.95}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mo>−<!-- − --></mo>
+<msup>
+<mn>0.95</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>60</mn>
+</mrow>
+</msup>
+<mo>=</mo>
+<mn>0.953</mn>
+<mo>&gt;</mo>
+<mn>0.95</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1-0.95^{60}=0.953&gt;0.95}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 1-0.95^{60}=0.953&gt;0.95}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/10d6130ba40831b325bfe0b136e160f1d39b6b0d" style="vertical-align: -0.505ex; width:25.641ex; height:2.843ex;"/></span>, making use of the counterprobability).
+</p>
+
+<h2><span class="mw-headline" id="Algorithm">Algorithm</span><span class="mw-editsection"></span></h2>
+<p>Let <span class="texhtml"><i>f</i>: ℝ<sup><i>n</i></sup> → ℝ</span> be the fitness or cost function which must be minimized. Let <span class="texhtml"><b>x</b> ∈ ℝ<sup><i>n</i></sup></span> designate a position or candidate solution in the search-space. The basic RS algorithm can then be described as:
+</p>
+<ol><li>Initialize <b>x</b> with a random position in the search-space.</li>
+<li>Until a termination criterion is met (e.g. number of iterations performed, or adequate fitness reached), repeat the following:
+<ol><li>Sample a new position <b>y</b> from the hypersphere of a given radius surrounding the current position <b>x</b> (see e.g. Marsaglia's technique for sampling a hypersphere.)</li>
+<li>If <span class="texhtml"><i>f</i>(<b>y</b>) &lt; <i>f</i>(<b>x</b>)</span> then move to the new position by setting <span class="texhtml"><b>x</b> = <b>y</b></span></li></ol></li></ol>
+<h2><span class="mw-headline" id="Variants">Variants</span><span class="mw-editsection"></span></h2>
+
+<p>Truly random search is purely by luck and varies from very costive to very lucky, but the structured random search is strategic. A number of RS variants have been introduced in the literature with structured sampling in the searching space:
+</p>
+<ul><li>Friedman-Savage procedure: Sequentially search each parameter with a set of guesses that have a space pattern between the initial guess and the boundaries.<sup class="reference" id="cite_ref-Friedman-Savage_random_search_5-0">[5]</sup> An example of exponentially distributed steps can be found here in a MATLAB code (FigNGuess @ GitHub).<sup class="reference" id="cite_ref-nkchenjx_FigNGuess_GitHub_2-1">[2]</sup> This example code converges 1-2 orders of magnitude slower than the Levenberg–Marquardt algorithm, with an example also provided in the GitHub.</li>
+<li>Fixed Step Size Random Search (FSSRS) is Rastrigin's <sup class="reference" id="cite_ref-rastrigin63convergence_3-1">[3]</sup> basic algorithm which samples from a hypersphere of fixed radius.</li>
+<li>Optimum Step Size Random Search (OSSRS) by Schumer and Steiglitz <sup class="reference" id="cite_ref-schumer68adaptive_6-0">[6]</sup> is primarily a theoretical study on how to optimally adjust the radius of the hypersphere so as to allow for speedy convergence to the optimum. The actual implementation of the OSSRS needs to approximate this optimal radius by repeated sampling and is therefore expensive to execute.</li>
+<li>Adaptive Step Size Random Search (ASSRS) by Schumer and Steiglitz <sup class="reference" id="cite_ref-schumer68adaptive_6-1">[6]</sup> attempts to heuristically adapt the hypersphere's radius: two new candidate solutions are generated, one with the current nominal step size and one with a larger step-size. The larger step size becomes the new nominal step size if and only if it leads to a larger improvement. If for several iterations neither of the steps leads to an improvement, the nominal step size is reduced.</li>
+<li>Optimized Relative Step Size Random Search (ORSSRS) by Schrack and Choit <sup class="reference" id="cite_ref-schrack76optimized_7-0">[7]</sup> approximate the optimal step size by a simple exponential decrease. However, the formula for computing the decrease factor is somewhat complicated.</li></ul>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Random optimization is a closely related family of optimization methods which sample from a normal distribution instead of a hypersphere.</li>
+<li>Luus–Jaakola is a closely related optimization method using a uniform distribution in its sampling and a simple formula for exponentially decreasing the sampling range.</li>
+<li>Pattern search takes steps along the axes of the search-space using exponentially decreasing step sizes.</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+
+<!-- 
+NewPP limit report
+Parsed by mw2331
+Cached time: 20221221015657
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.153 seconds
+Real time usage: 0.208 seconds
+Preprocessor visited node count: 659/1000000
+Post‐expand include size: 18818/2097152 bytes
+Template argument size: 698/2097152 bytes
+Highest expansion depth: 8/100
+Expensive parser function count: 0/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 26336/5000000 bytes
+Lua time usage: 0.094/10.000 seconds
+Lua memory usage: 3884621/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  164.237      1 -total
+ 62.68%  102.940      1 Template:Reflist
+ 45.46%   74.668      5 Template:Cite_journal
+ 25.59%   42.021      1 Template:Major_subfields_of_optimization
+ 24.50%   40.231      1 Template:Navbox
+ 10.25%   16.830      4 Template:Math
+  3.00%    4.920      1 Template:Cite_book
+  2.66%    4.372      1 Template:Cite_web
+  1.43%    2.347      5 Template:Main_other
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:27340816-0!canonical and timestamp 20221221015657 and revision id 1114307835.
+ -->
+</div></body>
+</html>

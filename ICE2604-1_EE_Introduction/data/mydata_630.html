@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>monotone_priority_queue</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p>In computer science, a <b>monotone priority queue</b> is a variant of the priority queue abstract data type in which the priorities of extracted items are required to form a monotonic sequence. That is, for a priority queue in which each successively extracted item is the one with the minimum priority (a min-heap), the minimum priority should be monotonically increasing. Conversely for a max-heap the maximum priority should be monotonically decreasing. The assumption of monotonicity arises naturally in several applications of priority queues, and can be used as a simplifying assumption to speed up certain types of priority queues.<sup class="reference" id="cite_ref-mehlhorn_1-0">[1]</sup><sup class="reference nowrap"><span title="Page / location: 128">: 128 </span></sup>
+</p><p>A necessary and sufficient condition on a monotone priority queue is that one never attempts to add an element with lower priority than the most recently extracted one.
+</p>
+<h2><span class="mw-headline" id="Applications">Applications</span><span class="mw-editsection"></span></h2>
+<p>Monotone priority queues arise naturally when arranging events in order of time, such as network timeouts or discrete event simulation.  An event can cause some action to be scheduled at some time in the future, but (real or simulated) causality makes attempts to schedule actions in the past meaningless.  
+</p><p>In Dijkstra's algorithm for the shortest path problem, vertices of a given weighted graph are extracted in increasing order by their distance from the starting vertex, and a priority queue is used to determine the closest remaining vertex to the starting vertex. Therefore, in this application, the priority queue operations are monotonic.
+</p><p>Similarly, in sweep line algorithms in computational geometry, events at which the sweep line crosses a point of interest are prioritized by the coordinate of the crossed point, and these events are extracted in monotonic ordering.
+A monotonic extraction order also occurs in the best-first version of branch and bound.<sup class="reference" id="cite_ref-mehlhorn_1-1">[1]</sup><sup class="reference nowrap"><span title="Page: 128">: 128 </span></sup>
+</p>
+<h2><span class="mw-headline" id="Data_structures">Data structures</span><span class="mw-editsection"></span></h2>
+<p>Any priority queue that can handle non-monotone extraction operations can also handle monotone extractions, but some priority queues are specialized to work only for monotone extractions or work better when the extractions are monotone.
+For instance, the bucket queue is a simple priority queue data structure consisting of an array indexed by priority, where each array cell contains a bucket of items with that priority. An extract-min operation performs a sequential search for the first non-empty bucket and chooses an arbitrary item in that bucket. For non-monotone extractions, each extract-min operation takes time (in the worst case) proportional to the array length (the number of distinct priorities).
+However, when used as a monotone priority queue, the search for the next non-empty bucket can begin at the priority of the most recent previous extract-min operation rather than at the start of the array. This optimization causes the total time for a sequence of operations to be proportional to the sum of the number of operations and the length of the array, rather than (as in the non-monotonic case) the product of these two quantities.<sup class="reference" id="cite_ref-2">[2]</sup>
+</p><p>Cherkassky, Goldberg &amp; Silverstein (1999) describe a more complicated scheme called a Heap-on-top (HOT) queue for monotone priority queues with integer priorities, based on multilevel bucketing together with a conventional heap priority queue. Using this method they obtain a structure that can maintain items with integer priorities in a range from <span class="texhtml">0</span> to a parameter <span class="texhtml">C</span>. The hot queue uses constant time per insertion or decrease-priority operation and amortized time <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O((\log C)^{1/3}(\log \log C)^{1/2})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>C</mi>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>3</mn>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>C</mi>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>2</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O((\log C)^{1/3}(\log \log C)^{1/2})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O((\log C)^{1/3}(\log \log C)^{1/2})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f1e4ebbd1d95ad80d49ea27ca888f5a13e16e969" style="vertical-align: -0.838ex; width:26.207ex; height:3.343ex;"/></span> per extract-min operation.<sup class="reference" id="cite_ref-3">[3]</sup> Another related structure of Raman (1996) allows the priorities to be machine integers, and again allows constant-time insertion and decrease-priority operations, with extract-min operations on a priority queue of <span class="texhtml mvar" style="font-style:italic;">n</span> items taking amortized time <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O({\sqrt {\log n\log \log n}})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</msqrt>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O({\sqrt {\log n\log \log n}})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O({\sqrt {\log n\log \log n}})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8f53a9288ae98ed24889d991345175374ba3941a" style="vertical-align: -1.171ex; width:19.159ex; height:3.509ex;"/></span>.<sup class="reference" id="cite_ref-4">[4]</sup>
+These results lead to a corresponding speedup in Dijkstra's algorithm for graphs with integer edge weights.
+</p>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<!-- 
+NewPP limit report
+Parsed by mw2275
+Cached time: 20221224102213
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1]
+CPU time usage: 0.199 seconds
+Real time usage: 0.299 seconds
+Preprocessor visited node count: 1233/1000000
+Post‐expand include size: 12216/2097152 bytes
+Template argument size: 800/2097152 bytes
+Highest expansion depth: 16/100
+Expensive parser function count: 0/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 14415/5000000 bytes
+Lua time usage: 0.108/10.000 seconds
+Lua memory usage: 4953015/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  249.612      1 -total
+ 44.46%  110.972      1 Template:Reflist
+ 29.26%   73.033      1 Template:Cite_book
+ 23.19%   57.896      1 Template:Short_description
+ 12.70%   31.695      2 Template:Pagetype
+ 12.22%   30.511      2 Template:Harvtxt
+ 10.49%   26.178      2 Template:R/superscript
+  9.60%   23.970      1 Template:Rp
+  7.18%   17.924      3 Template:Citation
+  6.76%   16.885      1 Template:R
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:43920111-0!canonical and timestamp 20221224102212 and revision id 1029534912.
+ -->
+</div></body>
+</html>

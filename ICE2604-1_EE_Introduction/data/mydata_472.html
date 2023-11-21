@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Munkres'_assignment_algorithm</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p>The <b>Hungarian method</b> is a combinatorial optimization algorithm that solves the assignment problem in polynomial time and which anticipated later primal–dual methods. It was developed and published in 1955 by Harold Kuhn, who gave the name "Hungarian method" because the algorithm was largely based on the earlier works of two Hungarian mathematicians: Dénes Kőnig and Jenő Egerváry.<sup class="reference" id="cite_ref-kuhn1955_1-0">[1]</sup><sup class="reference" id="cite_ref-kuhn1956_2-0">[2]</sup>
+</p><p>James Munkres reviewed the algorithm in 1957 and observed that it is (strongly) polynomial.<sup class="reference" id="cite_ref-munkres_3-0">[3]</sup> Since then the algorithm has been known also as the <b>Kuhn–Munkres algorithm</b> or <b>Munkres assignment algorithm</b>. The time complexity of the original algorithm was <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n^{4})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>4</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n^{4})}</annotation>
+</semantics>
+</math></span><img alt="O(n^{4})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ae98b94e039c8eafabf6fe6a0128d232ed7d21f6" style="vertical-align: -0.838ex; width:6.032ex; height:3.176ex;"/></span>, however Edmonds and Karp, and independently Tomizawa noticed that it can be modified to achieve an <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n^{3})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n^{3})}</annotation>
+</semantics>
+</math></span><img alt="O(n^{3})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6b04f5c5cfea38f43406d9442387ad28555e2609" style="vertical-align: -0.838ex; width:6.032ex; height:3.176ex;"/></span> running time.<sup class="reference" id="cite_ref-4">[4]</sup><sup class="reference" id="cite_ref-5">[5]</sup><sup class="noprint Inline-Template" style="white-space:nowrap;">[<i><span title="What kind of change is needed? (November 2019)">how?</span></i>]</sup> One of the most popular<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (November 2019)">citation needed</span></i>]</sup> <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n^{3})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n^{3})}</annotation>
+</semantics>
+</math></span><img alt="O(n^{3})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6b04f5c5cfea38f43406d9442387ad28555e2609" style="vertical-align: -0.838ex; width:6.032ex; height:3.176ex;"/></span> variants is the Jonker–Volgenant algorithm.<sup class="reference" id="cite_ref-JVAlg_6-0">[6]</sup> Ford and Fulkerson extended the method to general maximum flow problems in form of the Ford–Fulkerson algorithm. In 2006, it was discovered that Carl Gustav Jacobi had solved the assignment problem in the 19th century, and the solution had been published posthumously in 1890 in Latin.<sup class="reference" id="cite_ref-7">[7]</sup>
+</p>
+
+<h2><span class="mw-headline" id="The_problem">The problem</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<h3><span class="mw-headline" id="Example">Example</span><span class="mw-editsection"></span></h3>
+<p>In this simple example there are three workers: Paul, Dave, and Chris. One of them has to clean the bathroom, another sweep the floors and the third washes the windows, but they each demand different pay for the various tasks. The problem is to find the lowest-cost way to assign the jobs. The problem can be represented in a matrix of the costs of the workers doing the jobs. For example:
+</p>
+<table border="1" class="wikitable">
+<tbody><tr>
+<th>
+</th>
+<th>Clean bathroom
+</th>
+<th>Sweep floors
+</th>
+<th>Wash windows
+</th></tr>
+<tr>
+<th>Paul
+</th>
+<td>$2
+</td>
+<td>$3
+</td>
+<td>$3
+</td></tr>
+<tr>
+<th>Dave
+</th>
+<td>$3
+</td>
+<td>$2
+</td>
+<td>$3
+</td></tr>
+<tr>
+<th>Chris
+</th>
+<td>$3
+</td>
+<td>$3
+</td>
+<td>$2
+</td></tr></tbody></table>
+<p>The Hungarian method, when applied to the above table, would give the minimum cost: this is $6, achieved by having Paul clean the bathroom, Dave sweep the floors, and Chris wash the windows.
+</p>
+<h3><span class="mw-headline" id="Matrix_formulation">Matrix formulation</span><span class="mw-editsection"></span></h3>
+<p>In the matrix formulation, we are given a nonnegative <i>n</i>×<i>n</i> matrix, where the element in the <i>i</i>-th row and <i>j</i>-th column represents the cost of assigning the <i>j</i>-th job to the <i>i</i>-th worker. We have to find an assignment of the jobs to the workers, such that each job is assigned to one worker and each worker is assigned one job, such that the total cost of assignment is minimum.
+</p><p>This can be expressed as permuting the rows and columns of a cost matrix <i>C</i> to minimize the trace of a matrix:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \min _{L,R}{\rm {Tr}}(LCR)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<munder>
+<mo form="prefix" movablelimits="true">min</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>L</mi>
+<mo>,</mo>
+<mi>R</mi>
+</mrow>
+</munder>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">T</mi>
+<mi mathvariant="normal">r</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>L</mi>
+<mi>C</mi>
+<mi>R</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \min _{L,R}{\rm {Tr}}(LCR)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \min _{L,R}{\rm {Tr}}(LCR)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/56d540c9c0a240c7299dcde3266af8d03ec45365" style="vertical-align: -2.338ex; width:13.775ex; height:4.343ex;"/></span></dd></dl>
+<p>where <i>L</i> and <i>R</i> are permutation matrices.
+</p><p>If the goal is to find the assignment that yields the <i>maximum</i> cost, the problem can be solved by negating the cost matrix <i>C</i>.
+</p>
+<h3><span class="mw-headline" id="Bipartite_graph_formulation">Bipartite graph formulation</span><span class="mw-editsection"></span></h3>
+<p>The algorithm can equivalently be described by formulating the problem using a bipartite graph. We have a complete bipartite graph <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G=(S,T;E)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>G</mi>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<mi>S</mi>
+<mo>,</mo>
+<mi>T</mi>
+<mo>;</mo>
+<mi>E</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G=(S,T;E)}</annotation>
+</semantics>
+</math></span><img alt="G=(S, T; E)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/19279c22d75f6b0a371cfdf17df3d8c62f6a8219" style="vertical-align: -0.838ex; width:13.713ex; height:2.843ex;"/></span> with <span class="texhtml mvar" style="font-style:italic;">n</span> worker vertices (<span class="texhtml mvar" style="font-style:italic;">S</span>) and <span class="texhtml mvar" style="font-style:italic;">n</span> job vertices (<span class="texhtml mvar" style="font-style:italic;">T</span>), and each edge has a nonnegative cost <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c(i,j)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo>,</mo>
+<mi>j</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c(i,j)}</annotation>
+</semantics>
+</math></span><img alt="c(i,j)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6daa352058a7ba2cf2b4d1faee57c37669bc89fe" style="vertical-align: -0.838ex; width:5.611ex; height:2.843ex;"/></span>. We want to find a perfect matching with a minimum total cost.
+</p>
+<h2><span class="mw-headline" id="The_algorithm_in_terms_of_bipartite_graphs">The algorithm in terms of bipartite graphs</span><span class="mw-editsection"></span></h2>
+<p>Let us call a function <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y:(S\cup T)\to \mathbb {R} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>y</mi>
+<mo>:</mo>
+<mo stretchy="false">(</mo>
+<mi>S</mi>
+<mo>∪<!-- ∪ --></mo>
+<mi>T</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">→<!-- → --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">R</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y:(S\cup T)\to \mathbb {R} }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle y:(S\cup T)\to \mathbb {R} }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4d1b0dc6f1768cde09d95d780d20032225b95f0c" style="vertical-align: -0.838ex; width:15.912ex; height:2.843ex;"/></span> a <b>potential</b> if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y(i)+y(j)\leq c(i,j)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>y</mi>
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>y</mi>
+<mo stretchy="false">(</mo>
+<mi>j</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mi>c</mi>
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo>,</mo>
+<mi>j</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y(i)+y(j)\leq c(i,j)}</annotation>
+</semantics>
+</math></span><img alt="y(i)+y(j) \leq c(i, j)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/adf07322592c8f0b4f04512478b24c4351e8b072" style="vertical-align: -0.838ex; width:19.24ex; height:2.843ex;"/></span> for each <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i\in S,j\in T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>S</mi>
+<mo>,</mo>
+<mi>j</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i\in S,j\in T}</annotation>
+</semantics>
+</math></span><img alt="i \in S, j \in T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fcd07db8ddd7ca161fd0a4a1ecfc26dbef961b69" style="vertical-align: -0.671ex; width:11.611ex; height:2.509ex;"/></span>. The <i>value</i> of potential <span class="texhtml mvar" style="font-style:italic;">y</span> is the sum of the potential over all vertices: <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sum _{v\in S\cup T}y(v)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<munder>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>v</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>S</mi>
+<mo>∪<!-- ∪ --></mo>
+<mi>T</mi>
+</mrow>
+</munder>
+<mi>y</mi>
+<mo stretchy="false">(</mo>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sum _{v\in S\cup T}y(v)}</annotation>
+</semantics>
+</math></span><img alt="\sum_{v\in S\cup T} y(v)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2860bc12144fb8083b455f424d09ee01400a802b" style="vertical-align: -3.171ex; width:9.686ex; height:5.676ex;"/></span>.
+</p><p>The cost of each perfect matching is at least the value of each potential: the total cost of the matching is the sum of costs of all edges; the cost of each edge is at least the sum of potentials of its endpoints; since the matching is perfect, each vertex is an endpoint of exactly one edge; hence the total cost is at least the total potential.
+</p><p>The Hungarian method finds a perfect matching and a potential such that the matching cost equals the potential value. This proves that both of them are optimal. In fact, the Hungarian method finds a perfect matching of <b>tight edges</b>: an edge <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle ij}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+<mi>j</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle ij}</annotation>
+</semantics>
+</math></span><img alt="ij" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/53fcc7b57da64979c370eb150eb5a61a625a08e8" style="vertical-align: -0.671ex; width:1.761ex; height:2.509ex;"/></span> is called tight for a potential <span class="texhtml mvar" style="font-style:italic;">y</span> if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y(i)+y(j)=c(i,j)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>y</mi>
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>y</mi>
+<mo stretchy="false">(</mo>
+<mi>j</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>c</mi>
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo>,</mo>
+<mi>j</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y(i)+y(j)=c(i,j)}</annotation>
+</semantics>
+</math></span><img alt="y(i)+y(j) = c(i, j)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bb0ebc7f369036d7d53f98a091b17049c8d678d2" style="vertical-align: -0.838ex; width:19.24ex; height:2.843ex;"/></span>. Let us denote the subgraph of tight edges by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G_{y}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>G</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>y</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G_{y}}</annotation>
+</semantics>
+</math></span><img alt="G_y" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9edc1535536d90898dcc0aea79aa3b1919c54b2d" style="vertical-align: -1.005ex; width:2.876ex; height:2.843ex;"/></span>. The cost of a perfect matching in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G_{y}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>G</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>y</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G_{y}}</annotation>
+</semantics>
+</math></span><img alt="G_y" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9edc1535536d90898dcc0aea79aa3b1919c54b2d" style="vertical-align: -1.005ex; width:2.876ex; height:2.843ex;"/></span> (if there is one) equals the value of <span class="texhtml mvar" style="font-style:italic;">y</span>.
+</p><p>During the algorithm we maintain a potential  <span class="texhtml mvar" style="font-style:italic;">y</span> and an orientation of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G_{y}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>G</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>y</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G_{y}}</annotation>
+</semantics>
+</math></span><img alt="G_y" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9edc1535536d90898dcc0aea79aa3b1919c54b2d" style="vertical-align: -1.005ex; width:2.876ex; height:2.843ex;"/></span> (denoted by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\overrightarrow {G_{y}}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<msub>
+<mi>G</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>y</mi>
+</mrow>
+</msub>
+<mo>→<!-- → --></mo>
+</mover>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\overrightarrow {G_{y}}}}</annotation>
+</semantics>
+</math></span><img alt="\overrightarrow{G_y}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/494c7745f5b60faa2c5c741eb5dea0d4fe7342eb" style="vertical-align: -1.005ex; margin-top: -0.398ex; width:3.006ex; height:4.509ex;"/></span>) which has the property that the edges oriented from <span class="texhtml mvar" style="font-style:italic;">T</span> to <span class="texhtml mvar" style="font-style:italic;">S</span> form a matching <span class="texhtml mvar" style="font-style:italic;">M</span>. Initially, <span class="texhtml mvar" style="font-style:italic;">y</span> is 0 everywhere, and all edges are oriented from <span class="texhtml mvar" style="font-style:italic;">S</span> to <span class="texhtml mvar" style="font-style:italic;">T</span> (so <span class="texhtml mvar" style="font-style:italic;">M</span> is empty). In each step, either we modify <span class="texhtml mvar" style="font-style:italic;">y</span> so that its value increases, or modify the orientation to obtain a matching with more edges. We maintain the invariant that all the edges of <span class="texhtml mvar" style="font-style:italic;">M</span> are tight.  We are done if <span class="texhtml mvar" style="font-style:italic;">M</span> is a perfect matching.
+</p><p>In a general step, let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R_{S}\subseteq S}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>S</mi>
+</mrow>
+</msub>
+<mo>⊆<!-- ⊆ --></mo>
+<mi>S</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R_{S}\subseteq S}</annotation>
+</semantics>
+</math></span><img alt="R_S \subseteq S" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7e84a3e87343472d38b88d4206813eecf85c2d3c" style="vertical-align: -0.671ex; width:7.654ex; height:2.509ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R_{T}\subseteq T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>T</mi>
+</mrow>
+</msub>
+<mo>⊆<!-- ⊆ --></mo>
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R_{T}\subseteq T}</annotation>
+</semantics>
+</math></span><img alt="R_T \subseteq T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0dff9fe111d2b4fa70593e264ea7f17a2fba1279" style="vertical-align: -0.671ex; width:7.888ex; height:2.509ex;"/></span> be the vertices not covered by <span class="texhtml mvar" style="font-style:italic;">M</span> (so <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R_{S}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>S</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R_{S}}</annotation>
+</semantics>
+</math></span><img alt="R_{S}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e5aad493910032da9a1e9ebd853fb6f5b6dceffd" style="vertical-align: -0.671ex; width:3.056ex; height:2.509ex;"/></span> consists of the vertices in <span class="texhtml mvar" style="font-style:italic;">S</span> with no incoming edge and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R_{T}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>T</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R_{T}}</annotation>
+</semantics>
+</math></span><img alt="R_T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9eb988dc610b1c617907dbb02121ac853d79ebd1" style="vertical-align: -0.671ex; width:3.153ex; height:2.509ex;"/></span> consists of the vertices in <span class="texhtml mvar" style="font-style:italic;">T</span> with no outgoing edge). Let <span class="texhtml mvar" style="font-style:italic;">Z</span> be the set of vertices reachable in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\overrightarrow {G_{y}}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<msub>
+<mi>G</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>y</mi>
+</mrow>
+</msub>
+<mo>→<!-- → --></mo>
+</mover>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\overrightarrow {G_{y}}}}</annotation>
+</semantics>
+</math></span><img alt="\overrightarrow{G_y}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/494c7745f5b60faa2c5c741eb5dea0d4fe7342eb" style="vertical-align: -1.005ex; margin-top: -0.398ex; width:3.006ex; height:4.509ex;"/></span> from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R_{S}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>S</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R_{S}}</annotation>
+</semantics>
+</math></span><img alt="R_{S}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e5aad493910032da9a1e9ebd853fb6f5b6dceffd" style="vertical-align: -0.671ex; width:3.056ex; height:2.509ex;"/></span> by a directed path only following edges that are tight. This can be computed by breadth-first search.
+</p><p>If <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R_{T}\cap Z}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>T</mi>
+</mrow>
+</msub>
+<mo>∩<!-- ∩ --></mo>
+<mi>Z</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R_{T}\cap Z}</annotation>
+</semantics>
+</math></span><img alt="R_T \cap Z" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/125c5b85c5caee0d2c87e75ef711066326f4e221" style="vertical-align: -0.671ex; width:7.416ex; height:2.509ex;"/></span> is nonempty, then reverse the orientation of a directed path in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\overrightarrow {G_{y}}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<msub>
+<mi>G</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>y</mi>
+</mrow>
+</msub>
+<mo>→<!-- → --></mo>
+</mover>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\overrightarrow {G_{y}}}}</annotation>
+</semantics>
+</math></span><img alt="\overrightarrow{G_y}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/494c7745f5b60faa2c5c741eb5dea0d4fe7342eb" style="vertical-align: -1.005ex; margin-top: -0.398ex; width:3.006ex; height:4.509ex;"/></span> from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R_{S}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>S</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R_{S}}</annotation>
+</semantics>
+</math></span><img alt="R_{S}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e5aad493910032da9a1e9ebd853fb6f5b6dceffd" style="vertical-align: -0.671ex; width:3.056ex; height:2.509ex;"/></span> to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R_{T}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>T</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R_{T}}</annotation>
+</semantics>
+</math></span><img alt="R_T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9eb988dc610b1c617907dbb02121ac853d79ebd1" style="vertical-align: -0.671ex; width:3.153ex; height:2.509ex;"/></span>. Thus the size of the corresponding matching increases by 1.
+</p><p>If <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R_{T}\cap Z}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>T</mi>
+</mrow>
+</msub>
+<mo>∩<!-- ∩ --></mo>
+<mi>Z</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R_{T}\cap Z}</annotation>
+</semantics>
+</math></span><img alt="R_T \cap Z" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/125c5b85c5caee0d2c87e75ef711066326f4e221" style="vertical-align: -0.671ex; width:7.416ex; height:2.509ex;"/></span> is empty, then let
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Delta :=\min\{c(i,j)-y(i)-y(j):i\in Z\cap S,j\in T\setminus Z\}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mo>:=</mo>
+<mo form="prefix" movablelimits="true">min</mo>
+<mo fence="false" stretchy="false">{</mo>
+<mi>c</mi>
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo>,</mo>
+<mi>j</mi>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mi>y</mi>
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mi>y</mi>
+<mo stretchy="false">(</mo>
+<mi>j</mi>
+<mo stretchy="false">)</mo>
+<mo>:</mo>
+<mi>i</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>Z</mi>
+<mo>∩<!-- ∩ --></mo>
+<mi>S</mi>
+<mo>,</mo>
+<mi>j</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>T</mi>
+<mo class="MJX-variant">∖<!-- ∖ --></mo>
+<mi>Z</mi>
+<mo fence="false" stretchy="false">}</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Delta :=\min\{c(i,j)-y(i)-y(j):i\in Z\cap S,j\in T\setminus Z\}.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \Delta :=\min\{c(i,j)-y(i)-y(j):i\in Z\cap S,j\in T\setminus Z\}.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1e915eac548d688cb6c04d1cc4a1dde4df877712" style="vertical-align: -0.838ex; width:53.196ex; height:2.843ex;"/></span></dd></dl>
+<p><span class="texhtml">Δ</span> is well defined because at least one such edge <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle ij}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+<mi>j</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle ij}</annotation>
+</semantics>
+</math></span><img alt="ij" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/53fcc7b57da64979c370eb150eb5a61a625a08e8" style="vertical-align: -0.671ex; width:1.761ex; height:2.509ex;"/></span> must exist whenever the matching is not yet of maximum possible size (see the following section); it is positive because there are no tight edges between <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Z\cap S}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>Z</mi>
+<mo>∩<!-- ∩ --></mo>
+<mi>S</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Z\cap S}</annotation>
+</semantics>
+</math></span><img alt="Z \cap S" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2fc25d84714cf124ab31bcf47b1b154c6e056234" style="vertical-align: -0.338ex; width:5.762ex; height:2.176ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T\setminus Z}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+<mo class="MJX-variant">∖<!-- ∖ --></mo>
+<mi>Z</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T\setminus Z}</annotation>
+</semantics>
+</math></span><img alt="T \setminus Z" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5cdea6b7ee22a9815856bbcacc1d78d0b5b8b9ce" style="vertical-align: -0.838ex; width:5.511ex; height:2.843ex;"/></span>. Increase <span class="texhtml mvar" style="font-style:italic;">y</span> by <span class="texhtml">Δ</span> on the vertices of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Z\cap S}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>Z</mi>
+<mo>∩<!-- ∩ --></mo>
+<mi>S</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Z\cap S}</annotation>
+</semantics>
+</math></span><img alt="Z \cap S" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2fc25d84714cf124ab31bcf47b1b154c6e056234" style="vertical-align: -0.338ex; width:5.762ex; height:2.176ex;"/></span> and decrease <span class="texhtml mvar" style="font-style:italic;">y</span> by <span class="texhtml">Δ</span> on the vertices of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Z\cap T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>Z</mi>
+<mo>∩<!-- ∩ --></mo>
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Z\cap T}</annotation>
+</semantics>
+</math></span><img alt="Z \cap T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/df2e5aa7a71bbe86aa28b1bb8bbdc61fe5218f23" style="vertical-align: -0.338ex; width:5.899ex; height:2.176ex;"/></span>. The resulting <span class="texhtml mvar" style="font-style:italic;">y</span> is still a potential, and although the graph <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G_{y}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>G</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>y</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G_{y}}</annotation>
+</semantics>
+</math></span><img alt="G_y" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9edc1535536d90898dcc0aea79aa3b1919c54b2d" style="vertical-align: -1.005ex; width:2.876ex; height:2.843ex;"/></span> changes, it still contains <span class="texhtml mvar" style="font-style:italic;">M</span> (see the next subsections). We orient the new edges from <span class="texhtml mvar" style="font-style:italic;">S</span> to <span class="texhtml mvar" style="font-style:italic;">T</span>. By the definition of <span class="texhtml">Δ</span> the set <span class="texhtml mvar" style="font-style:italic;">Z</span> of vertices reachable from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R_{S}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>S</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R_{S}}</annotation>
+</semantics>
+</math></span><img alt="R_{S}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e5aad493910032da9a1e9ebd853fb6f5b6dceffd" style="vertical-align: -0.671ex; width:3.056ex; height:2.509ex;"/></span> increases (note that the number of tight edges does not necessarily increase).
+</p><p>We repeat these steps until <span class="texhtml mvar" style="font-style:italic;">M</span> is a perfect matching, in which case it gives a minimum cost assignment. The running time of this version of the method is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n^{4})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>4</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n^{4})}</annotation>
+</semantics>
+</math></span><img alt="O(n^{4})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ae98b94e039c8eafabf6fe6a0128d232ed7d21f6" style="vertical-align: -0.838ex; width:6.032ex; height:3.176ex;"/></span>: <span class="texhtml mvar" style="font-style:italic;">M</span> is augmented <span class="texhtml mvar" style="font-style:italic;">n</span> times, and in a phase where <span class="texhtml mvar" style="font-style:italic;">M</span> is unchanged, there are at most <span class="texhtml mvar" style="font-style:italic;">n</span> potential changes (since <span class="texhtml mvar" style="font-style:italic;">Z</span> increases every time). The time sufficient for a potential change is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n^{2})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n^{2})}</annotation>
+</semantics>
+</math></span><img alt="O(n^{2})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6cd9594a16cb898b8f2a2dff9227a385ec183392" style="vertical-align: -0.838ex; width:6.032ex; height:3.176ex;"/></span>.
+</p>
+<h3><span class="mw-headline" id="Proof_that_the_algorithm_makes_progress">Proof that the algorithm makes progress</span><span class="mw-editsection"></span></h3>
+<p>We must show that as long as the matching is not of maximum possible size, the algorithm is always able to make progress — that is, to either increase the number of matched edges, or tighten at least one edge. It suffices to show that at least one of the following holds at every step:
+</p>
+<ul><li><span class="texhtml mvar" style="font-style:italic;">M</span> is of maximum possible size.</li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G_{y}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>G</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>y</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G_{y}}</annotation>
+</semantics>
+</math></span><img alt="G_y" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9edc1535536d90898dcc0aea79aa3b1919c54b2d" style="vertical-align: -1.005ex; width:2.876ex; height:2.843ex;"/></span> contains an augmenting path.</li>
+<li><span class="texhtml mvar" style="font-style:italic;">G</span> contains a <b>loose-tailed path</b>: a path from some vertex in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R_{S}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>S</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R_{S}}</annotation>
+</semantics>
+</math></span><img alt="R_{S}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e5aad493910032da9a1e9ebd853fb6f5b6dceffd" style="vertical-align: -0.671ex; width:3.056ex; height:2.509ex;"/></span> to a vertex in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T\setminus Z}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+<mo class="MJX-variant">∖<!-- ∖ --></mo>
+<mi>Z</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T\setminus Z}</annotation>
+</semantics>
+</math></span><img alt="T \setminus Z" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5cdea6b7ee22a9815856bbcacc1d78d0b5b8b9ce" style="vertical-align: -0.838ex; width:5.511ex; height:2.843ex;"/></span> that consists of any number (possibly zero) of tight edges followed by a single loose edge. The trailing loose edge of a loose-tailed path is thus from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Z\cap S}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>Z</mi>
+<mo>∩<!-- ∩ --></mo>
+<mi>S</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Z\cap S}</annotation>
+</semantics>
+</math></span><img alt="Z \cap S" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2fc25d84714cf124ab31bcf47b1b154c6e056234" style="vertical-align: -0.338ex; width:5.762ex; height:2.176ex;"/></span>, guaranteeing that <span class="texhtml">Δ</span> is well defined.</li></ul>
+<p>If <span class="texhtml mvar" style="font-style:italic;">M</span> is of maximum possible size, we are of course finished. Otherwise, by Berge's lemma, there must exist an augmenting path <span class="texhtml mvar" style="font-style:italic;">P</span> with respect to <span class="texhtml mvar" style="font-style:italic;">M</span> in the underlying graph <span class="texhtml mvar" style="font-style:italic;">G</span>. However, this path may not exist in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G_{y}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>G</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>y</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G_{y}}</annotation>
+</semantics>
+</math></span><img alt="G_y" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9edc1535536d90898dcc0aea79aa3b1919c54b2d" style="vertical-align: -1.005ex; width:2.876ex; height:2.843ex;"/></span>: Although every even-numbered edge in <span class="texhtml mvar" style="font-style:italic;">P</span> is tight by the definition of <span class="texhtml mvar" style="font-style:italic;">M</span>, odd-numbered edges may be loose and thus absent from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G_{y}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>G</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>y</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G_{y}}</annotation>
+</semantics>
+</math></span><img alt="G_y" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9edc1535536d90898dcc0aea79aa3b1919c54b2d" style="vertical-align: -1.005ex; width:2.876ex; height:2.843ex;"/></span>. One endpoint of <span class="texhtml mvar" style="font-style:italic;">P</span> is in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R_{S}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>S</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R_{S}}</annotation>
+</semantics>
+</math></span><img alt="R_{S}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e5aad493910032da9a1e9ebd853fb6f5b6dceffd" style="vertical-align: -0.671ex; width:3.056ex; height:2.509ex;"/></span>, the other in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R_{T}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>T</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R_{T}}</annotation>
+</semantics>
+</math></span><img alt="R_T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9eb988dc610b1c617907dbb02121ac853d79ebd1" style="vertical-align: -0.671ex; width:3.153ex; height:2.509ex;"/></span>; w.l.o.g., suppose it begins in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R_{S}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>S</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R_{S}}</annotation>
+</semantics>
+</math></span><img alt="R_{S}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e5aad493910032da9a1e9ebd853fb6f5b6dceffd" style="vertical-align: -0.671ex; width:3.056ex; height:2.509ex;"/></span>. If every edge on <span class="texhtml mvar" style="font-style:italic;">P</span> is tight, then it remains an augmenting path in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G_{y}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>G</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>y</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G_{y}}</annotation>
+</semantics>
+</math></span><img alt="G_y" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9edc1535536d90898dcc0aea79aa3b1919c54b2d" style="vertical-align: -1.005ex; width:2.876ex; height:2.843ex;"/></span> and we are done. Otherwise, let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle uv}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>u</mi>
+<mi>v</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle uv}</annotation>
+</semantics>
+</math></span><img alt="uv" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4e6b4c628431f1c0bdf17baf5b94d2f46caa4c5f" style="vertical-align: -0.338ex; width:2.457ex; height:1.676ex;"/></span> be the first loose edge on <span class="texhtml mvar" style="font-style:italic;">P</span>. If <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v\notin Z}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>v</mi>
+<mo>∉<!-- ∉ --></mo>
+<mi>Z</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v\notin Z}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle v\notin Z}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b11a6f1f16f4fb9077149b8c00485b434561bcd5" style="vertical-align: -0.838ex; width:5.649ex; height:2.676ex;"/></span> then we have found a loose-tailed path and we are done. Otherwise, <span class="texhtml mvar" style="font-style:italic;">v</span> is reachable from some other path <span class="texhtml mvar" style="font-style:italic;">Q</span> of tight edges from a vertex in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R_{S}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>S</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R_{S}}</annotation>
+</semantics>
+</math></span><img alt="R_{S}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e5aad493910032da9a1e9ebd853fb6f5b6dceffd" style="vertical-align: -0.671ex; width:3.056ex; height:2.509ex;"/></span>. Let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P_{v}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>P</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>v</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P_{v}}</annotation>
+</semantics>
+</math></span><img alt="P_{v}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0a5ca3e8cb08e2700ccc8b6988533df691de0761" style="vertical-align: -0.671ex; width:2.522ex; height:2.509ex;"/></span> be the subpath of <span class="texhtml mvar" style="font-style:italic;">P</span> beginning at <span class="texhtml mvar" style="font-style:italic;">v</span> and continuing to the end, and let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P'}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>P</mi>
+<mo>′</mo>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P'}</annotation>
+</semantics>
+</math></span><img alt="P'" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ef4efa52c8f47f06136f6ebfd1d68c1249aaca39" style="vertical-align: -0.338ex; width:2.506ex; height:2.509ex;"/></span> be the path formed by travelling along <span class="texhtml mvar" style="font-style:italic;">Q</span> until a vertex on <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P_{v}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>P</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>v</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P_{v}}</annotation>
+</semantics>
+</math></span><img alt="P_{v}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0a5ca3e8cb08e2700ccc8b6988533df691de0761" style="vertical-align: -0.671ex; width:2.522ex; height:2.509ex;"/></span> is reached, and then continuing to the end of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P_{v}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>P</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>v</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P_{v}}</annotation>
+</semantics>
+</math></span><img alt="P_{v}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0a5ca3e8cb08e2700ccc8b6988533df691de0761" style="vertical-align: -0.671ex; width:2.522ex; height:2.509ex;"/></span>. Observe that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P'}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>P</mi>
+<mo>′</mo>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P'}</annotation>
+</semantics>
+</math></span><img alt="P'" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ef4efa52c8f47f06136f6ebfd1d68c1249aaca39" style="vertical-align: -0.338ex; width:2.506ex; height:2.509ex;"/></span> is an augmenting path in <span class="texhtml mvar" style="font-style:italic;">G</span> with at least one fewer loose edge than <span class="texhtml mvar" style="font-style:italic;">P</span>. <span class="texhtml mvar" style="font-style:italic;">P</span> can be replaced with <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P'}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>P</mi>
+<mo>′</mo>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P'}</annotation>
+</semantics>
+</math></span><img alt="P'" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ef4efa52c8f47f06136f6ebfd1d68c1249aaca39" style="vertical-align: -0.338ex; width:2.506ex; height:2.509ex;"/></span> and this reasoning process iterated (formally, using induction on the number of loose edges) until either an augmenting path in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G_{y}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>G</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>y</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G_{y}}</annotation>
+</semantics>
+</math></span><img alt="G_y" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9edc1535536d90898dcc0aea79aa3b1919c54b2d" style="vertical-align: -1.005ex; width:2.876ex; height:2.843ex;"/></span> or a loose-tailed path in <span class="texhtml mvar" style="font-style:italic;">G</span> is found.
+</p>
+<h3><span class="mw-headline" id="Proof_that_adjusting_the_potential_y_leaves_M_unchanged">Proof that adjusting the potential <i>y</i> leaves <i>M</i> unchanged</span><span class="mw-editsection"></span></h3>
+<p>To show that every edge in <span class="texhtml mvar" style="font-style:italic;">M</span> remains after adjusting <span class="texhtml mvar" style="font-style:italic;">y</span>, it suffices to show that for an arbitrary edge in <span class="texhtml mvar" style="font-style:italic;">M</span>, either both of its endpoints, or neither of them, are in <span class="texhtml mvar" style="font-style:italic;">Z</span>. To this end let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle vu}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>v</mi>
+<mi>u</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle vu}</annotation>
+</semantics>
+</math></span><img alt="vu" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fd112fc91ea85d4600b8b83d18e4f9976ba87788" style="vertical-align: -0.338ex; width:2.457ex; height:1.676ex;"/></span> be an edge in <span class="texhtml mvar" style="font-style:italic;">M</span> from <span class="texhtml mvar" style="font-style:italic;">T</span> to <span class="texhtml mvar" style="font-style:italic;">S</span>. It is easy to see that if <span class="texhtml mvar" style="font-style:italic;">v</span> is in <span class="texhtml mvar" style="font-style:italic;">Z</span> then <span class="texhtml mvar" style="font-style:italic;">u</span> must be too, since every edge in <span class="texhtml mvar" style="font-style:italic;">M</span> is tight. Now suppose, toward contradiction, that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u\in Z}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>u</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>Z</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u\in Z}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle u\in Z}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f0ee6526e0c9c0af1d20de1f50730181097954d8" style="vertical-align: -0.338ex; width:5.851ex; height:2.176ex;"/></span> but <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v\notin Z}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>v</mi>
+<mo>∉<!-- ∉ --></mo>
+<mi>Z</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v\notin Z}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle v\notin Z}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b11a6f1f16f4fb9077149b8c00485b434561bcd5" style="vertical-align: -0.838ex; width:5.649ex; height:2.676ex;"/></span>. <span class="texhtml mvar" style="font-style:italic;">u</span> itself cannot be in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R_{S}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>S</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R_{S}}</annotation>
+</semantics>
+</math></span><img alt="R_{S}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e5aad493910032da9a1e9ebd853fb6f5b6dceffd" style="vertical-align: -0.671ex; width:3.056ex; height:2.509ex;"/></span> because it is the endpoint of a matched edge, so there must be some directed path of tight edges from a vertex in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R_{S}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>S</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R_{S}}</annotation>
+</semantics>
+</math></span><img alt="R_{S}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e5aad493910032da9a1e9ebd853fb6f5b6dceffd" style="vertical-align: -0.671ex; width:3.056ex; height:2.509ex;"/></span> to <span class="texhtml mvar" style="font-style:italic;">u</span>. This path must avoid <span class="texhtml mvar" style="font-style:italic;">v</span>, since that is by assumption not in <span class="texhtml mvar" style="font-style:italic;">Z</span>, so the vertex immediately preceding <span class="texhtml mvar" style="font-style:italic;">u</span> in this path is some other vertex <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v'\in T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>v</mi>
+<mo>′</mo>
+</msup>
+<mo>∈<!-- ∈ --></mo>
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v'\in T}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle v'\in T}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/72b8a0663dd228ba5aa33523cea544907daa0d29" style="vertical-align: -0.338ex; width:6.289ex; height:2.509ex;"/></span>. <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v'u}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>v</mi>
+<mo>′</mo>
+</msup>
+<mi>u</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v'u}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle v'u}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/20b6a58177fff9c50e2b2c9ad9471d653ab03bc1" style="vertical-align: -0.338ex; width:3.142ex; height:2.509ex;"/></span> is a tight edge from <span class="texhtml mvar" style="font-style:italic;">T</span> to <span class="texhtml mvar" style="font-style:italic;">S</span> and is thus in <span class="texhtml mvar" style="font-style:italic;">M</span>. But then <span class="texhtml mvar" style="font-style:italic;">M</span> contains two edges that share the vertex <span class="texhtml mvar" style="font-style:italic;">u</span>, contradicting the fact that <span class="texhtml mvar" style="font-style:italic;">M</span> is a matching. Thus every edge in <span class="texhtml mvar" style="font-style:italic;">M</span> has either both endpoints or neither endpoint in <span class="texhtml mvar" style="font-style:italic;">Z</span>.
+</p>
+<h3><span class="mw-headline" id="Proof_that_y_remains_a_potential">Proof that <span class="texhtml mvar" style="font-style:italic;">y</span> remains a potential</span><span class="mw-editsection"></span></h3>
+<p>To show that <span class="texhtml mvar" style="font-style:italic;">y</span> remains a potential after being adjusted, it suffices to show that no edge has its total potential increased beyond its cost. This is already established for edges in <span class="texhtml mvar" style="font-style:italic;">M</span> by the preceding paragraph, so consider an arbitrary edge <span class="texhtml mvar" style="font-style:italic;">uv</span> from <span class="texhtml mvar" style="font-style:italic;">S</span> to <span class="texhtml mvar" style="font-style:italic;">T</span>. If <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y(u)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>y</mi>
+<mo stretchy="false">(</mo>
+<mi>u</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y(u)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle y(u)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b8b4a02a07d3ad7514499890c0701943d2ed73e5" style="vertical-align: -0.838ex; width:4.294ex; height:2.843ex;"/></span> is increased by <span class="texhtml">Δ</span>, then either <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v\in Z\cap T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>v</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>Z</mi>
+<mo>∩<!-- ∩ --></mo>
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v\in Z\cap T}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle v\in Z\cap T}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/58df9172091f3cd09d81c18cfe95ba978285aec9" style="vertical-align: -0.338ex; width:9.868ex; height:2.176ex;"/></span>, in which case <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y(v)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>y</mi>
+<mo stretchy="false">(</mo>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y(v)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle y(v)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3de23b6f2229d48350b663d16fddea6337e9848a" style="vertical-align: -0.838ex; width:4.092ex; height:2.843ex;"/></span> is decreased by <span class="texhtml">Δ</span>, leaving the total potential of the edge unchanged, or <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v\in T\setminus Z}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>v</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>T</mi>
+<mo class="MJX-variant">∖<!-- ∖ --></mo>
+<mi>Z</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v\in T\setminus Z}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle v\in T\setminus Z}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7f5468ff8e6c1df5eaa63c15b420392d5ee59e2e" style="vertical-align: -0.838ex; width:9.48ex; height:2.843ex;"/></span>, in which case the definition of <span class="texhtml">Δ</span> guarantees that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y(u)+y(v)+\Delta \leq c(u,v)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>y</mi>
+<mo stretchy="false">(</mo>
+<mi>u</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>y</mi>
+<mo stretchy="false">(</mo>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>c</mi>
+<mo stretchy="false">(</mo>
+<mi>u</mi>
+<mo>,</mo>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y(u)+y(v)+\Delta \leq c(u,v)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle y(u)+y(v)+\Delta \leq c(u,v)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/03dd6bd614b22696c0137a3520a140046e2296d0" style="vertical-align: -0.838ex; width:25.409ex; height:2.843ex;"/></span>. Thus <span class="texhtml mvar" style="font-style:italic;">y</span> remains a potential.
+</p>
+<h2><span class="mw-headline" id="Matrix_interpretation">Matrix interpretation</span><span class="mw-editsection"></span></h2>
+<p>Given <span class="texhtml mvar" style="font-style:italic;">n</span> workers and tasks, and an <span class="texhtml mvar" style="font-style:italic;">n</span>×<span class="texhtml mvar" style="font-style:italic;">n</span>  matrix containing the cost of assigning each worker to a task, find the cost minimizing assignment.
+</p><p>First the problem is written in the form of a matrix as given below
+</p>
+<dl><dd><table class="wikitable"><tbody><tr style="vertical-align:top"><td>a1</td><td> a2</td><td> a3</td><td> a4</td></tr><tr style="vertical-align:top"><td>b1</td><td> b2</td><td> b3</td><td> b4</td></tr><tr style="vertical-align:top"><td>c1</td><td> c2</td><td> c3</td><td> c4</td></tr><tr style="vertical-align:top"><td>d1</td><td> d2</td><td> d3</td><td> d4</td></tr></tbody></table></dd></dl>
+<p>where a, b, c and d are the workers who have to perform tasks 1, 2, 3 and 4. a1, a2, a3, a4 denote the penalties incurred when worker "a" does task 1, 2, 3, 4 respectively. The same holds true for the other symbols as well. The matrix is square, so each worker can perform only one task.
+</p>
+<h3><span class="mw-headline" id="Step_1">Step 1</span><span class="mw-editsection"></span></h3>
+<p>Then we perform row operations on the matrix. To do this, <b>the lowest of all <i>a<sub>i</sub></i> </b>(i belonging to 1-4)<b> is taken and is subtracted from each element in that row.</b> <i>This will lead to at least one zero in that row</i> (We get multiple zeros when there are two equal elements which also happen to be the lowest in that row). <b>This procedure is repeated for all rows</b>. <i>We now have a matrix with at least one zero per row.</i>
+</p><p>As there are <span class="texhtml mvar" style="font-style:italic;">n</span> workers and <span class="texhtml mvar" style="font-style:italic;">n</span> tasks, adding or subtracting a fixed number to each item in a row or a column will only change the cost of the assignment by that amount; but the minimum cost assignment under old weights will remain a minimum cost assignment under new weights. 
+</p><p>Now we try to assign tasks to agents such that each agent is doing only one task and the penalty incurred in each case is zero. As all weights are non-negative, the assignment will be of minimum cost. This is illustrated below.
+</p>
+<dl><dd><table class="wikitable" style="text-align:center">
+<tbody><tr>
+<td>0</td>
+<td>a2'</td>
+<td>a3'</td>
+<td>a4'
+</td></tr>
+<tr>
+<td>b1'</td>
+<td>b2'</td>
+<td>b3'</td>
+<td>0
+</td></tr>
+<tr>
+<td>c1'</td>
+<td>0</td>
+<td>c3'</td>
+<td>c4'
+</td></tr>
+<tr>
+<td>d1'</td>
+<td>d2'</td>
+<td>0</td>
+<td>d4'
+</td></tr></tbody></table></dd></dl>
+<p>The zeros that are indicated as 0 are the assigned tasks.
+</p>
+<h3><span class="mw-headline" id="Step_2">Step 2</span><span class="mw-editsection"></span></h3>
+<p>Sometimes it may turn out that the matrix at this stage cannot be used for assigning, as is the case for the matrix below.
+</p>
+<dl><dd><table class="wikitable" style="text-align:center">
+<tbody><tr>
+<td>0</td>
+<td>a2'</td>
+<td>0</td>
+<td>a4'
+</td></tr>
+<tr>
+<td>b1'</td>
+<td>0</td>
+<td>b3'</td>
+<td>0
+</td></tr>
+<tr>
+<td>0</td>
+<td>c2'</td>
+<td>c3'</td>
+<td>c4'
+</td></tr>
+<tr>
+<td>0</td>
+<td>d2'</td>
+<td>d3'</td>
+<td>d4'
+</td></tr></tbody></table></dd></dl>
+<p>In the above case, no assignment can be made. Note that task 1 is done efficiently by both agents c and d. Both can't be assigned the same task. Also note that no one does task 3 efficiently.
+To overcome this, we repeat the above procedure for all columns (i.e. <b>the minimum element in each column is subtracted from all the elements in that column</b>) and then check if an assignment is possible.
+</p><p>In most situations this will give the result, but if it is still not possible then we need to keep going.
+</p>
+<h3><span class="mw-headline" id="Step_3">Step 3</span><span class="mw-editsection"></span></h3>
+<p><b>All zeros in the matrix must be covered by marking as few rows and/or columns as possible.</b> The following procedure is <i>one way</i> to accomplish this:
+</p>
+<ul><li>First, assign as many tasks as possible. The assigned tasks are represented by starring a zero.
+<ul><li>We assign the first zero of Row 1. The second zero of Row 1 can't be assigned, because it is on the same row as the first zero.</li>
+<li>We assign the first zero of Row 2. The second zero of Row 2 can't be assigned.</li>
+<li>Zeros on Row 3 and Row 4 can't be assigned, because they are on the same column as the zero assigned on Row 1.</li></ul></li></ul>
+<p>We could end with another assignment if we choose another ordering of the rows and columns.
+</p>
+<dl><dd><table class="wikitable" style="text-align:center">
+<tbody><tr>
+<td>0*</td>
+<td>a2'</td>
+<td>0</td>
+<td>a4'
+</td></tr>
+<tr>
+<td>b1'</td>
+<td>0*</td>
+<td>b3'</td>
+<td>0
+</td></tr>
+<tr>
+<td>0</td>
+<td>c2'</td>
+<td>c3'</td>
+<td>c4'
+</td></tr>
+<tr>
+<td>0</td>
+<td>d2'</td>
+<td>d3'</td>
+<td>d4'
+</td></tr></tbody></table></dd></dl>
+<ul><li>Cover all columns having an assignment (columns 1 and 2).</li></ul>
+<dl><dd><table class="wikitable" style="text-align:center">
+<tbody><tr style="background: white">
+<td>×</td>
+<td>×</td>
+<td></td>
+<td></td>
+<td>
+</td></tr>
+<tr>
+<td style="background:lightgrey">0*</td>
+<td style="background:lightgrey">a2'</td>
+<td>0</td>
+<td>a4'
+</td>
+<td style="background: white">
+</td></tr>
+<tr>
+<td style="background:lightgrey">b1'</td>
+<td style="background:lightgrey">0*</td>
+<td>b3'</td>
+<td>0
+</td>
+<td style="background: white">
+</td></tr>
+<tr>
+<td style="background:lightgrey">0</td>
+<td style="background:lightgrey">c2'</td>
+<td>c3'</td>
+<td>c4'
+</td>
+<td style="background: white">
+</td></tr>
+<tr>
+<td style="background:lightgrey">0</td>
+<td style="background:lightgrey">d2'</td>
+<td>d3'</td>
+<td>d4'
+</td>
+<td style="background: white">
+</td></tr></tbody></table></dd></dl>
+<ul><li>Find a non-covered zero and prime it. If the zero is on the same row as a starred zero, cover the corresponding row, and uncover the column of the starred zero.
+<ul><li>Here, the second zero of Row 1 is uncovered. Because there is another zero starred on Row 1, we cover Row 1 and uncover Column 1.</li>
+<li>Then, the second zero of Row 2 is uncovered. We cover Row 2 and uncover Column 2.</li></ul></li></ul>
+<dl><dd><table class="wikitable" style="text-align:center">
+<tbody><tr style="background: white">
+<td></td>
+<td>×</td>
+<td></td>
+<td></td>
+<td>
+</td></tr>
+<tr style="background:lightgrey">
+<td>0*</td>
+<td>a2'</td>
+<td>0'</td>
+<td>a4'
+</td>
+<td style="background: white">×
+</td></tr>
+<tr>
+<td>b1'</td>
+<td style="background:lightgrey">0*</td>
+<td>b3'</td>
+<td>0
+</td>
+<td style="background: white">
+</td></tr>
+<tr>
+<td>0</td>
+<td style="background:lightgrey">c2'</td>
+<td>c3'</td>
+<td>c4'
+</td>
+<td style="background: white">
+</td></tr>
+<tr>
+<td>0</td>
+<td style="background:lightgrey">d2'</td>
+<td>d3'</td>
+<td>d4'
+</td>
+<td style="background: white">
+</td></tr></tbody></table></dd></dl>
+<dl><dd><table class="wikitable" style="text-align:center">
+<tbody><tr style="background: white">
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>
+</td></tr>
+<tr style="background:lightgrey">
+<td>0*</td>
+<td>a2'</td>
+<td>0'</td>
+<td>a4'
+</td>
+<td style="background: white">×
+</td></tr>
+<tr style="background:lightgrey">
+<td>b1'</td>
+<td>0*</td>
+<td>b3'</td>
+<td>0'
+</td>
+<td style="background: white">×
+</td></tr>
+<tr>
+<td>0</td>
+<td>c2'</td>
+<td>c3'</td>
+<td>c4'
+</td>
+<td style="background: white">
+</td></tr>
+<tr>
+<td>0</td>
+<td>d2'</td>
+<td>d3'</td>
+<td>d4'
+</td>
+<td style="background: white">
+</td></tr></tbody></table></dd></dl>
+<ul><li>If a non-covered zero has no assigned zero on its row, perform the following steps :
+<ul><li>Step 1: Find a starred zero on the corresponding column. If there is one, go to Step 2, else, stop.</li>
+<li>Step 2: Find a primed zero on the corresponding row (there should always be one). Go to Step 1.</li></ul></li></ul>
+<p>The zero on Row 3 is uncovered. We find on the path the first zero of Row 1, then the second zero of Row 1, then we are done.
+</p>
+<dl><dd><table class="wikitable" style="text-align:center">
+<tbody><tr style="background: white">
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>
+</td></tr>
+<tr style="background:lightgrey">
+<td><span style="color:red">0*</span></td>
+<td>a2'</td>
+<td><span style="color:red">0'</span></td>
+<td>a4'
+</td>
+<td style="background: white">×
+</td></tr>
+<tr style="background:lightgrey">
+<td>b1'</td>
+<td>0*</td>
+<td>b3'</td>
+<td>0'
+</td>
+<td style="background: white">×
+</td></tr>
+<tr>
+<td><span style="color:red">0'</span></td>
+<td>c2'</td>
+<td>c3'</td>
+<td>c4'
+</td>
+<td style="background: white">
+</td></tr>
+<tr>
+<td>0</td>
+<td>d2'</td>
+<td>d3'</td>
+<td>d4'
+</td>
+<td style="background: white">
+</td></tr></tbody></table></dd></dl>
+<ul><li>For all zeros encountered during the path, star primed zeros and unstar starred zeros, remove all covered lines and primed zeros.
+<ul><li>As the path begins and ends by a primed zero when swapping starred zeros, we have assigned one more zero.</li></ul></li></ul>
+<dl><dd><table class="wikitable" style="text-align:center">
+<tbody><tr>
+<td>0</td>
+<td>a2'</td>
+<td>0*</td>
+<td>a4'
+</td></tr>
+<tr>
+<td>b1'</td>
+<td>0*</td>
+<td>b3'</td>
+<td>0
+</td></tr>
+<tr>
+<td>0*</td>
+<td>c2'</td>
+<td>c3'</td>
+<td>c4'
+</td></tr>
+<tr>
+<td>0</td>
+<td>d2'</td>
+<td>d3'</td>
+<td>d4'
+</td></tr></tbody></table></dd></dl>
+<ul><li>Repeat the previous steps
+<ul><li>we cover columns 1, 2 and 3. The second zero on Row 2 is uncovered, so we cover Row 2 and uncover Column 2</li></ul></li></ul>
+<dl><dd><table class="wikitable" style="text-align:center">
+<tbody><tr style="background: white">
+<td>×</td>
+<td></td>
+<td>×</td>
+<td></td>
+<td>
+</td></tr>
+<tr>
+<td style="background:lightgrey">0</td>
+<td>a2'</td>
+<td style="background:lightgrey">0*</td>
+<td>a4'
+</td>
+<td style="background: white">
+</td></tr>
+<tr style="background:lightgrey">
+<td>b1'</td>
+<td>0*</td>
+<td>b3'</td>
+<td>0'
+</td>
+<td style="background: white">×
+</td></tr>
+<tr>
+<td style="background:lightgrey">0*</td>
+<td>c2'</td>
+<td style="background:lightgrey">c3'</td>
+<td>c4'
+</td>
+<td style="background: white">
+</td></tr>
+<tr>
+<td style="background:lightgrey">0</td>
+<td>d2'</td>
+<td style="background:lightgrey">d3'</td>
+<td>d4'
+</td>
+<td style="background: white">
+</td></tr></tbody></table></dd></dl>
+<p>All zeros are now covered with a minimal number of rows and columns.
+</p><p>The aforementioned detailed description is <i>just one way</i> to draw the minimum number of lines to cover all the 0s. Other methods work as well. 
+</p>
+<h3><span class="mw-headline" id="Step_4">Step 4</span><span class="mw-editsection"></span></h3>
+<p><b>From the elements that are left, find the lowest value. Subtract this from every unmarked element and add it to every element covered by two lines.</b>
+</p><p>This is equivalent to subtracting a number from all rows which are not covered and adding the same number to all columns which are covered. These operations do not change optimal assignments. 
+</p><p>Repeat steps 3–4 until an assignment is possible; this is when the minimum number of lines used to cover all the 0s is equal to min(number of people, number of assignments), assuming dummy variables (usually the max cost) are used to fill in when the number of people is greater than the number of assignments. 
+</p><p>From Kőnig's theorem,<sup class="reference" id="cite_ref-8">[8]</sup> the minimum number of lines (minimum Vertex cover<sup class="reference" id="cite_ref-9">[9]</sup>) will be <span class="texhtml mvar" style="font-style:italic;">n</span> (the size of maximum matching<sup class="reference" id="cite_ref-10">[10]</sup>). Thus, when <span class="texhtml mvar" style="font-style:italic;">n</span>  lines are required, minimum cost assignment can be found by looking at only zeroes in the matrix.
+</p>
+<h2><span class="mw-headline" id="Bibliography">Bibliography</span><span class="mw-editsection"></span></h2>
+<ul><li>R.E. Burkard, M. Dell'Amico, S. Martello: <i>Assignment Problems</i> (Revised reprint). SIAM, Philadelphia (PA.) 2012. <style data-mw-deduplicate="TemplateStyles:r1067248974">.mw-parser-output cite.citation{font-style:inherit;word-wrap:break-word}.mw-parser-output .citation q{quotes:"\"""\"""'""'"}.mw-parser-output .citation:target{background-color:rgba(0,127,255,0.133)}.mw-parser-output .id-lock-free a,.mw-parser-output .citation .cs1-lock-free a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/6/65/Lock-green.svg")right 0.1em center/9px no-repeat}.mw-parser-output .id-lock-limited a,.mw-parser-output .id-lock-registration a,.mw-parser-output .citation .cs1-lock-limited a,.mw-parser-output .citation .cs1-lock-registration a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/d/d6/Lock-gray-alt-2.svg")right 0.1em center/9px no-repeat}.mw-parser-output .id-lock-subscription a,.mw-parser-output .citation .cs1-lock-subscription a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/a/aa/Lock-red-alt-2.svg")right 0.1em center/9px no-repeat}.mw-parser-output .cs1-ws-icon a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/4/4c/Wikisource-logo.svg")right 0.1em center/12px no-repeat}.mw-parser-output .cs1-code{color:inherit;background:inherit;border:none;padding:inherit}.mw-parser-output .cs1-hidden-error{display:none;color:#d33}.mw-parser-output .cs1-visible-error{color:#d33}.mw-parser-output .cs1-maint{display:none;color:#3a3;margin-left:0.3em}.mw-parser-output .cs1-format{font-size:95%}.mw-parser-output .cs1-kern-left{padding-left:0.2em}.mw-parser-output .cs1-kern-right{padding-right:0.2em}.mw-parser-output .citation .mw-selflink{font-weight:inherit}</style>ISBN 978-1-61197-222-1</li>
+<li>M. Fischetti, "Lezioni di Ricerca Operativa", Edizioni Libreria Progetto Padova, Italia, 1995.</li>
+<li>R. Ahuja, T. Magnanti, J. Orlin, "Network Flows", Prentice Hall, 1993.</li>
+<li>S. Martello, "Jeno Egerváry: from the origins of the Hungarian algorithm to satellite communication". Central European Journal of Operational Research 18, 47–58, 2010</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>Bruff, Derek, The Assignment Problem and the Hungarian Method (matrix formalism).</li>
+<li>Mordecai J. Golin, Bipartite Matching and the Hungarian Method (bigraph formalism), Course Notes, Hong Kong University of Science and Technology.</li>
+<li>Hungarian maximum matching algorithm (both formalisms), in Brilliant website.</li>
+<li>R. A. Pilgrim, <i>Munkres' Assignment Algorithm. Modified for Rectangular Matrices</i>, Course notes, Murray State University.</li>
+<li>Mike Dawes, <i>The Optimal Assignment Problem</i>, Course notes, University of Western Ontario.</li>
+<li>On Kuhn's Hungarian Method – A tribute from Hungary, András Frank, Egervary Research Group, Pazmany P. setany 1/C, H1117, Budapest, Hungary.</li>
+<li>Lecture: Fundamentals of Operations Research - Assignment Problem - Hungarian Algorithm, Prof. G. Srinivasan, Department of Management Studies, IIT Madras.</li>
+<li>Extension: Assignment sensitivity analysis (with O(n^4) time complexity), Liu, Shell.</li>
+<li>Solve any Assignment Problem online, provides a step by step explanation of the Hungarian Algorithm.</li></ul>
+<h3><span class="mw-headline" id="Implementations">Implementations</span><span class="mw-editsection"></span></h3>
+<p>Note that not all of these satisfy the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n^{3})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n^{3})}</annotation>
+</semantics>
+</math></span><img alt="O(n^{3})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6b04f5c5cfea38f43406d9442387ad28555e2609" style="vertical-align: -0.838ex; width:6.032ex; height:3.176ex;"/></span> time complexity, even if they claim so. Some may contain errors, implement the slower <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n^{4})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>4</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n^{4})}</annotation>
+</semantics>
+</math></span><img alt="O(n^{4})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ae98b94e039c8eafabf6fe6a0128d232ed7d21f6" style="vertical-align: -0.838ex; width:6.032ex; height:3.176ex;"/></span> algorithm, or have other inefficiencies. In the worst case, a code example linked from Wikipedia could later be modified to include exploit code. Verification and benchmarking is necessary when using such code examples from unknown authors.
+</p>
+<ul><li>Julia implementation</li>
+<li>C implementation claiming <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n^{3})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n^{3})}</annotation>
+</semantics>
+</math></span><img alt="O(n^{3})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6b04f5c5cfea38f43406d9442387ad28555e2609" style="vertical-align: -0.838ex; width:6.032ex; height:3.176ex;"/></span> time complexity</li>
+<li>Java implementation claiming <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n^{3})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n^{3})}</annotation>
+</semantics>
+</math></span><img alt="O(n^{3})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6b04f5c5cfea38f43406d9442387ad28555e2609" style="vertical-align: -0.838ex; width:6.032ex; height:3.176ex;"/></span> time complexity</li>
+<li>Python implementation</li>
+<li>Ruby implementation with unit tests</li>
+<li>C# implementation claiming <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n^{3})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n^{3})}</annotation>
+</semantics>
+</math></span><img alt="O(n^{3})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6b04f5c5cfea38f43406d9442387ad28555e2609" style="vertical-align: -0.838ex; width:6.032ex; height:3.176ex;"/></span> time complexity</li>
+<li>D implementation with unit tests (port of a Java version claiming <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n^{3})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n^{3})}</annotation>
+</semantics>
+</math></span><img alt="O(n^{3})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6b04f5c5cfea38f43406d9442387ad28555e2609" style="vertical-align: -0.838ex; width:6.032ex; height:3.176ex;"/></span>)</li>
+<li>Online interactive implementation</li>
+<li>Serial and parallel implementations.</li>
+<li>Matlab and C</li>
+<li>Perl implementation</li>
+<li>C++ implementation</li>
+<li>C++ implementation claiming <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n^{3})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n^{3})}</annotation>
+</semantics>
+</math></span><img alt="O(n^{3})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6b04f5c5cfea38f43406d9442387ad28555e2609" style="vertical-align: -0.838ex; width:6.032ex; height:3.176ex;"/></span> time complexity (BSD style open source licensed)</li>
+<li>MATLAB implementation</li>
+<li>C implementation</li>
+<li>JavaScript implementation with unit tests (port of a Java version claiming <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n^{3})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n^{3})}</annotation>
+</semantics>
+</math></span><img alt="O(n^{3})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6b04f5c5cfea38f43406d9442387ad28555e2609" style="vertical-align: -0.838ex; width:6.032ex; height:3.176ex;"/></span> time complexity)</li>
+<li>Clue R package proposes an implementation, solve_LSAP</li>
+<li>Node.js implementation on GitHub</li>
+<li>Python implementation in scipy package</li></ul>
+<p class="mw-empty-elt">
+</p>
+<!-- 
+NewPP limit report
+Parsed by mw2377
+Cached time: 20221223231737
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.309 seconds
+Real time usage: 0.483 seconds
+Preprocessor visited node count: 2576/1000000
+Post‐expand include size: 21892/2097152 bytes
+Template argument size: 2958/2097152 bytes
+Highest expansion depth: 14/100
+Expensive parser function count: 5/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 19974/5000000 bytes
+Lua time usage: 0.092/10.000 seconds
+Lua memory usage: 4568262/52428800 bytes
+Number of Wikibase entities loaded: 1/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  271.973      1 -total
+ 25.69%   69.865      1 Template:Reflist
+ 19.02%   51.727      3 Template:Cite_journal
+ 17.98%   48.906      1 Template:Short_description
+ 12.21%   33.215      1 Template:ISBN
+ 10.26%   27.914      2 Template:Fix
+  9.95%   27.067      2 Template:Pagetype
+  9.94%   27.042      1 Template:Catalog_lookup_link
+  9.66%   26.267      1 Template:How
+  7.12%   19.353      1 Template:Authority_control
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:2609001-0!canonical and timestamp 20221223231737 and revision id 1118675331.
+ -->
+</div></body>
+</html>

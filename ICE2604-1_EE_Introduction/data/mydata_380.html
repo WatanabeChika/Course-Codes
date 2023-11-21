@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Fibonacci_heap</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1066479718">.mw-parser-output .infobox-subbox{padding:0;border:none;margin:-3px;width:auto;min-width:100%;font-size:100%;clear:none;float:none;background-color:transparent}.mw-parser-output .infobox-3cols-child{margin:auto}.mw-parser-output .infobox .navbar{font-size:100%}body.skin-minerva .mw-parser-output .infobox-header,body.skin-minerva .mw-parser-output .infobox-subheader,body.skin-minerva .mw-parser-output .infobox-above,body.skin-minerva .mw-parser-output .infobox-title,body.skin-minerva .mw-parser-output .infobox-image,body.skin-minerva .mw-parser-output .infobox-full-data,body.skin-minerva .mw-parser-output .infobox-below{text-align:center}</style><table class="infobox"><tbody><tr><th class="infobox-above" colspan="2">Fibonacci heap</th></tr><tr><th class="infobox-label" scope="row">Type</th><td class="infobox-data">heap</td></tr><tr><th class="infobox-label" scope="row">Invented</th><td class="infobox-data">1984</td></tr><tr><th class="infobox-label" scope="row">Invented by</th><td class="infobox-data">Michael L. Fredman and Robert Endre Tarjan</td></tr><tr><th class="infobox-header" colspan="2">Time complexity in big O notation</th></tr><tr><td class="infobox-full-data" colspan="2"><link href="mw-data:TemplateStyles:r1066479718" rel="mw-deduplicated-inline-style"/><table class="infobox-subbox infobox-3cols-child"><tbody><tr><th class="infobox-label" scope="row" style="white-space:nowrap;">Algorithm</th><td class="infobox-data infobox-data-a">
+<b>Average</b></td><td class="infobox-data infobox-data-b">
+<b>Worst case</b></td></tr><tr><th class="infobox-label" scope="row" style="white-space:nowrap;">Insert</th><td class="infobox-data infobox-data-a">
+<i>Θ</i>(1)</td><td class="infobox-data infobox-data-b">
+</td></tr><tr><th class="infobox-label" scope="row" style="white-space:nowrap;">Find-min</th><td class="infobox-data infobox-data-a">
+<i>Θ</i>(1)</td><td class="infobox-data infobox-data-b">
+ </td></tr><tr><th class="infobox-label" scope="row" style="white-space:nowrap;">Delete-min</th><td class="infobox-data infobox-data-a">
+O(log <i>n</i>)</td><td class="infobox-data infobox-data-b">
+ </td></tr><tr><th class="infobox-label" scope="row" style="white-space:nowrap;">Decrease-key</th><td class="infobox-data infobox-data-a">
+<i>Θ</i>(1)</td><td class="infobox-data infobox-data-b">
+ </td></tr><tr><th class="infobox-label" scope="row" style="white-space:nowrap;">Merge</th><td class="infobox-data infobox-data-a">
+<i>Θ</i>(1)</td><td class="infobox-data infobox-data-b">
+ </td></tr></tbody></table></td></tr></tbody></table>
+<p>In computer science, a <b>Fibonacci heap</b> is a data structure for priority queue operations, consisting of a collection of  heap-ordered trees. It has a better amortized running time than many other priority queue data structures including the binary heap and binomial heap. Michael L. Fredman and Robert E. Tarjan developed Fibonacci heaps in 1984 and published them in a scientific journal in 1987. Fibonacci heaps are named after the Fibonacci numbers, which are used in their running time analysis.
+</p><p>For the Fibonacci heap, the find-minimum operation takes constant (<i>O</i>(1)) amortized time.<sup class="reference" id="cite_ref-1">[1]</sup> The insert and decrease key operations also work in constant amortized time.<sup class="reference" id="cite_ref-Fredman_And_Tarjan_2-0">[2]</sup> Deleting an element (most often used in the special case of deleting the minimum element) works in <i>O</i>(log <i>n</i>) amortized time, where <i>n</i> is the size of the heap.<sup class="reference" id="cite_ref-Fredman_And_Tarjan_2-1">[2]</sup> This means that starting from an empty data structure, any sequence of <i>a</i> insert and decrease key operations and <i>b</i> delete operations would take <i>O</i>(<i>a</i> + <i>b</i> log <i>n</i>) worst case time, where <i>n</i> is the maximum heap size. In a binary or binomial heap, such a sequence of operations would take <i>O</i>((<i>a</i> + <i>b</i>) log <i>n</i>) time. A Fibonacci heap is thus better than a binary or binomial heap when <i>b</i> is smaller than <i>a</i> by a non-constant factor. It is also possible to merge two Fibonacci heaps in constant amortized time, improving on the logarithmic merge time of a binomial heap, and improving on binary heaps which cannot handle merges efficiently.
+</p><p>Using Fibonacci heaps for priority queues improves the asymptotic running time of important algorithms, such as Dijkstra's algorithm for computing the shortest path between two nodes in a graph, compared to the same algorithm using other slower priority queue data structures.
+</p>
+
+<h2><span class="mw-headline" id="Structure">Structure</span><span class="mw-editsection"></span></h2>
+
+<p>A Fibonacci heap is a collection of trees satisfying the minimum-heap property, that is, the key of a child is always greater than or equal to the key of the parent. This implies that the minimum key is always at the root of one of the trees. Compared with binomial heaps, the structure of a Fibonacci heap is more flexible. The trees do not have a prescribed shape and in the extreme case the heap can have every element in a separate tree. This flexibility allows some operations to be executed in a lazy manner, postponing the work for later operations. For example, merging heaps is done simply by concatenating the two lists of trees, and operation <i>decrease key</i> sometimes cuts a node from its parent and forms a new tree.
+</p><p>However, at some point order needs to be introduced to the heap to achieve the desired running time. In particular, degrees of nodes (here degree means the number of direct children) are kept quite low: every node has degree at most <i>log n</i> and the size of a subtree rooted in a node of degree <i>k</i> is at least <i>F</i><sub><i>k</i>+2</sub>, where <i>F<sub>k</sub></i> is the <i>k</i>th Fibonacci number. This is achieved by the rule that we can cut at most one child of each non-root node. When a second child is cut, the node itself needs to be cut from its parent and becomes the root of a new tree (see Proof of degree bounds, below). The number of trees is decreased in the operation <i>delete minimum</i>, where trees are linked together.
+</p><p>As a result of a relaxed structure, some operations can take a long time while others are done very quickly. For the amortized running time analysis, we use the potential method, in that we pretend that very fast operations take a little bit longer than they actually do. This additional time is then later combined and subtracted from the actual running time of slow operations. The amount of time saved for later use is measured at any given moment by a potential function. The potential of a Fibonacci heap is given by
+</p>
+<dl><dd>Potential = <i>t</i> + 2<i>m</i></dd></dl>
+<p>where <i>t</i> is the number of trees in the Fibonacci heap, and <i>m</i> is the number of marked nodes. A node is marked if at least one of its children was cut since this node was made a child of another node (all roots are unmarked).
+The amortized time for an operation is given by the sum of the actual time and <i>c</i> times the difference in potential, where <i>c</i> is a constant (chosen to match the constant factors in the <i>O</i> notation for the actual time).
+</p><p>Thus, the root of each tree in a heap has one unit of time stored. This unit of time can be used later to link this tree with another tree at amortized time 0. Also, each marked node has two units of time stored. One can be used to cut the node from its parent. If this happens, the node becomes a root and the second unit of time will remain stored in it as in any other root.
+</p>
+<h2><span class="mw-headline" id="Implementation_of_operations">Implementation of operations</span><span class="mw-editsection"></span></h2>
+<p>To allow fast deletion and concatenation, the roots of all trees are linked using a circular doubly linked list. The children of each node are also linked using such a list. For each node, we maintain its number of children and whether the node is marked. Moreover, we maintain a pointer to the root containing the minimum key.
+</p><p>Operation <b>find minimum</b> is now trivial because we keep the pointer to the node containing it. It does not change the potential of the heap, therefore both actual and amortized cost are constant.
+</p><p>As mentioned above, <b>merge</b> is implemented simply by concatenating the lists of tree roots of the two heaps. This can be done in constant time and the potential does not change, leading again to constant amortized time.
+</p><p>Operation <b>insert</b> works by creating a new heap with one element and doing merge. This takes constant time, and the potential increases by one, because the number of trees increases. The amortized cost is thus still constant.
+</p><p>Operation <b>extract minimum</b> (same as <i>delete minimum</i>) operates in three phases. First we take the root containing the minimum element and remove it. Its children will become roots of new trees. If the number of children was <i>d</i>, it takes time <i>O</i>(<i>d</i>) to process all new roots and the potential increases by <i>d</i>−1. Therefore, the amortized running time of this phase is <i>O</i>(<i>d</i>) = <i>O</i>(log <i>n</i>).
+</p><p>However to complete the extract minimum operation, we need to update the pointer to the root with minimum key. Unfortunately there may be up to <i>n</i> roots we need to check. In the second phase we therefore decrease the number of roots by successively linking together roots of the same degree. When two roots <i>u</i> and <i>v</i> have the same degree, we make one of them a child of the other so that the one with the smaller key remains the root. Its degree will increase by one. This is repeated until every root has a different degree. To find trees of the same degree efficiently we use an array of length <i>O</i>(log <i>n</i>) in which we keep a pointer to one root of each degree. When a second root is found of the same degree, the two are linked and the array is updated. The actual running time is <i>O</i>(log <i>n</i> + <i>m</i>) where <i>m</i> is the number of roots at the beginning of the second phase. At the end we will have at most <i>O</i>(log <i>n</i>) roots (because each has a different degree). Therefore, the difference in the potential function from before this phase to after it is: <i>O</i>(log <i>n</i>) − <i>m</i>, and the amortized running time is then at most <i>O</i>(log <i>n</i> + <i>m</i>) + <i>c</i>(<i>O</i>(log <i>n</i>) − <i>m</i>). With a sufficiently large choice of <i>c</i>, this simplifies to <i>O</i>(log <i>n</i>).
+</p>
+<table style="margin: 0 auto;">
+<tbody><tr>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td></tr></tbody></table>
+<p>In the third phase we check each of the remaining roots and find the minimum. This takes <i>O</i>(log <i>n</i>) time and the potential does not change. The overall amortized running time of extract minimum is therefore <i>O</i>(log <i>n</i>).
+</p><p>Operation <b>decrease key</b> will take the node, decrease the key and if the heap property becomes violated (the new key is smaller than the key of the parent), the node is cut from its parent. If the parent is not a root, it is marked. If it has been marked already, it is cut as well and its parent is marked. We continue upwards until we reach either the root or an unmarked node. Now we set the minimum pointer to the decreased value if it is the new minimum. In the process we create some number, say <i>k</i>, of new trees. Each of these new trees except possibly the first one was marked originally but as a root it will become unmarked. One node can become marked. Therefore, the number of marked nodes changes by −(<i>k</i> − 1) + 1 = − <i>k</i> + 2. Combining these 2 changes, the potential changes by 2(−<i>k</i> + 2) + <i>k</i> = −<i>k</i> + 4. The actual time to perform the cutting was <i>O</i>(<i>k</i>), therefore (again with a sufficiently large choice of <i>c</i>) the amortized running time is constant.
+</p><p>Finally, operation <b>delete</b> can be implemented simply by decreasing the key of the element to be deleted to minus infinity, thus turning it into the minimum of the whole heap. Then we call extract minimum to remove it. The amortized running time of this operation is <i>O</i>(log <i>n</i>).
+</p>
+<h2><span class="mw-headline" id="Proof_of_degree_bounds">Proof of degree bounds</span><span class="mw-editsection"></span></h2>
+<p>The amortized performance of a Fibonacci heap depends on the degree (number of children) of any tree root being <i>O</i>(log <i>n</i>), where <i>n</i> is the size of the heap.  Here we show that the size of the (sub)tree rooted at any node <i>x</i> of degree <i>d</i> in the heap must have size at least <i>F<sub>d</sub></i><sub>+2</sub>, where <i>F<sub>k</sub></i> is the <i>k</i>th Fibonacci number.  The degree bound follows from this and the fact (easily proved by induction) that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle F_{d+2}\geq \varphi ^{d}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>F</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+<mo>+</mo>
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<msup>
+<mi>φ<!-- φ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle F_{d+2}\geq \varphi ^{d}}</annotation>
+</semantics>
+</math></span><img alt="F_{d+2}\geq \varphi ^{d}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/63432dfc502dac7cb7fd73b118d093f23e6b578f" style="vertical-align: -0.838ex; width:10.398ex; height:3.176ex;"/></span> for all integers <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d\geq 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+<mo>≥<!-- ≥ --></mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d\geq 0}</annotation>
+</semantics>
+</math></span><img alt="d\geq 0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/74c3a2cca0c610ded6e0f188788933fb11f07df4" style="vertical-align: -0.505ex; width:5.477ex; height:2.343ex;"/></span>, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \varphi =(1+{\sqrt {5}})/2\doteq 1.618}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>φ<!-- φ --></mi>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mn>5</mn>
+</msqrt>
+</mrow>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>2</mn>
+<mo>≐<!-- ≐ --></mo>
+<mn>1.618</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \varphi =(1+{\sqrt {5}})/2\doteq 1.618}</annotation>
+</semantics>
+</math></span><img alt="\varphi =(1+{\sqrt {5}})/2\doteq 1.618" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/08e8c9a7d14a67697d5b11a2ff266c3fef21155e" style="vertical-align: -0.838ex; width:24.249ex; height:3.009ex;"/></span>.  (We then have <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\geq F_{d+2}\geq \varphi ^{d}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>≥<!-- ≥ --></mo>
+<msub>
+<mi>F</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+<mo>+</mo>
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<msup>
+<mi>φ<!-- φ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\geq F_{d+2}\geq \varphi ^{d}}</annotation>
+</semantics>
+</math></span><img alt="n\geq F_{d+2}\geq \varphi ^{d}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4322d3c1d2f5a5e6f44cc247aa6c51ca5b091ea9" style="vertical-align: -0.838ex; width:14.891ex; height:3.176ex;"/></span>, and taking the log to base <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \varphi }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>φ<!-- φ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \varphi }</annotation>
+</semantics>
+</math></span><img alt="\varphi " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/33ee699558d09cf9d653f6351f9fda0b2f4aaa3e" style="vertical-align: -0.838ex; width:1.52ex; height:2.176ex;"/></span> of both sides gives <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d\leq \log _{\varphi }n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+<mo>≤<!-- ≤ --></mo>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>φ<!-- φ --></mi>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d\leq \log _{\varphi }n}</annotation>
+</semantics>
+</math></span><img alt="d\leq \log _{\varphi }n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/35f3899165d1758028c84525d49637f3cae1f832" style="vertical-align: -1.171ex; width:10.375ex; height:3.009ex;"/></span> as required.)
+</p><p>Consider any node <i>x</i> somewhere in the heap (<i>x</i> need not be the root of one of the main trees).  Define <b>size</b>(<i>x</i>) to be the size of the tree rooted at <i>x</i> (the number of descendants of <i>x</i>, including <i>x</i> itself).  We prove by induction on the height of <i>x</i> (the length of a longest simple path from <i>x</i> to a descendant leaf), that <b>size</b>(<i>x</i>) ≥ <i>F<sub>d</sub></i><sub>+2</sub>, where <i>d</i> is the degree of <i>x</i>.
+</p><p><b>Base case:</b> If <i>x</i> has height 0, then <i>d</i> = 0, and <b>size</b>(<i>x</i>) = 1 = <i>F</i><sub>2</sub>.
+</p><p><b>Inductive case:</b>  Suppose <i>x</i> has positive height and degree <i>d</i> &gt; 0.  Let <i>y</i><sub>1</sub>, <i>y</i><sub>2</sub>, ..., <i>y<sub>d</sub></i> be the children of <i>x</i>, indexed in order of the times they were most recently made children of <i>x</i> (<i>y</i><sub>1</sub> being the earliest and <i>y<sub>d</sub></i> the latest), and let <i>c</i><sub>1</sub>, <i>c</i><sub>2</sub>, ..., <i>c<sub>d</sub></i> be their respective degrees.  We <b>claim</b> that <i>c<sub>i</sub></i> ≥ <i>i</i>-2 for each <i>i</i> with 2 ≤ <i>i</i> ≤ <i>d</i>: Just before <i>y<sub>i</sub></i> was made a child of <i>x</i>, <i>y</i><sub>1</sub>,...,<i>y<sub>i</sub></i><sub>−1</sub> were already children of <i>x</i>, and so <i>x</i> had degree at least <i>i</i>−1 at that time.  Since trees are combined only when the degrees of their roots are equal, it must have been that <i>y<sub>i</sub></i> also had degree at least <i>i</i>-1 at the time it became a child of <i>x</i>.  From that time to the present, <i>y<sub>i</sub></i> can only have lost at most one child (as guaranteed by the marking process), and so its current degree <i>c<sub>i</sub></i> is at least <i>i</i>−2.  This proves the <b>claim</b>.
+</p><p>Since the heights of all the <i>y<sub>i</sub></i> are strictly less than that of <i>x</i>, we can apply the inductive hypothesis to them to get <b>size</b>(<i>y<sub>i</sub></i>) ≥ <i>F<sub>c<sub>i</sub></sub></i><sub>+2</sub> ≥ <i>F</i><sub>(<i>i</i>−2)+2</sub> = <i>F<sub>i</sub></i>.  The nodes <i>x</i> and <i>y</i><sub>1</sub> each contribute at least 1 to <b>size</b>(<i>x</i>), and so we have
+</p><p><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\textbf {size}}(x)\geq 2+\sum _{i=2}^{d}{\textbf {size}}(y_{i})\geq 2+\sum _{i=2}^{d}F_{i}=1+\sum _{i=0}^{d}F_{i}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext mathvariant="bold">size</mtext>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>≥<!-- ≥ --></mo>
+<mn>2</mn>
+<mo>+</mo>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>2</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+</mrow>
+</munderover>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext mathvariant="bold">size</mtext>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>≥<!-- ≥ --></mo>
+<mn>2</mn>
+<mo>+</mo>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>2</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>F</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mn>1</mn>
+<mo>+</mo>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>F</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\textbf {size}}(x)\geq 2+\sum _{i=2}^{d}{\textbf {size}}(y_{i})\geq 2+\sum _{i=2}^{d}F_{i}=1+\sum _{i=0}^{d}F_{i}.}</annotation>
+</semantics>
+</math></span><img alt="{\textbf {size}}(x)\geq 2+\sum _{i=2}^{d}{\textbf {size}}(y_{i})\geq 2+\sum _{i=2}^{d}F_{i}=1+\sum _{i=0}^{d}F_{i}." aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/feb69dc19583c0c49c159a3cf72e0d6fd0114788" style="vertical-align: -3.005ex; width:53.074ex; height:7.343ex;"/></span>
+</p><p>A routine induction proves that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1+\sum _{i=0}^{d}F_{i}=F_{d+2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mo>+</mo>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>F</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<msub>
+<mi>F</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+<mo>+</mo>
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1+\sum _{i=0}^{d}F_{i}=F_{d+2}}</annotation>
+</semantics>
+</math></span><img alt="1+\sum _{i=0}^{d}F_{i}=F_{d+2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e18bd86d3bb675e8a45c8a090862fe38e620c851" style="vertical-align: -3.005ex; width:17.825ex; height:7.343ex;"/></span> for any <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d\geq 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+<mo>≥<!-- ≥ --></mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d\geq 0}</annotation>
+</semantics>
+</math></span><img alt="d\geq 0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/74c3a2cca0c610ded6e0f188788933fb11f07df4" style="vertical-align: -0.505ex; width:5.477ex; height:2.343ex;"/></span>, which gives the desired lower bound on <b>size</b>(<i>x</i>).
+</p>
+<h2><span class="mw-headline" id="Worst_case">Worst case</span><span class="mw-editsection"></span></h2>
+<p>Although Fibonacci heaps look very efficient, they have the following two drawbacks:<sup class="reference" id="cite_ref-FSST_3-0">[3]</sup>
+</p>
+<ol><li>They are complicated when it comes to implementing them.</li>
+<li>They are not as efficient in practice when compared with the theoretically less efficient forms of heaps. In their simplest version they require storage and manipulation of four pointers per node, whereas only two or three pointers per node are needed in other structures, such as Binary heap, Binomial heap, Pairing heap, Brodal queue and Rank pairing heap.</li></ol>
+<p>Although the total running time of a sequence of operations starting with an empty structure is bounded by the bounds given above, some (very few) operations in the sequence can take very long to complete (in particular delete and delete minimum have linear running time in the worst case). For this reason Fibonacci heaps and other amortized data structures may not be appropriate for real-time systems. It is possible to create a data structure which has the same worst-case performance as the Fibonacci heap has amortized performance. One such structure, the Brodal queue,<sup class="reference" id="cite_ref-bare_url_4-0">[4]</sup> is, in the words of the creator, "quite complicated" and "[not] applicable in practice." Created in 2012, the strict Fibonacci heap<sup class="reference" id="cite_ref-5">[5]</sup> is a simpler (compared to Brodal's) structure with the same worst-case bounds. Despite having simpler structure, experiments show that in practice the strict Fibonacci heap performs slower than more complicated Brodal queue and also slower than basic Fibonacci heap.<sup class="reference" id="cite_ref-6">[6]</sup><sup class="reference" id="cite_ref-:0_7-0">[7]</sup> The run-relaxed heaps of Driscoll et al. give good worst-case performance for all Fibonacci heap operations except merge.
+</p>
+<h2><span class="mw-headline" id="Summary_of_running_times">Summary of running times</span><span class="mw-editsection"></span></h2>
+<p>Here are time complexities<sup class="reference" id="cite_ref-CLRS_8-0">[8]</sup> of various heap data structures. Function names assume a min-heap.  For the meaning of "<i>O</i>(<i>f</i>)" and "<i>Θ</i>(<i>f</i>)" see Big O notation.
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>Operation
+</th>
+<th>find-min
+</th>
+<th>delete-min
+</th>
+<th>insert
+</th>
+<th>decrease-key
+</th>
+<th>meld
+</th></tr>
+<tr>
+<th>Binary<sup class="reference" id="cite_ref-CLRS_8-1">[8]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>Θ</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)
+</td>
+<td style="background:#ffdddd"><i>Θ</i>(<i>n</i>)
+</td></tr>
+<tr>
+<th>Leftist
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>Θ</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>Θ</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>Θ</i>(log <i>n</i>)
+</td></tr>
+<tr>
+<th>Binomial<sup class="reference" id="cite_ref-CLRS_8-2">[8]</sup><sup class="reference" id="cite_ref-9">[9]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>Θ</i>(log <i>n</i>)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)<sup class="reference" id="cite_ref-amortized_10-0">[a]</sup>
+</td>
+<td style="background:#ffffdd"><i>Θ</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)<sup class="reference" id="cite_ref-meld_11-0">[b]</sup>
+</td></tr>
+<tr>
+<th>Fibonacci<sup class="reference" id="cite_ref-CLRS_8-3">[8]</sup><sup class="reference" id="cite_ref-Fredman_And_Tarjan_2-2">[2]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)<sup class="reference" id="cite_ref-amortized_10-1">[a]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)<sup class="reference" id="cite_ref-amortized_10-2">[a]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td></tr>
+<tr>
+<th>Pairing<sup class="reference" id="cite_ref-Iacono_12-0">[10]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)<sup class="reference" id="cite_ref-amortized_10-3">[a]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>o</i>(log <i>n</i>)<sup class="reference" id="cite_ref-amortized_10-4">[a]</sup><sup class="reference" id="cite_ref-pairingdecreasekey_15-0">[c]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td></tr>
+<tr>
+<th>Brodal<sup class="reference" id="cite_ref-16">[13]</sup><sup class="reference" id="cite_ref-brodal_18-0">[d]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td></tr>
+<tr>
+<th>Rank-pairing<sup class="reference" id="cite_ref-19">[15]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)<sup class="reference" id="cite_ref-amortized_10-5">[a]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)<sup class="reference" id="cite_ref-amortized_10-6">[a]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td></tr>
+<tr>
+<th>Strict Fibonacci<sup class="reference" id="cite_ref-20">[16]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td></tr>
+<tr>
+<th>2–3 heap<sup class="reference" id="cite_ref-21">[17]</sup>
+</th>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)<sup class="reference" id="cite_ref-amortized_10-7">[a]</sup>
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)<sup class="reference" id="cite_ref-amortized_10-8">[a]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>?</i>
+</td></tr></tbody></table>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="Practical_considerations">Practical considerations</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-Expand_section plainlinks metadata ambox mbox-small-left ambox-content" role="presentation"><tbody><tr><td class="mbox-image"><img alt="[icon]" data-file-height="31" data-file-width="44" decoding="async" height="14" src="//upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Wiki_letter_w_cropped.svg/20px-Wiki_letter_w_cropped.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Wiki_letter_w_cropped.svg/30px-Wiki_letter_w_cropped.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Wiki_letter_w_cropped.svg/40px-Wiki_letter_w_cropped.svg.png 2x" width="20"/></td><td class="mbox-text"></td></tr></tbody></table>
+<p>Fibonacci heaps have a reputation for being slow in practice<sup class="reference" id="cite_ref-22">[18]</sup> due to large memory consumption per node and high constant factors on all operations.  Recent experimental results suggest that Fibonacci heaps are more efficient in practice than most of its later derivatives, including quake heaps, violation heaps, strict Fibonacci heaps, rank pairing heaps, but less efficient than either pairing heaps or array-based heaps.<sup class="reference" id="cite_ref-:0_7-1">[7]</sup>
+</p>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1011085734" rel="mw-deduplicated-inline-style"/>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>Java applet simulation of a Fibonacci heap</li>
+<li>MATLAB implementation of Fibonacci heap</li>
+<li>De-recursived and memory efficient C implementation of Fibonacci heap (free/libre software, CeCILL-B license)</li>
+<li>Ruby implementation of the Fibonacci heap (with tests)</li>
+<li>Pseudocode of the Fibonacci heap algorithm</li>
+<li>Various Java Implementations for Fibonacci heap</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2373
+Cached time: 20221224000141
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.331 seconds
+Real time usage: 0.461 seconds
+Preprocessor visited node count: 2286/1000000
+Post‐expand include size: 69362/2097152 bytes
+Template argument size: 1683/2097152 bytes
+Highest expansion depth: 10/100
+Expensive parser function count: 1/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 68613/5000000 bytes
+Lua time usage: 0.185/10.000 seconds
+Lua memory usage: 6963807/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  346.812      1 -total
+ 46.63%  161.715      2 Template:Reflist
+ 20.25%   70.230      3 Template:Cite_book
+ 19.82%   68.721      2 Template:Introduction_to_Algorithms
+ 14.94%   51.819      1 Template:Short_description
+ 11.16%   38.717      1 Template:Data_structures
+ 10.95%   37.976      1 Template:Expand_section
+ 10.66%   36.981      1 Template:Navbox
+  9.96%   34.544      1 Template:Infobox_data_structure
+  9.82%   34.046      1 Template:Ambox
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:254142-0!canonical and timestamp 20221224000140 and revision id 1100400957.
+ -->
+</div></body>
+</html>

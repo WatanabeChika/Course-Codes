@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Jaro-Winkler</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p>In computer science and statistics, the <b>Jaro–Winkler distance</b> is a string metric measuring an edit distance between two sequences. It is a variant proposed in 1990 by William E. Winkler of the <b>Jaro distance</b> metric (1989, Matthew A. Jaro).
+</p><p>The Jaro–Winkler distance uses a prefix scale <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>p</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p}</annotation>
+</semantics>
+</math></span><img alt="p" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/81eac1e205430d1f40810df36a0edffdc367af36" style="vertical-align: -0.671ex; margin-left: -0.089ex; width:1.259ex; height:2.009ex;"/></span> which gives more favourable ratings to strings that match from the beginning for a set prefix length <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \ell }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>ℓ<!-- ℓ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \ell }</annotation>
+</semantics>
+</math></span><img alt="\ell " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f066e981e530bacc07efc6a10fa82deee985929e" style="vertical-align: -0.338ex; width:0.97ex; height:2.176ex;"/></span>.
+</p><p>The higher the Jaro–Winkler distance for two strings is, the less similar the strings are. The score is normalized such that 0 means an exact match and 1 means there is no similarity. The original paper actually defined the metric in terms of similarity, so the distance is defined as the inversion of that value (distance = 1 − similarity).
+</p><p>Although often referred to as a <i>distance metric</i>, the Jaro–Winkler distance is not a metric in the mathematical sense of that term because it does not obey the triangle inequality.
+</p>
+
+<h2><span class="mw-headline" id="Definition">Definition</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Jaro_similarity">Jaro similarity</span><span class="mw-editsection"></span></h3>
+<p>The Jaro similarity <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle sim_{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>s</mi>
+<mi>i</mi>
+<msub>
+<mi>m</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle sim_{j}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle sim_{j}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5591e96ce7b0f92c65f0786ef3f58ce8b3a4c2f2" style="vertical-align: -1.005ex; width:4.843ex; height:2.843ex;"/></span> of two given strings <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{1}}</annotation>
+</semantics>
+</math></span><img alt="s_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/eb8baad278d51283e0ef3c99898d583cf2c8a8fd" style="vertical-align: -0.671ex; width:2.145ex; height:2.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{2}}</annotation>
+</semantics>
+</math></span><img alt="s_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d4b9a7acc0ae8f54da4b7f4eef2c777d44faecd4" style="vertical-align: -0.671ex; width:2.145ex; height:2.009ex;"/></span> is
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle sim_{j}=\left\{{\begin{array}{l l}0&amp;{\text{if }}m=0\\{\frac {1}{3}}\left({\frac {m}{|s_{1}|}}+{\frac {m}{|s_{2}|}}+{\frac {m-t}{m}}\right)&amp;{\text{otherwise}}\end{array}}\right.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>s</mi>
+<mi>i</mi>
+<msub>
+<mi>m</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mrow>
+<mo>{</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="left left" columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<mn>0</mn>
+</mtd>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>if </mtext>
+</mrow>
+<mi>m</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<mn>3</mn>
+</mfrac>
+</mrow>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>m</mi>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mrow>
+</mfrac>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>m</mi>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mrow>
+</mfrac>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mi>m</mi>
+<mo>−<!-- − --></mo>
+<mi>t</mi>
+</mrow>
+<mi>m</mi>
+</mfrac>
+</mrow>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mtd>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>otherwise</mtext>
+</mrow>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+<mo fence="true" stretchy="true" symmetric="true"></mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle sim_{j}=\left\{{\begin{array}{l l}0&amp;{\text{if }}m=0\\{\frac {1}{3}}\left({\frac {m}{|s_{1}|}}+{\frac {m}{|s_{2}|}}+{\frac {m-t}{m}}\right)&amp;{\text{otherwise}}\end{array}}\right.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle sim_{j}=\left\{{\begin{array}{l l}0&amp;{\text{if }}m=0\\{\frac {1}{3}}\left({\frac {m}{|s_{1}|}}+{\frac {m}{|s_{2}|}}+{\frac {m-t}{m}}\right)&amp;{\text{otherwise}}\end{array}}\right.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/649ef8b1f712410856419f3525345c5ac7b3e88e" style="vertical-align: -3.338ex; width:43.826ex; height:7.843ex;"/></span></dd></dl>
+<p>Where:
+</p>
+<ul><li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |s_{i}|}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |s_{i}|}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle |s_{i}|}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4d375fec505971d56719705c2ca8ddfb4b07969a" style="vertical-align: -0.838ex; width:3.184ex; height:2.843ex;"/></span> is the length of the string <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{i}}</annotation>
+</semantics>
+</math></span><img alt="s_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cfda82668232cbdc0874ed28ab8b6079420d1ffe" style="vertical-align: -0.671ex; width:1.89ex; height:2.009ex;"/></span>;</li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle m}</annotation>
+</semantics>
+</math></span><img alt="m" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0a07d98bb302f3856cbabc47b2b9016692e3f7bc" style="vertical-align: -0.338ex; width:2.04ex; height:1.676ex;"/></span> is the number of <i>matching characters</i> (see below);</li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle t}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>t</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle t}</annotation>
+</semantics>
+</math></span><img alt="t" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/65658b7b223af9e1acc877d848888ecdb4466560" style="vertical-align: -0.338ex; width:0.84ex; height:2.009ex;"/></span> is the number of <i>transpositions</i> (see below).</li></ul>
+<p>Jaro similarity score is 0 if the strings do not match at all, and 1 if they are an exact match. In the first step, each character of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{1}}</annotation>
+</semantics>
+</math></span><img alt="s_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/eb8baad278d51283e0ef3c99898d583cf2c8a8fd" style="vertical-align: -0.671ex; width:2.145ex; height:2.009ex;"/></span> is compared with all its matching characters in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{2}}</annotation>
+</semantics>
+</math></span><img alt="s_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d4b9a7acc0ae8f54da4b7f4eef2c777d44faecd4" style="vertical-align: -0.671ex; width:2.145ex; height:2.009ex;"/></span>. Two characters from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{1}}</annotation>
+</semantics>
+</math></span><img alt="s_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/eb8baad278d51283e0ef3c99898d583cf2c8a8fd" style="vertical-align: -0.671ex; width:2.145ex; height:2.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{2}}</annotation>
+</semantics>
+</math></span><img alt="s_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d4b9a7acc0ae8f54da4b7f4eef2c777d44faecd4" style="vertical-align: -0.671ex; width:2.145ex; height:2.009ex;"/></span> respectively, are considered <i>matching</i> only if they are the same and not farther than <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \left\lfloor {\frac {\max(|s_{1}|,|s_{2}|)}{2}}\right\rfloor -1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow>
+<mo>⌊</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mo form="prefix" movablelimits="true">max</mo>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>,</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+</mrow>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mo>⌋</mo>
+</mrow>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \left\lfloor {\frac {\max(|s_{1}|,|s_{2}|)}{2}}\right\rfloor -1}</annotation>
+</semantics>
+</math></span><img alt="\left\lfloor {\frac  {\max(|s_{1}|,|s_{2}|)}{2}}\right\rfloor -1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c1f561213289491d4c7a32d3f45819a5aa157c57" style="vertical-align: -2.505ex; width:21.595ex; height:6.343ex;"/></span> characters apart. For example, the following two nine character long strings, FAREMVIEL and FARMVILLE, have 8 matching characters. 'F', 'A' and 'R' are in the same position in both string. Also 'M', 'V', 'I', 'E' and 'L' are within three (result of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \lfloor {\tfrac {\max(9,9)}{2}}\rfloor -1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">⌊<!-- ⌊ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mrow>
+<mo form="prefix" movablelimits="true">max</mo>
+<mo stretchy="false">(</mo>
+<mn>9</mn>
+<mo>,</mo>
+<mn>9</mn>
+<mo stretchy="false">)</mo>
+</mrow>
+<mn>2</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mo fence="false" stretchy="false">⌋<!-- ⌋ --></mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \lfloor {\tfrac {\max(9,9)}{2}}\rfloor -1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \lfloor {\tfrac {\max(9,9)}{2}}\rfloor -1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/33023520a7f5171ba5480de792413bb6db9612f8" style="vertical-align: -1.171ex; width:13.343ex; height:4.176ex;"/></span>) characters away.<sup class="reference" id="cite_ref-1">[1]</sup> If no matching characters are found then the strings are not similar and the algorithm terminates by returning Jaro similarity score 0.
+</p><p>If non-zero matching characters are found, the next step is to find the number of transpositions. Transposition is the number of matching characters that are not in the right order divided by two. In the above example between FAREMVIEL and FARMVILLE, 'E' and 'L' are the matching characters that are not in the right order. So the number of transposition is one. 
+</p><p>Finally, plugging in the number of matching characters <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle m}</annotation>
+</semantics>
+</math></span><img alt="m" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0a07d98bb302f3856cbabc47b2b9016692e3f7bc" style="vertical-align: -0.338ex; width:2.04ex; height:1.676ex;"/></span> and number of transpositions <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle t}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>t</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle t}</annotation>
+</semantics>
+</math></span><img alt="t" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/65658b7b223af9e1acc877d848888ecdb4466560" style="vertical-align: -0.338ex; width:0.84ex; height:2.009ex;"/></span> the Jaro similarity of FAREMVIEL and FARMVILLE can be calculated,
+<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\frac {1}{3}}\left({\frac {8}{9}}+{\frac {8}{9}}+{\frac {8-1}{8}}\right)=0.88}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<mn>3</mn>
+</mfrac>
+</mrow>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>8</mn>
+<mn>9</mn>
+</mfrac>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>8</mn>
+<mn>9</mn>
+</mfrac>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mn>8</mn>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+<mn>8</mn>
+</mfrac>
+</mrow>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mo>=</mo>
+<mn>0.88</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\frac {1}{3}}\left({\frac {8}{9}}+{\frac {8}{9}}+{\frac {8-1}{8}}\right)=0.88}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\frac {1}{3}}\left({\frac {8}{9}}+{\frac {8}{9}}+{\frac {8-1}{8}}\right)=0.88}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/03671087a717f53684606025f53b650fd134bac7" style="vertical-align: -2.505ex; width:28.719ex; height:6.176ex;"/></span>
+</p>
+<h3><span id="Jaro.E2.80.93Winkler_similarity"></span><span class="mw-headline" id="Jaro–Winkler_similarity">Jaro–Winkler similarity</span><span class="mw-editsection"></span></h3>
+<p>Jaro–Winkler similarity uses a prefix scale <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>p</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p}</annotation>
+</semantics>
+</math></span><img alt="p" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/81eac1e205430d1f40810df36a0edffdc367af36" style="vertical-align: -0.671ex; margin-left: -0.089ex; width:1.259ex; height:2.009ex;"/></span> which gives more favorable ratings to strings that match from the beginning for a set prefix length <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \ell }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>ℓ<!-- ℓ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \ell }</annotation>
+</semantics>
+</math></span><img alt="\ell " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f066e981e530bacc07efc6a10fa82deee985929e" style="vertical-align: -0.338ex; width:0.97ex; height:2.176ex;"/></span>. Given two strings <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{1}}</annotation>
+</semantics>
+</math></span><img alt="s_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/eb8baad278d51283e0ef3c99898d583cf2c8a8fd" style="vertical-align: -0.671ex; width:2.145ex; height:2.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{2}}</annotation>
+</semantics>
+</math></span><img alt="s_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d4b9a7acc0ae8f54da4b7f4eef2c777d44faecd4" style="vertical-align: -0.671ex; width:2.145ex; height:2.009ex;"/></span>, their Jaro–Winkler similarity <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle sim_{w}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>s</mi>
+<mi>i</mi>
+<msub>
+<mi>m</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>w</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle sim_{w}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle sim_{w}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4dab32d0134effd3a2fe87c991602ef9e5a90d0d" style="vertical-align: -0.671ex; width:5.342ex; height:2.509ex;"/></span> is:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle sim_{w}=sim_{j}+\ell p(1-sim_{j}),}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>s</mi>
+<mi>i</mi>
+<msub>
+<mi>m</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>w</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mi>s</mi>
+<mi>i</mi>
+<msub>
+<mi>m</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<mi>ℓ<!-- ℓ --></mi>
+<mi>p</mi>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo>−<!-- − --></mo>
+<mi>s</mi>
+<mi>i</mi>
+<msub>
+<mi>m</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle sim_{w}=sim_{j}+\ell p(1-sim_{j}),}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle sim_{w}=sim_{j}+\ell p(1-sim_{j}),}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/03ce3597b133e80f611220e52ded597ce2ad6fbf" style="vertical-align: -1.005ex; width:29.565ex; height:3.009ex;"/></span></dd></dl>
+<p>where:
+</p>
+<ul><li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle sim_{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>s</mi>
+<mi>i</mi>
+<msub>
+<mi>m</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle sim_{j}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle sim_{j}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5591e96ce7b0f92c65f0786ef3f58ce8b3a4c2f2" style="vertical-align: -1.005ex; width:4.843ex; height:2.843ex;"/></span> is the Jaro similarity for strings <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{1}}</annotation>
+</semantics>
+</math></span><img alt="s_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/eb8baad278d51283e0ef3c99898d583cf2c8a8fd" style="vertical-align: -0.671ex; width:2.145ex; height:2.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{2}}</annotation>
+</semantics>
+</math></span><img alt="s_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d4b9a7acc0ae8f54da4b7f4eef2c777d44faecd4" style="vertical-align: -0.671ex; width:2.145ex; height:2.009ex;"/></span></li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \ell }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>ℓ<!-- ℓ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \ell }</annotation>
+</semantics>
+</math></span><img alt="\ell " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f066e981e530bacc07efc6a10fa82deee985929e" style="vertical-align: -0.338ex; width:0.97ex; height:2.176ex;"/></span> is the length of common prefix at the start of the string up to a maximum of 4 characters</li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>p</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p}</annotation>
+</semantics>
+</math></span><img alt="p" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/81eac1e205430d1f40810df36a0edffdc367af36" style="vertical-align: -0.671ex; margin-left: -0.089ex; width:1.259ex; height:2.009ex;"/></span> is a constant scaling factor for how much the score is adjusted upwards for having common prefixes. <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>p</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p}</annotation>
+</semantics>
+</math></span><img alt="p" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/81eac1e205430d1f40810df36a0edffdc367af36" style="vertical-align: -0.671ex; margin-left: -0.089ex; width:1.259ex; height:2.009ex;"/></span> should not exceed 0.25 (i.e. 1/4, with 4 being the maximum length of the prefix being considered), otherwise the similarity could become larger than 1. The standard value for this constant in Winkler's work is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p=0.1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>p</mi>
+<mo>=</mo>
+<mn>0.1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p=0.1}</annotation>
+</semantics>
+</math></span><img alt="p=0.1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5ca20e78cf98c25969afdf51fbe95eaae9f24bc9" style="vertical-align: -0.671ex; margin-left: -0.089ex; width:7.329ex; height:2.509ex;"/></span></li></ul>
+<p>The Jaro–Winkler distance <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d_{w}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>d</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>w</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d_{w}}</annotation>
+</semantics>
+</math></span><img alt="d_{w}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e8f34228ad0512bbf60d8a8c4e3a31ae32ac108c" style="vertical-align: -0.671ex; width:2.618ex; height:2.509ex;"/></span> is defined as <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d_{w}=1-sim_{w}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>d</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>w</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mn>1</mn>
+<mo>−<!-- − --></mo>
+<mi>s</mi>
+<mi>i</mi>
+<msub>
+<mi>m</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>w</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d_{w}=1-sim_{w}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle d_{w}=1-sim_{w}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a1425ffad08c1c8299f96ffa5aa45cf585fa7dd4" style="vertical-align: -0.671ex; width:15.061ex; height:2.509ex;"/></span>.
+</p><p>Although often referred to as a <i>distance metric</i>, the Jaro–Winkler distance is not a metric in the mathematical sense of that term because it does not obey the triangle inequality.<sup class="reference" id="cite_ref-2">[2]</sup> The Jaro–Winkler distance also does not satisfy the identity axiom <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d(x,y)=0\leftrightarrow x=y}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo>,</mo>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>0</mn>
+<mo stretchy="false">↔<!-- ↔ --></mo>
+<mi>x</mi>
+<mo>=</mo>
+<mi>y</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d(x,y)=0\leftrightarrow x=y}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle d(x,y)=0\leftrightarrow x=y}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/83d89a290855dd09a8726dd192136ccd73687e5b" style="vertical-align: -0.838ex; width:20.003ex; height:2.843ex;"/></span>.
+</p>
+<h2><span class="mw-headline" id="Relationship_with_other_edit_distance_metrics">Relationship with other edit distance metrics</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/><p>There are other popular measures of edit distance, which are calculated using a different set of allowable edit operations. For instance,
+</p><ul><li>the Levenshtein distance allows deletion, insertion and substitution;</li>
+<li>the Damerau–Levenshtein distance allows insertion, deletion, substitution, and the transposition of two adjacent characters;</li>
+<li>the longest common subsequence (LCS) distance allows only insertion and deletion, not substitution;</li>
+<li>the Hamming distance allows only substitution, hence, it only applies to strings of the same length.</li></ul>
+<p>Edit distance is usually defined as a parameterizable metric calculated with a specific set of allowed edit operations, and each operation is assigned a cost (possibly infinite). This is further generalized by DNA sequence alignment algorithms such as the Smith–Waterman algorithm, which make an operation's cost depend on where it is applied.
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Record linkage</li>
+<li>Census</li></ul>
+<h2><span class="mw-headline" id="Footnotes">Footnotes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFCohenRavikumarFienberg2003">Cohen, W. W.; Ravikumar, P.; Fienberg, S. E. (2003). "A comparison of string distance metrics for name-matching tasks" <span class="cs1-format">(PDF)</span>. <i>KDD Workshop on Data Cleaning and Object Consolidation</i>. <b>3</b>: 73–8.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=KDD+Workshop+on+Data+Cleaning+and+Object+Consolidation&amp;rft.atitle=A+comparison+of+string+distance+metrics+for+name-matching+tasks&amp;rft.volume=3&amp;rft.pages=73-8&amp;rft.date=2003&amp;rft.aulast=Cohen&amp;rft.aufirst=W.+W.&amp;rft.au=Ravikumar%2C+P.&amp;rft.au=Fienberg%2C+S.+E.&amp;rft_id=https%3A%2F%2Fwww.cs.cmu.edu%2Fafs%2Fcs%2FWeb%2FPeople%2Fwcohen%2Fpostscript%2Fkdd-2003-match-ws.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AJaro%E2%80%93Winkler+distance"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFJaro,_M._A.1989">Jaro, M. A. (1989). "Advances in record linkage methodology as applied to the 1985 census of Tampa Florida". <i>Journal of the American Statistical Association</i>. <b>84</b> (406): 414–20. doi:10.1080/01621459.1989.10478785.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Journal+of+the+American+Statistical+Association&amp;rft.atitle=Advances+in+record+linkage+methodology+as+applied+to+the+1985+census+of+Tampa+Florida&amp;rft.volume=84&amp;rft.issue=406&amp;rft.pages=414-20&amp;rft.date=1989&amp;rft_id=info%3Adoi%2F10.1080%2F01621459.1989.10478785&amp;rft.au=Jaro%2C+M.+A.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AJaro%E2%80%93Winkler+distance"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFJaro,_M._A.1995">Jaro, M. A. (1995). "Probabilistic linkage of large public health data file". <i>Statistics in Medicine</i>. <b>14</b> (5–7): 491–8. doi:10.1002/sim.4780140510. PMID 7792443.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Statistics+in+Medicine&amp;rft.atitle=Probabilistic+linkage+of+large+public+health+data+file&amp;rft.volume=14&amp;rft.issue=5%E2%80%937&amp;rft.pages=491-8&amp;rft.date=1995&amp;rft_id=info%3Adoi%2F10.1002%2Fsim.4780140510&amp;rft_id=info%3Apmid%2F7792443&amp;rft.au=Jaro%2C+M.+A.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AJaro%E2%80%93Winkler+distance"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFWinkler,_W._E.1990">Winkler, W. E. (1990). "String Comparator Metrics and Enhanced Decision Rules in the Fellegi-Sunter Model of Record Linkage" <span class="cs1-format">(PDF)</span>. <i>Proceedings of the Section on Survey Research Methods</i>. American Statistical Association: 354–359.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Proceedings+of+the+Section+on+Survey+Research+Methods&amp;rft.atitle=String+Comparator+Metrics+and+Enhanced+Decision+Rules+in+the+Fellegi-Sunter+Model+of+Record+Linkage&amp;rft.pages=354-359&amp;rft.date=1990&amp;rft.au=Winkler%2C+W.+E.&amp;rft_id=https%3A%2F%2Ffiles.eric.ed.gov%2Ffulltext%2FED325505.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AJaro%E2%80%93Winkler+distance"></span></li></ul>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFWinkler,_W._E.2006">Winkler, W. E. (2006). "Overview of Record Linkage and Current Research Directions" <span class="cs1-format">(PDF)</span>. <i>Research Report Series, RRS</i>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Research+Report+Series%2C+RRS&amp;rft.atitle=Overview+of+Record+Linkage+and+Current+Research+Directions&amp;rft.date=2006&amp;rft.au=Winkler%2C+W.+E.&amp;rft_id=https%3A%2F%2Fwww.census.gov%2Fcontent%2Fdam%2FCensus%2Flibrary%2Fworking-papers%2F2006%2Fadrm%2Frrs2006-02.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AJaro%E2%80%93Winkler+distance"></span></li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>strcmp.c - Original C implementation by the author of the algorithm</li>
+<li>nltk.metrics.distance module- Python implementation in the Natural Language Toolkit</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2303
+Cached time: 20221223233222
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.213 seconds
+Real time usage: 0.344 seconds
+Preprocessor visited node count: 775/1000000
+Post‐expand include size: 25504/2097152 bytes
+Template argument size: 416/2097152 bytes
+Highest expansion depth: 8/100
+Expensive parser function count: 2/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 20187/5000000 bytes
+Lua time usage: 0.114/10.000 seconds
+Lua memory usage: 4269246/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  205.952      1 -total
+ 34.92%   71.928      1 Template:Reflist
+ 29.97%   61.727      2 Template:Cite_web
+ 23.68%   48.776      1 Template:Short_description
+ 19.18%   39.500      1 Template:Strings
+ 18.20%   37.486      1 Template:Navbox
+ 12.16%   25.052      2 Template:Pagetype
+ 10.01%   20.619      5 Template:Cite_journal
+  8.30%   17.103      1 Template:About
+  6.77%   13.941      3 Template:Main_other
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:6782835-0!canonical and timestamp 20221223233222 and revision id 1124567491.
+ -->
+</div></body>
+</html>

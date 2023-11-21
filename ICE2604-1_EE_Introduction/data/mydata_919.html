@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>simulated_annealing</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-More_citations_needed plainlinks metadata ambox ambox-content ambox-Refimprove" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+
+
+<p><b>Simulated annealing</b> (<b>SA</b>) is a probabilistic technique for approximating the global optimum of a given function. Specifically, it is a metaheuristic to approximate global optimization in a large search space for an optimization problem. It is often used when the search space is discrete (for example the traveling salesman problem, the boolean satisfiability problem, protein structure prediction, and job-shop scheduling). For problems where finding an approximate global optimum is more important than finding a precise local optimum in a fixed amount of time, simulated annealing may be preferable to exact algorithms such as gradient descent or branch and bound.
+</p><p>The name of the algorithm comes from annealing in metallurgy, a technique involving heating and controlled cooling of a material to alter its physical properties. Both are attributes of the material that depend on their thermodynamic free energy. Heating and cooling the material affects both the temperature and the thermodynamic free energy or Gibbs energy.
+Simulated annealing can be used for very hard computational optimization problems where exact algorithms fail; even though it usually achieves an approximate solution to the global minimum, it could be enough for many practical problems.
+</p><p>The problems solved by SA are currently formulated by an objective function of many variables, subject to several constraints. In practice, the constraint can be penalized as part of the objective function.
+</p><p>Similar techniques have been independently introduced on several occasions, including Pincus (1970),<sup class="reference" id="cite_ref-1">[1]</sup> Khachaturyan et al (1979,<sup class="reference" id="cite_ref-2">[2]</sup> 1981<sup class="reference" id="cite_ref-3">[3]</sup>), Kirkpatrick, Gelatt and Vecchi (1983), and Cerny (1985).<sup class="reference" id="cite_ref-4">[4]</sup> In 1983, this approach was used by Kirkpatrick, Gelatt Jr., Vecchi,<sup class="reference" id="cite_ref-:2_5-0">[5]</sup> for a solution of the traveling salesman problem. They also proposed its current name, simulated annealing.
+</p><p>This notion of slow cooling implemented in the simulated annealing algorithm is interpreted as a slow decrease in the probability of accepting worse solutions as the solution space is explored. Accepting worse solutions allows for a more extensive search for the global optimal solution. In general, simulated annealing algorithms work as follows. The temperature progressively decreases from an initial positive value to zero. At each time step, the algorithm randomly selects a solution close to the current one, measures its quality, and moves to it according to the temperature-dependent probabilities of selecting better or worse solutions, which during the search respectively remain at 1 (or positive) and decrease toward zero.
+</p><p>The simulation can be performed either by a solution of kinetic equations for density functions<sup class="reference" id="cite_ref-:0_6-0">[6]</sup><sup class="reference" id="cite_ref-:1_7-0">[7]</sup> or by using the stochastic sampling method.<sup class="reference" id="cite_ref-:2_5-1">[5]</sup><sup class="reference" id="cite_ref-8">[8]</sup> The method is an adaptation of the Metropolis–Hastings algorithm, a Monte Carlo method to generate sample states of a thermodynamic system, published by N. Metropolis et al. in 1953.<sup class="reference" id="cite_ref-:4_9-0">[9]</sup>
+</p>
+
+<h2><span class="mw-headline" id="Overview">Overview</span><span class="mw-editsection"></span></h2>
+<p>The state of some physical systems, and the function <i>E</i>(<i>s</i>) to be minimized, is analogous to the internal energy of the system in that state. The goal is to bring the system, from an arbitrary <i>initial state</i>, to a state with the minimum possible energy.
+</p>
+
+<h3><span class="mw-headline" id="The_basic_iteration">The basic iteration</span><span class="mw-editsection"></span></h3>
+<p>At each step, the simulated annealing heuristic considers some neighboring state <i>s*</i> of the current state <i>s</i>, and probabilistically decides between moving the system to state <i>s*</i> or staying in-state <i>s</i>.  These probabilities ultimately lead the system to move to states of lower energy.  Typically this step is repeated until the system reaches a state that is good enough for the application, or until a given computation budget has been exhausted.
+</p>
+<h3><span class="mw-headline" id="The_neighbours_of_a_state">The neighbours of a state</span><span class="mw-editsection"></span></h3>
+<p>Optimization of a solution involves evaluating the neighbours of a state of the problem, which are new states produced through conservatively altering a given state. For example, in the traveling salesman problem each state is typically defined as a permutation of the cities to be visited, and the neighbors of any state are the set of permutations produced by swapping any two of these cities. The well-defined way in which the states are altered to produce neighboring states is called a "move", and different moves give different sets of neighboring states. These moves usually result in minimal alterations of the last state, in an attempt to progressively improve the solution through iteratively improving its parts (such as the city connections in the traveling salesman problem).
+</p><p>Simple heuristics like hill climbing, which move by finding better neighbour after better neighbour and stop when they have reached a solution which has no neighbours that are better solutions, cannot guarantee to lead to any of the existing better solutions –  their outcome may easily be just a local optimum, while the actual best solution would be a global optimum that could be different. Metaheuristics use the neighbours of a solution as a way to explore the solution space, and although they prefer better neighbours, they also accept worse neighbours in order to avoid getting stuck in local optima; they can find the global optimum if run for a long enough amount of time.
+</p>
+<h3><span class="mw-headline" id="Acceptance_probabilities">Acceptance probabilities</span><span class="mw-editsection"></span></h3>
+<p>The probability of making the transition from the current state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>s</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s}</annotation>
+</semantics>
+</math></span><img alt="s" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/01d131dfd7673938b947072a13a9744fe997e632" style="vertical-align: -0.338ex; width:1.09ex; height:1.676ex;"/></span> to a candidate new state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{\mathrm {new} }}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">n</mi>
+<mi mathvariant="normal">e</mi>
+<mi mathvariant="normal">w</mi>
+</mrow>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{\mathrm {new} }}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle s_{\mathrm {new} }}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5ca8963d74c30434f1b831d5d116630b56b39c4c" style="vertical-align: -0.671ex; width:4.153ex; height:2.009ex;"/></span> is specified by an <i>acceptance probability function</i> <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P(e,e_{\mathrm {new} },T)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+<mo stretchy="false">(</mo>
+<mi>e</mi>
+<mo>,</mo>
+<msub>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">n</mi>
+<mi mathvariant="normal">e</mi>
+<mi mathvariant="normal">w</mi>
+</mrow>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>T</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P(e,e_{\mathrm {new} },T)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle P(e,e_{\mathrm {new} },T)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/af03170ac324f04659ca310c380a6b676fcb82fb" style="vertical-align: -0.838ex; width:12.489ex; height:2.843ex;"/></span>, that depends on the energies <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle e=E(s)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>e</mi>
+<mo>=</mo>
+<mi>E</mi>
+<mo stretchy="false">(</mo>
+<mi>s</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle e=E(s)}</annotation>
+</semantics>
+</math></span><img alt="e=E(s)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c6915e07da86f93e2c484e63f44f86f20f0ab941" style="vertical-align: -0.838ex; width:8.857ex; height:2.843ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle e_{\mathrm {new} }=E(s_{\mathrm {new} })}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">n</mi>
+<mi mathvariant="normal">e</mi>
+<mi mathvariant="normal">w</mi>
+</mrow>
+</mrow>
+</msub>
+<mo>=</mo>
+<mi>E</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">n</mi>
+<mi mathvariant="normal">e</mi>
+<mi mathvariant="normal">w</mi>
+</mrow>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle e_{\mathrm {new} }=E(s_{\mathrm {new} })}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle e_{\mathrm {new} }=E(s_{\mathrm {new} })}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d0e952002b7333b9dcd9f36d17907d0db345174f" style="vertical-align: -0.838ex; width:14.983ex; height:2.843ex;"/></span> of the two states, and on a global time-varying parameter <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T}</annotation>
+</semantics>
+</math></span><img alt="T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7200acd984a1d3a3d7dc455e262fbe54f7f6e0" style="vertical-align: -0.338ex; width:1.636ex; height:2.176ex;"/></span> called the <i>temperature</i>.  States with a smaller energy are better than those with a greater energy.  The probability function <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P}</annotation>
+</semantics>
+</math></span><img alt="P" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b4dc73bf40314945ff376bd363916a738548d40a" style="vertical-align: -0.338ex; width:1.745ex; height:2.176ex;"/></span> must be positive even when <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle e_{\mathrm {new} }}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">n</mi>
+<mi mathvariant="normal">e</mi>
+<mi mathvariant="normal">w</mi>
+</mrow>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle e_{\mathrm {new} }}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle e_{\mathrm {new} }}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ffbb59881a581673e73f9c6c92ffd4f1407c1eb2" style="vertical-align: -0.671ex; width:4.146ex; height:2.009ex;"/></span> is greater than <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle e}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>e</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle e}</annotation>
+</semantics>
+</math></span><img alt="e" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cd253103f0876afc68ebead27a5aa9867d927467" style="vertical-align: -0.338ex; width:1.083ex; height:1.676ex;"/></span>.  This feature prevents the method from becoming stuck at a local minimum that is worse than the global one.
+</p><p>When <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T}</annotation>
+</semantics>
+</math></span><img alt="T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7200acd984a1d3a3d7dc455e262fbe54f7f6e0" style="vertical-align: -0.338ex; width:1.636ex; height:2.176ex;"/></span> tends to zero, the probability <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P(e,e_{\mathrm {new} },T)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+<mo stretchy="false">(</mo>
+<mi>e</mi>
+<mo>,</mo>
+<msub>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">n</mi>
+<mi mathvariant="normal">e</mi>
+<mi mathvariant="normal">w</mi>
+</mrow>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>T</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P(e,e_{\mathrm {new} },T)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle P(e,e_{\mathrm {new} },T)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/af03170ac324f04659ca310c380a6b676fcb82fb" style="vertical-align: -0.838ex; width:12.489ex; height:2.843ex;"/></span> must tend to zero if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle e_{\mathrm {new} }&gt;e}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">n</mi>
+<mi mathvariant="normal">e</mi>
+<mi mathvariant="normal">w</mi>
+</mrow>
+</mrow>
+</msub>
+<mo>&gt;</mo>
+<mi>e</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle e_{\mathrm {new} }&gt;e}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle e_{\mathrm {new} }&gt;e}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e9d447020985aaaf4cb2b44b2dfce33dd39dc0e5" style="vertical-align: -0.671ex; width:8.328ex; height:2.176ex;"/></span> and to a positive value otherwise. For sufficiently small values of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T}</annotation>
+</semantics>
+</math></span><img alt="T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7200acd984a1d3a3d7dc455e262fbe54f7f6e0" style="vertical-align: -0.338ex; width:1.636ex; height:2.176ex;"/></span>, the system will then increasingly favor moves that go "downhill" (i.e., to lower energy values), and avoid those that go "uphill."  With <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T=0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T=0}</annotation>
+</semantics>
+</math></span><img alt="T=0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3c6a5b6d0370b358a8d5f3df6d17eeca08d3629b" style="vertical-align: -0.338ex; width:5.897ex; height:2.176ex;"/></span> the procedure reduces to the greedy algorithm, which makes only the downhill transitions.
+</p><p>In the original description of simulated annealing, the probability <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P(e,e_{\mathrm {new} },T)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+<mo stretchy="false">(</mo>
+<mi>e</mi>
+<mo>,</mo>
+<msub>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">n</mi>
+<mi mathvariant="normal">e</mi>
+<mi mathvariant="normal">w</mi>
+</mrow>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>T</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P(e,e_{\mathrm {new} },T)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle P(e,e_{\mathrm {new} },T)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/af03170ac324f04659ca310c380a6b676fcb82fb" style="vertical-align: -0.838ex; width:12.489ex; height:2.843ex;"/></span> was equal to 1 when <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle e_{\mathrm {new} }&lt;e}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">n</mi>
+<mi mathvariant="normal">e</mi>
+<mi mathvariant="normal">w</mi>
+</mrow>
+</mrow>
+</msub>
+<mo>&lt;</mo>
+<mi>e</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle e_{\mathrm {new} }&lt;e}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle e_{\mathrm {new} }&lt;e}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4d8e67ebb0576557bcf33757f3bb5b7ebe540b2a" style="vertical-align: -0.671ex; width:8.328ex; height:2.176ex;"/></span>—i.e., the procedure always moved downhill when it found a way to do so, irrespective of the temperature.  Many descriptions and implementations of simulated annealing still take this condition as part of the method's definition.  However, this condition is not essential for the method to work.
+</p><p>The <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P}</annotation>
+</semantics>
+</math></span><img alt="P" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b4dc73bf40314945ff376bd363916a738548d40a" style="vertical-align: -0.338ex; width:1.745ex; height:2.176ex;"/></span> function is usually chosen so that the probability of accepting a move decreases when the difference
+<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle e_{\mathrm {new} }-e}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">n</mi>
+<mi mathvariant="normal">e</mi>
+<mi mathvariant="normal">w</mi>
+</mrow>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<mi>e</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle e_{\mathrm {new} }-e}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle e_{\mathrm {new} }-e}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/aedabe0bfd1d8d2efd69d215ce78052beeb6fafd" style="vertical-align: -0.671ex; width:8.07ex; height:2.343ex;"/></span> increases—that is, small uphill moves are more likely than large ones.  However, this requirement is not strictly necessary, provided that the above requirements are met.
+</p><p>Given these properties, the temperature <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T}</annotation>
+</semantics>
+</math></span><img alt="T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7200acd984a1d3a3d7dc455e262fbe54f7f6e0" style="vertical-align: -0.338ex; width:1.636ex; height:2.176ex;"/></span> plays a crucial role in controlling the evolution of the state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>s</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s}</annotation>
+</semantics>
+</math></span><img alt="s" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/01d131dfd7673938b947072a13a9744fe997e632" style="vertical-align: -0.338ex; width:1.09ex; height:1.676ex;"/></span> of the system with regard to its sensitivity to the variations of system energies. To be precise, for a large <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T}</annotation>
+</semantics>
+</math></span><img alt="T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7200acd984a1d3a3d7dc455e262fbe54f7f6e0" style="vertical-align: -0.338ex; width:1.636ex; height:2.176ex;"/></span>, the evolution of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>s</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s}</annotation>
+</semantics>
+</math></span><img alt="s" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/01d131dfd7673938b947072a13a9744fe997e632" style="vertical-align: -0.338ex; width:1.09ex; height:1.676ex;"/></span> is sensitive to coarser energy variations, while it is sensitive to finer energy variations when <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T}</annotation>
+</semantics>
+</math></span><img alt="T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7200acd984a1d3a3d7dc455e262fbe54f7f6e0" style="vertical-align: -0.338ex; width:1.636ex; height:2.176ex;"/></span> is small.
+</p>
+<h3><span class="mw-headline" id="The_annealing_schedule">The annealing schedule</span><span class="mw-editsection"></span></h3>
+<style data-mw-deduplicate="TemplateStyles:r1096954695/mw-parser-output/.tmulti">.mw-parser-output .tmulti .multiimageinner{display:flex;flex-direction:column}.mw-parser-output .tmulti .trow{display:flex;flex-direction:row;clear:left;flex-wrap:wrap;width:100%;box-sizing:border-box}.mw-parser-output .tmulti .tsingle{margin:1px;float:left}.mw-parser-output .tmulti .theader{clear:both;font-weight:bold;text-align:center;align-self:center;background-color:transparent;width:100%}.mw-parser-output .tmulti .thumbcaption{background-color:transparent}.mw-parser-output .tmulti .text-align-left{text-align:left}.mw-parser-output .tmulti .text-align-right{text-align:right}.mw-parser-output .tmulti .text-align-center{text-align:center}@media all and (max-width:720px){.mw-parser-output .tmulti .thumbinner{width:100%!important;box-sizing:border-box;max-width:none!important;align-items:center}.mw-parser-output .tmulti .trow{justify-content:center}.mw-parser-output .tmulti .tsingle{float:none!important;max-width:100%!important;box-sizing:border-box;text-align:center}.mw-parser-output .tmulti .tsingle .thumbcaption{text-align:left}.mw-parser-output .tmulti .trow>.thumbcaption{text-align:center}}</style>
+<p>The name and inspiration of the algorithm demand an interesting feature related to the temperature variation to be embedded in the operational characteristics of the algorithm. This necessitates a gradual reduction of the temperature as the simulation proceeds. The algorithm starts initially with <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T}</annotation>
+</semantics>
+</math></span><img alt="T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7200acd984a1d3a3d7dc455e262fbe54f7f6e0" style="vertical-align: -0.338ex; width:1.636ex; height:2.176ex;"/></span> set to a high value (or infinity), and then it is decreased at each step following some <i>annealing schedule</i>—which may be specified by the user, but must end with <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T=0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T=0}</annotation>
+</semantics>
+</math></span><img alt="T=0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3c6a5b6d0370b358a8d5f3df6d17eeca08d3629b" style="vertical-align: -0.338ex; width:5.897ex; height:2.176ex;"/></span> towards the end of the allotted time budget.  In this way, the system is expected to wander initially towards a broad region of the search space containing good solutions, ignoring small features of the energy function; then drift towards low-energy regions that become narrower and narrower, and finally move downhill according to the steepest descent heuristic.
+</p><p>For any given finite problem, the probability that the simulated annealing algorithm terminates with a global optimal solution approaches 1 as the annealing schedule is extended.<sup class="reference" id="cite_ref-10">[10]</sup> This theoretical result, however, is not particularly helpful, since the time required to ensure a significant probability of success will usually exceed the time required for a complete search of the solution space.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (June 2011)">citation needed</span></i>]</sup>
+</p>
+<h2><span class="mw-headline" id="Pseudocode">Pseudocode</span><span class="mw-editsection"></span></h2>
+<p>The following pseudocode presents the simulated annealing heuristic as described above. It starts from a state <span class="texhtml"><i>s</i><sub>0</sub></span> and continues until a maximum of <span class="texhtml"><i>k</i><sub>max</sub></span> steps have been taken. In the process, the call <span class="texhtml">neighbour(<i>s</i>)</span> should generate a randomly chosen neighbour of a given state <span class="texhtml mvar" style="font-style:italic;">s</span>; the call <span class="texhtml">random(0, 1)</span> should pick and return a value in the range <span class="texhtml">[0, 1]</span>, uniformly at random. The annealing schedule is defined by the call <span class="texhtml">temperature(<i>r</i>)</span>, which should yield the temperature to use, given the fraction <span class="texhtml mvar" style="font-style:italic;">r</span> of the time budget that has been expended so far.
+</p>
+
+<h2><span class="mw-headline" id="Selecting_the_parameters">Selecting the parameters</span><span class="mw-editsection"></span></h2>
+<p>In order to apply the simulated annealing method to a specific problem, one must specify the following parameters: the state space, the energy (goal) function <code class="mw-highlight mw-highlight-lang-text mw-content-ltr" dir="ltr" id="" style="">E()</code>, the candidate generator procedure <code class="mw-highlight mw-highlight-lang-text mw-content-ltr" dir="ltr" id="" style="">neighbour()</code>, the acceptance probability function <code class="mw-highlight mw-highlight-lang-text mw-content-ltr" dir="ltr" id="" style="">P()</code>, and the annealing schedule <code class="mw-highlight mw-highlight-lang-text mw-content-ltr" dir="ltr" id="" style="">temperature()</code> AND initial temperature <code class="mw-highlight mw-highlight-lang-text mw-content-ltr" dir="ltr" id="" style="">init_temp</code>. These choices can have a significant impact on the method's effectiveness.  Unfortunately, there are no choices of these parameters that will be good for all problems, and there is no general way to find the best choices for a given problem.  The following sections give some general guidelines.
+</p>
+<h3><span class="mw-headline" id="Sufficiently_near_neighbour">Sufficiently near neighbour</span><span class="mw-editsection"></span></h3>
+<p>Simulated annealing may be modeled as a random walk on a search graph, whose vertices are all possible states, and whose edges are the candidate moves. An essential requirement for the <code class="mw-highlight mw-highlight-lang-text mw-content-ltr" dir="ltr" id="" style="">neighbour()</code> function is that it must provide a sufficiently short path on this graph from the initial state to any state which may be the global optimum –  the diameter of the search graph must be small. In the traveling salesman example above, for instance, the search space for n = 20 cities has n! = 2,432,902,008,176,640,000 (2.4 quintillion) states; yet the number of neighbors of each vertex is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sum _{k=1}^{n-1}k={\frac {n(n-1)}{2}}=190}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</munderover>
+<mi>k</mi>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mi>n</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mrow>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mo>=</mo>
+<mn>190</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sum _{k=1}^{n-1}k={\frac {n(n-1)}{2}}=190}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \sum _{k=1}^{n-1}k={\frac {n(n-1)}{2}}=190}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/de877e37db57da805a513afff22b2ec84ed0b97d" style="vertical-align: -3.005ex; width:24.075ex; height:7.343ex;"/></span> edges (coming from n choose 2), and the diameter of the graph is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n-1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n-1}</annotation>
+</semantics>
+</math></span><img alt="n-1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fbd0b0f32b28f51962943ee9ede4fb34198a2521" style="vertical-align: -0.505ex; width:5.398ex; height:2.343ex;"/></span>.
+</p>
+<h3><span class="mw-headline" id="Transition_probabilities">Transition probabilities</span><span class="mw-editsection"></span></h3>
+<p>To investigate the behavior of simulated annealing on a particular problem, it can be useful to consider the <i>transition probabilities</i> that result from the various design choices made in the implementation of the algorithm.  For each edge <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (s,s')}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mi>s</mi>
+<mo>,</mo>
+<msup>
+<mi>s</mi>
+<mo>′</mo>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (s,s')}</annotation>
+</semantics>
+</math></span><img alt="(s,s')" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3b6d575b0da9abb408213349745625069a92c97c" style="vertical-align: -0.838ex; width:5.709ex; height:3.009ex;"/></span> of the search graph, the transition probability is defined as the probability that the simulated annealing algorithm will move to state  <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s'}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>s</mi>
+<mo>′</mo>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s'}</annotation>
+</semantics>
+</math></span><img alt="s'" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5136680c63706cfd17ceddb4acddbfdd0ba5ef2d" style="vertical-align: -0.338ex; width:1.775ex; height:2.509ex;"/></span> when its current state is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>s</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s}</annotation>
+</semantics>
+</math></span><img alt="s" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/01d131dfd7673938b947072a13a9744fe997e632" style="vertical-align: -0.338ex; width:1.09ex; height:1.676ex;"/></span>.  This probability depends on the current temperature as specified by <code class="mw-highlight mw-highlight-lang-text mw-content-ltr" dir="ltr" id="" style="">temperature()</code>, on the order in which the candidate moves are generated by the <code class="mw-highlight mw-highlight-lang-text mw-content-ltr" dir="ltr" id="" style="">neighbour()</code> function, and on the acceptance probability function <code class="mw-highlight mw-highlight-lang-text mw-content-ltr" dir="ltr" id="" style="">P()</code>. (Note that the transition probability is <b>not</b> simply <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P(e,e',T)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+<mo stretchy="false">(</mo>
+<mi>e</mi>
+<mo>,</mo>
+<msup>
+<mi>e</mi>
+<mo>′</mo>
+</msup>
+<mo>,</mo>
+<mi>T</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P(e,e',T)}</annotation>
+</semantics>
+</math></span><img alt="P(e,e',T)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b772cb6787985aa5cd4c99f6f71376d8b52da119" style="vertical-align: -0.838ex; width:10.111ex; height:3.009ex;"/></span>, because the candidates are tested serially.)
+</p>
+<h3><span class="mw-headline" id="Acceptance_probabilities_2">Acceptance probabilities</span><span class="mw-editsection"></span></h3>
+<p>The specification of <code class="mw-highlight mw-highlight-lang-text mw-content-ltr" dir="ltr" id="" style="">neighbour()</code>, <code class="mw-highlight mw-highlight-lang-text mw-content-ltr" dir="ltr" id="" style="">P()</code>, and <code class="mw-highlight mw-highlight-lang-text mw-content-ltr" dir="ltr" id="" style="">temperature()</code> is partially redundant.  In practice, it's common to use the same acceptance function <code class="mw-highlight mw-highlight-lang-text mw-content-ltr" dir="ltr" id="" style="">P()</code> for many problems, and adjust the other two functions according to the specific problem.
+</p><p>In the formulation of the method by Kirkpatrick et al., the acceptance probability function <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P(e,e',T)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+<mo stretchy="false">(</mo>
+<mi>e</mi>
+<mo>,</mo>
+<msup>
+<mi>e</mi>
+<mo>′</mo>
+</msup>
+<mo>,</mo>
+<mi>T</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P(e,e',T)}</annotation>
+</semantics>
+</math></span><img alt="P(e,e',T)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b772cb6787985aa5cd4c99f6f71376d8b52da119" style="vertical-align: -0.838ex; width:10.111ex; height:3.009ex;"/></span> was defined as 1 if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle e'&lt;e}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>e</mi>
+<mo>′</mo>
+</msup>
+<mo>&lt;</mo>
+<mi>e</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle e'&lt;e}</annotation>
+</semantics>
+</math></span><img alt="e'&lt;e" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1e6fd0a75d9e9fbe2454266ada8d5500724d2613" style="vertical-align: -0.338ex; width:5.95ex; height:2.509ex;"/></span>, and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \exp(-(e'-e)/T)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>exp</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mo>−<!-- − --></mo>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>e</mi>
+<mo>′</mo>
+</msup>
+<mo>−<!-- − --></mo>
+<mi>e</mi>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>T</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \exp(-(e'-e)/T)}</annotation>
+</semantics>
+</math></span><img alt="\exp(-(e'-e)/T)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8096d553c4688ad5c81adc140b030bf18afd9a0c" style="vertical-align: -0.838ex; width:17.47ex; height:3.009ex;"/></span> otherwise. This formula was superficially justified by analogy with the transitions of a physical system; it corresponds to the Metropolis–Hastings algorithm, in the case where T=1 and the proposal distribution of Metropolis–Hastings is symmetric. However, this acceptance probability is often used for simulated annealing even when the <code class="mw-highlight mw-highlight-lang-text mw-content-ltr" dir="ltr" id="" style="">neighbour()</code> function, which is analogous to the proposal distribution in Metropolis–Hastings, is not symmetric, or not probabilistic at all. As a result, the transition probabilities of the simulated annealing algorithm do not correspond to the transitions of the analogous physical system, and the long-term distribution of states at a constant temperature <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T}</annotation>
+</semantics>
+</math></span><img alt="T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7200acd984a1d3a3d7dc455e262fbe54f7f6e0" style="vertical-align: -0.338ex; width:1.636ex; height:2.176ex;"/></span> need not bear any resemblance to the thermodynamic equilibrium distribution over states of that physical system, at any temperature. Nevertheless, most descriptions of simulated annealing assume the original acceptance function, which is probably hard-coded in many implementations of SA.
+</p><p>In 1990, Moscato and Fontanari,<sup class="reference" id="cite_ref-11">[11]</sup> and independently Dueck and Scheuer,<sup class="reference" id="cite_ref-12">[12]</sup> proposed that a deterministic update (i.e. one that is not based on the probabilistic acceptance rule) could speed-up the optimization process without impacting on the final quality. Moscato and Fontanari conclude from observing the analogous of the "specific heat" curve of the "threshold updating" annealing originating from their study that "the stochasticity of the Metropolis updating in the simulated annealing algorithm does not play a major role in the search of near-optimal minima". Instead, they proposed that "the smoothening of the cost function landscape at high temperature and the gradual definition of the minima during the cooling process are the fundamental ingredients for the success of simulated annealing." The method subsequently popularized under the denomination of "threshold accepting" due to Dueck and Scheuer's denomination. In 2001, Franz, Hoffmann and Salamon showed that the deterministic update strategy is indeed the optimal one within the large class of algorithms that simulate a random walk on the cost/energy landscape.<sup class="reference" id="cite_ref-13">[13]</sup>
+</p>
+<h3><span class="mw-headline" id="Efficient_candidate_generation">Efficient candidate generation</span><span class="mw-editsection"></span></h3>
+<p>When choosing the candidate generator <code class="mw-highlight mw-highlight-lang-text mw-content-ltr" dir="ltr" id="" style="">neighbour()</code>, one must consider that after a few iterations of the simulated annealing algorithm, the current state is expected to have much lower energy than a random state. Therefore, as a general rule, one should skew the generator towards candidate moves where the energy of the destination state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s'}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>s</mi>
+<mo>′</mo>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s'}</annotation>
+</semantics>
+</math></span><img alt="s'" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5136680c63706cfd17ceddb4acddbfdd0ba5ef2d" style="vertical-align: -0.338ex; width:1.775ex; height:2.509ex;"/></span> is likely to be similar to that of the current state. This heuristic (which is the main principle of the Metropolis–Hastings algorithm) tends to exclude "very good" candidate moves as well as "very bad" ones; however, the former are usually much less common than the latter, so the heuristic is generally quite effective.
+</p><p>In the traveling salesman problem above, for example, swapping two <i>consecutive</i> cities in a low-energy tour is expected to have a modest effect on its energy (length); whereas swapping two <i>arbitrary</i> cities is far more likely to increase its length than to decrease it. Thus, the consecutive-swap neighbour generator is expected to perform better than the arbitrary-swap one, even though the latter could provide a somewhat shorter path to the optimum (with <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n-1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n-1}</annotation>
+</semantics>
+</math></span><img alt="n-1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fbd0b0f32b28f51962943ee9ede4fb34198a2521" style="vertical-align: -0.505ex; width:5.398ex; height:2.343ex;"/></span> swaps, instead of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n(n-1)/2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n(n-1)/2}</annotation>
+</semantics>
+</math></span><img alt="n(n-1)/2" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5b1d96c185de1bffc1e78739934b09489f683efc" style="vertical-align: -0.838ex; width:10.926ex; height:2.843ex;"/></span>).
+</p><p>A more precise statement of the heuristic is that one should try first candidate states <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s'}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>s</mi>
+<mo>′</mo>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s'}</annotation>
+</semantics>
+</math></span><img alt="s'" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5136680c63706cfd17ceddb4acddbfdd0ba5ef2d" style="vertical-align: -0.338ex; width:1.775ex; height:2.509ex;"/></span> for which <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P(E(s),E(s'),T)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+<mo stretchy="false">(</mo>
+<mi>E</mi>
+<mo stretchy="false">(</mo>
+<mi>s</mi>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<mi>E</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>s</mi>
+<mo>′</mo>
+</msup>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<mi>T</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P(E(s),E(s'),T)}</annotation>
+</semantics>
+</math></span><img alt="P(E(s),E(s'),T)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/307b5b2f74641b1c7397a906172488dc95bba9bd" style="vertical-align: -0.838ex; width:17.294ex; height:3.009ex;"/></span> is large. For the "standard" acceptance function <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P}</annotation>
+</semantics>
+</math></span><img alt="P" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b4dc73bf40314945ff376bd363916a738548d40a" style="vertical-align: -0.338ex; width:1.745ex; height:2.176ex;"/></span> above, it means that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle E(s')-E(s)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>E</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>s</mi>
+<mo>′</mo>
+</msup>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mi>E</mi>
+<mo stretchy="false">(</mo>
+<mi>s</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle E(s')-E(s)}</annotation>
+</semantics>
+</math></span><img alt="E(s')-E(s)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/46d44e8b14bdfab203a027a134e2e7fd90e784df" style="vertical-align: -0.838ex; width:12.876ex; height:3.009ex;"/></span> is on the order of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T}</annotation>
+</semantics>
+</math></span><img alt="T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7200acd984a1d3a3d7dc455e262fbe54f7f6e0" style="vertical-align: -0.338ex; width:1.636ex; height:2.176ex;"/></span> or less. Thus, in the traveling salesman example above, one could use a <code class="mw-highlight mw-highlight-lang-text mw-content-ltr" dir="ltr" id="" style="">neighbour()</code> function that swaps two random cities, where the probability of choosing a city-pair vanishes as their distance increases beyond <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T}</annotation>
+</semantics>
+</math></span><img alt="T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7200acd984a1d3a3d7dc455e262fbe54f7f6e0" style="vertical-align: -0.338ex; width:1.636ex; height:2.176ex;"/></span>.
+</p>
+<h3><span class="mw-headline" id="Barrier_avoidance">Barrier avoidance</span><span class="mw-editsection"></span></h3>
+<p>When choosing the candidate generator <code class="mw-highlight mw-highlight-lang-text mw-content-ltr" dir="ltr" id="" style="">neighbour()</code> one must also try to reduce the number of "deep" local minima—states (or sets of connected states) that have much lower energy than all its neighbouring states. Such "closed catchment basins" of the energy function may trap the simulated annealing algorithm with high probability (roughly proportional to the number of states in the basin) and for a very long time (roughly exponential on the energy difference between the surrounding states and the bottom of the basin).
+</p><p>As a rule, it is impossible to design a candidate generator that will satisfy this goal and also prioritize candidates with similar energy. On the other hand, one can often vastly improve the efficiency of simulated annealing by relatively simple changes to the generator. In the traveling salesman problem, for instance, it is not hard to exhibit two tours <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A}</annotation>
+</semantics>
+</math></span><img alt="A" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7daff47fa58cdfd29dc333def748ff5fa4c923e3" style="vertical-align: -0.338ex; width:1.743ex; height:2.176ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle B}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>B</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle B}</annotation>
+</semantics>
+</math></span><img alt="B" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/47136aad860d145f75f3eed3022df827cee94d7a" style="vertical-align: -0.338ex; width:1.764ex; height:2.176ex;"/></span>, with nearly equal lengths, such that (1) <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A}</annotation>
+</semantics>
+</math></span><img alt="A" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7daff47fa58cdfd29dc333def748ff5fa4c923e3" style="vertical-align: -0.338ex; width:1.743ex; height:2.176ex;"/></span> is optimal, (2) every sequence of city-pair swaps that converts <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A}</annotation>
+</semantics>
+</math></span><img alt="A" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7daff47fa58cdfd29dc333def748ff5fa4c923e3" style="vertical-align: -0.338ex; width:1.743ex; height:2.176ex;"/></span> to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle B}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>B</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle B}</annotation>
+</semantics>
+</math></span><img alt="B" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/47136aad860d145f75f3eed3022df827cee94d7a" style="vertical-align: -0.338ex; width:1.764ex; height:2.176ex;"/></span> goes through tours that are much longer than both, and (3) <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A}</annotation>
+</semantics>
+</math></span><img alt="A" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7daff47fa58cdfd29dc333def748ff5fa4c923e3" style="vertical-align: -0.338ex; width:1.743ex; height:2.176ex;"/></span> can be transformed into <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle B}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>B</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle B}</annotation>
+</semantics>
+</math></span><img alt="B" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/47136aad860d145f75f3eed3022df827cee94d7a" style="vertical-align: -0.338ex; width:1.764ex; height:2.176ex;"/></span> by flipping (reversing the order of) a set of consecutive cities. In this example, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A}</annotation>
+</semantics>
+</math></span><img alt="A" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7daff47fa58cdfd29dc333def748ff5fa4c923e3" style="vertical-align: -0.338ex; width:1.743ex; height:2.176ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle B}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>B</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle B}</annotation>
+</semantics>
+</math></span><img alt="B" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/47136aad860d145f75f3eed3022df827cee94d7a" style="vertical-align: -0.338ex; width:1.764ex; height:2.176ex;"/></span> lie in different "deep basins" if the generator performs only random pair-swaps; but they will be in the same basin if the generator performs random segment-flips.
+</p>
+<h3><span class="mw-headline" id="Cooling_schedule">Cooling schedule</span><span class="mw-editsection"></span></h3>
+<p>The physical analogy that is used to justify simulated annealing assumes that the cooling rate is low enough for the probability distribution of the current state to be near thermodynamic equilibrium at all times.  Unfortunately, the <i>relaxation time</i>—the time one must wait for the equilibrium to be restored after a change in temperature—strongly depends on the "topography" of the energy function and on the current temperature.  In the simulated annealing algorithm, the relaxation time also depends on the candidate generator, in a very complicated way.  Note that all these parameters are usually provided as black box functions to the simulated annealing algorithm. Therefore, the ideal cooling rate cannot be determined beforehand, and should be empirically adjusted for each problem. Adaptive simulated annealing algorithms address this problem by connecting the cooling schedule to the search progress. Other adaptive approach as Thermodynamic Simulated Annealing,<sup class="reference" id="cite_ref-14">[14]</sup> automatically adjusts the temperature at each step based on the energy difference between the two states, according to the laws of thermodynamics.
+</p>
+<h2><span class="mw-headline" id="Restarts">Restarts</span><span class="mw-editsection"></span></h2>
+<p>Sometimes it is better to move back to a solution that was significantly better rather than always moving from the current state.  This process is called <i>restarting</i> of simulated annealing.  To do this we set <code>s</code> and <code>e</code> to <code>sbest</code> and <code>ebest</code> and perhaps restart the annealing schedule.  The decision to restart could be based on several criteria. Notable among these include restarting based on a fixed number of steps, based on whether the current energy is too high compared to the best energy obtained so far, restarting randomly, etc.
+</p>
+<h2><span class="mw-headline" id="Related_methods">Related methods</span><span class="mw-editsection"></span></h2>
+<ul><li>Interacting Metropolis–Hasting algorithms (a.k.a. sequential Monte Carlo<sup class="reference" id="cite_ref-:3_15-0">[15]</sup>) combines simulated annealing moves with an acceptance-rejection of the best fitted individuals equipped with an interacting recycling mechanism.</li>
+<li>Quantum annealing uses "quantum fluctuations" instead of thermal fluctuations to get through high but thin barriers in the target function.</li>
+<li>Stochastic tunneling attempts to overcome the increasing difficulty simulated annealing runs have in escaping from local minima as the temperature decreases, by 'tunneling' through barriers.</li>
+<li>Tabu search normally moves to neighbouring states of lower energy, but will take uphill moves when it finds itself stuck in a local minimum; and avoids cycles by keeping a "taboo list" of solutions already seen.</li>
+<li>Dual-phase evolution is a family of algorithms and processes (to which simulated annealing belongs) that mediate between local and global search by exploiting phase changes in the search space.</li>
+<li>Reactive search optimization focuses on combining machine learning with optimization, by adding an internal feedback loop to self-tune the free parameters of an algorithm to the characteristics of the problem, of the instance, and of the local situation around the current solution.</li>
+<li>Genetic algorithms maintain a pool of solutions rather than just one. New candidate solutions are generated not only by "mutation" (as in SA), but also by "recombination" of two solutions from the pool. Probabilistic criteria, similar to those used in SA, are used to select the candidates for mutation or combination, and for discarding excess solutions from the pool.</li>
+<li>Memetic algorithms search for solutions by employing a set of agents that both cooperate and compete in the process; sometimes the agents' strategies involve simulated annealing procedures for obtaining high quality solutions before recombining them.<sup class="reference" id="cite_ref-16">[16]</sup> Annealing has also been suggested as a mechanism for increasing the diversity of the search.<sup class="reference" id="cite_ref-martial_arts_17-0">[17]</sup></li>
+<li>Graduated optimization digressively "smooths" the target function while optimizing.</li>
+<li>Ant colony optimization (ACO) uses many ants (or agents) to traverse the solution space and find locally productive areas.</li>
+<li>The cross-entropy method (CE) generates candidates solutions via a parameterized probability distribution. The parameters are updated via cross-entropy minimization, so as to generate better samples in the next iteration.</li>
+<li>Harmony search mimics musicians in improvisation process where each musician plays a note for finding a best harmony all together.</li>
+<li>Stochastic optimization is an umbrella set of methods that includes simulated annealing and numerous other approaches.</li>
+<li>Particle swarm optimization is an algorithm modeled on swarm intelligence that finds a solution to an optimization problem in a search space, or model and predict social behavior in the presence of objectives.</li>
+<li>The runner-root algorithm (RRA) is a meta-heuristic optimization algorithm for solving unimodal and multimodal problems inspired by the runners and roots of plants in nature.</li>
+<li>Intelligent water drops algorithm (IWD) which mimics the behavior of natural water drops to solve optimization problems</li>
+<li>Parallel tempering is a simulation of model copies at different temperatures (or Hamiltonians) to overcome the potential barriers.</li>
+<li>Multi-objective simulated annealing algorithms have been used in multi-objective optimization.<sup class="reference" id="cite_ref-18">[18]</sup></li></ul>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r998391716">.mw-parser-output .div-col{margin-top:0.3em;column-width:30em}.mw-parser-output .div-col-small{font-size:90%}.mw-parser-output .div-col-rules{column-rule:1px solid #aaa}.mw-parser-output .div-col dl,.mw-parser-output .div-col ol,.mw-parser-output .div-col ul{margin-top:0}.mw-parser-output .div-col li,.mw-parser-output .div-col dd{page-break-inside:avoid;break-inside:avoid-column}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="Further_reading">Further reading</span><span class="mw-editsection"></span></h2>
+<ul><li>A. Das and B. K. Chakrabarti (Eds.), <i>Quantum Annealing and Related Optimization Methods,</i> Lecture Note in Physics, Vol. 679, Springer, Heidelberg (2005)</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFWeinberger1990">Weinberger, E. (1990). "Correlated and uncorrelated fitness landscapes and how to tell the difference". <i>Biological Cybernetics</i>. <b>63</b> (5): 325–336. doi:10.1007/BF00202749. S2CID 851736.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Biological+Cybernetics&amp;rft.atitle=Correlated+and+uncorrelated+fitness+landscapes+and+how+to+tell+the+difference&amp;rft.volume=63&amp;rft.issue=5&amp;rft.pages=325-336&amp;rft.date=1990&amp;rft_id=info%3Adoi%2F10.1007%2FBF00202749&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A851736%23id-name%3DS2CID&amp;rft.aulast=Weinberger&amp;rft.aufirst=E.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASimulated+annealing"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFPressTeukolskyVetterlingFlannery2007">Press, WH; Teukolsky, SA; Vetterling, WT; Flannery, BP (2007). "Section 10.12. Simulated Annealing Methods". <i>Numerical Recipes: The Art of Scientific Computing</i> (3rd ed.). New York: Cambridge University Press. ISBN <bdi>978-0-521-88068-8</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Section+10.12.+Simulated+Annealing+Methods&amp;rft.btitle=Numerical+Recipes%3A+The+Art+of+Scientific+Computing&amp;rft.place=New+York&amp;rft.edition=3rd&amp;rft.pub=Cambridge+University+Press&amp;rft.date=2007&amp;rft.isbn=978-0-521-88068-8&amp;rft.aulast=Press&amp;rft.aufirst=WH&amp;rft.au=Teukolsky%2C+SA&amp;rft.au=Vetterling%2C+WT&amp;rft.au=Flannery%2C+BP&amp;rft_id=http%3A%2F%2Fapps.nrbook.com%2Fempanel%2Findex.html%23pg%3D549&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASimulated+annealing"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFStroblBarker2016">Strobl, M.A.R.; Barker, D. (2016). "On simulated annealing phase transitions in phylogeny reconstruction". <i>Molecular Phylogenetics and Evolution</i>. <b>101</b>: 46–55. doi:10.1016/j.ympev.2016.05.001. PMC <span class="cs1-lock-free" title="Freely accessible">4912009</span>. PMID 27150349.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Molecular+Phylogenetics+and+Evolution&amp;rft.atitle=On+simulated+annealing+phase+transitions+in+phylogeny+reconstruction&amp;rft.volume=101&amp;rft.pages=46-55&amp;rft.date=2016&amp;rft_id=%2F%2Fwww.ncbi.nlm.nih.gov%2Fpmc%2Farticles%2FPMC4912009%23id-name%3DPMC&amp;rft_id=info%3Apmid%2F27150349&amp;rft_id=info%3Adoi%2F10.1016%2Fj.ympev.2016.05.001&amp;rft.aulast=Strobl&amp;rft.aufirst=M.A.R.&amp;rft.au=Barker%2C+D.&amp;rft_id=%2F%2Fwww.ncbi.nlm.nih.gov%2Fpmc%2Farticles%2FPMC4912009&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASimulated+annealing"></span></li>
+<li>V.Vassilev, A.Prahova: "The Use of Simulated Annealing in the Control of Flexible Manufacturing Systems", International Journal INFORMATION THEORIES &amp; APPLICATIONS, VOLUME 6/1999</li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>Simulated Annealing A Javascript app that allows you to experiment with simulated annealing. Source code included.</li>
+<li>"General Simulated Annealing Algorithm" An open-source MATLAB program for general simulated annealing exercises.</li>
+<li>Self-Guided Lesson on Simulated Annealing A Wikiversity project.</li>
+<li>Google in superposition of using, not using quantum computer Ars Technica discusses the possibility that the D-Wave computer being used by Google may, in fact, be an efficient simulated annealing co-processor.</li>
+<li>[1] A Simulated Annealing-Based Multiobjective Optimization Algorithm: AMOSA.</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2387
+Cached time: 20221220210712
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.436 seconds
+Real time usage: 0.793 seconds
+Preprocessor visited node count: 3068/1000000
+Post‐expand include size: 73740/2097152 bytes
+Template argument size: 3929/2097152 bytes
+Highest expansion depth: 12/100
+Expensive parser function count: 22/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 75280/5000000 bytes
+Lua time usage: 0.243/10.000 seconds
+Lua memory usage: 7700663/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  433.469      1 -total
+ 39.15%  169.690      1 Template:Reflist
+ 30.78%  133.412     16 Template:Cite_journal
+ 12.31%   53.341      1 Template:More_citations_needed
+ 11.36%   49.221      1 Template:Ambox
+ 10.90%   47.230      1 Template:Short_description
+  9.16%   39.699      1 Template:Major_subfields_of_optimization
+  8.76%   37.992      1 Template:Navbox
+  6.24%   27.030      2 Template:Pagetype
+  4.49%   19.478      1 Template:Other_uses
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:172244-0!canonical and timestamp 20221220210711 and revision id 1125897531.
+ -->
+</div></body>
+</html>

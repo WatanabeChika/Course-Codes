@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>lowest_common_ancestor</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+
+<p>In graph theory and computer science, the <b>lowest common ancestor</b> (<b>LCA</b>) (also called least common ancestor) of two nodes <span class="texhtml mvar" style="font-style:italic;">v</span> and <span class="texhtml mvar" style="font-style:italic;">w</span> in a tree or directed acyclic graph (DAG)  <span class="texhtml mvar" style="font-style:italic;">T</span> is the lowest (i.e. deepest) node that has both <span class="texhtml mvar" style="font-style:italic;">v</span> and <span class="texhtml mvar" style="font-style:italic;">w</span> as descendants, where we define each node to be a descendant of itself (so if <span class="texhtml mvar" style="font-style:italic;">v</span> has a direct connection from <span class="texhtml mvar" style="font-style:italic;">w</span>, <span class="texhtml mvar" style="font-style:italic;">w</span> is the lowest common ancestor).
+</p><p>The LCA of <span class="texhtml mvar" style="font-style:italic;">v</span> and <span class="texhtml mvar" style="font-style:italic;">w</span> in <span class="texhtml mvar" style="font-style:italic;">T</span> is the shared ancestor of <span class="texhtml mvar" style="font-style:italic;">v</span> and <span class="texhtml mvar" style="font-style:italic;">w</span> that is located farthest from the root. Computation of lowest common ancestors may be useful, for instance, as part of a procedure for determining the distance between pairs of nodes in a tree: the distance from <span class="texhtml mvar" style="font-style:italic;">v</span> to <span class="texhtml mvar" style="font-style:italic;">w</span> can be computed as the distance from the root to <span class="texhtml mvar" style="font-style:italic;">v</span>, plus the distance from the root to <span class="texhtml mvar" style="font-style:italic;">w</span>, minus twice the distance from the root to their lowest common ancestor (Djidjev, Pantziou &amp; Zaroliagis 1991). In ontologies, the lowest common ancestor is also known as the <b>least common ancestor</b>.
+</p><p>In a tree data structure where each node points to its parent, the lowest common ancestor can be easily determined by finding the first intersection of the paths from <span class="texhtml mvar" style="font-style:italic;">v</span> and <span class="texhtml mvar" style="font-style:italic;">w</span> to the root. In general, the computational time required for this algorithm is <span class="texhtml mvar" style="font-style:italic;">O(h)</span> where <span class="texhtml mvar" style="font-style:italic;">h</span> is the height of the tree (length of longest path from a leaf to the root). However, there exist several algorithms for processing trees so that lowest common ancestors may be found more quickly. Tarjan's off-line lowest common ancestors algorithm, for example, preprocesses a tree in linear time to provide constant-time LCA queries. In general DAGs, similar algorithms exist, but with super-linear complexity.
+</p>
+
+<h2><span class="mw-headline" id="History">History</span><span class="mw-editsection"></span></h2>
+<p>The lowest common ancestor problem was defined by Alfred Aho, John Hopcroft, and Jeffrey Ullman (1973), but Dov Harel and Robert Tarjan (1984) were the first to develop an optimally efficient lowest common ancestor data structure. Their algorithm processes any tree in linear time, using a heavy path decomposition, so that subsequent lowest common ancestor queries may be answered in constant time per query. However, their data structure is complex and difficult to implement. Tarjan also found a simpler but less efficient algorithm, based on the union-find data structure, for computing lowest common ancestors of an offline batch of pairs of nodes.
+</p><p>Baruch Schieber and Uzi Vishkin (1988) simplified the data structure of Harel and Tarjan, leading to an implementable structure with the same asymptotic preprocessing and query time bounds. Their simplification is based on the principle that, in two special kinds of trees, lowest common ancestors are easy to determine: if the tree is a path, then the lowest common ancestor can be computed simply from the minimum of the levels of the two queried nodes, while if the tree is a complete binary tree, the nodes may be indexed in such a way that lowest common ancestors reduce to simple binary operations on the indices. The structure of Schieber and Vishkin decomposes any tree into a collection of paths, such that the connections between the paths have the structure of a binary tree, and combines both of these two simpler indexing techniques.
+</p><p>Omer Berkman and Uzi Vishkin (1993) discovered a completely new way to answer lowest common ancestor queries, again achieving linear preprocessing time with constant query time. Their method involves forming an Euler tour of a graph formed from the input tree by doubling every edge, and using this tour to write a sequence of level numbers of the nodes in the order the tour visits them; a lowest common ancestor query can then be transformed into a query that seeks the minimum value occurring within some subinterval of this sequence of numbers. They then handle this range minimum query problem (RMQ) by combining two techniques, one technique based on precomputing the answers to large intervals that have sizes that are powers of two, and the other based on table   lookup for small-interval queries. This method was later presented in a simplified form by Michael Bender and Martin Farach-Colton (2000). As had been previously observed by Gabow, Bentley &amp; Tarjan (1984), the range minimum problem can in turn be transformed back into a lowest common ancestor problem using the technique of Cartesian trees.
+</p><p>Further simplifications were made by Alstrup et al. (2004) and Fischer &amp; Heun (2006).
+</p><p>Sleator and  Tarjan (1983) proposed the dynamic LCA variant of the problem in which the data structure should be prepared to handle LCA queries intermixed with operations that change the tree (that is, rearrange the tree by adding and removing edges). This variant can be solved in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(\log N)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(\log N)}</annotation>
+</semantics>
+</math></span><img alt="O(\log N)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/14eea297b4387decf341763c39dc038e05744272" style="vertical-align: -0.838ex; width:9.005ex; height:2.843ex;"/></span> time in the total size of the tree for all modifications and queries. This is done by maintaining the forest using the dynamic trees data structure with partitioning by size; this then maintains a heavy-light decomposition of each tree, and allows LCA queries to be carried out in logarithmic time in the size of the tree.
+</p><p>One can also improve the naïve online algorithm's computation time to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(\log H)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>H</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(\log H)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(\log H)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cff9946b76294b491ac732893cb9a96662b6c501" style="vertical-align: -0.838ex; width:9.005ex; height:2.843ex;"/></span> in the height of the tree by storing the paths through the tree using skew-binary random access lists, although edits are limited to extension at the leaves.<sup class="reference" id="cite_ref-1">[1]</sup>
+</p>
+<h2><span class="mw-headline" id="Linear_space_and_constant_search_time_solution_to_tree_based_LCA_problem">Linear space and constant search time solution to tree based LCA problem</span><span class="mw-editsection"></span></h2>
+<p>As mentioned above, LCA can be reduced into RMQ first, then divided the sequence of numbers into intervals and apply two different techniques to handle range minimum query across different intervals, and handle range minimum query within an interval. 
+</p>
+<h3><span class="mw-headline" id="Reduction_from_LCA_to_RMQ">Reduction from LCA to RMQ</span><span class="mw-editsection"></span></h3>
+<p>Reduction of LCA into RMQ started by walking the tree. When walking the tree, the order of the label and the depth of the node visited is recorded. Then a LCA question can be answered by answering a RMQ question which the input of a RMQ problem is the indices of two child nodes in the list of visited nodes. 
+</p>
+
+<p>Therefore, LCA can be solved by solving RMQ.
+</p>
+<h3><span class="mw-headline" id="Linear_space_and_constant_search_time_algorithm_for_RMQ_reduced_from_LCA">Linear space and constant search time algorithm for RMQ reduced from LCA</span><span class="mw-editsection"></span></h3>
+<p>Despite that there exists a constant time and linear space solution for general RMQ, but a simplified solution can be applied that make uses of LCA’s properties. This simplified solution can only be used for RMQ reduced from LCA.
+</p><p>Similar to the solution mentioned above, we divide the sequence into each block <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle B_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>B</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle B_{i}}</annotation>
+</semantics>
+</math></span><img alt="B_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/82cda0578ec6b48774c541ecb9bee4a90176e62f" style="vertical-align: -0.671ex; width:2.564ex; height:2.509ex;"/></span>, where each block <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle B_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>B</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle B_{i}}</annotation>
+</semantics>
+</math></span><img alt="B_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/82cda0578ec6b48774c541ecb9bee4a90176e62f" style="vertical-align: -0.671ex; width:2.564ex; height:2.509ex;"/></span> has size of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle b={1 \over 2}\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>b</mi>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle b={1 \over 2}\log n}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle b={1 \over 2}\log n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ca8fbe830dee8598422da9f0e3c441872bdcf2e0" style="vertical-align: -1.838ex; width:11.235ex; height:5.176ex;"/></span>. 
+</p>
+
+<p>By splitting the sequence into blocks, the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle RMQ(i,j)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>R</mi>
+<mi>M</mi>
+<mi>Q</mi>
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo>,</mo>
+<mi>j</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle RMQ(i,j)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle RMQ(i,j)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/24846ad6b793558a93b5ab0b098593c0c9d29a29" style="vertical-align: -0.838ex; width:10.648ex; height:2.843ex;"/></span> query can be solved by solving two different cases:
+</p>
+<h4><span class="mw-headline" id="Case_1:_if_i_and_j_are_in_different_blocks">Case 1: if i and j are in different blocks</span><span class="mw-editsection"></span></h4>
+<p>To answer the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle RMQ(i,j)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>R</mi>
+<mi>M</mi>
+<mi>Q</mi>
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo>,</mo>
+<mi>j</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle RMQ(i,j)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle RMQ(i,j)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/24846ad6b793558a93b5ab0b098593c0c9d29a29" style="vertical-align: -0.838ex; width:10.648ex; height:2.843ex;"/></span> query in case one, there are 3 groups of variables precomputed to help reducing query time. 
+</p><p>First, the minimum element with smallest index in each block <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle B_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>B</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle B_{i}}</annotation>
+</semantics>
+</math></span><img alt="B_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/82cda0578ec6b48774c541ecb9bee4a90176e62f" style="vertical-align: -0.671ex; width:2.564ex; height:2.509ex;"/></span> is precomputed and denoted as <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y_{i}}</annotation>
+</semantics>
+</math></span><img alt="y_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/67d30d30b6c2dbe4d6f150d699de040937ecc95f" style="vertical-align: -0.671ex; width:1.939ex; height:2.009ex;"/></span>. A set of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y_{i}}</annotation>
+</semantics>
+</math></span><img alt="y_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/67d30d30b6c2dbe4d6f150d699de040937ecc95f" style="vertical-align: -0.671ex; width:1.939ex; height:2.009ex;"/></span> takes <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n/b)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n/b)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(n/b)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/38f017dae286a05aab46d81d456e4c14f104737a" style="vertical-align: -0.838ex; width:7.137ex; height:2.843ex;"/></span> space.
+</p><p>Second, given the set of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y_{i}}</annotation>
+</semantics>
+</math></span><img alt="y_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/67d30d30b6c2dbe4d6f150d699de040937ecc95f" style="vertical-align: -0.671ex; width:1.939ex; height:2.009ex;"/></span>, the RMQ query for this set is precomputed using the solution with constant time and linearithmic space. There are <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n/b}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>b</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n/b}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n/b}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4adb09d8ef12275aef3341d6dc3a45ae2f073808" style="vertical-align: -0.838ex; width:3.555ex; height:2.843ex;"/></span> blocks, so the lookup table in that solution takes <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O({n \over b}\log {n \over b})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>n</mi>
+<mi>b</mi>
+</mfrac>
+</mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>n</mi>
+<mi>b</mi>
+</mfrac>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O({n \over b}\log {n \over b})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O({n \over b}\log {n \over b})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4ae9548d2d6dfa8c38cdd485066f9bb0fb5f5151" style="vertical-align: -2.005ex; width:11.79ex; height:4.843ex;"/></span> space. Because <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle b={1 \over 2}\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>b</mi>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle b={1 \over 2}\log n}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle b={1 \over 2}\log n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ca8fbe830dee8598422da9f0e3c441872bdcf2e0" style="vertical-align: -1.838ex; width:11.235ex; height:5.176ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O({n \over b}\log {n \over b})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>n</mi>
+<mi>b</mi>
+</mfrac>
+</mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>n</mi>
+<mi>b</mi>
+</mfrac>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O({n \over b}\log {n \over b})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O({n \over b}\log {n \over b})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4ae9548d2d6dfa8c38cdd485066f9bb0fb5f5151" style="vertical-align: -2.005ex; width:11.79ex; height:4.843ex;"/></span> = <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n)}</annotation>
+</semantics>
+</math></span><img alt="O(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34109fe397fdcff370079185bfdb65826cb5565a" style="vertical-align: -0.838ex; width:4.977ex; height:2.843ex;"/></span> space. Hence the precomputed RMQ query using the solution with constant time and linearithmic space on these blocks only take <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n)}</annotation>
+</semantics>
+</math></span><img alt="O(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34109fe397fdcff370079185bfdb65826cb5565a" style="vertical-align: -0.838ex; width:4.977ex; height:2.843ex;"/></span> space.
+</p><p>Third, in each block <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle B_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>B</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle B_{i}}</annotation>
+</semantics>
+</math></span><img alt="B_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/82cda0578ec6b48774c541ecb9bee4a90176e62f" style="vertical-align: -0.671ex; width:2.564ex; height:2.509ex;"/></span>, let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k_{i}}</annotation>
+</semantics>
+</math></span><img alt="k_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f29138ed3ad54ffce527daccadc49c520459b0b0" style="vertical-align: -0.671ex; width:2.011ex; height:2.509ex;"/></span> be an index in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle B_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>B</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle B_{i}}</annotation>
+</semantics>
+</math></span><img alt="B_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/82cda0578ec6b48774c541ecb9bee4a90176e62f" style="vertical-align: -0.671ex; width:2.564ex; height:2.509ex;"/></span> such that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 0\leq ki&lt;b}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>0</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>k</mi>
+<mi>i</mi>
+<mo>&lt;</mo>
+<mi>b</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 0\leq ki&lt;b}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 0\leq ki&lt;b}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dcc74d37f90d47f41014ee8da68801cb454828d1" style="vertical-align: -0.505ex; width:10.371ex; height:2.343ex;"/></span>. For all <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k_{i}}</annotation>
+</semantics>
+</math></span><img alt="k_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f29138ed3ad54ffce527daccadc49c520459b0b0" style="vertical-align: -0.671ex; width:2.011ex; height:2.509ex;"/></span> from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2aae8864a3c1fec9585261791a809ddec1489950" style="vertical-align: -0.338ex; width:1.162ex; height:2.176ex;"/></span> until <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle b}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>b</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle b}</annotation>
+</semantics>
+</math></span><img alt="b" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f11423fbb2e967f986e36804a8ae4271734917c3" style="vertical-align: -0.338ex; width:0.998ex; height:2.176ex;"/></span>, block <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle B_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>B</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle B_{i}}</annotation>
+</semantics>
+</math></span><img alt="B_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/82cda0578ec6b48774c541ecb9bee4a90176e62f" style="vertical-align: -0.671ex; width:2.564ex; height:2.509ex;"/></span> is divided into two intervals <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle [0,k_{i})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">[</mo>
+<mn>0</mn>
+<mo>,</mo>
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle [0,k_{i})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle [0,k_{i})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ea45ec71802244fc739d4d3622482d72c2b24350" style="vertical-align: -0.838ex; width:5.759ex; height:2.843ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle [k_{i},b)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">[</mo>
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle [k_{i},b)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle [k_{i},b)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/92855e5fd817ff276eb258d8ceef231831f565b6" style="vertical-align: -0.838ex; width:5.594ex; height:2.843ex;"/></span>. Then the minimum element with smallest index for intervals in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle [0,k_{i})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">[</mo>
+<mn>0</mn>
+<mo>,</mo>
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle [0,k_{i})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle [0,k_{i})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ea45ec71802244fc739d4d3622482d72c2b24350" style="vertical-align: -0.838ex; width:5.759ex; height:2.843ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle [k_{i},b)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">[</mo>
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle [k_{i},b)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle [k_{i},b)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/92855e5fd817ff276eb258d8ceef231831f565b6" style="vertical-align: -0.838ex; width:5.594ex; height:2.843ex;"/></span> in each block <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle B_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>B</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle B_{i}}</annotation>
+</semantics>
+</math></span><img alt="B_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/82cda0578ec6b48774c541ecb9bee4a90176e62f" style="vertical-align: -0.671ex; width:2.564ex; height:2.509ex;"/></span> is precomputed. Such minimum elements are called as prefix min for the interval in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle [0,k_{i})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">[</mo>
+<mn>0</mn>
+<mo>,</mo>
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle [0,k_{i})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle [0,k_{i})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ea45ec71802244fc739d4d3622482d72c2b24350" style="vertical-align: -0.838ex; width:5.759ex; height:2.843ex;"/></span> and suffix min for the interval in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle [k_{i},b)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">[</mo>
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle [k_{i},b)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle [k_{i},b)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/92855e5fd817ff276eb258d8ceef231831f565b6" style="vertical-align: -0.838ex; width:5.594ex; height:2.843ex;"/></span>. Each iteration of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k_{i}}</annotation>
+</semantics>
+</math></span><img alt="k_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f29138ed3ad54ffce527daccadc49c520459b0b0" style="vertical-align: -0.671ex; width:2.011ex; height:2.509ex;"/></span> computes a pair of prefix min and suffix min. Hence the total number of prefix mins and suffix mins in a block <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle B_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>B</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle B_{i}}</annotation>
+</semantics>
+</math></span><img alt="B_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/82cda0578ec6b48774c541ecb9bee4a90176e62f" style="vertical-align: -0.671ex; width:2.564ex; height:2.509ex;"/></span> is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2b}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>2</mn>
+<mi>b</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2b}</annotation>
+</semantics>
+</math></span><img alt="2b" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3da45af0250645a54cab2ef45483c4399e4a40df" style="vertical-align: -0.338ex; width:2.16ex; height:2.176ex;"/></span>. Since there are <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n/b}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>b</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n/b}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n/b}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4adb09d8ef12275aef3341d6dc3a45ae2f073808" style="vertical-align: -0.838ex; width:3.555ex; height:2.843ex;"/></span> blocks, in total, all prefix min and suffix min arrays take <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(2b\cdot {n \over b})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mn>2</mn>
+<mi>b</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>n</mi>
+<mi>b</mi>
+</mfrac>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(2b\cdot {n \over b})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(2b\cdot {n \over b})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e2e08c8a284a04b0e1070bc8c52ea2e17a91a480" style="vertical-align: -2.005ex; width:9.653ex; height:4.843ex;"/></span> which is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n)}</annotation>
+</semantics>
+</math></span><img alt="O(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34109fe397fdcff370079185bfdb65826cb5565a" style="vertical-align: -0.838ex; width:4.977ex; height:2.843ex;"/></span> spaces.
+</p><p>In total, it takes <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n)}</annotation>
+</semantics>
+</math></span><img alt="O(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34109fe397fdcff370079185bfdb65826cb5565a" style="vertical-align: -0.838ex; width:4.977ex; height:2.843ex;"/></span> space to store all 3 groups of precomputed variables mentioned above.
+</p><p>Therefore, answering the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle RMQ(i,j)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>R</mi>
+<mi>M</mi>
+<mi>Q</mi>
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo>,</mo>
+<mi>j</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle RMQ(i,j)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle RMQ(i,j)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/24846ad6b793558a93b5ab0b098593c0c9d29a29" style="vertical-align: -0.838ex; width:10.648ex; height:2.843ex;"/></span> query in case 1 is simply tasking the minimum of the following three questions:
+</p><p>Let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle B_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>B</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle B_{i}}</annotation>
+</semantics>
+</math></span><img alt="B_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/82cda0578ec6b48774c541ecb9bee4a90176e62f" style="vertical-align: -0.671ex; width:2.564ex; height:2.509ex;"/></span> be the block that contains the element at index <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span>, and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle B_{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>B</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle B_{j}}</annotation>
+</semantics>
+</math></span><img alt="B_j" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ea2c69d0fec8f10eb21aa996ca50219be25fc223" style="vertical-align: -1.005ex; width:2.674ex; height:2.843ex;"/></span> for index <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle j}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>j</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle j}</annotation>
+</semantics>
+</math></span><img alt="j" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2f461e54f5c093e92a55547b9764291390f0b5d0" style="vertical-align: -0.671ex; margin-left: -0.027ex; width:0.985ex; height:2.509ex;"/></span>.
+</p>
+<ol><li>The suffix min in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle [i\mod b,b)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">[</mo>
+<mi>i</mi>
+<mspace width="1em"></mspace>
+<mi>mod</mi>
+<mspace width="thinmathspace"></mspace>
+<mspace width="thinmathspace"></mspace>
+<mi>b</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle [i\mod b,b)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle [i\mod b,b)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/860d99a771215a97671371cae03a605fe2ca4f48" style="vertical-align: -0.838ex; width:13.645ex; height:2.843ex;"/></span> in the block<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle B_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>B</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle B_{i}}</annotation>
+</semantics>
+</math></span><img alt="B_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/82cda0578ec6b48774c541ecb9bee4a90176e62f" style="vertical-align: -0.671ex; width:2.564ex; height:2.509ex;"/></span></li>
+<li>Answering the RMQ query on a subset of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>y</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y}</annotation>
+</semantics>
+</math></span><img alt="y" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b8a6208ec717213d4317e666f1ae872e00620a0d" style="vertical-align: -0.671ex; width:1.155ex; height:2.009ex;"/></span>s from blocks <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \{B_{i+1}...B_{j-1}\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">{</mo>
+<msub>
+<mi>B</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<msub>
+<mi>B</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \{B_{i+1}...B_{j-1}\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \{B_{i+1}...B_{j-1}\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c2c02ec5b5de31ac5194ec9cc74f861d9de5e94e" style="vertical-align: -1.005ex; width:14.865ex; height:3.009ex;"/></span>using the solution with constant time and linearithmic space</li>
+<li>The prefix min in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle [0,j\mod b)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">[</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mi>j</mi>
+<mspace width="1em"></mspace>
+<mi>mod</mi>
+<mspace width="thinmathspace"></mspace>
+<mspace width="thinmathspace"></mspace>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle [0,j\mod b)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle [0,j\mod b)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/17fef205fb324b9ee12b5ac9be8d56400f2a69af" style="vertical-align: -0.838ex; width:13.965ex; height:2.843ex;"/></span> in the block <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle B_{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>B</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle B_{j}}</annotation>
+</semantics>
+</math></span><img alt="B_j" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ea2c69d0fec8f10eb21aa996ca50219be25fc223" style="vertical-align: -1.005ex; width:2.674ex; height:2.843ex;"/></span></li></ol>
+<p>As 3 questions can be answered in constant time. Hence case 1 can be answered in linear space and constant time.
+</p>
+<h4><span class="mw-headline" id="Case_2:_if_i_and_j_are_in_the_same_block">Case 2: if i and j are in the same block</span><span class="mw-editsection"></span></h4>
+<p>The sequence of RMQ that reduced from LCA has one property that a normal RMQ doesn’t have. The next element is always +1 or -1 from the current element. For example:
+</p>
+
+<p>Therefore, each block <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle B_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>B</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle B_{i}}</annotation>
+</semantics>
+</math></span><img alt="B_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/82cda0578ec6b48774c541ecb9bee4a90176e62f" style="vertical-align: -0.671ex; width:2.564ex; height:2.509ex;"/></span> can be encoded as a bitstring with 0 represents the current depth -1, and 1 represent the current depth +1. This transformation turns a block <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle B_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>B</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle B_{i}}</annotation>
+</semantics>
+</math></span><img alt="B_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/82cda0578ec6b48774c541ecb9bee4a90176e62f" style="vertical-align: -0.671ex; width:2.564ex; height:2.509ex;"/></span>into a bitstring of size <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle b-1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>b</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle b-1}</annotation>
+</semantics>
+</math></span><img alt="b-1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1bf4269308d5f8175c0de6c3d7d9dc177e4f1cae" style="vertical-align: -0.505ex; width:5ex; height:2.343ex;"/></span>. A bitstring of size <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle b-1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>b</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle b-1}</annotation>
+</semantics>
+</math></span><img alt="b-1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1bf4269308d5f8175c0de6c3d7d9dc177e4f1cae" style="vertical-align: -0.505ex; width:5ex; height:2.343ex;"/></span> has <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{b-1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>b</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{b-1}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 2^{b-1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/518866902d43bff95d1eda29cb3428ca2ca64179" style="vertical-align: -0.338ex; width:4.201ex; height:2.676ex;"/></span> possible bitstrings. Since <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle b={1 \over 2}\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>b</mi>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle b={1 \over 2}\log n}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle b={1 \over 2}\log n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ca8fbe830dee8598422da9f0e3c441872bdcf2e0" style="vertical-align: -1.838ex; width:11.235ex; height:5.176ex;"/></span>, so <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{b-1}\leq 2^{b}=2^{{1 \over 2}\log n}=n^{1 \over 2}={\sqrt {n}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>b</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mo>≤<!-- ≤ --></mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>b</mi>
+</mrow>
+</msup>
+<mo>=</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mrow>
+</msup>
+<mo>=</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<mn>2</mn>
+</mfrac>
+</mrow>
+</msup>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>n</mi>
+</msqrt>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{b-1}\leq 2^{b}=2^{{1 \over 2}\log n}=n^{1 \over 2}={\sqrt {n}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 2^{b-1}\leq 2^{b}=2^{{1 \over 2}\log n}=n^{1 \over 2}={\sqrt {n}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5751f55ffa767d81183c674ccef1be9a95883042" style="vertical-align: -1.005ex; width:31.916ex; height:4.176ex;"/></span>.
+</p><p>Hence <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle B_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>B</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle B_{i}}</annotation>
+</semantics>
+</math></span><img alt="B_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/82cda0578ec6b48774c541ecb9bee4a90176e62f" style="vertical-align: -0.671ex; width:2.564ex; height:2.509ex;"/></span> is always one of the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\sqrt {n}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>n</mi>
+</msqrt>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\sqrt {n}}}</annotation>
+</semantics>
+</math></span><img alt="{\sqrt {n}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2a2994734eae382ce30100fb17b9447fd8e99f81" style="vertical-align: -1.005ex; width:3.331ex; height:3.009ex;"/></span> possible bitstring with size of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle b-1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>b</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle b-1}</annotation>
+</semantics>
+</math></span><img alt="b-1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1bf4269308d5f8175c0de6c3d7d9dc177e4f1cae" style="vertical-align: -0.505ex; width:5ex; height:2.343ex;"/></span>.
+</p><p>Then, for each possible bitstrings, we apply the naïve quadratic space constant time solution. This will take up <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\sqrt {n}}\cdot b^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>n</mi>
+</msqrt>
+</mrow>
+<mo>⋅<!-- ⋅ --></mo>
+<msup>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\sqrt {n}}\cdot b^{2}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\sqrt {n}}\cdot b^{2}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ace5e28faf22b85bb4a8a303fb9f60c46808d914" style="vertical-align: -1.005ex; width:7.061ex; height:3.343ex;"/></span> spaces, which is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O({\sqrt {n}}\cdot (\log n)^{2})\leq O({\sqrt {n}}\cdot {\sqrt {n}})=O(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>n</mi>
+</msqrt>
+</mrow>
+<mo>⋅<!-- ⋅ --></mo>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>n</mi>
+</msqrt>
+</mrow>
+<mo>⋅<!-- ⋅ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>n</mi>
+</msqrt>
+</mrow>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O({\sqrt {n}}\cdot (\log n)^{2})\leq O({\sqrt {n}}\cdot {\sqrt {n}})=O(n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O({\sqrt {n}}\cdot (\log n)^{2})\leq O({\sqrt {n}}\cdot {\sqrt {n}})=O(n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/212c4133b1f78e6a127f930c9913d67d4d7f4802" style="vertical-align: -1.005ex; width:39.307ex; height:3.343ex;"/></span>.
+</p><p>Therefore, answering the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle RMQ(i,j)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>R</mi>
+<mi>M</mi>
+<mi>Q</mi>
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo>,</mo>
+<mi>j</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle RMQ(i,j)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle RMQ(i,j)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/24846ad6b793558a93b5ab0b098593c0c9d29a29" style="vertical-align: -0.838ex; width:10.648ex; height:2.843ex;"/></span> query in case 2 is simply finding the corresponding block (in which is a bitstring) and perform a table lookup for that bitstring. Hence case 2 can be solved using linear space with constant searching time.
+</p>
+<h2><span class="mw-headline" id="Extension_to_directed_acyclic_graphs">Extension to directed acyclic graphs</span><span class="mw-editsection"></span></h2>
+
+<p>While originally studied in the context of trees, the notion of lowest common ancestors can be defined for directed acyclic graphs (DAGs), using either of two possible definitions. In both, the edges of the DAG are assumed to point from parents to children.
+</p>
+<ul><li>Given <span class="texhtml"><i>G</i> = (<i>V</i>, <i>E</i>)</span>, Aït-Kaci et al. (1989) define a poset <span class="texhtml">(<i>V</i>, ≤)</span> such that <span class="texhtml mvar" style="font-style:italic;"><i>x</i> ≤ <i>y</i></span> iff <span class="texhtml mvar" style="font-style:italic;">x</span> is reachable from <span class="texhtml mvar" style="font-style:italic;">y</span>. The lowest common ancestors of <span class="texhtml mvar" style="font-style:italic;">x</span> and <span class="texhtml mvar" style="font-style:italic;">y</span> are then the minimum elements under ≤ of the common ancestor set <span class="texhtml">{<i>z</i> ∈ <i>V</i> | <i>x</i> ≤ <i>z</i> and <i>y</i> ≤ <i>z</i></span>}.</li>
+<li>Bender et al. (2005) gave an equivalent definition, where the lowest common ancestors of <span class="texhtml mvar" style="font-style:italic;">x</span> and <span class="texhtml mvar" style="font-style:italic;">y</span> are the nodes of out-degree zero in the subgraph of <span class="texhtml mvar" style="font-style:italic;">G</span> induced by the set of common ancestors of <span class="texhtml mvar" style="font-style:italic;">x</span> and <span class="texhtml mvar" style="font-style:italic;">y</span>.</li></ul>
+<p>In a tree, the lowest common ancestor is unique; in a DAG of <span class="texhtml mvar" style="font-style:italic;">n</span> nodes, each pair of nodes may have as much as <span class="texhtml"><i>n</i>-2</span> LCAs (Bender et al. 2005), while the existence of an LCA for a pair of nodes is not even guaranteed in arbitrary connected DAGs.
+</p><p>A brute-force algorithm for finding lowest common ancestors is given by Aït-Kaci et al. (1989): find all ancestors of <span class="texhtml mvar" style="font-style:italic;">x</span> and <span class="texhtml mvar" style="font-style:italic;">y</span>, then return the maximum element of the intersection of the two sets. Better algorithms exist that, analogous to the LCA algorithms on trees, preprocess a graph to enable constant-time LCA queries. The problem of <i>LCA existence</i> can be solved optimally for sparse DAGs by means of an <span class="texhtml">O(|<i>V</i>||<i>E</i>|)</span> algorithm due to Kowaluk &amp; Lingas (2005).
+</p><p>Dash et al. (2013) present a unified framework for preprocessing directed acyclic graphs to compute lowest common ancestors in constant time. Their framework can achieve near-linear preprocessing times for sparse graphs and is available for public use.<sup class="reference" id="cite_ref-2">[2]</sup>
+</p>
+<h2><span class="mw-headline" id="Applications">Applications</span><span class="mw-editsection"></span></h2>
+<p>The problem of computing lowest common ancestors of classes in an inheritance hierarchy arises in the implementation of object-oriented programming systems (Aït-Kaci et al. 1989). The LCA problem also finds applications in models of complex systems found in distributed computing (Bender et al. 2005).
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Level ancestor problem</li>
+<li>Semilattice</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFAhoHopcroftUllman1973">Aho, Alfred; Hopcroft, John; Ullman, Jeffrey (1973), "On finding lowest common ancestors in trees", <i>Proc. 5th ACM Symp. Theory of Computing (STOC)</i>, pp. 253–265, doi:10.1145/800125.804056, S2CID 17705738</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=On+finding+lowest+common+ancestors+in+trees&amp;rft.btitle=Proc.+5th+ACM+Symp.+Theory+of+Computing+%28STOC%29&amp;rft.pages=253-265&amp;rft.date=1973&amp;rft_id=info%3Adoi%2F10.1145%2F800125.804056&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A17705738%23id-name%3DS2CID&amp;rft.aulast=Aho&amp;rft.aufirst=Alfred&amp;rft.au=Hopcroft%2C+John&amp;rft.au=Ullman%2C+Jeffrey&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ALowest+common+ancestor"></span>.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFAït-KaciBoyerLincolnNasr1989">Aït-Kaci, H.; Boyer, R.; Lincoln, P.; Nasr, R. (1989), "Efficient implementation of lattice operations" <span class="cs1-format">(PDF)</span>, <i>ACM Transactions on Programming Languages and Systems</i>, <b>11</b> (1): 115–146, CiteSeerX <span class="cs1-lock-free" title="Freely accessible">10.1.1.106.4911</span>, doi:10.1145/59287.59293, S2CID 2931984</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=ACM+Transactions+on+Programming+Languages+and+Systems&amp;rft.atitle=Efficient+implementation+of+lattice+operations&amp;rft.volume=11&amp;rft.issue=1&amp;rft.pages=115-146&amp;rft.date=1989&amp;rft_id=%2F%2Fciteseerx.ist.psu.edu%2Fviewdoc%2Fsummary%3Fdoi%3D10.1.1.106.4911%23id-name%3DCiteSeerX&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A2931984%23id-name%3DS2CID&amp;rft_id=info%3Adoi%2F10.1145%2F59287.59293&amp;rft.aulast=A%C3%AFt-Kaci&amp;rft.aufirst=H.&amp;rft.au=Boyer%2C+R.&amp;rft.au=Lincoln%2C+P.&amp;rft.au=Nasr%2C+R.&amp;rft_id=http%3A%2F%2Fhassan-ait-kaci.net%2Fpdf%2Fencoding-toplas-89.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ALowest+common+ancestor"></span>.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFAlstrupGavoilleKaplanRauhe2004">Alstrup, Stephen; Gavoille, Cyril; Kaplan, Haim; Rauhe, Theis (2004), "Nearest Common Ancestors: A Survey and a New Algorithm for a Distributed Environment", <i>Theory of Computing Systems</i>, <b>37</b> (3): 441–456, CiteSeerX <span class="cs1-lock-free" title="Freely accessible">10.1.1.76.5973</span>, doi:10.1007/s00224-004-1155-5, S2CID 9447127</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Theory+of+Computing+Systems&amp;rft.atitle=Nearest+Common+Ancestors%3A+A+Survey+and+a+New+Algorithm+for+a+Distributed+Environment&amp;rft.volume=37&amp;rft.issue=3&amp;rft.pages=441-456&amp;rft.date=2004&amp;rft_id=%2F%2Fciteseerx.ist.psu.edu%2Fviewdoc%2Fsummary%3Fdoi%3D10.1.1.76.5973%23id-name%3DCiteSeerX&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A9447127%23id-name%3DS2CID&amp;rft_id=info%3Adoi%2F10.1007%2Fs00224-004-1155-5&amp;rft.aulast=Alstrup&amp;rft.aufirst=Stephen&amp;rft.au=Gavoille%2C+Cyril&amp;rft.au=Kaplan%2C+Haim&amp;rft.au=Rauhe%2C+Theis&amp;rft_id=http%3A%2F%2Fwww.math.tau.ac.il%2F~haimk%2Fpapers%2Flnca-submitted.ps&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ALowest+common+ancestor"></span>. A preliminary version appeared in SPAA 2002.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFBenderFarach-Colton2000">Bender, Michael A.; Farach-Colton, Martin (2000), "The LCA problem revisited", <span class="cs1-lock-registration" title="Free registration required"><i>Proceedings of the 4th Latin American Symposium on Theoretical Informatics</i></span>, Lecture Notes in Computer Science, vol. 1776, Springer-Verlag, pp. 88–94, doi:10.1007/10719839_9, ISBN <bdi>978-3-540-67306-4</bdi></cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=The+LCA+problem+revisited&amp;rft.btitle=Proceedings+of+the+4th+Latin+American+Symposium+on+Theoretical+Informatics&amp;rft.series=Lecture+Notes+in+Computer+Science&amp;rft.pages=88-94&amp;rft.pub=Springer-Verlag&amp;rft.date=2000&amp;rft_id=info%3Adoi%2F10.1007%2F10719839_9&amp;rft.isbn=978-3-540-67306-4&amp;rft.aulast=Bender&amp;rft.aufirst=Michael+A.&amp;rft.au=Farach-Colton%2C+Martin&amp;rft_id=https%3A%2F%2Farchive.org%2Fdetails%2Flatin2000theoret0000lati%2Fpage%2F88&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ALowest+common+ancestor"></span>.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFBenderFarach-ColtonPemmasaniSkiena2005">Bender, Michael A.; Farach-Colton, Martín; Pemmasani, Giridhar; Skiena, Steven; Sumazin, Pavel (2005), "Lowest common ancestors in trees and directed acyclic graphs" <span class="cs1-format">(PDF)</span>, <i>Journal of Algorithms</i>, <b>57</b> (2): 75–94, doi:10.1016/j.jalgor.2005.08.001</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Journal+of+Algorithms&amp;rft.atitle=Lowest+common+ancestors+in+trees+and+directed+acyclic+graphs&amp;rft.volume=57&amp;rft.issue=2&amp;rft.pages=75-94&amp;rft.date=2005&amp;rft_id=info%3Adoi%2F10.1016%2Fj.jalgor.2005.08.001&amp;rft.aulast=Bender&amp;rft.aufirst=Michael+A.&amp;rft.au=Farach-Colton%2C+Mart%C3%ADn&amp;rft.au=Pemmasani%2C+Giridhar&amp;rft.au=Skiena%2C+Steven&amp;rft.au=Sumazin%2C+Pavel&amp;rft_id=http%3A%2F%2Fwww.cs.sunysb.edu%2F~bender%2Fpub%2FJALG05-daglca.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ALowest+common+ancestor"></span>.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFBerkmanVishkin1993">Berkman, Omer; Vishkin, Uzi (1993), "Recursive Star-Tree Parallel Data Structure", <i>SIAM Journal on Computing</i>, <b>22</b> (2): 221–242, doi:10.1137/0222017, archived from the original on September 23, 2017</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=SIAM+Journal+on+Computing&amp;rft.atitle=Recursive+Star-Tree+Parallel+Data+Structure&amp;rft.volume=22&amp;rft.issue=2&amp;rft.pages=221-242&amp;rft.date=1993&amp;rft_id=info%3Adoi%2F10.1137%2F0222017&amp;rft.aulast=Berkman&amp;rft.aufirst=Omer&amp;rft.au=Vishkin%2C+Uzi&amp;rft_id=http%3A%2F%2Fwww.dtic.mil%2Fget-tr-doc%2Fpdf%3FAD%3DADA227803&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ALowest+common+ancestor"></span>.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFDashScholzHerhutChristianson2013">Dash, Santanu Kumar; Scholz, Sven-Bodo; Herhut, Stephan; Christianson, Bruce (2013), "A scalable approach to computing representative lowest common ancestor in directed acyclic graphs" <span class="cs1-format">(PDF)</span>, <i>Theoretical Computer Science</i>, <b>513</b>: 25–37, doi:<span class="cs1-lock-free" title="Freely accessible">10.1016/j.tcs.2013.09.030</span>, hdl:2299/12152</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Theoretical+Computer+Science&amp;rft.atitle=A+scalable+approach+to+computing+representative+lowest+common+ancestor+in+directed+acyclic+graphs&amp;rft.volume=513&amp;rft.pages=25-37&amp;rft.date=2013&amp;rft_id=info%3Ahdl%2F2299%2F12152&amp;rft_id=info%3Adoi%2F10.1016%2Fj.tcs.2013.09.030&amp;rft.aulast=Dash&amp;rft.aufirst=Santanu+Kumar&amp;rft.au=Scholz%2C+Sven-Bodo&amp;rft.au=Herhut%2C+Stephan&amp;rft.au=Christianson%2C+Bruce&amp;rft_id=http%3A%2F%2Fuhra.herts.ac.uk%2Fbitstream%2F2299%2F12152%2F2%2F906535.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ALowest+common+ancestor"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFDjidjevPantziouZaroliagis1991">Djidjev, Hristo N.; Pantziou, Grammati E.; Zaroliagis, Christos D. (1991), "Computing shortest paths and distances in planar graphs", <i>Automata, Languages and Programming: 18th International Colloquium, Madrid, Spain, July 8–12, 1991, Proceedings</i>, Lecture Notes in Computer Science, vol. 510, Springer, pp. 327–338, doi:10.1007/3-540-54233-7_145, ISBN <bdi>978-3-540-54233-9</bdi></cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Computing+shortest+paths+and+distances+in+planar+graphs&amp;rft.btitle=Automata%2C+Languages+and+Programming%3A+18th+International+Colloquium%2C+Madrid%2C+Spain%2C+July+8%E2%80%9312%2C+1991%2C+Proceedings&amp;rft.series=Lecture+Notes+in+Computer+Science&amp;rft.pages=327-338&amp;rft.pub=Springer&amp;rft.date=1991&amp;rft_id=info%3Adoi%2F10.1007%2F3-540-54233-7_145&amp;rft.isbn=978-3-540-54233-9&amp;rft.aulast=Djidjev&amp;rft.aufirst=Hristo+N.&amp;rft.au=Pantziou%2C+Grammati+E.&amp;rft.au=Zaroliagis%2C+Christos+D.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ALowest+common+ancestor"></span>.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFFischerHeun2006">Fischer, Johannes; Heun, Volker (2006), "Theoretical and Practical Improvements on the RMQ-Problem, with Applications to LCA and LCE", <i>Proceedings of the 17th Annual Symposium on Combinatorial Pattern Matching</i>, Lecture Notes in Computer Science, vol. 4009, Springer-Verlag, pp. 36–48, CiteSeerX <span class="cs1-lock-free" title="Freely accessible">10.1.1.64.5439</span>, doi:10.1007/11780441_5, ISBN <bdi>978-3-540-35455-0</bdi></cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Theoretical+and+Practical+Improvements+on+the+RMQ-Problem%2C+with+Applications+to+LCA+and+LCE&amp;rft.btitle=Proceedings+of+the+17th+Annual+Symposium+on+Combinatorial+Pattern+Matching&amp;rft.series=Lecture+Notes+in+Computer+Science&amp;rft.pages=36-48&amp;rft.pub=Springer-Verlag&amp;rft.date=2006&amp;rft_id=%2F%2Fciteseerx.ist.psu.edu%2Fviewdoc%2Fsummary%3Fdoi%3D10.1.1.64.5439%23id-name%3DCiteSeerX&amp;rft_id=info%3Adoi%2F10.1007%2F11780441_5&amp;rft.isbn=978-3-540-35455-0&amp;rft.aulast=Fischer&amp;rft.aufirst=Johannes&amp;rft.au=Heun%2C+Volker&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ALowest+common+ancestor"></span>.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFGabowBentleyTarjan1984">Gabow, Harold N.; Bentley, Jon Louis; Tarjan, Robert E. (1984), "Scaling and related techniques for geometry problems", <i>STOC '84: Proc. 16th ACM Symposium on Theory of Computing</i>, New York, NY, USA: ACM, pp. 135–143, doi:10.1145/800057.808675, ISBN <bdi>978-0897911337</bdi>, S2CID 17752833</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Scaling+and+related+techniques+for+geometry+problems&amp;rft.btitle=STOC+%2784%3A+Proc.+16th+ACM+Symposium+on+Theory+of+Computing&amp;rft.place=New+York%2C+NY%2C+USA&amp;rft.pages=135-143&amp;rft.pub=ACM&amp;rft.date=1984&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A17752833%23id-name%3DS2CID&amp;rft_id=info%3Adoi%2F10.1145%2F800057.808675&amp;rft.isbn=978-0897911337&amp;rft.aulast=Gabow&amp;rft.aufirst=Harold+N.&amp;rft.au=Bentley%2C+Jon+Louis&amp;rft.au=Tarjan%2C+Robert+E.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ALowest+common+ancestor"></span>.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFHarelTarjan1984">Harel, Dov; Tarjan, Robert E. (1984), "Fast algorithms for finding nearest common ancestors", <i>SIAM Journal on Computing</i>, <b>13</b> (2): 338–355, doi:10.1137/0213024</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=SIAM+Journal+on+Computing&amp;rft.atitle=Fast+algorithms+for+finding+nearest+common+ancestors&amp;rft.volume=13&amp;rft.issue=2&amp;rft.pages=338-355&amp;rft.date=1984&amp;rft_id=info%3Adoi%2F10.1137%2F0213024&amp;rft.aulast=Harel&amp;rft.aufirst=Dov&amp;rft.au=Tarjan%2C+Robert+E.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ALowest+common+ancestor"></span>.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFKowalukLingas2005">Kowaluk, Miroslaw; Lingas, Andrzej (2005), "LCA queries in directed acyclic graphs",  in Caires, Luís; Italiano, Giuseppe F.; Monteiro, Luís; Palamidessi, Catuscia; Yung, Moti (eds.), <i>Automata, Languages and Programming, 32nd International Colloquium, ICALP 2005, Lisbon, Portugal, July 11-15, 2005, Proceedings</i>, Lecture Notes in Computer Science, vol. 3580, Springer, pp. 241–248, CiteSeerX <span class="cs1-lock-free" title="Freely accessible">10.1.1.460.6923</span>, doi:10.1007/11523468_20, ISBN <bdi>978-3-540-27580-0</bdi></cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=LCA+queries+in+directed+acyclic+graphs&amp;rft.btitle=Automata%2C+Languages+and+Programming%2C+32nd+International+Colloquium%2C+ICALP+2005%2C+Lisbon%2C+Portugal%2C+July+11-15%2C+2005%2C+Proceedings&amp;rft.series=Lecture+Notes+in+Computer+Science&amp;rft.pages=241-248&amp;rft.pub=Springer&amp;rft.date=2005&amp;rft_id=%2F%2Fciteseerx.ist.psu.edu%2Fviewdoc%2Fsummary%3Fdoi%3D10.1.1.460.6923%23id-name%3DCiteSeerX&amp;rft_id=info%3Adoi%2F10.1007%2F11523468_20&amp;rft.isbn=978-3-540-27580-0&amp;rft.aulast=Kowaluk&amp;rft.aufirst=Miroslaw&amp;rft.au=Lingas%2C+Andrzej&amp;rft_id=https%3A%2F%2Farchive.org%2Fdetails%2Fautomatalanguage2005inte%2Fpage%2F241&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ALowest+common+ancestor"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFSchieberVishkin1988">Schieber, Baruch; Vishkin, Uzi (1988), "On finding lowest common ancestors: simplification and parallelization", <i>SIAM Journal on Computing</i>, <b>17</b> (6): 1253–1262, doi:10.1137/0217079</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=SIAM+Journal+on+Computing&amp;rft.atitle=On+finding+lowest+common+ancestors%3A+simplification+and+parallelization&amp;rft.volume=17&amp;rft.issue=6&amp;rft.pages=1253-1262&amp;rft.date=1988&amp;rft_id=info%3Adoi%2F10.1137%2F0217079&amp;rft.aulast=Schieber&amp;rft.aufirst=Baruch&amp;rft.au=Vishkin%2C+Uzi&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ALowest+common+ancestor"></span>.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFSleatorTarjan1983">Sleator, D. D.; Tarjan, R. E. (1983), "A Data Structure for Dynamic Trees" <span class="cs1-format">(PDF)</span>, <i>Proceedings of the thirteenth annual ACM symposium on Theory of computing - STOC '81</i>, pp. 114–122, doi:10.1145/800076.802464, S2CID 15402750</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=A+Data+Structure+for+Dynamic+Trees&amp;rft.btitle=Proceedings+of+the+thirteenth+annual+ACM+symposium+on+Theory+of+computing+-+STOC+%2781&amp;rft.pages=114-122&amp;rft.date=1983&amp;rft_id=info%3Adoi%2F10.1145%2F800076.802464&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A15402750%23id-name%3DS2CID&amp;rft.aulast=Sleator&amp;rft.aufirst=D.+D.&amp;rft.au=Tarjan%2C+R.+E.&amp;rft_id=https%3A%2F%2Fwww.cs.cmu.edu%2F~sleator%2Fpapers%2Fdynamic-trees.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ALowest+common+ancestor"></span></li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>Lowest Common Ancestor of a Binary Search Tree, by Kamal Rawat</li>
+<li>Python implementation of the algorithm of Bender and Farach-Colton for trees, by David Eppstein</li>
+<li>Python implementation for arbitrary directed acyclic graphs</li>
+<li>Lecture notes on LCAs from a 2003 MIT Data Structures course. Course by Erik Demaine, notes written by Loizos Michael and Christos Kapoutsis. Notes from 2007 offering of same course, written by Alison Cichowlas.</li>
+<li>Lowest Common Ancestor in Binary Trees in C. A simplified version of the Schieber–Vishkin technique that works only for balanced binary trees.</li>
+<li>Video of Donald Knuth explaining the Schieber–Vishkin technique</li>
+<li>Range Minimum Query and Lowest Common Ancestor article in Topcoder</li>
+<li>Documentation for the lca package for Haskell by Edward Kmett, which includes the skew-binary random access list algorithm. Purely functional data structures for on-line LCA slides for the same package.</li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw2393
+Cached time: 20221224000214
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.322 seconds
+Real time usage: 0.466 seconds
+Preprocessor visited node count: 3498/1000000
+Post‐expand include size: 47299/2097152 bytes
+Template argument size: 2449/2097152 bytes
+Highest expansion depth: 9/100
+Expensive parser function count: 2/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 31701/5000000 bytes
+Lua time usage: 0.163/10.000 seconds
+Lua memory usage: 6523107/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  285.763      1 -total
+ 24.39%   69.704      1 Template:Reflist
+ 23.74%   67.840     14 Template:Citation
+ 20.75%   59.296      1 Template:Cite_web
+ 19.75%   56.452      1 Template:Short_description
+ 12.79%   36.546      2 Template:Pagetype
+ 12.78%   36.517      4 Template:Harv
+  5.99%   17.118      1 Template:About
+  4.48%   12.792      6 Template:Harvs
+  4.05%   11.562      8 Template:Main_other
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:7196522-0!canonical and timestamp 20221224000213 and revision id 1111669741.
+ -->
+</div></body>
+</html>

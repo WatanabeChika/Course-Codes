@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Knuth-Morris-Pratt_algorithm</title>
+</head>
+<body>
+<div class="mw-parser-output"><style data-mw-deduplicate="TemplateStyles:r1066479718">.mw-parser-output .infobox-subbox{padding:0;border:none;margin:-3px;width:auto;min-width:100%;font-size:100%;clear:none;float:none;background-color:transparent}.mw-parser-output .infobox-3cols-child{margin:auto}.mw-parser-output .infobox .navbar{font-size:100%}body.skin-minerva .mw-parser-output .infobox-header,body.skin-minerva .mw-parser-output .infobox-subheader,body.skin-minerva .mw-parser-output .infobox-above,body.skin-minerva .mw-parser-output .infobox-title,body.skin-minerva .mw-parser-output .infobox-image,body.skin-minerva .mw-parser-output .infobox-full-data,body.skin-minerva .mw-parser-output .infobox-below{text-align:center}</style><table class="infobox"><caption class="infobox-title">Knuth–Morris–Pratt algorithm</caption><tbody><tr><th class="infobox-label" scope="row">Class</th><td class="infobox-data">String search</td></tr><tr><th class="infobox-label" scope="row">Data structure</th><td class="infobox-data">String</td></tr><tr><th class="infobox-label" scope="row">Worst-case performance</th><td class="infobox-data"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta (m)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mi>m</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta (m)}</annotation>
+</semantics>
+</math></span><img alt="\Theta(m)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/80a5cb7e7794c6e0c32bbed3e25c64f1c22a1a57" style="vertical-align: -0.838ex; width:5.658ex; height:2.843ex;"/></span> preprocessing + <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta (n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta (n)}</annotation>
+</semantics>
+</math></span><img alt="\Theta (n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a6351206e27071559aa4472579095994f650d76b" style="vertical-align: -0.838ex; width:5.012ex; height:2.843ex;"/></span> matching<sup class="reference" id="cite_ref-1">[note 1]</sup></td></tr><tr><th class="infobox-label" scope="row">Worst-case space complexity</th><td class="infobox-data"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta (m)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mi>m</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta (m)}</annotation>
+</semantics>
+</math></span><img alt="\Theta(m)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/80a5cb7e7794c6e0c32bbed3e25c64f1c22a1a57" style="vertical-align: -0.838ex; width:5.658ex; height:2.843ex;"/></span></td></tr></tbody></table>
+<p>In computer science, the <b>Knuth–Morris–Pratt string-searching algorithm</b> (or <b>KMP algorithm</b>) searches for occurrences of a "word" <code>W</code> within a main "text string" <code>S</code> by employing the observation that when a mismatch occurs, the word itself embodies sufficient information to determine where the next match could begin, thus bypassing re-examination of previously matched characters.
+</p><p>The algorithm was conceived by James H. Morris and independently discovered by Donald Knuth "a few weeks later" from automata theory.<sup class="reference" id="cite_ref-knuth1977_2-0">[1]</sup><sup class="reference" id="cite_ref-3">[2]</sup>
+Morris and Vaughan Pratt published a technical report in 1970.<sup class="reference" id="cite_ref-4">[3]</sup>
+The three also published the algorithm jointly in 1977.<sup class="reference" id="cite_ref-knuth1977_2-1">[1]</sup> Independently, in 1969, Matiyasevich<sup class="reference" id="cite_ref-5">[4]</sup><sup class="reference" id="cite_ref-6">[5]</sup> discovered a similar algorithm, coded by a two-dimensional Turing machine, while studying a string-pattern-matching recognition problem over a binary alphabet.  This was the first linear-time algorithm for string matching.<sup class="reference" id="cite_ref-7">[6]</sup>
+</p>
+
+<h2><span class="mw-headline" id="Background">Background</span><span class="mw-editsection"></span></h2>
+<p>A string-matching algorithm wants to find the starting index <code>m</code> in string <code>S[]</code> that matches the search word <code>W[]</code>.
+</p><p>The most straightforward algorithm, known as the "Brute-force" or "Naive" algorithm, is to look for a word match at each index <code>m</code>, i.e. the position in the string being searched that corresponds to the character <code>S[m]</code>. At each position <code>m</code> the algorithm first checks for equality of the first character in the word being searched, i.e. <code>S[m] =? W[0]</code>. If a match is found, the algorithm tests the other characters in the word being searched by checking successive values of the word position index, <code>i</code>. The algorithm retrieves the character <code>W[i]</code> in the word being searched and checks for equality of the expression <code>S[m+i] =? W[i]</code>.  If all successive characters match in <code>W</code> at position <code>m</code>, then a match is found at that position in the search string. If the index <code>m</code> reaches the end of the string then there is no match, in which case the search is said to "fail".
+</p><p>Usually, the trial check will quickly reject the trial match. If the strings are uniformly distributed random letters, then the chance that characters match is 1 in 26. In most cases, the trial check will reject the match at the initial letter. The chance that the first two letters will match is 1 in 26<sup>2</sup> (1 in 676). So if the characters are random, then the expected complexity of searching string <code>S[]</code> of length <i>n</i> is on the order of <i>n</i> comparisons or <i>O</i>(<i>n</i>).  The expected performance is very good. If <code>S[]</code> is 1 million characters and <code>W[]</code> is 1000 characters, then the string search should complete after about 1.04 million character comparisons.
+</p><p>That expected performance is not guaranteed. If the strings are not random, then checking a trial <code>m</code> may take many character comparisons. The worst case is if the two strings match in all but the last letter. Imagine that the string <code>S[]</code> consists of 1 million characters that are all <i>A</i>, and that the word <code>W[]</code> is 999 <i>A</i> characters terminating in a final <i>B</i> character. The simple string-matching algorithm will now examine 1000 characters at each trial position before rejecting the match and advancing the trial position. The simple string search example would now take about 1000 character comparisons times 1 million positions for 1 billion character comparisons.  If the length of <code>W[]</code> is <i>k</i>, then the worst-case performance is <i>O</i>(<i>k</i>⋅<i>n</i>).
+</p><p>The KMP algorithm has a better worst-case performance than the straightforward algorithm. KMP spends a little time precomputing a table (on the order of the size of <code>W[]</code>, <i>O</i>(<i>k</i>)), and then it uses that table to do an efficient search of the string in <i>O</i>(<i>n</i>).
+</p><p>The difference is that KMP makes use of previous match information that the straightforward algorithm does not. In the example above, when KMP sees a trial match fail on the 1000th character (<code>i</code> = 999) because <code>S[m+999] ≠ W[999]</code>, it will increment <code>m</code> by 1, but it will know that the first 998 characters at the new position already match.  KMP matched 999 <i>A</i> characters before discovering a mismatch at the 1000th character (position 999). Advancing the trial match position <code>m</code> by one throws away the first <i>A</i>, so KMP knows there are 998 <i>A</i> characters that match <code>W[]</code> and does not retest them; that is, KMP sets <code>i</code> to 998. KMP maintains its knowledge in the precomputed table and two state variables. When KMP discovers a mismatch, the table determines how much KMP will increase (variable <code>m</code>) and where it will resume testing (variable <code>i</code>).
+</p>
+<h2><span class="mw-headline" id="KMP_algorithm">KMP algorithm</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Example_of_the_search_algorithm">Example of the search algorithm</span><span class="mw-editsection"></span></h3>
+<p>To illustrate the algorithm's details, consider a (relatively artificial) run of the algorithm, where <code>W</code> = "ABCDABD" and <code>S</code> = "ABC ABCDAB ABCDABCDABDE". At any given time, the algorithm is in a state determined by two integers:
+</p>
+<ul><li><code>m</code>, denoting the position within <code>S</code> where the prospective match for <code>W</code> begins,</li>
+<li><code>i</code>, denoting the index of the currently considered character in <code>W</code>.</li></ul>
+<p>In each step the algorithm compares <code>S[m+i]</code> with <code>W[i]</code> and increments <code>i</code> if they are equal. This is depicted, at the start of the run, like
+</p>
+
+<p>The algorithm compares successive characters of <code>W</code> to "parallel" characters of <code>S</code>, moving from one to the next by incrementing <code>i</code> if they match.  However, in the fourth step <code>S[3] = ' '</code> does not match <code>W[3] = 'D'</code>.  Rather than beginning to search again at <code>S[1]</code>, we note that no <code>'A'</code> occurs between positions 1 and 2 in <code>S</code>; hence, having checked all those characters previously (and knowing they matched the corresponding characters in <code>W</code>), there is no chance of finding the beginning of a match.  Therefore, the algorithm sets <code>m = 3</code> and <code>i = 0</code>.
+</p>
+
+<p>This match fails at the initial character, so the algorithm sets <code>m = 4</code> and <code>i = 0</code>
+</p>
+
+<p>Here, <code>i</code> increments through a nearly complete match <code>"ABCDAB"</code> until <code>i = 6</code> giving a mismatch at <code>W[6]</code> and <code>S[10]</code>.  However, just prior to the end of the current partial match, there was that substring <code>"AB"</code> that could be the beginning of a new match, so the algorithm must take this into consideration.  As these characters match the two characters prior to the current position, those characters need not be checked again; the algorithm sets <code>m = 8</code> (the start of the initial prefix) and <code>i = 2</code> (signaling the first two characters match) and continues matching.  Thus the algorithm not only omits previously matched characters of <code>S</code> (the <code>"AB"</code>), but also previously matched characters of <code>W</code> (the prefix <code>"AB"</code>).
+</p>
+
+<p>This search at the new position fails immediately because <code>W[2]</code> (a <code>'C'</code>) does not match <code>S[10]</code> (a <code>' '</code>). As in the first trial, the mismatch causes the algorithm to return to the beginning of <code>W</code> and begins searching at the mismatched character position of <code>S</code>: <code>m = 10</code>, reset <code>i = 0</code>.
+</p>
+
+<p>The match at <code>m=10</code> fails immediately, so the algorithm next tries <code>m = 11</code> and <code>i = 0</code>.
+</p>
+
+<p>Once again, the algorithm matches <code>"ABCDAB"</code>, but the next character, <code>'C'</code>, does not match the final character <code>'D'</code> of the word <code>W</code>.  Reasoning as before, the algorithm sets <code>m = 15</code>, to start at the two-character string <code>"AB"</code> leading up to the current position, set <code>i = 2</code>, and continue matching from the current position.
+</p>
+
+<p>This time the match is complete, and the first character of the match is <code>S[15]</code>.
+</p>
+<h3><span class="mw-headline" id="Description_of_pseudocode_for_the_search_algorithm">Description of pseudocode for the search algorithm</span><span class="mw-editsection"></span></h3>
+<p>The above example contains all the elements of the algorithm.  For the moment, we assume the existence of a "partial match" table <code>T</code>, described below, which indicates where we need to look for the start of a new match when a mismatch is found.  The entries of <code>T</code> are constructed so that if we have a match starting at <code>S[m]</code> that fails when comparing <code>S[m + i]</code> to <code>W[i]</code>, then the next possible match will start at index <code>m + i - T[i]</code> in <code>S</code> (that is, <code>T[i]</code> is the amount of "backtracking" we need to do after a mismatch).  This has two implications: first, <code>T[0] = -1</code>, which indicates that if <code>W[0]</code> is a mismatch, we cannot backtrack and must simply check the next character; and second, although the next possible match will <i>begin</i> at index <code>m + i - T[i]</code>, as in the example above, we need not actually check any of the <code>T[i]</code> characters after that, so that we continue searching from <code>W[T[i]]</code>.  The following is a sample pseudocode implementation of the KMP search algorithm.
+</p>
+<pre><b>algorithm</b> <i>kmp_search</i>:
+    <b>input</b>:
+        an array of characters, S (the text to be searched)
+        an array of characters, W (the word sought)
+    <b>output</b>:
+        an array of integers, P (positions in S at which W is found)
+        an integer, nP (number of positions)
+
+    <b>define variables</b>:
+        an integer, j ← 0 (the position of the current character in S)
+        an integer, k ← 0 (the position of the current character in W)
+        an array of integers, T (the table, computed elsewhere)
+
+    <b>let</b> nP ← 0
+
+    <b>while</b> j &lt; length(S) <b>do</b>
+        <b>if</b> W[k] = S[j] <b>then</b>
+            <b>let</b> j ← j + 1
+            <b>let</b> k ← k + 1
+            <b>if</b> k = length(W) <b>then</b>
+                (occurrence found, if only first occurrence is needed, m ← j - k  may be returned here)
+                <b>let</b> P[nP] ← j - k, nP ← nP + 1
+                <b>let</b> k ← T[k] (T[length(W)] can't be -1)
+        <b>else</b>
+            <b>let</b> k ← T[k]
+            <b>if</b> k &lt; 0 <b>then</b>
+                <b>let</b> j ← j + 1
+                <b>let</b> k ← k + 1
+</pre>
+<h3><span class="mw-headline" id="Efficiency_of_the_search_algorithm">Efficiency of the search algorithm</span><span class="mw-editsection"></span></h3>
+<p>Assuming the prior existence of the table <code>T</code>, the search portion of the Knuth–Morris–Pratt algorithm has complexity <i>O</i>(<i>n</i>), where <i>n</i> is the length of <code>S</code> and the <i>O</i> is big-O notation.  Except for the fixed overhead incurred in entering and exiting the function, all the computations are performed in the <code><b>while</b></code> loop. To bound the number of iterations of this loop; observe that <code>T</code> is constructed so that if a match which had begun at <code>S[m]</code> fails while comparing <code>S[m + i]</code> to <code>W[i]</code>, then the next possible match must begin at <code>S[m + (i - T[i])]</code>.  In particular, the next possible match must occur at a higher index than <code>m</code>, so that <code>T[i] &lt; i</code>.
+</p><p>This fact implies that the loop can execute at most 2<i>n</i> times, since at each iteration it executes one of the two branches in the loop.  The first branch invariably increases <code>i</code> and does not change <code>m</code>, so that the index <code>m + i</code> of the currently scrutinized character of <code>S</code> is increased.  The second branch adds <code>i - T[i]</code> to <code>m</code>, and as we have seen, this is always a positive number.  Thus the location <code>m</code> of the beginning of the current potential match is increased. At the same time, the second branch leaves <code>m + i</code> unchanged, for <code>m</code> gets <code>i - T[i]</code> added to it, and immediately after <code>T[i]</code> gets assigned as the new value of <code>i</code>, hence <code>new_m + new_i =  old_m + old_i - T[old_i] + T[old_i] = old_m + old_i</code>. Now, the loop ends if <code>m + i</code> = <i>n</i>; therefore, each branch of the loop can be reached at most <i>n</i> times, since they respectively increase either <code>m + i</code> or <code>m</code>, and <code>m ≤ m + i</code>: if <code>m</code> = <i>n</i>, then certainly <code>m + i</code> ≥ <i>n</i>, so that since it increases by unit increments at most, we must have had <code>m + i</code> = <i>n</i> at some point in the past, and therefore either way we would be done.
+</p><p>Thus the loop executes at most 2<i>n</i> times, showing that the time complexity of the search algorithm is <i>O</i>(<i>n</i>).
+</p><p>Here is another way to think about the runtime:
+Let us say we begin to match <code>W</code> and <code>S</code> at position <code>i</code> and <code>p</code>. If <code>W</code> exists as a substring of <code>S</code> at p, then <code>W[0..m] = S[p..p+m]</code>.
+Upon success, that is, the word and the text matched at the positions (<code>W[i] = S[p+i]</code>), we increase <code>i</code> by 1.
+Upon failure, that is, the word and the text do not match at the positions (<code>W[i] ≠ S[p+i]</code>), the text pointer is kept still, while the word pointer is rolled back a certain amount (<code>i = T[i]</code>, where <code>T</code> is the jump table), and we attempt to match <code>W[T[i]]</code> with <code>S[p+i]</code>.
+The maximum number of roll-back of <code>i</code> is bounded by <code>i</code>, that is to say, for any failure, we can only roll back as much as we have progressed up to the failure.
+Then it is clear the runtime is 2<i>n</i>.
+</p>
+<h2><span id=".22Partial_match.22_table_.28also_known_as_.22failure_function.22.29"></span><span class="mw-headline" id='"Partial_match"_table_(also_known_as_"failure_function")'>"Partial match" table (also known as "failure function")</span><span class="mw-editsection"></span></h2>
+<p>The goal of the table is to allow the algorithm not to match any character of <code>S</code> more than once.  The key observation about the nature of a linear search that allows this to happen is that in having checked some segment of the main string against an <i>initial segment</i> of the pattern, we know exactly at which places a new potential match which could continue to the current position could begin prior to the current position.  In other words, we "pre-search" the pattern itself and compile a list of all possible fallback positions that bypass a maximum of hopeless characters while not sacrificing any potential matches in doing so.
+</p><p>We want to be able to look up, for each position in <code>W</code>, the length of the longest possible initial segment of <code>W</code> leading up to (but not including) that position, other than the full segment starting at <code>W[0]</code> that just failed to match; this is how far we have to backtrack in finding the next match.  Hence <code>T[i]</code> is exactly the length of the longest possible <i>proper</i> initial segment of <code>W</code> which is also a segment of the substring ending at <code>W[i - 1]</code>.  We use the convention that the empty string has length 0.  Since a mismatch at the very start of the pattern is a special case (there is no possibility of backtracking), we set <code>T[0] = -1</code>, as discussed below.
+</p>
+<h3><span class="mw-headline" id="Working_example_of_the_table-building_algorithm">Working example of the table-building algorithm</span><span class="mw-editsection"></span></h3>
+<p>We consider the example of <code>W = "ABCDABD"</code> first.  We will see that it follows much the same pattern as the main search, and is efficient for similar reasons.  We set <code>T[0] = -1</code>.  To find <code>T[1]</code>, we must discover a proper suffix of <code>"A"</code> which is also a prefix of pattern <code>W</code>.  But there are no proper suffixes of <code>"A"</code>, so we set <code>T[1] = 0</code>. To find <code>T[2]</code>, we see that the substring <code>W[0]</code> - <code>W[1]</code> (<code>"AB"</code>) has a proper suffix <code>"B"</code>. However "B" is not a prefix of the pattern <code>W</code>. Therefore, we set <code>T[2] = 0</code>.
+</p><p>Continuing to <code>T[3]</code>, we first check the proper suffix of length 1, and as in the previous case it fails. Should we also check longer suffixes? No, we now note that there is a shortcut to checking <i>all</i> suffixes: let us say that we discovered a proper suffix which is a proper prefix (A proper prefix of a string is not equal to the string itself) and ending at <code>W[2]</code> with length 2 (the maximum possible); then its first character is also a proper prefix of <code>W</code>, hence a proper prefix itself, and it ends at <code>W[1]</code>, which we already determined did not occur as <code>T[2] = 0</code> and not <code>T[2] = 1</code>. Hence at each stage, the shortcut rule is that one needs to consider checking suffixes of a given size m+1 only if a valid suffix of size m was found at the previous stage (i.e. <code>T[x] = m</code>) and should not bother to check m+2, m+3, etc.
+</p><p>Therefore, we need not even concern ourselves with substrings having length 2, and as in the previous case the sole one with length 1 fails, so <code>T[3] = 0</code>.
+</p><p>We pass to the subsequent <code>W[4]</code>, <code>'A'</code>.  The same logic shows that the longest substring we need to consider has length 1, and as in the previous case it fails since "D" is not a prefix of <code>W</code>. But instead of setting <code>T[4] = 0</code>, we can do better by noting that <code>W[4] = W[0]</code>, and also that a look-up of <code>T[4]</code> implies the corresponding <code>S</code> character, <code>S[m+4]</code>, was a mismatch and therefore <code>S[m+4] ≠ 'A'</code>. Thus there is no point in restarting the search at <code>S[m+4]</code>; we should begin at 1 position ahead. This means that we may shift pattern <code>W</code> by match length plus one character, so <code>T[4] = -1</code>.
+</p><p>Considering now the next character, <code>W[5]</code>, which is <code>'B'</code>: though by inspection the longest substring would appear to be <code>'A'</code>, we still set <code>T[5] = 0</code>. The reasoning is similar to why <code>T[4] = -1</code>. <code>W[5]</code> itself extends the prefix match begun with <code>W[4]</code>, and we can assume that the corresponding character in <code>S</code>, <code>S[m+5] ≠ 'B'</code>. So backtracking before <code>W[5]</code> is pointless, but <code>S[m+5]</code> may be <code>'A'</code>, hence <code>T[5] = 0</code>.
+</p><p>Finally, we see that the next character in the ongoing segment starting at <code>W[4] = 'A'</code> would be <code>'B'</code>, and indeed this is also <code>W[5]</code>.  Furthermore, the same argument as above shows that we need not look before <code>W[4]</code> to find a segment for <code>W[6]</code>, so that this is it, and we take <code>T[6] = 2</code>.
+</p><p>Therefore, we compile the following table:
+</p>
+<table class="wikitable" style="background-color:white; font-family:monospace; text-align:right">
+<tbody><tr>
+<th><code>i</code>
+</th>
+<td>0
+</td>
+<td>1
+</td>
+<td>2
+</td>
+<td>3
+</td>
+<td>4
+</td>
+<td>5
+</td>
+<td>6
+</td>
+<td>7
+</td></tr>
+<tr>
+<th><code>W[i]</code>
+</th>
+<td>A
+</td>
+<td>B
+</td>
+<td>C
+</td>
+<td>D
+</td>
+<td>A
+</td>
+<td>B
+</td>
+<td>D
+</td>
+<td>
+</td></tr>
+<tr>
+<th><code>T[i]</code>
+</th>
+<td>-1
+</td>
+<td>0
+</td>
+<td>0
+</td>
+<td>0
+</td>
+<td>-1
+</td>
+<td>0
+</td>
+<td>2
+</td>
+<td>0
+</td></tr></tbody></table>
+<p>Another example:
+</p>
+<table class="wikitable" style="background-color:white; font-family:monospace; text-align:right">
+<tbody><tr>
+<th><code>i</code>
+</th>
+<td>0
+</td>
+<td>1
+</td>
+<td>2
+</td>
+<td>3
+</td>
+<td>4
+</td>
+<td>5
+</td>
+<td>6
+</td>
+<td>7
+</td>
+<td>8
+</td>
+<td>9
+</td></tr>
+<tr>
+<th><code>W[i]</code>
+</th>
+<td>A
+</td>
+<td>B
+</td>
+<td>A
+</td>
+<td>C
+</td>
+<td>A
+</td>
+<td>B
+</td>
+<td>A
+</td>
+<td>B
+</td>
+<td>C
+</td>
+<td>
+</td></tr>
+<tr>
+<th><code>T[i]</code>
+</th>
+<td>-1
+</td>
+<td>0
+</td>
+<td>-1
+</td>
+<td>1
+</td>
+<td>-1
+</td>
+<td>0
+</td>
+<td>-1
+</td>
+<td>3
+</td>
+<td>2
+</td>
+<td>0
+</td></tr></tbody></table>
+<p>Another example (slightly changed from the previous example):
+</p>
+<table class="wikitable" style="background-color:white; font-family:monospace; text-align:right">
+<tbody><tr>
+<th><code>i</code>
+</th>
+<td>0
+</td>
+<td>1
+</td>
+<td>2
+</td>
+<td>3
+</td>
+<td>4
+</td>
+<td>5
+</td>
+<td>6
+</td>
+<td>7
+</td>
+<td>8
+</td>
+<td>9
+</td></tr>
+<tr>
+<th><code>W[i]</code>
+</th>
+<td>A
+</td>
+<td>B
+</td>
+<td>A
+</td>
+<td>C
+</td>
+<td>A
+</td>
+<td>B
+</td>
+<td>A
+</td>
+<td>B
+</td>
+<td>A
+</td>
+<td>
+</td></tr>
+<tr>
+<th><code>T[i]</code>
+</th>
+<td>-1
+</td>
+<td>0
+</td>
+<td>-1
+</td>
+<td>1
+</td>
+<td>-1
+</td>
+<td>0
+</td>
+<td>-1
+</td>
+<td>3
+</td>
+<td>-1
+</td>
+<td>3
+</td></tr></tbody></table>
+<p>Another more complicated example:
+</p>
+<table class="wikitable" style="background-color:white; font-family:monospace; text-align:right">
+<tbody><tr>
+<th><code>i</code>
+</th>
+<td>00
+</td>
+<td>01
+</td>
+<td>02
+</td>
+<td>03
+</td>
+<td>04
+</td>
+<td>05
+</td>
+<td>06
+</td>
+<td>07
+</td>
+<td>08
+</td>
+<td>09
+</td>
+<td>10
+</td>
+<td>11
+</td>
+<td>12
+</td>
+<td>13
+</td>
+<td>14
+</td>
+<td>15
+</td>
+<td>16
+</td>
+<td>17
+</td>
+<td>18
+</td>
+<td>19
+</td>
+<td>20
+</td>
+<td>21
+</td>
+<td>22
+</td>
+<td>23
+</td>
+<td>24
+</td></tr>
+<tr>
+<th><code>W[i]</code>
+</th>
+<td>P
+</td>
+<td>A
+</td>
+<td>R
+</td>
+<td>T
+</td>
+<td>I
+</td>
+<td>C
+</td>
+<td>I
+</td>
+<td>P
+</td>
+<td>A
+</td>
+<td>T
+</td>
+<td>E
+</td>
+<td>
+</td>
+<td>I
+</td>
+<td>N
+</td>
+<td>
+</td>
+<td>P
+</td>
+<td>A
+</td>
+<td>R
+</td>
+<td>A
+</td>
+<td>C
+</td>
+<td>H
+</td>
+<td>U
+</td>
+<td>T
+</td>
+<td>E
+</td>
+<td>
+</td></tr>
+<tr>
+<th><code>T[i]</code>
+</th>
+<td>-1
+</td>
+<td>0
+</td>
+<td>0
+</td>
+<td>0
+</td>
+<td>0
+</td>
+<td>0
+</td>
+<td>0
+</td>
+<td>-1
+</td>
+<td>0
+</td>
+<td>2
+</td>
+<td>0
+</td>
+<td>0
+</td>
+<td>0
+</td>
+<td>0
+</td>
+<td>0
+</td>
+<td>-1
+</td>
+<td>0
+</td>
+<td>0
+</td>
+<td>3
+</td>
+<td>0
+</td>
+<td>0
+</td>
+<td>0
+</td>
+<td>0
+</td>
+<td>0
+</td>
+<td>0
+</td></tr></tbody></table>
+<h3><span class="mw-headline" id="Description_of_pseudocode_for_the_table-building_algorithm">Description of pseudocode for the table-building algorithm</span><span class="mw-editsection"></span></h3>
+<p>The example above illustrates the general technique for assembling the table with a minimum of fuss.  The principle is that of the overall search: most of the work was already done in getting to the current position, so very little needs to be done in leaving it.  The only minor complication is that the logic which is correct late in the string erroneously gives non-proper substrings at the beginning.  This necessitates some initialization code.
+</p>
+<pre><b>algorithm</b> <i>kmp_table</i>:
+    <b>input</b>:
+        an array of characters, W (the word to be analyzed)
+    <b>output</b>:
+        an array of integers, T (the table to be filled)
+
+    <b>define variables</b>:
+        an integer, pos ← 1 (the current position we are computing in T)
+        an integer, cnd ← 0 (the zero-based index in W of the next character of the current candidate substring)
+
+    <b>let</b> T[0] ← -1
+
+    <b>while</b> pos &lt; length(W) <b>do</b>
+        <b>if</b> W[pos] = W[cnd] <b>then</b>
+            <b>let</b> T[pos] ← T[cnd]
+        <b>else</b>
+            <b>let</b> T[pos] ← cnd
+            <b>while</b> cnd ≥ 0 <b>and</b> W[pos] ≠ W[cnd] <b>do</b>
+                <b>let</b> cnd ← T[cnd]
+        <b>let</b> pos ← pos + 1, cnd ← cnd + 1
+
+    <b>let</b> T[pos] ← cnd (only needed when all word occurrences are searched)
+</pre>
+<h3><span class="mw-headline" id="Efficiency_of_the_table-building_algorithm">Efficiency of the table-building algorithm</span><span class="mw-editsection"></span></h3>
+<p>The time (and space) complexity of the table algorithm is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(k)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(k)}</annotation>
+</semantics>
+</math></span><img alt="O(k)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f5ec39041121b14e8c2b1a986c9b04547b223e3c" style="vertical-align: -0.838ex; width:4.794ex; height:2.843ex;"/></span>, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k}</annotation>
+</semantics>
+</math></span><img alt="k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3c9a2c7b599b37105512c5d570edc034056dd40" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> is the length of <code>W</code>.
+</p>
+<ul><li>The outer loop: <code>pos</code> is initialized to 1, the loop condition is <code>pos &lt; k</code>, and <code>pos</code> is increased by 1 in every iteration of the loop. Thus the loop will take <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k-1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k-1}</annotation>
+</semantics>
+</math></span><img alt="k - 1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/21363ebd7038c93aae93127e7d910fc1b2e2c745" style="vertical-align: -0.505ex; width:5.214ex; height:2.343ex;"/></span> iterations.</li></ul>
+<ul><li>The inner loop: <code>cnd</code> is initialized to <code>0</code> and gets increased by at most 1 in each outer loop iteration. <code>T[cnd]</code> is always less than <code>cnd</code>, so <code>cnd</code> gets decreased by at least 1 in each inner loop iteration; the inner loop condition is <code>cnd ≥ 0</code>. This means that the inner loop can execute at most as many times in total, as the outer loop has executed – each decrease of <code>cnd</code> by 1 in the inner loop needs to have a corresponding increase by 1 in the outer loop. Since the outer loop takes <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k-1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k-1}</annotation>
+</semantics>
+</math></span><img alt="k - 1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/21363ebd7038c93aae93127e7d910fc1b2e2c745" style="vertical-align: -0.505ex; width:5.214ex; height:2.343ex;"/></span> iterations, the inner loop can take no more than <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k-1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k-1}</annotation>
+</semantics>
+</math></span><img alt="k - 1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/21363ebd7038c93aae93127e7d910fc1b2e2c745" style="vertical-align: -0.505ex; width:5.214ex; height:2.343ex;"/></span> iterations in total.</li></ul>
+<p>Combined, the outer and inner loops take at most <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2k-2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>2</mn>
+<mi>k</mi>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2k-2}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 2k-2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/33d087b5bfa8901abb5f48999ba00285edeaae7e" style="vertical-align: -0.505ex; width:6.377ex; height:2.343ex;"/></span> iterations. This corresponds to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(k)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(k)}</annotation>
+</semantics>
+</math></span><img alt="O(k)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f5ec39041121b14e8c2b1a986c9b04547b223e3c" style="vertical-align: -0.838ex; width:4.794ex; height:2.843ex;"/></span> time complexity using the Big O notation.
+</p>
+<h2><span class="mw-headline" id="Efficiency_of_the_KMP_algorithm">Efficiency of the KMP algorithm</span><span class="mw-editsection"></span></h2>
+<p>Since the two portions of the algorithm have, respectively, complexities of <code>O(k)</code> and <code>O(n)</code>, the complexity of the overall algorithm is <code>O(n + k)</code>.
+</p><p>These complexities are the same, no matter how many repetitive patterns are in <code>W</code> or <code>S</code>.
+</p>
+<h2><span class="mw-headline" id="Variants">Variants</span><span class="mw-editsection"></span></h2>
+<p>A real-time version of KMP can be implemented using a separate failure function table for each character in the alphabet. If a mismatch occurs on character <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> in the text, the failure function table for character <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> is consulted for the index <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span> in the pattern at which the mismatch took place. This will return the length of the longest substring ending at <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span> matching a prefix of the pattern, with the added condition that the character after the prefix is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span>. With this restriction, character <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> in the text need not be checked again in the next phase, and so only a constant number of operations are executed between the processing of each index of the text<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (July 2017)">citation needed</span></i>]</sup>. This satisfies the real-time computing restriction.
+</p><p>Booth's algorithm uses a modified version of the KMP preprocessing function to find the lexicographically minimal string rotation. The failure function is progressively calculated as the string is rotated.
+</p>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1011085734" rel="mw-deduplicated-inline-style"/>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFCormenLeisersonRivestStein2001">Cormen, Thomas; Leiserson, Charles E.; Rivest, Ronald L.; Stein, Clifford (2001). "Section 32.4: The Knuth-Morris-Pratt algorithm". <span class="cs1-lock-limited" title="Free access subject to limited trial, subscription normally required"><i>Introduction to Algorithms</i></span> (Second ed.). MIT Press and McGraw-Hill. pp. 923–931. ISBN <bdi>0-262-03293-7</bdi>. Zbl 1047.68161.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Section+32.4%3A+The+Knuth-Morris-Pratt+algorithm&amp;rft.btitle=Introduction+to+Algorithms&amp;rft.pages=923-931&amp;rft.edition=Second&amp;rft.pub=MIT+Press+and+McGraw-Hill&amp;rft.date=2001&amp;rft_id=%2F%2Fzbmath.org%2F%3Fformat%3Dcomplete%26q%3Dan%3A1047.68161%23id-name%3DZbl&amp;rft.isbn=0-262-03293-7&amp;rft.aulast=Cormen&amp;rft.aufirst=Thomas&amp;rft.au=Leiserson%2C+Charles+E.&amp;rft.au=Rivest%2C+Ronald+L.&amp;rft.au=Stein%2C+Clifford&amp;rft_id=https%3A%2F%2Farchive.org%2Fdetails%2Fintroductiontoal00corm_691&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AKnuth%E2%80%93Morris%E2%80%93Pratt+algorithm"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFCrochemoreRytter2003">Crochemore, Maxime; Rytter, Wojciech (2003). <i>Jewels of stringology. Text algorithms</i>. River Edge, NJ: World Scientific. pp. 20–25. ISBN <bdi>981-02-4897-0</bdi>. Zbl 1078.68151.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Jewels+of+stringology.+Text+algorithms&amp;rft.place=River+Edge%2C+NJ&amp;rft.pages=20-25&amp;rft.pub=World+Scientific&amp;rft.date=2003&amp;rft_id=%2F%2Fzbmath.org%2F%3Fformat%3Dcomplete%26q%3Dan%3A1078.68151%23id-name%3DZbl&amp;rft.isbn=981-02-4897-0&amp;rft.aulast=Crochemore&amp;rft.aufirst=Maxime&amp;rft.au=Rytter%2C+Wojciech&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AKnuth%E2%80%93Morris%E2%80%93Pratt+algorithm"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFSzpankowski2001">Szpankowski, Wojciech (2001). <i>Average case analysis of algorithms on sequences</i>. Wiley-Interscience Series in Discrete Mathematics and Optimization. With a foreword by Philippe Flajolet. Chichester: Wiley. pp. 15–17, 136–141. ISBN <bdi>0-471-24063-X</bdi>. Zbl 0968.68205.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Average+case+analysis+of+algorithms+on+sequences&amp;rft.place=Chichester&amp;rft.series=Wiley-Interscience+Series+in+Discrete+Mathematics+and+Optimization&amp;rft.pages=15-17%2C+136-141&amp;rft.pub=Wiley&amp;rft.date=2001&amp;rft_id=%2F%2Fzbmath.org%2F%3Fformat%3Dcomplete%26q%3Dan%3A0968.68205%23id-name%3DZbl&amp;rft.isbn=0-471-24063-X&amp;rft.aulast=Szpankowski&amp;rft.aufirst=Wojciech&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AKnuth%E2%80%93Morris%E2%80%93Pratt+algorithm"></span></li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097025294">.mw-parser-output .side-box{margin:4px 0;box-sizing:border-box;border:1px solid #aaa;font-size:88%;line-height:1.25em;background-color:#f9f9f9}.mw-parser-output .side-box-abovebelow,.mw-parser-output .side-box-text{padding:0.25em 0.9em}.mw-parser-output .side-box-image{padding:2px 0 2px 0.9em;text-align:center}.mw-parser-output .side-box-imageright{padding:2px 0.9em 2px 0;text-align:center}@media(min-width:500px){.mw-parser-output .side-box-flex{display:flex;align-items:center}.mw-parser-output .side-box-text{flex:1}}@media(min-width:720px){.mw-parser-output .side-box{width:238px}.mw-parser-output .side-box-right{clear:right;float:right;margin-left:1em}.mw-parser-output .side-box-left{margin-right:1em}}</style>
+<ul><li>String Searching Applet animation</li>
+<li>An explanation of the algorithm and sample C++ code by David Eppstein</li>
+<li>Knuth-Morris-Pratt algorithm description and C code by Christian Charras and Thierry Lecroq</li>
+<li>Explanation of the algorithm from scratch by FH Flensburg.</li>
+<li>Breaking down steps of running KMP by Chu-Cheng Hsieh.</li>
+<li>NPTELHRD YouTube lecture video</li>
+<li>LogicFirst YouTube lecture video</li>
+<li>Proof of correctness</li>
+<li>Transformation between different forms of algorithm</li>
+<li>Knuth-Morris-Pratt algorithm written in C#</li>
+<li>Knuth-Morris-Pratt string-searching algorithm (part I) + my homebrew algorithms formally verified using CBMC, Knuth-Morris-Pratt string-searching algorithm (part II): DFA version, Knuth-Morris-Pratt string-searching algorithm (part III): DFA-less version</li>
+<li>KMP algorithm search time complexity explained in plain English</li></ul>
+
+
+<!-- 
+NewPP limit report
+Parsed by mw2315
+Cached time: 20221224002454
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.299 seconds
+Real time usage: 0.438 seconds
+Preprocessor visited node count: 1915/1000000
+Post‐expand include size: 55456/2097152 bytes
+Template argument size: 3490/2097152 bytes
+Highest expansion depth: 13/100
+Expensive parser function count: 1/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 36720/5000000 bytes
+Lua time usage: 0.154/10.000 seconds
+Lua memory usage: 6015536/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  310.200      1 -total
+ 37.21%  115.416      2 Template:Reflist
+ 27.69%   85.882      5 Template:Cite_journal
+ 15.36%   47.661      1 Template:Short_description
+ 13.61%   42.203      2 Template:Navbox
+ 13.38%   41.505      1 Template:Strings
+  9.67%   30.011      1 Template:Citation_needed
+  8.54%   26.476      2 Template:Pagetype
+  8.22%   25.507      1 Template:Infobox_algorithm
+  7.97%   24.715      1 Template:Fix
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:253227-0!canonical and timestamp 20221224002454 and revision id 1116828644.
+ -->
+</div></body>
+</html>

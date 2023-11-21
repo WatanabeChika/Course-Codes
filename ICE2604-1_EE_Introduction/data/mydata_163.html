@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Burrows-Wheeler_transform</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1066479718">.mw-parser-output .infobox-subbox{padding:0;border:none;margin:-3px;width:auto;min-width:100%;font-size:100%;clear:none;float:none;background-color:transparent}.mw-parser-output .infobox-3cols-child{margin:auto}.mw-parser-output .infobox .navbar{font-size:100%}body.skin-minerva .mw-parser-output .infobox-header,body.skin-minerva .mw-parser-output .infobox-subheader,body.skin-minerva .mw-parser-output .infobox-above,body.skin-minerva .mw-parser-output .infobox-title,body.skin-minerva .mw-parser-output .infobox-image,body.skin-minerva .mw-parser-output .infobox-full-data,body.skin-minerva .mw-parser-output .infobox-below{text-align:center}</style><table class="infobox"><caption class="infobox-title">Burrows–Wheeler transform</caption><tbody><tr><th class="infobox-label" scope="row">Class</th><td class="infobox-data">preprocessing for lossless compression</td></tr><tr><th class="infobox-label" scope="row">Data structure</th><td class="infobox-data">string</td></tr><tr><th class="infobox-label" scope="row">Worst-case performance</th><td class="infobox-data">O(n)</td></tr><tr><th class="infobox-label" scope="row">Worst-case space complexity</th><td class="infobox-data">O(n)</td></tr></tbody></table>
+<p>The <b>Burrows–Wheeler transform</b> (<b>BWT</b>, also called <b>block-sorting compression</b>) rearranges a character string into runs of similar characters. This is useful for compression, since it tends to be easy to compress a string that has runs of repeated characters by techniques such as move-to-front transform and run-length encoding.  More importantly, the transformation is <i>reversible</i>, without needing to store any additional data except the position of the first original character. The BWT is thus a "free" method of improving the efficiency of text compression algorithms, costing only some extra computation. The Burrows–Wheeler transform is an algorithm used to prepare data for use with data compression techniques such as bzip2. It was invented by Michael Burrows and David Wheeler in 1994 while Burrows was working at DEC Systems Research Center in Palo Alto, California. It is based on a previously unpublished transformation discovered by Wheeler in 1983. The  algorithm can be implemented efficiently using a suffix array thus reaching linear time complexity.<sup class="reference" id="cite_ref-Burrows1994_1-0">[1]</sup>
+</p>
+
+<h2><span class="mw-headline" id="Description">Description</span><span class="mw-editsection"></span></h2>
+<p>When a character string is transformed by the BWT, the transformation permutes the order of the characters. If the original string had several substrings that occurred often, then the transformed string will have several places where a single character is repeated multiple times in a row.
+</p><p>For example:
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>Input
+</th>
+<td><code>SIX.MIXED.PIXIES.SIFT.SIXTY.PIXIE.DUST.BOXES</code>
+</td></tr>
+<tr>
+<th>Output
+</th>
+<td><code>TEXYDST.E.IXIXIXXSSMPPS.B..E.S.EUSFXDIIOIIIT</code><sup class="reference" id="cite_ref-2">[2]</sup>
+</td></tr></tbody></table>
+<p>The output is easier to compress because it has many repeated characters.
+In this example the transformed string contains six runs of identical characters:
+<code>XX</code>,
+<code>SS</code>,
+<code>PP</code>,
+<code>..</code>,
+<code>II</code>,
+and
+<code>III</code>, which together make 13 out of the 44 characters.
+</p>
+<h2><span class="mw-headline" id="Example">Example</span><span class="mw-editsection"></span></h2>
+<p>The transform is done by sorting all the circular shifts of a text in lexicographic order and by extracting the last column and the index of the original string in the set of sorted permutations of <code>S</code>.
+</p><p>Given an input string <code>S = ^BANANA<span style="color:red;">|</span></code> (step 1 in the table below), rotate it <i>N</i> times (step 2), where <code>N = 8</code> is the length of the <code>S</code> string considering also the symbol <code>^</code> representing the start of the string and the red <span style="color:red;">|</span> character representing the 'EOF' pointer; these rotations, or circular shifts, are then sorted lexicographically (step 3). The output of the encoding phase is the last column <code>L = BNN^AA<span style="color:red;">|</span>A</code> after step 3, and the index (0-based) <code>I</code> of the row containing the original string <code>S</code>, in this case <code>I = 6</code>.
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th colspan="5">Transformation
+</th></tr>
+<tr>
+<th>1. Input
+</th>
+<th>2. All<br/>rotations
+</th>
+<th>3. Sort into<br/>lexical order
+</th>
+<th>4. Take the<br/>last column
+</th>
+<th>5. Output
+</th></tr>
+<tr>
+<td align="center">
+<pre>^BANANA<span style="color:red;">|</span>
+</pre>
+</td>
+<td>
+<pre>^BANANA<span style="color:red;">|</span>
+<span style="color:red;">|</span>^BANANA
+A<span style="color:red;">|</span>^BANAN
+NA<span style="color:red;">|</span>^BANA
+ANA<span style="color:red;">|</span>^BAN
+NANA<span style="color:red;">|</span>^BA
+ANANA<span style="color:red;">|</span>^B
+BANANA<span style="color:red;">|</span>^
+</pre>
+</td>
+<td>
+<pre><b>A</b>NANA<span style="color:red;">|</span>^B
+<b>A</b>NA<span style="color:red;">|</span>^BAN
+<b>A</b><span style="color:red;">|</span>^BANAN
+<b>B</b>ANANA<span style="color:red;">|</span>^
+<b>N</b>ANA<span style="color:red;">|</span>^BA
+<b>N</b>A<span style="color:red;">|</span>^BANA
+<b>^</b>BANANA<span style="color:red;">|</span>
+<span style="color:red;"><b>|</b></span>^BANANA
+</pre>
+</td>
+<td>
+<pre><span style="color:grey;">ANANA<span style="color:red;">|</span>^</span><b>B</b>
+<span style="color:grey;">ANA<span style="color:red;">|</span>^BA</span><b>N</b>
+<span style="color:grey;">A<span style="color:red;">|</span>^BANA</span><b>N</b>
+<span style="color:grey;">BANANA<span style="color:red;">|</span></span><b>^</b>
+<span style="color:grey;">NANA<span style="color:red;">|</span>^B</span><b>A</b>
+<span style="color:grey;">NA<span style="color:red;">|</span>^BAN</span><b>A</b>
+<span style="color:grey;">^BANANA</span><span style="color:red;"><b>|</b></span>
+<span style="color:grey;"><span style="color:red;">|</span>^BANAN</span><b>A</b>
+</pre>
+</td>
+<td>
+<pre>BNN^AA<span style="color:red;">|</span>A
+</pre>
+</td></tr></tbody></table>
+<p>The following pseudocode gives a simple (though inefficient) way to calculate the BWT and its inverse.  It assumes that the input string <code>s</code> contains a special character 'EOF' which is the last character and occurs nowhere else in the text.
+</p>
+<pre><b>function</b> BWT (<i>string</i> s)
+    create a table, where the rows are all possible rotations of s
+    sort rows alphabetically
+    <b>return</b> (last column of the table)
+</pre>
+<pre><b>function</b> inverseBWT (<i>string</i> s)
+    create empty table
+    <b>repeat</b> length(s) <b>times</b>
+        // first insert creates first column
+        insert s as a column of table before first column of the table
+        sort rows of the table alphabetically
+    <b>return</b> (row that ends with the 'EOF' character)
+</pre>
+<h2><span class="mw-headline" id="Explanation">Explanation</span><span class="mw-editsection"></span></h2>
+<p>To understand why this creates more-easily-compressible data, consider transforming a long English text frequently containing the word "the". Sorting the rotations of this text will group rotations starting with "he " together, and the last character of that rotation (which is also the character before the "he ") will usually be "t", so the result of the transform would contain a number of "t" characters along with the perhaps less-common exceptions (such as if it contains "ache ") mixed in. So it can be seen that the success of this transform depends upon one value having a high probability of occurring before a sequence, so that in general it needs fairly long samples (a few kilobytes at least) of appropriate data (such as text).
+</p><p>The remarkable thing about the BWT is not that it generates a more easily encoded output—an ordinary sort would do that—but that it does this <i>reversibly</i>, allowing the original document to be re-generated from the last column data.
+</p><p>The inverse can be understood this way. Take the final table in the BWT algorithm, and erase all but the last column. Given only this information, you can easily reconstruct the first column. The last column tells you all the characters in the text, so just sort these characters alphabetically to get the first column. Then, the last and first columns (of each row) together give you all <i>pairs</i> of successive characters in the document, where pairs are taken cyclically so that the last and first character form a pair. Sorting the list of pairs gives the first <i>and second</i> columns. Continuing in this manner, you can reconstruct the entire list. Then, the row with the "end of file" character at the end is the original text. Reversing the example above is done like this:
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th colspan="4">Inverse transformation
+</th></tr>
+<tr>
+<th colspan="4">Input
+</th></tr>
+<tr>
+<td align="center" colspan="4">
+<pre>BNN^AA<span style="color:red;">|</span>A
+</pre>
+</td></tr>
+<tr>
+<th>Add 1
+</th>
+<th>Sort 1
+</th>
+<th>Add 2
+</th>
+<th>Sort 2
+</th></tr>
+<tr>
+<td align="right">
+<pre>B
+N
+N
+^
+A
+A
+<span style="color:red;">|</span>
+A
+</pre>
+</td>
+<td align="right">
+<pre>A
+A
+A
+B
+N
+N
+^
+<span style="color:red;">|</span>
+</pre>
+</td>
+<td align="right">
+<pre>BA
+NA
+NA
+^B
+AN
+AN
+<span style="color:red;">|</span>^
+A<span style="color:red;">|</span>
+</pre>
+</td>
+<td align="right">
+<pre>AN
+AN
+A<span style="color:red;">|</span>
+BA
+NA
+NA
+^B
+<span style="color:red;">|</span>^
+</pre>
+</td></tr>
+<tr>
+<th>Add 3
+</th>
+<th>Sort 3
+</th>
+<th>Add 4
+</th>
+<th>Sort 4
+</th></tr>
+<tr>
+<td align="right">
+<pre>BAN
+NAN
+NA<span style="color:red;">|</span>
+^BA
+ANA
+ANA
+<span style="color:red;">|</span>^B
+A<span style="color:red;">|</span>^
+</pre>
+</td>
+<td align="right">
+<pre>ANA
+ANA
+A<span style="color:red;">|</span>^
+BAN
+NAN
+NA<span style="color:red;">|</span>
+^BA
+<span style="color:red;">|</span>^B
+</pre>
+</td>
+<td align="right">
+<pre>BANA
+NANA
+NA<span style="color:red;">|</span>^
+^BAN
+ANAN
+ANA<span style="color:red;">|</span>
+<span style="color:red;">|</span>^BA
+A<span style="color:red;">|</span>^B
+</pre>
+</td>
+<td align="right">
+<pre>ANAN
+ANA<span style="color:red;">|</span>
+A<span style="color:red;">|</span>^B
+BANA
+NANA
+NA<span style="color:red;">|</span>^
+^BAN
+<span style="color:red;">|</span>^BA
+</pre>
+</td></tr>
+<tr>
+<th>Add 5
+</th>
+<th>Sort 5
+</th>
+<th>Add 6
+</th>
+<th>Sort 6
+</th></tr>
+<tr>
+<td align="right">
+<pre>BANAN
+NANA<span style="color:red;">|</span>
+NA<span style="color:red;">|</span>^B
+^BANA
+ANANA
+ANA<span style="color:red;">|</span>^
+<span style="color:red;">|</span>^BAN
+A<span style="color:red;">|</span>^BA
+</pre>
+</td>
+<td align="right">
+<pre>ANANA
+ANA<span style="color:red;">|</span>^
+A<span style="color:red;">|</span>^BA
+BANAN
+NANA<span style="color:red;">|</span>
+NA<span style="color:red;">|</span>^B
+^BANA
+<span style="color:red;">|</span>^BAN
+</pre>
+</td>
+<td align="right">
+<pre>BANANA
+NANA<span style="color:red;">|</span>^
+NA<span style="color:red;">|</span>^BA
+^BANAN
+ANANA<span style="color:red;">|</span>
+ANA<span style="color:red;">|</span>^B
+<span style="color:red;">|</span>^BANA
+A<span style="color:red;">|</span>^BAN
+</pre>
+</td>
+<td align="right">
+<pre>ANANA<span style="color:red;">|</span>
+ANA<span style="color:red;">|</span>^B
+A<span style="color:red;">|</span>^BAN
+BANANA
+NANA<span style="color:red;">|</span>^
+NA<span style="color:red;">|</span>^BA
+^BANAN
+<span style="color:red;">|</span>^BANA
+</pre>
+</td></tr>
+<tr>
+<th>Add 7
+</th>
+<th>Sort 7
+</th>
+<th>Add 8
+</th>
+<th>Sort 8
+</th></tr>
+<tr>
+<td align="right">
+<pre>BANANA<span style="color:red;">|</span>
+NANA<span style="color:red;">|</span>^B
+NA<span style="color:red;">|</span>^BAN
+^BANANA
+ANANA<span style="color:red;">|</span>^
+ANA<span style="color:red;">|</span>^BA
+<span style="color:red;">|</span>^BANAN
+A<span style="color:red;">|</span>^BANA
+</pre>
+</td>
+<td align="right">
+<pre>ANANA<span style="color:red;">|</span>^
+ANA<span style="color:red;">|</span>^BA
+A<span style="color:red;">|</span>^BANA
+BANANA<span style="color:red;">|</span>
+NANA<span style="color:red;">|</span>^B
+NA<span style="color:red;">|</span>^BAN
+^BANANA
+<span style="color:red;">|</span>^BANAN
+</pre>
+</td>
+<td align="right">
+<pre>BANANA<span style="color:red;">|</span>^
+NANA<span style="color:red;">|</span>^BA
+NA<span style="color:red;">|</span>^BANA
+^BANANA<span style="color:red;">|</span>
+ANANA<span style="color:red;">|</span>^B
+ANA<span style="color:red;">|</span>^BAN
+<span style="color:red;">|</span>^BANANA
+A<span style="color:red;">|</span>^BANAN
+</pre>
+</td>
+<td align="right">
+<pre>ANANA<span style="color:red;">|</span>^B
+ANA<span style="color:red;">|</span>^BAN
+A<span style="color:red;">|</span>^BANAN
+BANANA<span style="color:red;">|</span>^
+NANA<span style="color:red;">|</span>^BA
+NA<span style="color:red;">|</span>^BANA
+^BANANA<span style="color:red;">|</span>
+<span style="color:red;">|</span>^BANANA
+</pre>
+</td></tr>
+<tr>
+<th colspan="4">Output
+</th></tr>
+<tr>
+<td align="center" colspan="4">
+<pre>^BANANA<span style="color:red;">|</span>
+</pre>
+</td></tr></tbody></table>
+<h2><span class="mw-headline" id="Optimization">Optimization</span><span class="mw-editsection"></span></h2>
+<p>A number of optimizations can make these algorithms run more efficiently without changing the output. There is no need to represent the table in either the encoder or decoder. In the encoder, each row of the table can be represented by a single pointer into the strings, and the sort performed using the indices. In the decoder, there is also no need to store the table, and in fact no sort is needed at all. In time proportional to the alphabet size and string length, the decoded string may be generated one character at a time from right to left. A "character" in the algorithm can be a byte, or a bit, or any other convenient size.
+</p><p>One may also make the observation that mathematically, the encoded string can be computed as a simple modification of the suffix array, and suffix arrays can be computed with linear time and memory. The BWT can be defined with regards to the suffix array SA of text T as (1-based indexing):
+</p><p><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle BWT[i]={\begin{cases}T[SA[i]-1],&amp;{\text{if }}SA[i]&gt;0\\\$,&amp;{\text{otherwise}}\end{cases}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>B</mi>
+<mi>W</mi>
+<mi>T</mi>
+<mo stretchy="false">[</mo>
+<mi>i</mi>
+<mo stretchy="false">]</mo>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>{</mo>
+<mtable columnalign="left left" columnspacing="1em" displaystyle="false" rowspacing=".2em">
+<mtr>
+<mtd>
+<mi>T</mi>
+<mo stretchy="false">[</mo>
+<mi>S</mi>
+<mi>A</mi>
+<mo stretchy="false">[</mo>
+<mi>i</mi>
+<mo stretchy="false">]</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo stretchy="false">]</mo>
+<mo>,</mo>
+</mtd>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>if </mtext>
+</mrow>
+<mi>S</mi>
+<mi>A</mi>
+<mo stretchy="false">[</mo>
+<mi>i</mi>
+<mo stretchy="false">]</mo>
+<mo>&gt;</mo>
+<mn>0</mn>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mi mathvariant="normal">$<!-- $ --></mi>
+<mo>,</mo>
+</mtd>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>otherwise</mtext>
+</mrow>
+</mtd>
+</mtr>
+</mtable>
+<mo fence="true" stretchy="true" symmetric="true"></mo>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle BWT[i]={\begin{cases}T[SA[i]-1],&amp;{\text{if }}SA[i]&gt;0\\\$,&amp;{\text{otherwise}}\end{cases}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle BWT[i]={\begin{cases}T[SA[i]-1],&amp;{\text{if }}SA[i]&gt;0\\\$,&amp;{\text{otherwise}}\end{cases}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/887d46efbb40f6f35ac2b8a5a3a60e42cef84bb2" style="vertical-align: -2.505ex; width:40.304ex; height:6.176ex;"/></span><sup class="reference" id="cite_ref-3">[3]</sup>
+</p><p>There is no need to have an actual 'EOF' character. Instead, a pointer can be used that remembers where in a string the 'EOF' would be if it existed. In this approach, the output of the BWT must include both the transformed string, and the final value of the pointer. The inverse transform then shrinks it back down to the original size: it is given a string and a pointer, and returns just a string.
+</p><p>A complete description of the algorithms can be found in Burrows and Wheeler's paper, or in a number of online sources.<sup class="reference" id="cite_ref-Burrows1994_1-1">[1]</sup> The algorithms vary somewhat by whether EOF is used, and in which direction the sorting was done. In fact, the original formulation did not use an EOF marker.<sup class="reference" id="cite_ref-Manzini_4-0">[4]</sup>
+</p>
+<h2><span class="mw-headline" id="Bijective_variant">Bijective variant</span><span class="mw-editsection"></span></h2>
+<p>Since any rotation of the input string will lead to the same transformed string, the BWT cannot be inverted without adding an EOF marker to the end of the input or doing something equivalent, making it possible to distinguish the input string from all its rotations.  Increasing the size of the alphabet (by appending the EOF character) makes later compression steps awkward.
+</p><p>There is a bijective version of the transform, by which the transformed string uniquely identifies the original, and the two have the same length and contain exactly the same characters, just in a different order.<sup class="reference" id="cite_ref-5">[5]</sup><sup class="reference" id="cite_ref-6">[6]</sup>
+</p><p>The bijective transform is computed by factoring the input into a non-increasing sequence of Lyndon words; such a factorization exists and is unique by the Chen–Fox–Lyndon theorem,<sup class="reference" id="cite_ref-7">[7]</sup> and may be found in linear time.<sup class="reference" id="cite_ref-8">[8]</sup> The algorithm sorts the rotations of all the words; as in the Burrows–Wheeler transform, this produces a sorted sequence of <i>n</i> strings. The transformed string is then obtained by picking the final character of each string in this sorted list.  The one important caveat here is that strings of different lengths are not ordered in the usual way; the two strings are repeated forever, and the infinite repeats are sorted.  For example, "ORO" precedes "OR" because "OROORO..." precedes "OROROR...".
+</p><p>For example, the text "^BANANA<span style="color:red;">|</span>" is transformed into "ANNBAA^<span style="color:red;">|</span>" through these steps (the red <span style="color:red;">|</span> character indicates the EOF pointer) in the original string. The EOF character is unneeded in the bijective transform, so it is dropped during the transform and re-added to its proper place in the file.
+</p><p>The string is broken into Lyndon words so the words in the sequence are decreasing using the comparison method above. (Note that we're sorting '^' as succeeding other characters.)  "^BANANA" becomes (^) (B) (AN) (AN) (A).
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th colspan="5">Bijective transformation
+</th></tr>
+<tr>
+<th>Input
+</th>
+<th>All<br/>rotations
+</th>
+<th>Sorted alphabetically
+</th>
+<th>Last column<br/>of rotated Lyndon word
+</th>
+<th>Output
+</th></tr>
+<tr>
+<td align="center">
+<pre>^BANANA<span style="color:red;">|</span>
+</pre>
+</td>
+<td>
+<pre><b>^</b>^^^^^^^... (^)
+<b>B</b>BBBBBBB... (B)
+<b>ANAN</b>ANAN... (AN)
+<b>NANA</b>NANA... (NA)
+<b>ANAN</b>ANAN... (AN)
+<b>NANA</b>NANA... (NA)
+<b>A</b>AAAAAAA... (A)
+</pre>
+</td>
+<td>
+<pre><b>A</b>AAAAAAA... (A)
+<b>A</b>NANANAN... (AN)
+<b>A</b>NANANAN... (AN)
+<b>B</b>BBBBBBB... (B)
+<b>N</b>ANANANA... (NA)
+<b>N</b>ANANANA... (NA)
+<b>^</b>^^^^^^^... (^)
+</pre>
+</td>
+<td>
+<pre><b>A</b>AAAAAAA... (<b>A</b>)
+A<b>N</b>ANANAN... (A<b>N</b>)
+A<b>N</b>ANANAN... (A<b>N</b>)
+<b>B</b>BBBBBBB... (<b>B</b>)
+N<b>A</b>NANANA... (N<b>A</b>)
+N<b>A</b>NANANA... (N<b>A</b>)
+<b>^</b>^^^^^^^... (<b>^</b>)
+</pre>
+</td>
+<td>
+<pre>ANNBAA^<span style="color:red;">|</span>
+</pre>
+</td></tr></tbody></table>
+<table class="wikitable">
+<tbody><tr>
+<th colspan="4">Inverse bijective transform
+</th></tr>
+<tr>
+<th colspan="4">Input
+</th></tr>
+<tr>
+<td align="center" colspan="4">
+<pre>ANNBAA^
+</pre>
+</td></tr>
+<tr>
+<th>Add 1
+</th>
+<th>Sort 1
+</th>
+<th>Add 2
+</th>
+<th>Sort 2
+</th></tr>
+<tr>
+<td align="right">
+<pre>A
+N
+N
+B
+A
+A
+^
+</pre>
+</td>
+<td align="right">
+<pre>A
+A
+A
+B
+N
+N
+^
+</pre>
+</td>
+<td align="right">
+<pre>AA
+NA
+NA
+BB
+AN
+AN
+^^
+</pre>
+</td>
+<td align="right">
+<pre>AA
+AN
+AN
+BB
+NA
+NA
+^^
+</pre>
+</td></tr>
+<tr>
+<th>Add 3
+</th>
+<th>Sort 3
+</th>
+<th>Add 4
+</th>
+<th>Sort 4
+</th></tr>
+<tr>
+<td align="right">
+<pre>AAA
+NAN
+NAN
+BBB
+ANA
+ANA
+^^^
+</pre>
+</td>
+<td align="right">
+<pre>AAA
+ANA
+ANA
+BBB
+NAN
+NAN
+^^^
+</pre>
+</td>
+<td align="right">
+<pre>AAAA
+NANA
+NANA
+BBBB
+ANAN
+ANAN
+^^^^
+</pre>
+</td>
+<td align="right">
+<pre>AAAA
+ANAN
+ANAN
+BBBB
+NANA
+NANA
+^^^^
+</pre>
+</td></tr>
+<tr>
+<th colspan="4">Output
+</th></tr>
+<tr>
+<td align="center" colspan="4">
+<pre>^BANANA
+</pre>
+</td></tr></tbody></table>
+<p>Up until the last step, the process is identical to the inverse Burrows–Wheeler process, but here it will not necessarily give rotations of a single sequence; it instead gives rotations of Lyndon words (which will start to repeat as the process is continued).  Here, we can see (repetitions of) four distinct Lyndon words: (A), (AN) (twice), (B), and (^).  (NANA... doesn't represent a distinct word, as it is a cycle of ANAN....)
+At this point, these words are sorted into reverse order: (^), (B), (AN), (AN), (A).  These are then concatenated to get
+</p>
+<dl><dd>^BANANA</dd></dl>
+<p>The Burrows–Wheeler transform can indeed be viewed as a special case of this bijective transform; instead of the traditional introduction of a new letter from outside our alphabet to denote the end of the string, we can introduce a new letter that compares as preceding all existing letters that is put at the beginning of the string.  The whole string is now a Lyndon word, and running it through the bijective process will therefore result in a transformed result that, when inverted, gives back the Lyndon word, with no need for reassembling at the end.
+</p><p>Relatedly, the transformed text will only differ from the result of BWT by one character per Lyndon word; for example, if the input is decomposed into six Lyndon words, the output will only differ in six characters.
+For example, applying the bijective transform gives:
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>Input
+</th>
+<td><code>SIX.MIXED.PIXIES.SIFT.SIXTY.PIXIE.DUST.BOXES</code>
+</td></tr>
+<tr>
+<th>Lyndon words
+</th>
+<td><code><span style="color:#990000;">S</span><span style="color:#FF9900;">IX</span><span style="color:#006600;">.MIXED.PIXIES.SIFT.SIXTY.PIXIE</span><span style="color:#0000DD;">.DUST</span><span style="color:#660066;">.BOXES</span></code>
+</td></tr>
+<tr>
+<th>Output
+</th>
+<td><code>STEYDST.E.IXXIIXXSMPPXS.B..EE..SUSFXDIOIIIIT</code>
+</td></tr></tbody></table>
+<p>The bijective transform includes eight runs of identical
+characters. These runs are, in order: <code>XX</code>,
+<code>II</code>,
+<code>XX</code>,
+<code>PP</code>,
+<code>..</code>,
+<code>EE</code>,
+<code>..</code>,
+and
+<code>IIII</code>.
+</p><p>In total, 18 characters are used in these runs.
+</p>
+<h2><span id="Dynamic_Burrows.E2.80.93Wheeler_transform"></span><span class="mw-headline" id="Dynamic_Burrows–Wheeler_transform">Dynamic Burrows–Wheeler transform</span><span class="mw-editsection"></span></h2>
+<p>When a text is edited, its Burrows–Wheeler transform will change. Salson <i>et al.</i><sup class="reference" id="cite_ref-Salson2009_9-0">[9]</sup> propose an algorithm that deduces the Burrows–Wheeler transform of an edited text from that of the original text, doing a limited number of local reorderings in the original Burrows–Wheeler transform, which can be faster than constructing the Burrows–Wheeler transform of the edited text directly.
+</p>
+<h2><span class="mw-headline" id="Sample_implementation">Sample implementation</span><span class="mw-editsection"></span></h2>
+<p>This Python implementation sacrifices speed for simplicity: the program is short, but takes more than the linear time that would be desired in a practical implementation. It essentially does what the pseudocode section does.
+</p><p>Using the STX/ETX control codes to mark the start and end of the text, and using <code>s[i:] + s[:i]</code> to construct the <code>i</code>th rotation of <code>s</code>, the forward transform takes the last character of each of the sorted rows:
+</p>
+
+<p>The inverse transform repeatedly inserts <code>r</code> as the left column of the table and sorts the table.  After the whole table is built, it returns the row that ends with ETX, minus the STX and ETX.
+</p>
+
+<p>Following implementation notes from Manzini, it is equivalent to use a simple null character suffix instead. The sorting should be done in colexicographic order (string read right-to-left), i.e. <code class="mw-highlight mw-highlight-lang-text mw-content-ltr" dir="ltr" id="" style="">sorted(..., key=lambda s: s[::-1])</code> in Python.<sup class="reference" id="cite_ref-Manzini_4-1">[4]</sup> (The above control codes actually fail to satisfy EOF being the last character; the two codes are actually the <i>first</i>. The rotation holds nevertheless.)
+</p>
+<h2><span class="mw-headline" id="BWT_applications">BWT applications</span><span class="mw-editsection"></span></h2>
+<p>As a lossless compression algorithm the Burrows–Wheeler transform offers the important quality that its encoding is reversible and hence the original data may be recovered from the resulting compression. The lossless quality of Burrows algorithm has provided for different algorithms with different purposes in mind. To name a few, Burrows–Wheeler transform is used in algorithms for sequence alignment, image compression, data compression, etc. The following is a compilation of some uses given to the Burrows–Wheeler Transform.
+</p>
+<h3><span class="mw-headline" id="BWT_for_sequence_alignment">BWT for sequence alignment</span><span class="mw-editsection"></span></h3>
+<p>The advent of next-generation sequencing (NGS) techniques at the end of the 2000s decade has led to another application of the Burrows–Wheeler transformation. In NGS, DNA is fragmented into small pieces, of which the first few bases are sequenced, yielding several millions of "reads", each 30 to 500 base pairs ("DNA characters") long. In many experiments, e.g., in ChIP-Seq, the task is now to align these reads to a reference genome, i.e., to the known, nearly complete sequence of the organism in question (which may be up to several billion base pairs long). A number of alignment programs, specialized for this task, were published, which initially relied on hashing (e.g., Eland, SOAP,<sup class="reference" id="cite_ref-Li,_R2008_10-0">[10]</sup> or Maq<sup class="reference" id="cite_ref-Li,_H2008_11-0">[11]</sup>). In an effort to reduce the memory requirement for sequence alignment, several alignment programs were developed (Bowtie,<sup class="reference" id="cite_ref-Langmead2009_12-0">[12]</sup> BWA,<sup class="reference" id="cite_ref-Li,_H2009_13-0">[13]</sup> and SOAP2<sup class="reference" id="cite_ref-Li,_R2009_14-0">[14]</sup>) that use the Burrows–Wheeler transform.
+</p>
+<h3><span class="mw-headline" id="BWT_for_image_compression">BWT for image compression</span><span class="mw-editsection"></span></h3>
+<p>The Burrows–Wheeler transformation has proved to be fundamental for image compression applications. For example, <sup class="reference" id="cite_ref-Collin,_P2019_15-0">[15]</sup> Showed a compression pipeline based on the application of the Burrows–Wheeler transformation followed by inversion, run-length, and arithmetic encoders. The pipeline developed in this case is known as Burrows–Wheeler transform with an inversion encoder (BWIC). The results shown by BWIC are shown to outperform the compression performance of well-known and widely used algorithms like Lossless JPEG and JPEG 2000. BWIC is shown to outperform those in terms of final compression size of radiography medical images on the order of 5.1% and 4.1% respectively. The improvements are achieved by combining BWIC and a pre-BWIC scan of the image in a vertical snake order fashion. More recently, additional works like that of <sup class="reference" id="cite_ref-Devadoss,_CP2019_16-0">[16]</sup> have shown the implementation of the Burrows–Wheeler Transform in conjunction with the known move-to-front transform (MTF) achieve near lossless compression of images. 
+</p>
+<h3><span class="mw-headline" id="BWT_for_compression_of_genomic_databases">BWT for compression of genomic databases</span><span class="mw-editsection"></span></h3>
+<p>Cox et al. <sup class="reference" id="cite_ref-Cox,_AJ2012_17-0">[17]</sup> presented a genomic compression scheme that uses BWT as the algorithm applied during the first stage of compression of several genomic datasets including the human genomic information. Their work proposed that BWT compression could be enhanced by including a second stage compression mechanism called same-as-previous encoding ("SAP"), which makes use of the fact that suffixes of two or more prefix letters could be equal. With the compression mechanism BWT-SAP, Cox et al. showed that in the genomic database ERA015743, 135.5 GB in size, the compression scheme BWT-SAP compresses the ERA015743 dataset by around 94%, to 8.2 GB.
+</p>
+<h3><span class="mw-headline" id="BWT_for_sequence_prediction">BWT for sequence prediction</span><span class="mw-editsection"></span></h3>
+<p>BWT has also been proved to be useful on sequence prediction which is a common area of study in machine learning and natural-language processing. In particular, Ktistakis et al. <sup class="reference" id="cite_ref-Ktistakis,_R2019_18-0">[18]</sup> proposed a sequence prediction scheme called SuBSeq that exploits the lossless compression of data of the Burrows–Wheeler transform. SuBSeq exploits BWT by extracting the FM-index and then performing a series of operations called backwardSearch, forwardSearch, neighbourExpansion, and getConsequents in order to search for predictions given a suffix. The predictions are then classified based on a weight and put into an array from which the element with the highest weight is given as the prediction from the SuBSeq algorithm. SuBSeq has been shown to outperform state of the art algorithms for sequence prediction both in terms of training time and accuracy.
+</p>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>Article by Mark Nelson on the BWT</li>
+<li>A Bijective String-Sorting Transform, by Gil and Scott</li>
+<li>Yuta's openbwt-v1.5.zip contains source code for various BWT routines including BWTS for bijective version</li>
+<li>On Bijective Variants of the Burrows–Wheeler Transform, by Kufleitner</li>
+<li>Blog post and project page for an open-source compression program and library based on the Burrows–Wheeler algorithm</li>
+<li>MIT open courseware lecture on BWT (Foundations of Computational and Systems Biology)</li>
+<li>League Table Sort (LTS) or The Weighting algorithm to BWT by Abderrahim Hechachena</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2301
+Cached time: 20221224015421
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.321 seconds
+Real time usage: 0.429 seconds
+Preprocessor visited node count: 1653/1000000
+Post‐expand include size: 93493/2097152 bytes
+Template argument size: 742/2097152 bytes
+Highest expansion depth: 8/100
+Expensive parser function count: 3/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 71891/5000000 bytes
+Lua time usage: 0.177/10.000 seconds
+Lua memory usage: 5920453/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  310.889      1 -total
+ 53.21%  165.412      1 Template:Reflist
+ 27.05%   84.090      5 Template:Citation
+ 21.85%   67.934      1 Template:Burrows_Wheeler_1994
+ 19.77%   61.453      6 Template:Navbox
+ 19.04%   59.189      1 Template:Compression_Methods
+ 16.33%   50.777      1 Template:Short_description
+ 12.06%   37.494      9 Template:Cite_journal
+  9.13%   28.374      2 Template:Pagetype
+  7.96%   24.747      1 Template:Infobox_algorithm
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:36777-0!canonical and timestamp 20221224015421 and revision id 1126818966.
+ -->
+</div></body>
+</html>

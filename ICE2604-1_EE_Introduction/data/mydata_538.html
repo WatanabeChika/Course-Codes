@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Kruskal's_algorithm</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p><b>Kruskal's algorithm</b><sup class="reference" id="cite_ref-1">[1]</sup> finds a minimum spanning forest of an undirected edge-weighted graph. If the graph is connected, it finds a minimum spanning tree. (A minimum spanning tree of a connected graph is a subset of the edges that forms a tree that includes every vertex, where the sum of the weights of all the edges in the tree is minimized. For a disconnected graph, a minimum spanning forest is composed of a minimum spanning tree for each connected component.) It is a greedy algorithm in graph theory as in each step it adds the next lowest-weight edge that will not form a cycle to the minimum spanning forest.<sup class="reference" id="cite_ref-:0_2-0">[2]</sup>
+</p><p>This algorithm first appeared in <i>Proceedings of the American Mathematical Society</i>, pp. 48–50 in 1956, and was written by Joseph Kruskal.<sup class="reference" id="cite_ref-3">[3]</sup> It was rediscovered by Loberman &amp; Weinberger (1957).<sup class="reference" id="cite_ref-4">[4]</sup>
+</p><p>Other algorithms for this problem include Prim's algorithm, the reverse-delete algorithm, and Borůvka's algorithm.
+</p>
+
+<h2><span class="mw-headline" id="Algorithm">Algorithm</span><span class="mw-editsection"></span></h2>
+<ul><li>create a forest <i>F</i> (a set of trees), where each vertex in the graph is a separate tree</li>
+<li>create a sorted set <i>S</i> containing all the edges in the graph</li>
+<li>while <i>S</i> is nonempty and <i>F</i> is not yet spanning
+<ul><li>remove an edge with minimum weight from <i>S</i></li>
+<li>if the removed edge connects two different trees then add it to the forest <i>F</i>, combining two trees into a single tree</li></ul></li></ul>
+<p>At the termination of the algorithm, the forest forms a minimum spanning forest of the graph. If the graph is connected, the forest has a single component and forms a minimum spanning tree.
+</p>
+<h2><span class="mw-headline" id="Pseudocode">Pseudocode</span><span class="mw-editsection"></span></h2>
+
+<p>The following code is implemented with a disjoint-set data structure. Here, we represent our forest <i>F</i> as a set of edges, and use the disjoint-set data structure to efficiently determine whether two vertices are part of the same tree.
+</p>
+<pre><b>algorithm</b> Kruskal(<i>G</i>) <b>is</b>
+    F:= ∅
+    <b>for each</b> v ∈ G.V <b>do</b>
+        MAKE-SET(v)
+    <b>for each</b> (u, v) <b>in</b> G.E ordered by weight(u, v), increasing <b>do</b>
+        <b>if</b> FIND-SET(u) ≠ FIND-SET(v) <b>then</b>
+            F:= F ∪ {(u, v)} ∪ {(v, u)}
+            UNION(FIND-SET(u), FIND-SET(v))
+    <b>return</b> F
+</pre>
+<h2><span class="mw-headline" id="Complexity">Complexity</span><span class="mw-editsection"></span></h2>
+<p>For a graph with <i>E</i> edges and <i>V</i> vertices, Kruskal's algorithm can be shown to run in <i>O</i>(<i>E</i> log <i>E</i>) time, or equivalently, <i>O</i>(<i>E</i> log <i>V</i>) time, all with simple data structures. These running times are equivalent because:
+</p>
+<ul><li><i>E</i> is at most <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle V^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle V^{2}}</annotation>
+</semantics>
+</math></span><img alt="V^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dc8bf8999387969208f85073f17c00954a131160" style="vertical-align: -0.338ex; width:2.971ex; height:2.676ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \log V^{2}=2\log V\in O(\log V)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<msup>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>=</mo>
+<mn>2</mn>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>V</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>V</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \log V^{2}=2\log V\in O(\log V)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \log V^{2}=2\log V\in O(\log V)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a654a11335f727f6506afda8b9bcc26ddf3bf16d" style="vertical-align: -0.838ex; width:27.693ex; height:3.176ex;"/></span>.</li>
+<li>Each isolated vertex is a separate component of the minimum spanning forest. If we ignore isolated vertices we obtain <i>V</i> ≤ 2<i>E</i>, so log <i>V</i> is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(\log E)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>E</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(\log E)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(\log E)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/debcb763866bfd9ef59bcd947fb637f07a006f34" style="vertical-align: -0.838ex; width:8.717ex; height:2.843ex;"/></span>.</li></ul>
+<p>We can achieve this bound as follows: first sort the edges by weight using a comparison sort in <i>O</i>(<i>E</i> log <i>E</i>) time; this allows the step "remove an edge with minimum weight from <i>S</i>" to operate in constant time. Next, we use a disjoint-set data structure to keep track of which vertices are in which components. We place each vertex into its own disjoint set, which takes O(<i>V</i>) operations. Finally, in worst case, we need to iterate through all edges, and for each edge we need to do two 'find' operations and possibly one union. Even a simple disjoint-set data structure such as disjoint-set forests with union by rank can perform O(<i>E</i>) operations in <i>O</i>(<i>E</i> log <i>V</i>) time. Thus the total time is <i>O</i>(<i>E</i> log <i>E</i>) = <i>O</i>(<i>E</i> log <i>V</i>).
+</p><p>Provided that the edges are either already sorted or can be sorted in linear time (for example with counting sort or radix sort), the algorithm can use a more sophisticated disjoint-set data structure to run in <i>O</i>(<i>E</i> α(<i>V</i>)) time, where α is the extremely slowly growing inverse of the single-valued Ackermann function.
+</p>
+<h2><span class="mw-headline" id="Example">Example</span><span class="mw-editsection"></span></h2>
+<table class="wikitable">
+<tbody><tr>
+<th>Image</th>
+<th>Description
+</th></tr>
+<tr>
+<td><img alt="Kruskal Algorithm 1.svg" data-file-height="518" data-file-width="618" decoding="async" height="168" src="//upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Kruskal_Algorithm_1.svg/200px-Kruskal_Algorithm_1.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Kruskal_Algorithm_1.svg/300px-Kruskal_Algorithm_1.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Kruskal_Algorithm_1.svg/400px-Kruskal_Algorithm_1.svg.png 2x" width="200"/>
+</td>
+<td><b>AD</b> and <b>CE</b> are the shortest edges, with length 5, and <b>AD</b> has been arbitrarily chosen, so it is highlighted.
+</td></tr>
+<tr>
+<td><img alt="Kruskal Algorithm 2.svg" data-file-height="518" data-file-width="618" decoding="async" height="168" src="//upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Kruskal_Algorithm_2.svg/200px-Kruskal_Algorithm_2.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Kruskal_Algorithm_2.svg/300px-Kruskal_Algorithm_2.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Kruskal_Algorithm_2.svg/400px-Kruskal_Algorithm_2.svg.png 2x" width="200"/>
+</td>
+<td><b>CE</b> is now the shortest edge that does not form a cycle, with length 5, so it is highlighted as the second edge.
+</td></tr>
+<tr>
+<td><img alt="Kruskal Algorithm 3.svg" data-file-height="518" data-file-width="618" decoding="async" height="168" src="//upload.wikimedia.org/wikipedia/commons/thumb/5/59/Kruskal_Algorithm_3.svg/200px-Kruskal_Algorithm_3.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/5/59/Kruskal_Algorithm_3.svg/300px-Kruskal_Algorithm_3.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/5/59/Kruskal_Algorithm_3.svg/400px-Kruskal_Algorithm_3.svg.png 2x" width="200"/>
+</td>
+<td>The next edge, <b>DF</b> with length 6, is highlighted using much the same method.
+</td></tr>
+<tr>
+<td><img alt="Kruskal Algorithm 4.svg" data-file-height="518" data-file-width="618" decoding="async" height="168" src="//upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Kruskal_Algorithm_4.svg/200px-Kruskal_Algorithm_4.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Kruskal_Algorithm_4.svg/300px-Kruskal_Algorithm_4.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Kruskal_Algorithm_4.svg/400px-Kruskal_Algorithm_4.svg.png 2x" width="200"/>
+</td>
+<td>The next-shortest edges are <b>AB</b> and <b>BE</b>, both with length 7. <b>AB</b> is chosen arbitrarily, and is highlighted. The edge <b>BD</b> has been highlighted in red, because there already exists a path (in green) between <b>B</b> and <b>D</b>, so it would form a cycle (<b>ABD</b>) if it were chosen.
+</td></tr>
+<tr>
+<td><img alt="Kruskal Algorithm 5.svg" data-file-height="518" data-file-width="618" decoding="async" height="168" src="//upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Kruskal_Algorithm_5.svg/200px-Kruskal_Algorithm_5.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Kruskal_Algorithm_5.svg/300px-Kruskal_Algorithm_5.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Kruskal_Algorithm_5.svg/400px-Kruskal_Algorithm_5.svg.png 2x" width="200"/>
+</td>
+<td>The process continues to highlight the next-smallest edge, <b>BE</b> with length 7. Many more edges are highlighted in red at this stage: <b>BC</b> because it would form the loop <b>BCE</b>,  <b>DE</b> because it would form the loop <b>DEBA</b>, and <b>FE</b> because it would form <b>FEBAD</b>.
+</td></tr>
+<tr>
+<td><img alt="Kruskal Algorithm 6.svg" data-file-height="518" data-file-width="618" decoding="async" height="168" src="//upload.wikimedia.org/wikipedia/commons/thumb/8/87/Kruskal_Algorithm_6.svg/200px-Kruskal_Algorithm_6.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/8/87/Kruskal_Algorithm_6.svg/300px-Kruskal_Algorithm_6.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/8/87/Kruskal_Algorithm_6.svg/400px-Kruskal_Algorithm_6.svg.png 2x" width="200"/>
+</td>
+<td>Finally, the process finishes with the edge <b>EG</b> of length 9, and the minimum spanning tree is found.
+</td></tr></tbody></table>
+<h2><span class="mw-headline" id="Proof_of_correctness">Proof of correctness</span><span class="mw-editsection"></span></h2>
+<p>The proof consists of two parts. First, it is proved that the algorithm produces a spanning tree. Second, it is proved that the constructed spanning tree is of minimal weight.
+</p>
+<h3><span class="mw-headline" id="Spanning_tree">Spanning tree</span><span class="mw-editsection"></span></h3>
+<p>Let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>G</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G}</annotation>
+</semantics>
+</math></span><img alt="G" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f5f3c8921a3b352de45446a6789b104458c9f90b" style="vertical-align: -0.338ex; width:1.827ex; height:2.176ex;"/></span> be a connected, weighted graph and let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Y}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>Y</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Y}</annotation>
+</semantics>
+</math></span><img alt="Y" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/961d67d6b454b4df2301ac571808a3538b3a6d3f" style="vertical-align: -0.171ex; width:1.773ex; height:2.009ex;"/></span> be the subgraph of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>G</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G}</annotation>
+</semantics>
+</math></span><img alt="G" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f5f3c8921a3b352de45446a6789b104458c9f90b" style="vertical-align: -0.338ex; width:1.827ex; height:2.176ex;"/></span> produced by the algorithm. <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Y}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>Y</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Y}</annotation>
+</semantics>
+</math></span><img alt="Y" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/961d67d6b454b4df2301ac571808a3538b3a6d3f" style="vertical-align: -0.171ex; width:1.773ex; height:2.009ex;"/></span> cannot have a cycle, as by definition an edge is not added if it results in a cycle. <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Y}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>Y</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Y}</annotation>
+</semantics>
+</math></span><img alt="Y" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/961d67d6b454b4df2301ac571808a3538b3a6d3f" style="vertical-align: -0.171ex; width:1.773ex; height:2.009ex;"/></span> cannot be disconnected, since the first encountered edge that joins two components of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Y}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>Y</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Y}</annotation>
+</semantics>
+</math></span><img alt="Y" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/961d67d6b454b4df2301ac571808a3538b3a6d3f" style="vertical-align: -0.171ex; width:1.773ex; height:2.009ex;"/></span> would have been added by the algorithm. Thus, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Y}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>Y</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Y}</annotation>
+</semantics>
+</math></span><img alt="Y" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/961d67d6b454b4df2301ac571808a3538b3a6d3f" style="vertical-align: -0.171ex; width:1.773ex; height:2.009ex;"/></span> is a spanning tree of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>G</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G}</annotation>
+</semantics>
+</math></span><img alt="G" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f5f3c8921a3b352de45446a6789b104458c9f90b" style="vertical-align: -0.338ex; width:1.827ex; height:2.176ex;"/></span>.
+</p>
+<h3><span class="mw-headline" id="Minimality">Minimality</span><span class="mw-editsection"></span></h3>
+<p>We show that the following proposition <i><b>P</b></i> is true by induction: If <i>F</i> is the set of edges chosen at any stage of the algorithm, then there is some minimum spanning tree that contains <i>F</i> and none of the edges rejected by the algorithm.
+</p>
+<ul><li>Clearly <i><b>P</b></i> is true at the beginning, when <i>F</i> is empty: any minimum spanning tree will do, and there exists one because a weighted connected graph always has a minimum spanning tree.</li>
+<li>Now assume <i><b>P</b></i> is true for some non-final edge set <i>F</i> and let <i>T</i> be a minimum spanning tree that contains <i>F</i>.
+<ul><li>If the next chosen edge <i>e</i> is also in <i>T</i>, then <i><b>P</b></i> is true for <i>F</i> + <i>e</i>.</li>
+<li>Otherwise, if <i>e</i> is not in <i>T</i> then <i>T</i> + <i>e</i> has a cycle <i>C</i>. This cycle contains edges which do not belong to <i>F</i>, since <i>e</i> does not form a cycle when added to <i>F</i> but does in <i>T</i>.  Let <i>f</i> be an edge which is in <i>C</i> but not in <i>F</i> + <i>e</i>.  Note that <i>f</i> also belongs to <i>T</i>, and by  <i><b>P</b></i>, it has not been considered by the algorithm. <i>f</i> must therefore have a weight at least as large as <i>e</i>. Then <i>T</i> − <i>f</i> + <i>e</i> is a tree, and it has the same or less weight as <i>T</i>.  So <i>T</i> − <i>f</i> + <i>e</i> is a minimum spanning tree containing <i>F</i> + <i>e</i> and again <i><b>P</b></i> holds.</li></ul></li>
+<li>Therefore, by the principle of induction, <i><b>P</b></i> holds when <i>F</i> has become a spanning tree, which is only possible if <i>F</i> is a minimum spanning tree itself.</li></ul>
+<h2><span class="mw-headline" id="Parallel_algorithm">Parallel algorithm</span><span class="mw-editsection"></span></h2>
+<p>Kruskal's algorithm is inherently sequential and hard to parallelize. It is, however, possible to perform the initial sorting of the edges in parallel or, alternatively, to use a parallel implementation of a binary heap to extract the minimum-weight edge in every iteration.<sup class="reference" id="cite_ref-5">[5]</sup>
+As parallel sorting is possible in time <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n)}</annotation>
+</semantics>
+</math></span><img alt="O(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34109fe397fdcff370079185bfdb65826cb5565a" style="vertical-align: -0.838ex; width:4.977ex; height:2.843ex;"/></span> on <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(\log n)}</annotation>
+</semantics>
+</math></span><img alt="O(\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/aae0f22048ba6b7c05dbae17b056bfa16e21807d" style="vertical-align: -0.838ex; width:8.336ex; height:2.843ex;"/></span> processors,<sup class="reference" id="cite_ref-6">[6]</sup> the runtime of Kruskal's algorithm can be reduced to <i>O</i>(<i>E</i> α(<i>V</i>)), where α again is the inverse of the single-valued Ackermann function.
+</p><p>A variant of Kruskal's algorithm, named Filter-Kruskal, has been described by Osipov et al.<sup class="reference" id="cite_ref-osipov2009_7-0">[7]</sup> and is better suited for parallelization. The basic idea behind Filter-Kruskal is to partition the edges in a similar way to quicksort and filter out edges that connect vertices of the same tree to reduce the cost of sorting. The following pseudocode demonstrates this.
+</p>
+<pre><b>function</b> filter_kruskal(G) <b>is</b>
+    <b>if</b> |G.E| &lt; kruskal_threshold:
+        <b>return</b> kruskal(G)
+    pivot = choose_random(G.E)
+    <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle E_{\leq }}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>E</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mo>≤<!-- ≤ --></mo>
+          </mrow>
+        </msub>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle E_{\leq }}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle E_{\leq }}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6eb81afc109650c82a6240952db404f33824a71f" style="vertical-align: -0.838ex; width:3.226ex; height:2.676ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle E_{&gt;}}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>E</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mo>&gt;</mo>
+          </mrow>
+        </msub>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle E_{&gt;}}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle E_{&gt;}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8177e4a33a0ba0954aa9c464556d44475c27b841" style="vertical-align: -0.671ex; width:3.226ex; height:2.509ex;"/></span> = partition(G.E, pivot)
+    A = filter_kruskal(<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle E_{\leq }}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>E</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mo>≤<!-- ≤ --></mo>
+          </mrow>
+        </msub>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle E_{\leq }}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle E_{\leq }}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6eb81afc109650c82a6240952db404f33824a71f" style="vertical-align: -0.838ex; width:3.226ex; height:2.676ex;"/></span>)
+    <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle E_{&gt;}}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>E</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mo>&gt;</mo>
+          </mrow>
+        </msub>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle E_{&gt;}}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle E_{&gt;}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8177e4a33a0ba0954aa9c464556d44475c27b841" style="vertical-align: -0.671ex; width:3.226ex; height:2.509ex;"/></span> = filter(<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle E_{&gt;}}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>E</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mo>&gt;</mo>
+          </mrow>
+        </msub>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle E_{&gt;}}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle E_{&gt;}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8177e4a33a0ba0954aa9c464556d44475c27b841" style="vertical-align: -0.671ex; width:3.226ex; height:2.509ex;"/></span>)
+    A = A ∪ filter_kruskal(<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle E_{&gt;}}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>E</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mo>&gt;</mo>
+          </mrow>
+        </msub>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle E_{&gt;}}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle E_{&gt;}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8177e4a33a0ba0954aa9c464556d44475c27b841" style="vertical-align: -0.671ex; width:3.226ex; height:2.509ex;"/></span>)
+    <b>return</b> A
+
+<b>function</b> partition(E, pivot) <b>is</b>
+    <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle E_{\leq }}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>E</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mo>≤<!-- ≤ --></mo>
+          </mrow>
+        </msub>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle E_{\leq }}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle E_{\leq }}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6eb81afc109650c82a6240952db404f33824a71f" style="vertical-align: -0.838ex; width:3.226ex; height:2.676ex;"/></span> = ∅, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle E_{&gt;}}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>E</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mo>&gt;</mo>
+          </mrow>
+        </msub>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle E_{&gt;}}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle E_{&gt;}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8177e4a33a0ba0954aa9c464556d44475c27b841" style="vertical-align: -0.671ex; width:3.226ex; height:2.509ex;"/></span> = ∅
+    <b>foreach</b> (u, v) in E <b>do</b>
+        <b>if</b> weight(u, v) &lt;= pivot <b>then</b>
+            <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle E_{\leq }}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>E</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mo>≤<!-- ≤ --></mo>
+          </mrow>
+        </msub>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle E_{\leq }}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle E_{\leq }}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6eb81afc109650c82a6240952db404f33824a71f" style="vertical-align: -0.838ex; width:3.226ex; height:2.676ex;"/></span> = <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle E_{\leq }}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>E</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mo>≤<!-- ≤ --></mo>
+          </mrow>
+        </msub>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle E_{\leq }}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle E_{\leq }}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6eb81afc109650c82a6240952db404f33824a71f" style="vertical-align: -0.838ex; width:3.226ex; height:2.676ex;"/></span> ∪ {(u, v)}
+        <b>else</b>
+            <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle E_{&gt;}}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>E</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mo>&gt;</mo>
+          </mrow>
+        </msub>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle E_{&gt;}}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle E_{&gt;}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8177e4a33a0ba0954aa9c464556d44475c27b841" style="vertical-align: -0.671ex; width:3.226ex; height:2.509ex;"/></span> = <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle E_{&gt;}}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>E</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mo>&gt;</mo>
+          </mrow>
+        </msub>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle E_{&gt;}}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle E_{&gt;}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8177e4a33a0ba0954aa9c464556d44475c27b841" style="vertical-align: -0.671ex; width:3.226ex; height:2.509ex;"/></span> ∪ {(u, v)}
+    <b>return</b> <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle E_{\leq }}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>E</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mo>≤<!-- ≤ --></mo>
+          </mrow>
+        </msub>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle E_{\leq }}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle E_{\leq }}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6eb81afc109650c82a6240952db404f33824a71f" style="vertical-align: -0.838ex; width:3.226ex; height:2.676ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle E_{&gt;}}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>E</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mo>&gt;</mo>
+          </mrow>
+        </msub>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle E_{&gt;}}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle E_{&gt;}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8177e4a33a0ba0954aa9c464556d44475c27b841" style="vertical-align: -0.671ex; width:3.226ex; height:2.509ex;"/></span>
+
+<b>function</b> filter(E) <b>is</b>
+    <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle E_{\text{filtered}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>E</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mtext>filtered</mtext>
+          </mrow>
+        </msub>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle E_{\text{filtered}}}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle E_{\text{filtered}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5e68a77b69595cc6a6ba6e1f3393a8319d5b1332" style="vertical-align: -0.671ex; width:7.024ex; height:2.509ex;"/></span> = ∅
+    <b>foreach</b> (u, v) in E <b>do</b>
+        <b>if</b> find_set(u) ≠ find_set(v) <b>then</b>
+            <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle E_{\text{filtered}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>E</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mtext>filtered</mtext>
+          </mrow>
+        </msub>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle E_{\text{filtered}}}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle E_{\text{filtered}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5e68a77b69595cc6a6ba6e1f3393a8319d5b1332" style="vertical-align: -0.671ex; width:7.024ex; height:2.509ex;"/></span> = <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle E_{\text{filtered}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>E</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mtext>filtered</mtext>
+          </mrow>
+        </msub>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle E_{\text{filtered}}}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle E_{\text{filtered}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5e68a77b69595cc6a6ba6e1f3393a8319d5b1332" style="vertical-align: -0.671ex; width:7.024ex; height:2.509ex;"/></span> ∪ {(u, v)}
+    <b>return</b> <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle E_{\text{filtered}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>E</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mtext>filtered</mtext>
+          </mrow>
+        </msub>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle E_{\text{filtered}}}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle E_{\text{filtered}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5e68a77b69595cc6a6ba6e1f3393a8319d5b1332" style="vertical-align: -0.671ex; width:7.024ex; height:2.509ex;"/></span>
+</pre>
+<p>Filter-Kruskal lends itself better for parallelization as sorting, filtering, and partitioning can easily be performed in parallel by distributing the edges between the processors.<sup class="reference" id="cite_ref-osipov2009_7-1">[7]</sup>
+</p><p>Finally, other variants of a parallel implementation of Kruskal's algorithm have been explored. Examples include a scheme that uses helper threads to remove edges that are definitely not part of the MST in the background,<sup class="reference" id="cite_ref-8">[8]</sup> and a variant which runs the sequential algorithm on <i>p</i> subgraphs, then merges those subgraphs until only one, the final MST, remains.<sup class="reference" id="cite_ref-9">[9]</sup>
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Prim's algorithm</li>
+<li>Dijkstra's algorithm</li>
+<li>Borůvka's algorithm</li>
+<li>Reverse-delete algorithm</li>
+<li>Single-linkage clustering</li>
+<li>Greedy geometric spanner</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<ul><li>Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, and Clifford Stein. <i>Introduction to Algorithms</i>, Second Edition. MIT Press and McGraw-Hill, 2001. <link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/>ISBN 0-262-03293-7. Section 23.2: The algorithms of Kruskal and Prim, pp. 567–574.</li>
+<li>Michael T. Goodrich and Roberto Tamassia. <i>Data Structures and Algorithms in Java</i>, Fourth Edition. John Wiley &amp; Sons, Inc., 2006. <link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/>ISBN 0-471-73884-0. Section 13.7.1: Kruskal's Algorithm, pp. 632..</li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>Data for the article's example.</li>
+<li>Gephi Plugin For Calculating a Minimum Spanning Tree source code.</li>
+<li>Kruskal's Algorithm with example and program in c++</li>
+<li>Kruskal's Algorithm code in C++ as applied to random numbers</li>
+<li>Kruskal's Algorithm code in Python with explanation</li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw2305
+Cached time: 20221223233211
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.235 seconds
+Real time usage: 0.374 seconds
+Preprocessor visited node count: 1328/1000000
+Post‐expand include size: 22740/2097152 bytes
+Template argument size: 978/2097152 bytes
+Highest expansion depth: 14/100
+Expensive parser function count: 0/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 35279/5000000 bytes
+Lua time usage: 0.111/10.000 seconds
+Lua memory usage: 5851817/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  228.423      1 -total
+ 52.21%  119.269      1 Template:Reflist
+ 31.71%   72.430      3 Template:Cite_book
+ 24.63%   56.271      1 Template:Short_description
+ 12.02%   27.466      1 Template:Harvtxt
+ 11.69%   26.695      2 Template:Pagetype
+ 11.35%   25.916      6 Template:Cite_journal
+  8.73%   19.946      2 Template:Isbn
+  8.26%   18.877      5 Template:Main_other
+  6.52%   14.902      1 Template:SDcat
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:53776-0!canonical and timestamp 20221223233211 and revision id 1125150051.
+ -->
+</div></body>
+</html>

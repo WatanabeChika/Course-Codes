@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Miller-Rabin</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p>The <b>Miller–Rabin primality test</b> or <b>Rabin–Miller primality test</b> is a probabilistic primality test: an algorithm which determines whether a given number is likely to be prime, similar to the Fermat primality test and the Solovay–Strassen primality test.
+</p><p>It is of historical significance in the search for a polynomial-time deterministic primality test. Its probabilistic variant remains widely used in practice, as one of the simplest and fastest tests known.
+</p><p>Gary L. Miller discovered the test in 1976; Miller's version of the test is deterministic, but its correctness relies on the unproven extended Riemann hypothesis.<sup class="reference" id="cite_ref-miller_1-0">[1]</sup> Michael O. Rabin modified it to obtain an unconditional probabilistic algorithm in 1980.<sup class="reference" id="cite_ref-rabin_2-0">[2]</sup><sup class="reference" id="cite_ref-4">[a]</sup>
+</p>
+
+<h2><span class="mw-headline" id="Mathematical_concepts">Mathematical concepts</span><span class="mw-editsection"></span></h2>
+<p>Similarly to the Fermat and Solovay–Strassen tests, the Miller–Rabin primality test checks whether a specific property, which is known to hold for prime values, holds for the number under testing.
+</p>
+<h3><span class="mw-headline" id="Strong_probable_primes">Strong probable primes</span><span class="mw-editsection"></span></h3>
+<p>The property is the following. For a given odd integer <span class="nowrap"><i>n</i> &gt; 2</span>, let’s write <span class="nowrap"><i>n</i> − 1</span> as <span class="nowrap">2<sup><i>s</i></sup><i>d</i></span> where <i>s</i> is a positive integer and <i>d</i> is an odd positive integer. Let’s consider an integer <i>a</i>, called a <i>base</i>, which is coprime to <i>n</i>.
+Then, <i>n</i> is said to be a <b>strong probable prime to base <i>a</i></b> if one of these congruence relations holds:
+</p>
+<ul><li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a^{d}\equiv 1{\pmod {n}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+</mrow>
+</msup>
+<mo>≡<!-- ≡ --></mo>
+<mn>1</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mspace width="1em"></mspace>
+<mo stretchy="false">(</mo>
+<mi>mod</mi>
+<mspace width="0.333em"></mspace>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a^{d}\equiv 1{\pmod {n}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle a^{d}\equiv 1{\pmod {n}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2fbd85b469a4bd1028f98a9ba2a0a9e170006f21" style="vertical-align: -0.838ex; width:17.661ex; height:3.176ex;"/></span>;</li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a^{2^{r}d}\equiv -1{\pmod {n}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>r</mi>
+</mrow>
+</msup>
+<mi>d</mi>
+</mrow>
+</msup>
+<mo>≡<!-- ≡ --></mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mspace width="1em"></mspace>
+<mo stretchy="false">(</mo>
+<mi>mod</mi>
+<mspace width="0.333em"></mspace>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a^{2^{r}d}\equiv -1{\pmod {n}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle a^{2^{r}d}\equiv -1{\pmod {n}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/eb8b4bcb85512714451e65b5e92f60f84332a500" style="vertical-align: -0.838ex; width:21.058ex; height:3.176ex;"/></span>  for some <span class="nowrap">0 ≤ r &lt; <i>s</i></span>.</li></ul>
+<p>The idea beneath this test is that when <i>n</i> is an odd prime, it passes the test because of two facts:
+</p>
+<ul><li>by Fermat's little theorem, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a^{n-1}\equiv 1{\pmod {n}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mo>≡<!-- ≡ --></mo>
+<mn>1</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mspace width="1em"></mspace>
+<mo stretchy="false">(</mo>
+<mi>mod</mi>
+<mspace width="0.333em"></mspace>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a^{n-1}\equiv 1{\pmod {n}}}</annotation>
+</semantics>
+</math></span><img alt="a^{{n-1}}\equiv 1{\pmod  {n}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3bfc8625369c7558deadd61823842db06983423d" style="vertical-align: -0.838ex; width:19.888ex; height:3.176ex;"/></span> (this property alone defines the weaker notion of <i>probable prime to base a</i>, on which the Fermat test is based);</li>
+<li>the only square roots of 1 modulo <i>n</i> are 1 and −1.</li></ul>
+<p>Hence, by contraposition, if <i>n</i> is not a strong probable prime to base <i>a</i>, then <i>n</i> is definitely composite, and <i>a</i> is called a <b>witness</b> for the compositeness of <i>n</i> (sometimes misleadingly called a <i>strong witness</i>).
+</p><p>However, this property is not an exact characterization of prime numbers. If <i>n</i> is composite, it may nonetheless be a strong probable prime to base <i>a</i>, in which case it is called a <b>strong pseudoprime</b>, and <i>a</i> is a <b>strong liar</b>.
+</p>
+<h3><span class="mw-headline" id="Choices_of_bases">Choices of bases</span><span class="mw-editsection"></span></h3>
+<p>Thankfully, no composite number is a strong pseudoprime to all bases at the same time (contrary to the Fermat primality test for which Fermat pseudoprimes to all bases exist: the Carmichael numbers). However no simple way of finding a witness is known. A naïve solution is to try all possible bases, which yields an inefficient deterministic algorithm. The Miller test is a more efficient variant of this (see section <i>Miller test</i> below).
+</p><p>Another solution is to pick a base at random. This yields a fast probabilistic test. When <i>n</i> is composite, most bases are witnesses, so the test will detect <i>n</i> as composite with a reasonably high probability (see section <i>Accuracy</i> below). We can quickly reduce the probability of a false positive to an arbitrarily small rate, by combining the outcome of as many independently chosen bases as necessary to achieve the said rate. This is the Miller–Rabin test. The number of bases to try does not depend on <i>n</i>. There seems to be diminishing returns in trying many bases, because if <i>n</i> is a pseudoprime to some base, then it seems more likely to be a pseudoprime to another base.<sup class="reference" id="cite_ref-PSW_5-0">[4]</sup><sup class="reference nowrap"><span title="Page / location: §8">: §8 </span></sup>
+</p><p>Note that <span class="texhtml"><i>a</i><sup><i>d</i></sup> ≡ 1 (mod <i>n</i>)</span> holds trivially for <span class="texhtml"><i>a</i> ≡ 1 (mod <i>n</i>)</span>, because the congruence relation is compatible with exponentiation. And <span class="texhtml"><i>a</i><sup><i>d</i></sup> = <i>a</i><sup>2<sup>0</sup><i>d</i></sup> ≡ −1 (mod <i>n</i>)</span> holds trivially for <span class="texhtml"><i>a</i> ≡ −1 (mod <i>n</i>)</span> since <span class="texhtml mvar" style="font-style:italic;">d</span> is odd, for the same reason. That is why random <span class="texhtml mvar" style="font-style:italic;">a</span> are usually chosen in the interval <span class="texhtml">1 &lt; <i>a</i> &lt; <i>n</i> − 1</span>.
+</p><p>For testing arbitrarily large <span class="texhtml mvar" style="font-style:italic;">n</span>, choosing bases at random is essential, as we don't know the distribution of witnesses and strong liars among the numbers 2, 3, …, <span class="texhtml"><i>n</i> − 2</span>.<sup class="reference" id="cite_ref-7">[b]</sup>
+</p><p>However, a pre-selected set of a few small bases guarantees the identification of all composites up to a pre-computed maximum. This maximum is generally quite large compared to the bases. This gives very fast deterministic tests for small enough <i>n</i> (see section <i>Testing against small sets of bases</i> below).
+</p>
+<h3><span class="mw-headline" id="Proofs">Proofs</span><span class="mw-editsection"></span></h3>
+<p>Here is a proof that, if <i>n</i> is a prime, then the only square roots of 1 modulo <i>n</i> are 1 and −1.
+</p>
+<style data-mw-deduplicate="TemplateStyles:r1037201836">.mw-parser-output .math_proof{border:thin solid #aaa;margin:1em 2em;padding:0.5em 1em 0.4em;text-align:justify}@media(max-width:500px){.mw-parser-output .math_proof{margin:1em 0;padding:0.5em 0.5em 0.4em}}</style>
+<p>Here is a proof that, if <i>n</i> is an odd prime, then it is a strong probable prime to base <i>a</i>.
+</p>
+<link href="mw-data:TemplateStyles:r1037201836" rel="mw-deduplicated-inline-style"/>
+<h2><span class="mw-headline" id="Example">Example</span><span class="mw-editsection"></span></h2>
+<p>Suppose we wish to determine if <span class="nowrap"><i>n</i> = 221</span> is prime. We write <span class="nowrap"><i>n</i> − 1</span> as <span class="nowrap">2<sup>2</sup> × 55</span>, so that we have <span class="nowrap"><i>s</i> = 2</span> and <span class="nowrap"><i>d</i> = 55</span>. We randomly select a number <i>a</i> such that <span class="nowrap">2 ≤ <i>a</i> ≤ <i>n</i>−2</span>, say <span class="nowrap"><i>a</i> = 174</span>. We proceed to compute:
+</p>
+<ul><li><i>a</i><sup>2<sup>0</sup><i>d</i></sup> mod <i>n</i> = 174<sup>55</sup> mod 221 = 47 ≠ 1, <i>n</i> − 1</li>
+<li><i>a</i><sup>2<sup>1</sup><i>d</i></sup> mod <i>n</i> = 174<sup>110</sup> mod 221 = 220 = <i>n</i> − 1.</li></ul>
+<p>Since <span class="nowrap">220 ≡ −1 mod <i>n</i></span>, either 221 is prime, or 174 is a strong liar for 221. We try another random <i>a</i>, this time choosing <span class="nowrap"><i>a</i> = 137</span>:
+</p>
+<ul><li><i>a</i><sup>2<sup>0</sup><i>d</i></sup> mod <i>n</i> = 137<sup>55</sup> mod 221 = 188 ≠ 1, <i>n</i> − 1</li>
+<li><i>a</i><sup>2<sup>1</sup><i>d</i></sup> mod <i>n</i> = 137<sup>110</sup> mod 221 = 205 ≠ <i>n</i> − 1.</li></ul>
+<p>Hence 137 is a witness for the compositeness of 221, and 174 was in fact a strong liar. Note that this tells us nothing about the factors of 221 (which are 13 and 17). However, the example with 341 in a later section shows how these calculations can sometimes produce a factor of <i>n</i>.
+</p>
+<h2><span id="Miller.E2.80.93Rabin_test"></span><span class="mw-headline" id="Miller–Rabin_test">Miller–Rabin test</span><span class="mw-editsection"></span></h2>
+<p>The algorithm can be written in pseudocode as follows. The parameter <i>k</i> determines the accuracy of the test. The greater the number of rounds, the more accurate the result.<sup class="reference" id="cite_ref-8">[6]</sup>
+</p>
+<pre><b>Input #1</b>: <i>n</i> &gt; 2, an odd integer to be tested for primality
+<b>Input #2</b>: <i>k</i>, the number of rounds of testing to perform
+<b>Output</b>: “<i>composite</i>” if <i>n</i> is found to be composite, “<i>probably prime</i>” otherwise
+
+let <i>s</i> &gt; 0 and <i>d</i> odd &gt; 0 such that <i>n</i> − 1 = 2<sup><i>s</i></sup><i>d</i>  # by factoring out powers of 2 from <i>n</i> − 1
+<b>repeat</b> <i>k</i> <b>times</b>:
+    <i>a</i> ← random(2, <i>n</i> − 2)  # <i>n</i> is always a probable prime to base 1 and <i>n</i> − 1
+    <i>x</i> ← <i>a</i><sup><i>d</i></sup> mod <i>n</i>
+    <b>repeat</b> <i>s</i> <b>times</b>:
+        <i>y</i> ← <i>x</i><sup>2</sup> mod <i>n</i>
+        <b>if</b> <i>y</i> = 1 and <i>x</i> ≠ 1 and <i>x</i> ≠ <i>n</i> − 1 <b>then</b>  # nontrivial square root of 1 modulo <i>n</i>
+            <b>return</b> “<i>composite</i>”
+        <i>x</i> ← <i>y</i>
+    <b>if</b> <i>y</i> ≠ 1 <b>then</b>
+        <b>return</b> “<i>composite</i>”
+<b>return</b> “<i>probably prime</i>”
+</pre>
+<h3><span class="mw-headline" id="Complexity">Complexity</span><span class="mw-editsection"></span></h3>
+<p>Using repeated squaring, the running time of this algorithm is <span class="texhtml">O(<i>k</i> log<sup>3</sup> <i>n</i>)</span>, where <i>n</i> is the number tested for primality, and <i>k</i> is the number of rounds performed; thus this is an efficient, polynomial-time algorithm. FFT-based multiplication (Harvey-Hoeven algorithm) can decrease the running time to <span class="texhtml">O(<i>k</i> log<sup>2</sup> <i>n</i> log log <i>n</i>) = Õ(<i>k</i> log<sup>2</sup> <i>n</i>)</span>.
+</p>
+<h3><span class="mw-headline" id="Accuracy">Accuracy</span><span class="mw-editsection"></span></h3>
+<p>The error made by the primality test is measured by the probability that a composite number is declared probably prime. The more bases <i>a</i> are tried, the better the accuracy of the test. It can be shown that if <i>n</i> is composite, then at most <style data-mw-deduplicate="TemplateStyles:r1020198016">.mw-parser-output .frac{white-space:nowrap}.mw-parser-output .frac .num,.mw-parser-output .frac .den{font-size:80%;line-height:0;vertical-align:super}.mw-parser-output .frac .den{vertical-align:sub}.mw-parser-output .sr-only{border:0;clip:rect(0,0,0,0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px}</style><span class="frac" role="math"><span class="num">1</span>⁄<span class="den">4</span></span> of the bases <i>a</i> are strong liars for <i>n</i>.<sup class="reference" id="cite_ref-rabin_2-1">[2]</sup><sup class="reference" id="cite_ref-schoof_9-0">[7]</sup> As a consequence, if <i>n</i> is composite then running <i>k</i> iterations of the Miller–Rabin test will declare <i>n</i> probably prime with a probability at most 4<sup>−<i>k</i></sup>.
+</p><p>This is an improvement over the Solovay–Strassen test, whose worst‐case error bound is 2<sup>−<i>k</i></sup>. Moreover, the Miller–Rabin test is strictly stronger than the Solovay–Strassen test in the sense that for every composite <i>n</i>, the set of strong liars for <i>n</i> is a subset of the set of Euler liars for <i>n</i>, and for many <i>n</i>, the subset is proper.
+</p><p>In addition, for large values of <i>n</i>, the probability for a composite number to be declared probably prime is often significantly smaller than 4<sup>−<i>k</i></sup>. For instance, for most numbers <i>n</i>, this probability is bounded by 8<sup>−<i>k</i></sup>; the proportion of numbers <i>n</i> which invalidate this upper bound vanishes as we consider larger values of <i>n</i>.<sup class="reference" id="cite_ref-damgård-landrock-pomerance_10-0">[8]</sup> Hence the <i>average</i> case has a much better accuracy than 4<sup>−<i>k</i></sup>, a fact which can be exploited for <i>generating</i> probable primes (see below). However, such improved error bounds should not be relied upon to <i>verify</i> primes whose probability distribution is not controlled, since a cryptographic adversary might send a carefully chosen pseudoprime in order to defeat the primality test.<sup class="reference" id="cite_ref-12">[c]</sup>
+In such contexts, only the <i>worst‐case</i> error bound of 4<sup>−<i>k</i></sup> can be relied upon.
+</p><p>The above error measure is the probability for a composite number to be declared as a strong probable prime after <i>k</i> rounds of testing; in mathematical words, it is the conditional probability
+<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Pr(M\!R_{k}\mid \lnot P)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo form="prefix" movablelimits="true">Pr</mo>
+<mo stretchy="false">(</mo>
+<mi>M</mi>
+<mspace width="negativethinmathspace"></mspace>
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo>∣<!-- ∣ --></mo>
+<mi mathvariant="normal">¬<!-- ¬ --></mi>
+<mi>P</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Pr(M\!R_{k}\mid \lnot P)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \Pr(M\!R_{k}\mid \lnot P)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f3e751fe012aab7c299f21ba931ad54bcab8b771" style="vertical-align: -0.838ex; width:14.445ex; height:2.843ex;"/></span>
+where <i>P</i> is the event that the number being tested is prime, and <i>MR<sub>k</sub></i> is the event that it passes the Miller–Rabin test with <i>k</i> rounds. We are often interested instead in the inverse conditional probability <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Pr(\lnot P\mid M\!R_{k})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo form="prefix" movablelimits="true">Pr</mo>
+<mo stretchy="false">(</mo>
+<mi mathvariant="normal">¬<!-- ¬ --></mi>
+<mi>P</mi>
+<mo>∣<!-- ∣ --></mo>
+<mi>M</mi>
+<mspace width="negativethinmathspace"></mspace>
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Pr(\lnot P\mid M\!R_{k})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \Pr(\lnot P\mid M\!R_{k})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/91f45b84f2b9ce03d559f4966b9f82bde5983278" style="vertical-align: -0.838ex; width:14.445ex; height:2.843ex;"/></span>: the probability that a number which has been declared as a strong probable prime is in fact composite. These two probabilities are related by Bayes' law:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Pr(\lnot P\mid M\!R_{k})={\frac {\Pr(\lnot P\land M\!R_{k})}{\Pr(\lnot P\land M\!R_{k})+\Pr(P\land M\!R_{k})}}={\frac {1}{1+{\frac {\Pr(M\!R_{k}\mid P)}{\Pr(M\!R_{k}\mid \lnot P)}}{\frac {\Pr(P)}{\Pr(\lnot P)}}}}={\frac {1}{1+{\frac {1}{\Pr(M\!R_{k}\mid \lnot P)}}{\frac {\Pr(P)}{1-\Pr(P)}}}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo form="prefix" movablelimits="true">Pr</mo>
+<mo stretchy="false">(</mo>
+<mi mathvariant="normal">¬<!-- ¬ --></mi>
+<mi>P</mi>
+<mo>∣<!-- ∣ --></mo>
+<mi>M</mi>
+<mspace width="negativethinmathspace"></mspace>
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mo form="prefix" movablelimits="true">Pr</mo>
+<mo stretchy="false">(</mo>
+<mi mathvariant="normal">¬<!-- ¬ --></mi>
+<mi>P</mi>
+<mo>∧<!-- ∧ --></mo>
+<mi>M</mi>
+<mspace width="negativethinmathspace"></mspace>
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mrow>
+<mrow>
+<mo form="prefix" movablelimits="true">Pr</mo>
+<mo stretchy="false">(</mo>
+<mi mathvariant="normal">¬<!-- ¬ --></mi>
+<mi>P</mi>
+<mo>∧<!-- ∧ --></mo>
+<mi>M</mi>
+<mspace width="negativethinmathspace"></mspace>
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mo form="prefix" movablelimits="true">Pr</mo>
+<mo stretchy="false">(</mo>
+<mi>P</mi>
+<mo>∧<!-- ∧ --></mo>
+<mi>M</mi>
+<mspace width="negativethinmathspace"></mspace>
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mrow>
+</mfrac>
+</mrow>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<mrow>
+<mn>1</mn>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mo form="prefix" movablelimits="true">Pr</mo>
+<mo stretchy="false">(</mo>
+<mi>M</mi>
+<mspace width="negativethinmathspace"></mspace>
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo>∣<!-- ∣ --></mo>
+<mi>P</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+<mrow>
+<mo form="prefix" movablelimits="true">Pr</mo>
+<mo stretchy="false">(</mo>
+<mi>M</mi>
+<mspace width="negativethinmathspace"></mspace>
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo>∣<!-- ∣ --></mo>
+<mi mathvariant="normal">¬<!-- ¬ --></mi>
+<mi>P</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</mfrac>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mo form="prefix" movablelimits="true">Pr</mo>
+<mo stretchy="false">(</mo>
+<mi>P</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+<mrow>
+<mo form="prefix" movablelimits="true">Pr</mo>
+<mo stretchy="false">(</mo>
+<mi mathvariant="normal">¬<!-- ¬ --></mi>
+<mi>P</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</mfrac>
+</mrow>
+</mrow>
+</mfrac>
+</mrow>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<mrow>
+<mn>1</mn>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<mrow>
+<mo form="prefix" movablelimits="true">Pr</mo>
+<mo stretchy="false">(</mo>
+<mi>M</mi>
+<mspace width="negativethinmathspace"></mspace>
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo>∣<!-- ∣ --></mo>
+<mi mathvariant="normal">¬<!-- ¬ --></mi>
+<mi>P</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</mfrac>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mo form="prefix" movablelimits="true">Pr</mo>
+<mo stretchy="false">(</mo>
+<mi>P</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+<mrow>
+<mn>1</mn>
+<mo>−<!-- − --></mo>
+<mo form="prefix" movablelimits="true">Pr</mo>
+<mo stretchy="false">(</mo>
+<mi>P</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</mfrac>
+</mrow>
+</mrow>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Pr(\lnot P\mid M\!R_{k})={\frac {\Pr(\lnot P\land M\!R_{k})}{\Pr(\lnot P\land M\!R_{k})+\Pr(P\land M\!R_{k})}}={\frac {1}{1+{\frac {\Pr(M\!R_{k}\mid P)}{\Pr(M\!R_{k}\mid \lnot P)}}{\frac {\Pr(P)}{\Pr(\lnot P)}}}}={\frac {1}{1+{\frac {1}{\Pr(M\!R_{k}\mid \lnot P)}}{\frac {\Pr(P)}{1-\Pr(P)}}}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \Pr(\lnot P\mid M\!R_{k})={\frac {\Pr(\lnot P\land M\!R_{k})}{\Pr(\lnot P\land M\!R_{k})+\Pr(P\land M\!R_{k})}}={\frac {1}{1+{\frac {\Pr(M\!R_{k}\mid P)}{\Pr(M\!R_{k}\mid \lnot P)}}{\frac {\Pr(P)}{\Pr(\lnot P)}}}}={\frac {1}{1+{\frac {1}{\Pr(M\!R_{k}\mid \lnot P)}}{\frac {\Pr(P)}{1-\Pr(P)}}}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/23b2b50638bee7fdad95559c0fb9c75e7379d247" style="vertical-align: -4.505ex; width:99.376ex; height:8.343ex;"/></span></dd></dl>
+<p>In the last equation, we simplified the expression using the fact that all prime numbers are correctly reported as strong probable primes (the test has no false negative). By dropping the left part of the denominator, we derive a simple upper bound:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Pr(\lnot P\mid M\!R_{k})&lt;\Pr(M\!R_{k}\mid \lnot P)\left({\tfrac {1}{\Pr(P)}}-1\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo form="prefix" movablelimits="true">Pr</mo>
+<mo stretchy="false">(</mo>
+<mi mathvariant="normal">¬<!-- ¬ --></mi>
+<mi>P</mi>
+<mo>∣<!-- ∣ --></mo>
+<mi>M</mi>
+<mspace width="negativethinmathspace"></mspace>
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>&lt;</mo>
+<mo form="prefix" movablelimits="true">Pr</mo>
+<mo stretchy="false">(</mo>
+<mi>M</mi>
+<mspace width="negativethinmathspace"></mspace>
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo>∣<!-- ∣ --></mo>
+<mi mathvariant="normal">¬<!-- ¬ --></mi>
+<mi>P</mi>
+<mo stretchy="false">)</mo>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>1</mn>
+<mrow>
+<mo form="prefix" movablelimits="true">Pr</mo>
+<mo stretchy="false">(</mo>
+<mi>P</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</mfrac>
+</mstyle>
+</mrow>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Pr(\lnot P\mid M\!R_{k})&lt;\Pr(M\!R_{k}\mid \lnot P)\left({\tfrac {1}{\Pr(P)}}-1\right)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \Pr(\lnot P\mid M\!R_{k})&lt;\Pr(M\!R_{k}\mid \lnot P)\left({\tfrac {1}{\Pr(P)}}-1\right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d2e37800d1f74adbbce3a417ed3fd09e7d6234ee" style="vertical-align: -1.838ex; width:44.266ex; height:4.843ex;"/></span></dd></dl>
+<p>Hence this conditional probability is related not only to the error measure discussed above — which is bounded by 4<sup>−<i>k</i></sup> — but also to the probability distribution of the input number. In the general case, as said earlier, this distribution is controlled by a cryptographic adversary, thus unknown, so we cannot deduce much about <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Pr(\lnot P\mid M\!R_{k})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo form="prefix" movablelimits="true">Pr</mo>
+<mo stretchy="false">(</mo>
+<mi mathvariant="normal">¬<!-- ¬ --></mi>
+<mi>P</mi>
+<mo>∣<!-- ∣ --></mo>
+<mi>M</mi>
+<mspace width="negativethinmathspace"></mspace>
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Pr(\lnot P\mid M\!R_{k})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \Pr(\lnot P\mid M\!R_{k})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/91f45b84f2b9ce03d559f4966b9f82bde5983278" style="vertical-align: -0.838ex; width:14.445ex; height:2.843ex;"/></span>. However, in the case when we use the Miller–Rabin test to <i>generate</i> primes (see below), the distribution is chosen by the generator itself, so we can exploit this result.
+</p>
+<h2><span class="mw-headline" id="Deterministic_variants">Deterministic variants</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Miller_test">Miller test</span><span class="mw-editsection"></span></h3>
+<p>The Miller–Rabin algorithm can be made deterministic by trying all possible <i>a</i> below a certain limit. Taking <i>n</i> as the limit would imply <span class="texhtml">O(<i>n</i>)</span> trials, hence the running time would be exponential with respect to the size <span class="texhtml">log <i>n</i></span> of the input. To improve the running time, the challenge is then to lower the limit as much as possible while keeping the test reliable.
+</p><p>If the tested number <i>n</i> is composite, the strong liars <i>a</i> coprime to <i>n</i> are contained in a proper subgroup of the group (<b>Z</b>/<i>n</i><b>Z</b>)*, which means that if we test all <i>a</i> from a set which generates (<b>Z</b>/<i>n</i><b>Z</b>)*, one of them must lie outside the said subgroup, hence must be a witness for the compositeness of <i>n</i>. Assuming the truth of the generalized Riemann hypothesis (GRH), it is known that the group is generated by its elements smaller than <span class="texhtml">O((ln <i>n</i>)<sup>2</sup>)</span>, which was already noted by Miller.<sup class="reference" id="cite_ref-miller_1-1">[1]</sup> The constant involved in the Big O notation was reduced to 2 by Eric Bach.<sup class="reference" id="cite_ref-13">[10]</sup> This leads to the following deterministic primality testing algorithm, known as the <b>Miller test</b>:
+</p>
+<pre><b>Input</b>: <i>n</i> &gt; 2, an odd integer to be tested for primality
+<b>Output</b>: “<i>composite</i>” if <i>n</i> is composite, “<i>prime</i>” otherwise
+
+let <i>s</i> &gt; 0 and <i>d</i> odd &gt; 0 such that <i>n</i> − 1 = 2<sup><i>s</i></sup><i>d</i>  # by factoring out powers of 2 from <i>n</i> − 1
+<b>for all</b> <i>a</i> <b>in</b> the range [2, min(<i>n</i> − 2, ⌊2(ln <i>n</i>)<sup>2</sup>⌋)]:
+    <i>x</i> ← <i>a</i><sup><i>d</i></sup> mod <i>n</i>
+    <b>repeat</b> <i>s</i> <b>times</b>:
+        <i>y</i> ← <i>x</i><sup>2</sup> mod <i>n</i>
+        <b>if</b> <i>y</i> = 1 and <i>x</i> ≠ 1 and <i>x</i> ≠ <i>n</i> − 1 <b>then</b>  # nontrivial square root of 1 modulo <i>n</i>
+            <b>return</b> “<i>composite</i>”
+        <i>x</i> ← <i>y</i>
+    <b>if</b> <i>y</i> ≠ 1 <b>then</b>
+        <b>return</b> “<i>composite</i>”
+<b>return</b> “<i>prime</i>”
+</pre>
+<p>The full power of the generalized Riemann hypothesis is not needed to ensure the correctness of the test: as we deal with subgroups of even index, it suffices to assume the validity of GRH for quadratic Dirichlet characters.<sup class="reference" id="cite_ref-schoof_9-1">[7]</sup>
+</p><p>The running time of the algorithm is, in the soft-O notation, <span class="texhtml">Õ((log <i>n</i>)<sup>4</sup>)</span> (using FFT‐based multiplication).
+</p><p>The Miller test is not used in practice.  For most purposes, proper use of the probabilistic Miller–Rabin test or the Baillie–PSW primality test gives sufficient confidence while running much faster.  It is also slower in practice than commonly used proof methods such as APR-CL and ECPP which give results that do not rely on unproven assumptions. For theoretical purposes requiring a deterministic polynomial time algorithm, it was superseded by the AKS primality test, which also does not rely on unproven assumptions.
+</p>
+<h3><span class="mw-headline" id="Testing_against_small_sets_of_bases">Testing against small sets of bases</span><span class="mw-editsection"></span></h3>
+<p>When the number <i>n</i> to be tested is small, trying all <span class="texhtml"><i>a</i> &lt; 2(ln <i>n</i>)<sup>2</sup></span> is not necessary, as much smaller sets of potential witnesses are known to suffice. For example, Pomerance, Selfridge, Wagstaff<sup class="reference" id="cite_ref-PSW_5-1">[4]</sup> and Jaeschke<sup class="reference" id="cite_ref-14">[11]</sup> have verified that
+</p>
+<ul><li>if <i>n</i> &lt; 2,047, it is enough to test <i>a</i> = 2;</li>
+<li>if <i>n</i> &lt; 1,373,653, it is enough to test <i>a</i> = 2 and 3;</li>
+<li>if <i>n</i> &lt; 9,080,191, it is enough to test <i>a</i> = 31 and 73;</li>
+<li>if <i>n</i> &lt; 25,326,001, it is enough to test <i>a</i> = 2, 3, and 5;</li>
+<li>if <i>n</i> &lt; 3,215,031,751, it is enough to test <i>a</i> = 2, 3, 5, and 7;</li>
+<li>if <i>n</i> &lt; 4,759,123,141, it is enough to test <i>a</i> = 2, 7, and 61;</li>
+<li>if <i>n</i> &lt; 1,122,004,669,633, it is enough to test <i>a</i> = 2, 13, 23, and 1662803;</li>
+<li>if <i>n</i> &lt; 2,152,302,898,747, it is enough to test <i>a</i> = 2, 3, 5, 7, and 11;</li>
+<li>if <i>n</i> &lt; 3,474,749,660,383, it is enough to test <i>a</i> = 2, 3, 5, 7, 11, and 13;</li>
+<li>if <i>n</i> &lt; 341,550,071,728,321, it is enough to test <i>a</i> = 2, 3, 5, 7, 11, 13, and 17.</li></ul>
+<p>Using the work of Feitsma and Galway enumerating all base 2 pseudoprimes in 2010, this was extended (see <span class="nowrap external">OEIS: A014233</span>), with the first result later shown using different methods in Jiang and Deng:<sup class="reference" id="cite_ref-15">[12]</sup>
+</p>
+<ul><li>if <i>n</i> &lt; 3,825,123,056,546,413,051, it is enough to test <i>a</i> = 2, 3, 5, 7, 11, 13, 17, 19, and 23.</li>
+<li>if <i>n</i> &lt; 18,446,744,073,709,551,616 = 2<sup>64</sup>, it is enough to test <i>a</i> = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, and 37.</li></ul>
+<p>Sorenson and Webster<sup class="reference" id="cite_ref-16">[13]</sup> verify the above and calculate precise results for these larger than 64‐bit results:
+</p>
+<ul><li>if <i>n</i> &lt; 318,665,857,834,031,151,167,461, it is enough to test <i>a</i> = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, and 37.</li>
+<li>if <i>n</i> &lt; 3,317,044,064,679,887,385,961,981, it is enough to test <i>a</i> = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, and 41.</li></ul>
+<p>Other criteria of this sort, often more efficient (fewer bases required) than those shown above, exist.<sup class="reference" id="cite_ref-prime-pages_17-0">[14]</sup><sup class="reference" id="cite_ref-18">[15]</sup><sup class="reference" id="cite_ref-19">[16]</sup><sup class="reference" id="cite_ref-20">[17]</sup> They give very fast deterministic primality tests for numbers in the appropriate range, without any assumptions.
+</p><p>There is a small list of potential witnesses for every possible input size (at most <i>b</i> values for <i>b</i>‐bit numbers). However, no finite set of bases is sufficient for all composite numbers. Alford, Granville, and Pomerance have shown that there exist infinitely many composite numbers <i>n</i> whose smallest compositeness witness is at least <span class="texhtml">(ln <i>n</i>)<sup>1/(3ln ln ln <i>n</i>)</sup></span>.<sup class="reference" id="cite_ref-21">[18]</sup> They also argue heuristically that the smallest number <i>w</i> such that every composite number below <i>n</i> has a compositeness witness less than <i>w</i> should be of order <span class="texhtml">Θ(log <i>n</i> log log <i>n</i>).</span>
+</p>
+<h2><span class="mw-headline" id="Variants_for_finding_factors">Variants for finding factors</span><span class="mw-editsection"></span></h2>
+<p>By inserting greatest common divisor calculations into the above algorithm, we can sometimes obtain a factor of <i>n</i> instead of merely determining that <i>n</i> is composite. This occurs for example when <i>n</i> is a probable prime to base <i>a</i> but not a strong probable prime to base <i>a</i>.<sup class="reference" id="cite_ref-baillie_22-0">[19]</sup><sup class="reference nowrap"><span title="Page / location: 1402">: 1402 </span></sup>
+</p><p>If <i>x</i> is a nontrivial square root of 1 modulo <i>n</i>,
+</p>
+<ul><li>since <span class="texhtml"><i>x</i><sup>2</sup> ≡ 1 (mod <i>n</i>)</span>, we know that <i>n</i> divides <span class="texhtml"><i>x</i><sup>2</sup> − 1 = (<i>x</i> − 1)(<i>x</i> + 1)</span>;</li>
+<li>since <span class="texhtml"><i>x</i> ≢ ±1 (mod <i>n</i>)</span>, we know that <i>n</i> does not divide <span class="texhtml"><i>x</i> − 1</span> nor <span class="texhtml"><i>x</i> + 1</span>.</li></ul>
+<p>From this we deduce that <span class="texhtml"><i>A</i> = gcd(<i>x</i> − 1, <i>n</i>)</span> and <span class="texhtml"><i>B</i> = gcd(<i>x</i> + 1, <i>n</i>)</span> are nontrivial (not necessarily prime) factors of <i>n</i> (in fact, since <i>n</i> is odd, these factors are coprime and <i>n</i> = <i>AB</i>). Hence, if factoring is a goal, these gcd calculations can be inserted into the algorithm at little additional computational cost. This leads to the following pseudocode, where the added or changed code is highlighted:
+</p>
+<pre><b>Input #1</b>: <i>n</i> &gt; 2, an odd integer to be tested for primality
+<b>Input #2</b>: <i>k</i>, the number of rounds of testing to perform
+<b>Output</b>: <span style="background-color:yellow; color:;">(“<i>multiple of</i>”, <i>m</i>) if a nontrivial factor <i>m</i> of <i>n</i> is found,</span>
+        “<i>composite</i>” if <i>n</i> is otherwise found to be composite,
+        “<i>probably prime</i>” otherwise
+
+let <i>s</i> &gt; 0 and <i>d</i> odd &gt; 0 such that <i>n</i> − 1 = 2<sup><i>s</i></sup><i>d</i>  # by factoring out powers of 2 from <i>n</i> − 1
+<b>repeat</b> <i>k</i> <b>times</b>:
+    <i>a</i> ← random(2, <i>n</i> − 2)  # <i>n</i> is always a probable prime to base 1 and <i>n</i> − 1
+    <i>x</i> ← <i>a</i><sup><i>d</i></sup> mod <i>n</i>
+    <b>repeat</b> <i>s</i> <b>times</b>:
+        <i>y</i> ← <i>x</i><sup>2</sup> mod <i>n</i>
+        <b>if</b> <i>y</i> = 1 and <i>x</i> ≠ 1 and <i>x</i> ≠ <i>n</i> − 1 <b>then</b>  # nontrivial square root of 1 modulo <i>n</i>
+            <span style="background-color:yellow; color:;"><b>return</b> (“<i>multiple of</i>”, gcd(<i>x</i> − 1, <i>n</i>))</span>
+        <i>x</i> ← <i>y</i>
+    <b>if</b> <i>y</i> ≠ 1 <b>then</b>
+        <b>return</b> “<i>composite</i>”
+<b>return</b> “<i>probably prime</i>”
+</pre>
+<p>This is <i>not</i> a probabilistic factorization algorithm because it is only able to find factors for numbers <i>n</i> which are pseudoprime to base <i>a</i> (in other words, for numbers <i>n</i> such that <span class="texhtml"><i>a</i><sup><i>n</i>−1</sup> ≡ 1 mod <i>n</i></span>). For other numbers, the algorithm only returns “<i>composite</i>” with no further information.
+</p><p>For example, consider <i>n</i> = 341 and <i>a</i> = 2. We have <span class="texhtml"><i>n</i> − 1 = 85 × 4</span>. Then <span class="texhtml">2<sup>85</sup> mod 341 = 32</span> and <span class="texhtml">32<sup>2</sup> mod 341 = 1</span>. This tells us that <i>n</i> is a pseudoprime base 2, but not a strong pseudoprime base 2. By computing a gcd at this stage, we find a factor of 341: <span class="texhtml">gcd(32 − 1, 341) = 31</span>. Indeed, <span class="texhtml">341 = 11 × 31</span>.
+</p><p>In order to find factors more often, the same ideas can also be applied to the square roots of −1 (or any other number).
+This strategy can be implemented by exploiting knowledge from previous rounds of the Miller–Rabin test. In those rounds we may have identified a square root modulo <i>n</i> of −1, say <i>R</i>. Then, when <span class="texhtml"><i>x</i><sup>2</sup> mod <i>n</i> = <i>n</i>−1</span>, we can compare the value of <i>x</i> against <i>R</i>: if <i>x</i> is neither <i>R</i> nor <i>n</i>−<i>R</i>, then <span class="texhtml">gcd(<i>x</i> − <i>R</i>, <i>n</i>)</span> and <span class="texhtml">gcd(<i>x</i> + <i>R</i>, <i>n</i>)</span> are nontrivial factors of <i>n</i>.<sup class="reference" id="cite_ref-prime-pages_17-1">[14]</sup>
+</p>
+<h2><span class="mw-headline" id="Generation_of_probable_primes">Generation of probable primes</span><span class="mw-editsection"></span></h2>
+<p>The Miller–Rabin test can be used to generate strong probable primes, simply by drawing integers at random until one passes the test. This algorithm terminates almost surely (since at each iteration there is a chance to draw a prime number).  The pseudocode for generating <i>b</i>‐bit strong probable primes (with the most significant bit set) is as follows:
+</p>
+<pre><b>Input #1</b>: <i>b</i>, the number of bits of the result
+<b>Input #2</b>: <i>k</i>, the number of rounds of testing to perform
+<b>Output</b>: a strong probable prime <i>n</i>
+
+<b>while</b> True:
+    pick a random odd integer <i>n</i> in the range [2<sup><i>b</i>−1</sup>, 2<sup><i>b</i></sup>−1]
+    <b>if</b> the Miller–Rabin test with inputs <i>n</i> and <i>k</i> returns “<i>probably prime</i>” <b>then</b>
+        <b>return</b> <i>n</i>
+</pre>
+<h3><span class="mw-headline" id="Complexity_2">Complexity</span><span class="mw-editsection"></span></h3>
+<p>Of course the worst-case running time is infinite, since the outer loop may never terminate, but that happens with probability zero. As per the geometric distribution, the expected number of draws is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\tfrac {1}{\Pr(M\!R_{k})}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>1</mn>
+<mrow>
+<mo form="prefix" movablelimits="true">Pr</mo>
+<mo stretchy="false">(</mo>
+<mi>M</mi>
+<mspace width="negativethinmathspace"></mspace>
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mrow>
+</mfrac>
+</mstyle>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\tfrac {1}{\Pr(M\!R_{k})}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\tfrac {1}{\Pr(M\!R_{k})}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/91c9103c7ea487bed97a054f6839156142bd4e87" style="vertical-align: -1.838ex; width:7.326ex; height:4.176ex;"/></span> (reusing notations from earlier).
+</p><p>As any prime number passes the test, the probability of being prime gives a coarse lower bound to the probability of passing the test. If we draw odd integers uniformly in the range [2<sup><i>b</i>−1</sup>, 2<sup><i>b</i></sup>−1], then we get:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Pr(M\!R_{k})&gt;\Pr(P)={\frac {\pi \left(2^{b}\right)-\pi \left(2^{b-1}\right)}{2^{b-2}}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo form="prefix" movablelimits="true">Pr</mo>
+<mo stretchy="false">(</mo>
+<mi>M</mi>
+<mspace width="negativethinmathspace"></mspace>
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>&gt;</mo>
+<mo form="prefix" movablelimits="true">Pr</mo>
+<mo stretchy="false">(</mo>
+<mi>P</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mi>π<!-- π --></mi>
+<mrow>
+<mo>(</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>b</mi>
+</mrow>
+</msup>
+<mo>)</mo>
+</mrow>
+<mo>−<!-- − --></mo>
+<mi>π<!-- π --></mi>
+<mrow>
+<mo>(</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>b</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mo>)</mo>
+</mrow>
+</mrow>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>b</mi>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+</mrow>
+</msup>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Pr(M\!R_{k})&gt;\Pr(P)={\frac {\pi \left(2^{b}\right)-\pi \left(2^{b-1}\right)}{2^{b-2}}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \Pr(M\!R_{k})&gt;\Pr(P)={\frac {\pi \left(2^{b}\right)-\pi \left(2^{b-1}\right)}{2^{b-2}}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7ad3d4951590ecd4f1ef58acc8032b9e75e352c4" style="vertical-align: -2.338ex; width:39.133ex; height:6.676ex;"/></span></dd></dl>
+<p>where π is the prime-counting function. Using an asymptotic expansion of π (an extension of the prime number theorem), we can approximate this probability when <i>b</i> grows towards infinity. We find:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Pr(P)={\tfrac {2}{\ln 2}}b^{-1}+{\mathcal {O}}\left(b^{-3}\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo form="prefix" movablelimits="true">Pr</mo>
+<mo stretchy="false">(</mo>
+<mi>P</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>2</mn>
+<mrow>
+<mi>ln</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mn>2</mn>
+</mrow>
+</mfrac>
+</mstyle>
+</mrow>
+<msup>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">O</mi>
+</mrow>
+</mrow>
+<mrow>
+<mo>(</mo>
+<msup>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mn>3</mn>
+</mrow>
+</msup>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Pr(P)={\tfrac {2}{\ln 2}}b^{-1}+{\mathcal {O}}\left(b^{-3}\right)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \Pr(P)={\tfrac {2}{\ln 2}}b^{-1}+{\mathcal {O}}\left(b^{-3}\right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6b4a0934326ba41fe6ca71b86221fe7d5e9ba3d8" style="vertical-align: -1.338ex; width:26.432ex; height:3.676ex;"/></span></dd>
+<dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\tfrac {1}{\Pr(P)}}={\tfrac {\ln 2}{2}}b+{\mathcal {O}}\left(b^{-1}\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>1</mn>
+<mrow>
+<mo form="prefix" movablelimits="true">Pr</mo>
+<mo stretchy="false">(</mo>
+<mi>P</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</mfrac>
+</mstyle>
+</mrow>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mrow>
+<mi>ln</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mn>2</mn>
+</mrow>
+<mn>2</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mi>b</mi>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">O</mi>
+</mrow>
+</mrow>
+<mrow>
+<mo>(</mo>
+<msup>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\tfrac {1}{\Pr(P)}}={\tfrac {\ln 2}{2}}b+{\mathcal {O}}\left(b^{-1}\right)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\tfrac {1}{\Pr(P)}}={\tfrac {\ln 2}{2}}b+{\mathcal {O}}\left(b^{-1}\right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1dcc292b608ef9aa3cda5433f54654bd1daa6481" style="vertical-align: -1.838ex; width:23.164ex; height:4.343ex;"/></span></dd></dl>
+<p>Hence we can expect the generator to run no more Miller–Rabin tests than a number proportional to <i>b</i>. Taking into account the worst-case complexity of each Miller–Rabin test (see earlier), the expected running time of the generator with inputs <i>b</i> and <i>k</i> is then bounded by <span class="texhtml">O(<i>k</i> <i>b</i><sup>4</sup>)</span> (or <span class="texhtml">Õ(<i>k</i> <i>b</i><sup>3</sup>)</span> using FFT-based multiplication).
+</p>
+<h3><span class="mw-headline" id="Accuracy_2">Accuracy</span><span class="mw-editsection"></span></h3>
+<p>The error measure of this generator is the probability that it outputs a composite number.
+</p><p>Using the relation between conditional probabilities (shown in an earlier section) and the asymptotic behavior of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Pr(P)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo form="prefix" movablelimits="true">Pr</mo>
+<mo stretchy="false">(</mo>
+<mi>P</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Pr(P)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \Pr(P)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b57303b36255c288b97d64af0aac418ff1b9b810" style="vertical-align: -0.838ex; width:6.049ex; height:2.843ex;"/></span> (shown just before), this error measure can be given a coarse upper bound:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Pr(\lnot P\mid M\!R_{k})&lt;\Pr(M\!R_{k}\mid \lnot P)\left({\tfrac {1}{\Pr(P)}}-1\right)\leq 4^{-k}\left({\tfrac {\ln 2}{2}}b-1+{\mathcal {O}}\left(b^{-1}\right)\right).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo form="prefix" movablelimits="true">Pr</mo>
+<mo stretchy="false">(</mo>
+<mi mathvariant="normal">¬<!-- ¬ --></mi>
+<mi>P</mi>
+<mo>∣<!-- ∣ --></mo>
+<mi>M</mi>
+<mspace width="negativethinmathspace"></mspace>
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>&lt;</mo>
+<mo form="prefix" movablelimits="true">Pr</mo>
+<mo stretchy="false">(</mo>
+<mi>M</mi>
+<mspace width="negativethinmathspace"></mspace>
+<msub>
+<mi>R</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo>∣<!-- ∣ --></mo>
+<mi mathvariant="normal">¬<!-- ¬ --></mi>
+<mi>P</mi>
+<mo stretchy="false">)</mo>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>1</mn>
+<mrow>
+<mo form="prefix" movablelimits="true">Pr</mo>
+<mo stretchy="false">(</mo>
+<mi>P</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</mfrac>
+</mstyle>
+</mrow>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mo>≤<!-- ≤ --></mo>
+<msup>
+<mn>4</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>k</mi>
+</mrow>
+</msup>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mrow>
+<mi>ln</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mn>2</mn>
+</mrow>
+<mn>2</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mi>b</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">O</mi>
+</mrow>
+</mrow>
+<mrow>
+<mo>(</mo>
+<msup>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mo>)</mo>
+</mrow>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Pr(\lnot P\mid M\!R_{k})&lt;\Pr(M\!R_{k}\mid \lnot P)\left({\tfrac {1}{\Pr(P)}}-1\right)\leq 4^{-k}\left({\tfrac {\ln 2}{2}}b-1+{\mathcal {O}}\left(b^{-1}\right)\right).}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \Pr(\lnot P\mid M\!R_{k})&lt;\Pr(M\!R_{k}\mid \lnot P)\left({\tfrac {1}{\Pr(P)}}-1\right)\leq 4^{-k}\left({\tfrac {\ln 2}{2}}b-1+{\mathcal {O}}\left(b^{-1}\right)\right).}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e2858af81d8791fd1a85780634a232df5e6f5485" style="vertical-align: -1.838ex; width:74.046ex; height:4.843ex;"/></span></dd></dl>
+<p>Hence, for large enough <i>b</i>, this error measure is less than <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\tfrac {\ln 2}{2}}4^{-k}b}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mrow>
+<mi>ln</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mn>2</mn>
+</mrow>
+<mn>2</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<msup>
+<mn>4</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>k</mi>
+</mrow>
+</msup>
+<mi>b</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\tfrac {\ln 2}{2}}4^{-k}b}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\tfrac {\ln 2}{2}}4^{-k}b}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f93ceed21461945ddb8d7c2e4efbed813198edcd" style="vertical-align: -1.171ex; width:7.944ex; height:3.676ex;"/></span>. However, much better bounds exist.
+</p><p>Using the fact that the Miller–Rabin test itself often has an error bound much smaller than 4<sup>−<i>k</i></sup> (see earlier), Damgård, Landrock and Pomerance derived several error bounds for the generator, with various classes of parameters <i>b</i> and <i>k</i>.<sup class="reference" id="cite_ref-damgård-landrock-pomerance_10-1">[8]</sup> These error bounds allow an implementor to choose a reasonable <i>k</i> for a desired accuracy.
+</p><p>One of these error bounds is 4<sup>−<i>k</i></sup>, which holds for all <i>b</i> ≥ 2 (the authors only showed it for <i>b</i> ≥ 51, while Ronald Burthe Jr. completed the proof with the remaining values 2 ≤ <i>b</i> ≤ 50<sup class="reference" id="cite_ref-burthe_23-0">[20]</sup>). Again this simple bound can be improved for large values of <i>b</i>. For instance, another bound derived by the same authors is:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \left({\tfrac {1}{7}}b^{15/4}2^{-b/2}\right)4^{-k}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow>
+<mo>(</mo>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>1</mn>
+<mn>7</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<msup>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>15</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>4</mn>
+</mrow>
+</msup>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>2</mn>
+</mrow>
+</msup>
+</mrow>
+<mo>)</mo>
+</mrow>
+<msup>
+<mn>4</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>k</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \left({\tfrac {1}{7}}b^{15/4}2^{-b/2}\right)4^{-k}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \left({\tfrac {1}{7}}b^{15/4}2^{-b/2}\right)4^{-k}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4bac05bf33a3e033c1774dab52aab82807497a5a" style="vertical-align: -1.838ex; width:17.891ex; height:4.843ex;"/></span></dd></dl>
+<p>which holds for all <i>b</i> ≥ 21 and <i>k</i> ≥ <i>b</i>/4. This bound is smaller than 4<sup>−<i>k</i></sup> as soon as <i>b</i> ≥ 32.
+</p>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1011085734" rel="mw-deduplicated-inline-style"/>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097025294">.mw-parser-output .side-box{margin:4px 0;box-sizing:border-box;border:1px solid #aaa;font-size:88%;line-height:1.25em;background-color:#f9f9f9}.mw-parser-output .side-box-abovebelow,.mw-parser-output .side-box-text{padding:0.25em 0.9em}.mw-parser-output .side-box-image{padding:2px 0 2px 0.9em;text-align:center}.mw-parser-output .side-box-imageright{padding:2px 0.9em 2px 0;text-align:center}@media(min-width:500px){.mw-parser-output .side-box-flex{display:flex;align-items:center}.mw-parser-output .side-box-text{flex:1}}@media(min-width:720px){.mw-parser-output .side-box{width:238px}.mw-parser-output .side-box-right{clear:right;float:right;margin-left:1em}.mw-parser-output .side-box-left{margin-right:1em}}</style>
+<ul><li><span class="citation mathworld" id="Reference-Mathworld-Rabin-Miller_Strong_Pseudoprime_Test"><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation web cs1" id="CITEREFWeisstein">Weisstein, Eric W. "Rabin-Miller Strong Pseudoprime Test". <i>MathWorld</i>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=unknown&amp;rft.jtitle=MathWorld&amp;rft.atitle=Rabin-Miller+Strong+Pseudoprime+Test&amp;rft.au=Weisstein%2C+Eric+W.&amp;rft_id=https%3A%2F%2Fmathworld.wolfram.com%2FRabin-MillerStrongPseudoprimeTest.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AMiller%E2%80%93Rabin+primality+test"></span></span></li>
+<li>Interactive Online Implementation of the Deterministic Variant (stepping through the algorithm step-by-step)</li>
+<li>Applet (German)</li>
+<li>Miller–Rabin primality test in C#</li>
+<li>Miller–Rabin primality test in JavaScript using arbitrary precision arithmetic</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2413
+Cached time: 20221224015822
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.455 seconds
+Real time usage: 0.607 seconds
+Preprocessor visited node count: 4597/1000000
+Post‐expand include size: 87863/2097152 bytes
+Template argument size: 10320/2097152 bytes
+Highest expansion depth: 16/100
+Expensive parser function count: 0/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 76659/5000000 bytes
+Lua time usage: 0.222/10.000 seconds
+Lua memory usage: 6843273/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  463.236      1 -total
+ 46.47%  215.252      2 Template:Reflist
+ 23.74%  109.990     10 Template:Citation
+ 12.65%   58.583      1 Template:Short_description
+  8.82%   40.859      1 Template:Number_theoretic_algorithms
+  7.99%   37.020      1 Template:Navbox
+  7.11%   32.940      2 Template:Pagetype
+  6.55%   30.362     33 Template:Math
+  5.73%   26.537      1 Template:Wikibooks
+  5.65%   26.151      5 Template:Cite_journal
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:188999-0!canonical and timestamp 20221224015822 and revision id 1127800667.
+ -->
+</div></body>
+</html>

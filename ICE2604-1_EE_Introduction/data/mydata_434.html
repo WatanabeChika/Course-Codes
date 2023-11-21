@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>graph_partition</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p>In mathematics, a <b>graph partition</b> is the reduction of a graph to a smaller graph by partitioning its set of nodes into mutually exclusive groups. Edges of the original graph that cross between the groups will produce edges in the partitioned graph. If the number of resulting edges is small compared to the original graph, then the partitioned graph may be better suited for analysis and problem-solving than the original. Finding a partition that simplifies graph analysis is a hard problem, but one that has applications to scientific computing, VLSI circuit design, and task scheduling in multiprocessor computers, among others.<sup class="reference" id="cite_ref-balgraph_1-0">[1]</sup> Recently, the graph partition problem has gained importance due to its application for clustering and detection of cliques in social, pathological and biological networks. For a survey on recent trends in computational methods and applications see Buluc et al. (2013).<sup class="reference" id="cite_ref-recentadvances_2-0">[2]</sup>
+Two common examples of graph partitioning are minimum cut and maximum cut problems.
+</p>
+
+<h2><span class="mw-headline" id="Problem_complexity">Problem complexity</span><span class="mw-editsection"></span></h2>
+<p>Typically, graph partition problems fall under the category of NP-hard problems. Solutions to these problems are generally derived using heuristics and approximation algorithms.<sup class="reference" id="cite_ref-baltrees_3-0">[3]</sup> However, uniform graph partitioning or a balanced graph partition problem can be shown to be NP-complete to approximate within any finite factor.<sup class="reference" id="cite_ref-balgraph_1-1">[1]</sup> Even for special graph classes such as trees and grids, no reasonable approximation algorithms exist,<sup class="reference" id="cite_ref-fastpartition_4-0">[4]</sup> unless P=NP. Grids are a particularly interesting case since they model the graphs resulting from Finite Element Model (FEM) simulations. When not only the number of edges between the components is approximated, but also the sizes of the components, it can be shown that no reasonable fully polynomial algorithms exist for these graphs.<sup class="reference" id="cite_ref-fastpartition_4-1">[4]</sup>
+</p>
+<h2><span class="mw-headline" id="Problem">Problem</span><span class="mw-editsection"></span></h2>
+<p>Consider a graph <i>G</i> = (<i>V</i>, <i>E</i>), where <i>V</i> denotes the set of <i>n</i> vertices and <i>E</i> the set of edges. For a (<i>k</i>,<i>v</i>) balanced partition problem, the objective is to partition <i>G</i> into <i>k</i> components of at most size <i>v</i> · (<i>n</i>/<i>k</i>), while minimizing the capacity of the edges between separate components.<sup class="reference" id="cite_ref-balgraph_1-2">[1]</sup> Also, given <i>G</i> and an integer <i>k</i> &gt; 1, partition <i>V</i> into <i>k</i> parts (subsets) <i>V</i><sub>1</sub>, <i>V</i><sub>2</sub>, ..., <i>V<sub>k</sub></i> such that the parts are disjoint and have equal size, and the number of edges with endpoints in different parts is minimized. Such partition problems have been discussed in literature as bicriteria-approximation or resource augmentation approaches. A common extension is to hypergraphs, where an edge can connect more than two vertices. A hyperedge is not cut if all vertices are in one partition, and cut exactly once otherwise, no matter how many vertices are on each side. This usage is common in electronic design automation.
+</p>
+<h3><span class="mw-headline" id="Analysis">Analysis</span><span class="mw-editsection"></span></h3>
+<p>For a specific (<i>k</i>, 1 + <i>ε</i>) balanced partition problem, we seek to find a minimum cost partition of <i>G</i> into <i>k</i> components with each component containing a maximum of (1 + <i>ε</i>)·(<i>n</i>/<i>k</i>) nodes. We compare the cost of this approximation algorithm to the cost of a (<i>k</i>,1) cut, wherein each of the <i>k</i> components must have the same size of (<i>n</i>/<i>k</i>) nodes each, thus being a more restricted problem. Thus,
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \max _{i}|V_{i}|\leq (1+\varepsilon )\left\lceil {\frac {|V|}{k}}\right\rceil .}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<munder>
+<mo form="prefix" movablelimits="true">max</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</munder>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>≤<!-- ≤ --></mo>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo>+</mo>
+<mi>ε<!-- ε --></mi>
+<mo stretchy="false">)</mo>
+<mrow>
+<mo>⌈</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mrow>
+<mi>k</mi>
+</mfrac>
+</mrow>
+<mo>⌉</mo>
+</mrow>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \max _{i}|V_{i}|\leq (1+\varepsilon )\left\lceil {\frac {|V|}{k}}\right\rceil .}</annotation>
+</semantics>
+</math></span><img alt="\max _{i}|V_{i}|\leq (1+\varepsilon )\left\lceil {\frac {|V|}{k}}\right\rceil ." aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c24784421035a5dd80d853165c70ff50af06d775" style="vertical-align: -2.505ex; width:26.204ex; height:6.343ex;"/></span></dd></dl>
+<p>We already know that (2,1) cut is the minimum bisection problem and it is NP-complete.<sup class="reference" id="cite_ref-minbisect_5-0">[5]</sup> Next, we assess a 3-partition problem wherein <i>n</i> = 3<i>k</i>, which is also bounded in polynomial time.<sup class="reference" id="cite_ref-balgraph_1-3">[1]</sup> Now, if we assume that we have a finite approximation algorithm for (<i>k</i>, 1)-balanced partition, then, either the 3-partition instance can be solved using the balanced (<i>k</i>,1) partition in <i>G</i> or it cannot be solved. If the 3-partition instance can be solved, then (<i>k</i>, 1)-balanced partitioning problem in <i>G</i> can be solved without cutting any edge. Otherwise, if the 3-partition instance cannot be solved, the optimum (<i>k</i>, 1)-balanced partitioning in <i>G</i> will cut at least one edge. An approximation algorithm with a finite approximation factor has to differentiate between these two cases. Hence, it can solve the 3-partition problem which is a contradiction under the assumption that <i>P</i> = <i>NP</i>. Thus, it is evident that (<i>k</i>,1)-balanced partitioning problem has no polynomial-time approximation algorithm with a finite approximation factor unless <i>P</i> = <i>NP</i>.<sup class="reference" id="cite_ref-balgraph_1-4">[1]</sup>
+</p><p>The planar separator theorem states that any <i>n</i>-vertex planar graph can be partitioned into roughly equal parts by the removal of O(<span class="nowrap">√<span style="border-top:1px solid; padding:0 0.1em;"><i>n</i></span></span>) vertices. This is not a partition in the sense described above, because the partition set consists of vertices rather than edges. However, the same result also implies that every planar graph of bounded degree has a balanced cut with O(<span class="nowrap">√<span style="border-top:1px solid; padding:0 0.1em;"><i>n</i></span></span>) edges.
+</p>
+<h2><span class="mw-headline" id="Graph_partition_methods">Graph partition methods</span><span class="mw-editsection"></span></h2>
+<p>Since graph partitioning is a hard problem, practical solutions are based on heuristics.  There are two broad categories of methods, local and global. Well-known local methods are the Kernighan–Lin algorithm, and Fiduccia-Mattheyses algorithms, which were the first effective 2-way cuts by local search strategies. Their major drawback is the arbitrary initial partitioning of the vertex set, which can affect the final solution quality.  Global approaches rely on properties of the entire graph and do not rely on an arbitrary initial partition.  The most common example is spectral partitioning, where a partition is derived from approximate eigenvectors of the adjacency matrix, or spectral clustering that groups graph vertices using the eigendecomposition of the graph Laplacian matrix.
+</p>
+<h2><span class="mw-headline" id="Multi-level_methods">Multi-level methods</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p>A multi-level graph partitioning algorithm works by applying one or more stages.   Each stage reduces the size of
+the graph by collapsing vertices and edges, partitions the smaller graph, then maps back and refines this partition of the original graph.<sup class="reference" id="cite_ref-6">[6]</sup> A wide variety of partitioning and refinement methods can be applied within the overall multi-level scheme.  In many cases, this approach can give both fast execution times and very high quality results.  
+One widely used example of such an approach is METIS,<sup class="reference" id="cite_ref-:0_7-0">[7]</sup> a graph partitioner, and hMETIS, the corresponding partitioner for hypergraphs.<sup class="reference" id="cite_ref-hmetis_8-0">[8]</sup>
+An alternative approach originated from <sup class="reference" id="cite_ref-spectralmultigrid2006_9-0">[9]</sup>
+and implemented, e.g., in scikit-learn is spectral clustering with the partitioning determined from eigenvectors of the graph Laplacian matrix for the original graph computed by LOBPCG solver with multigrid preconditioning.
+</p>
+<h2><span class="mw-headline" id="Spectral_partitioning_and_spectral_bisection">Spectral partitioning and spectral bisection</span><span class="mw-editsection"></span></h2>
+<p>Given a graph <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G=(V,E)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>G</mi>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<mi>V</mi>
+<mo>,</mo>
+<mi>E</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G=(V,E)}</annotation>
+</semantics>
+</math></span><img alt="G=(V,E)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/644a8d85ee410b6159ca2bdb5dcb9097e2c8f182" style="vertical-align: -0.838ex; width:11.331ex; height:2.843ex;"/></span> with adjacency matrix <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A}</annotation>
+</semantics>
+</math></span><img alt="A" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7daff47fa58cdfd29dc333def748ff5fa4c923e3" style="vertical-align: -0.338ex; width:1.743ex; height:2.176ex;"/></span>, where an entry <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A_{ij}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>A</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A_{ij}}</annotation>
+</semantics>
+</math></span><img alt="A_{ij}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8272b28f5aae6dbb8d6f829d58bab353b21bde20" style="vertical-align: -1.005ex; width:3.22ex; height:2.843ex;"/></span> implies an edge between node <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle j}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>j</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle j}</annotation>
+</semantics>
+</math></span><img alt="j" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2f461e54f5c093e92a55547b9764291390f0b5d0" style="vertical-align: -0.671ex; margin-left: -0.027ex; width:0.985ex; height:2.509ex;"/></span>, and degree matrix <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle D}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>D</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle D}</annotation>
+</semantics>
+</math></span><img alt="D" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f34a0c600395e5d4345287e21fb26efd386990e6" style="vertical-align: -0.338ex; width:1.924ex; height:2.176ex;"/></span>, which is a diagonal matrix, where each diagonal entry of a row <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d_{ii}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>d</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d_{ii}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle d_{ii}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cf40a3e57e8a7c09f1b48acb5ee5fd14fe7c7d5f" style="vertical-align: -0.671ex; width:2.576ex; height:2.509ex;"/></span>, represents the node degree of node <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span>. The Laplacian matrix <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle L}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>L</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle L}</annotation>
+</semantics>
+</math></span><img alt="L" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/103168b86f781fe6e9a4a87b8ea1cebe0ad4ede8" style="vertical-align: -0.338ex; width:1.583ex; height:2.176ex;"/></span> is defined as <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle L=D-A}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>L</mi>
+<mo>=</mo>
+<mi>D</mi>
+<mo>−<!-- − --></mo>
+<mi>A</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle L=D-A}</annotation>
+</semantics>
+</math></span><img alt="L=D-A" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/043a9a4a219bbee58c30add2d40b74054a3f15f1" style="vertical-align: -0.505ex; width:11.189ex; height:2.343ex;"/></span>. Now, a ratio-cut partition for graph <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G=(V,E)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>G</mi>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<mi>V</mi>
+<mo>,</mo>
+<mi>E</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G=(V,E)}</annotation>
+</semantics>
+</math></span><img alt="G=(V,E)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/644a8d85ee410b6159ca2bdb5dcb9097e2c8f182" style="vertical-align: -0.838ex; width:11.331ex; height:2.843ex;"/></span> is defined as a partition of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle V}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>V</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle V}</annotation>
+</semantics>
+</math></span><img alt="V" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/af0f6064540e84211d0ffe4dac72098adfa52845" style="vertical-align: -0.338ex; width:1.787ex; height:2.176ex;"/></span> into disjoint <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle U}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>U</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle U}</annotation>
+</semantics>
+</math></span><img alt="U" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/458a728f53b9a0274f059cd695e067c430956025" style="vertical-align: -0.338ex; width:1.783ex; height:2.176ex;"/></span>, and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle W}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>W</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle W}</annotation>
+</semantics>
+</math></span><img alt="W" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/54a9c4c547f4d6111f81946cad242b18298d70b7" style="vertical-align: -0.338ex; width:2.435ex; height:2.176ex;"/></span>, minimizing the ratio
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\frac {|E(G)\cap (U\times W)|}{|U|\cdot |W|}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>∩<!-- ∩ --></mo>
+<mo stretchy="false">(</mo>
+<mi>U</mi>
+<mo>×<!-- × --></mo>
+<mi>W</mi>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mrow>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>U</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>⋅<!-- ⋅ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>W</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mrow>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\frac {|E(G)\cap (U\times W)|}{|U|\cdot |W|}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\frac {|E(G)\cap (U\times W)|}{|U|\cdot |W|}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/418d320989e7e8542501ba05f23c524a036a7e23" style="vertical-align: -2.671ex; width:18.992ex; height:6.509ex;"/></span></dd></dl>
+<p>of the number of edges that actually cross this cut to the number of pairs of vertices that could support such edges. Spectral graph partitioning can be motivated<sup class="reference" id="cite_ref-10">[10]</sup> by analogy with partitioning of a vibrating string or a mass-spring system and similarly extended to the case of negative weights of the graph.<sup class="reference" id="cite_ref-11">[11]</sup>
+</p>
+<h3><span class="mw-headline" id="Fiedler_eigenvalue_and_eigenvector">Fiedler eigenvalue and eigenvector</span><span class="mw-editsection"></span></h3>
+<p>In such a scenario, the second smallest eigenvalue (<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \lambda _{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>λ<!-- λ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \lambda _{2}}</annotation>
+</semantics>
+</math></span><img alt="\lambda _{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6b668a1bd1e8ab9452ca975b7497546e7c1ba187" style="vertical-align: -0.671ex; width:2.409ex; height:2.509ex;"/></span>) of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle L}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>L</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle L}</annotation>
+</semantics>
+</math></span><img alt="L" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/103168b86f781fe6e9a4a87b8ea1cebe0ad4ede8" style="vertical-align: -0.338ex; width:1.583ex; height:2.176ex;"/></span>, yields a <i>lower bound</i> on the optimal cost (<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c}</annotation>
+</semantics>
+</math></span><img alt="c" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/86a67b81c2de995bd608d5b2df50cd8cd7d92455" style="vertical-align: -0.338ex; width:1.007ex; height:1.676ex;"/></span>) of ratio-cut partition with <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c\geq {\frac {\lambda _{2}}{n}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+<mo>≥<!-- ≥ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<msub>
+<mi>λ<!-- λ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mi>n</mi>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c\geq {\frac {\lambda _{2}}{n}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle c\geq {\frac {\lambda _{2}}{n}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cbc26427839f501b001eb615318bf4e423682b3a" style="vertical-align: -1.838ex; width:7.351ex; height:5.343ex;"/></span>. The eigenvector (<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle V_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle V_{2}}</annotation>
+</semantics>
+</math></span><img alt="V_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ceaa689a894f5020a7b46177d201cbce2d41122b" style="vertical-align: -0.671ex; width:2.409ex; height:2.509ex;"/></span>) corresponding to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \lambda _{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>λ<!-- λ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \lambda _{2}}</annotation>
+</semantics>
+</math></span><img alt="\lambda _{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6b668a1bd1e8ab9452ca975b7497546e7c1ba187" style="vertical-align: -0.671ex; width:2.409ex; height:2.509ex;"/></span>, called the <i>Fiedler vector</i>, bisects the graph into only two communities based on the <i><b>sign</b> of the corresponding vector entry</i>. Division into a larger number of communities can be achieved by repeated <i>bisection</i> or by using <i>multiple eigenvectors</i> corresponding to the smallest eigenvalues.<sup class="reference" id="cite_ref-spectral_nvidia_tr_12-0">[12]</sup> The examples in Figures 1,2 illustrate the spectral bisection approach.
+</p>
+
+
+<h3><span class="mw-headline" id="Modularity_and_ratio-cut">Modularity and ratio-cut</span><span class="mw-editsection"></span></h3>
+<p>Minimum cut partitioning however fails when the number of communities to be partitioned, or the partition sizes are unknown. For instance, optimizing the cut size for free group sizes puts all vertices in the same community. Additionally, cut size may be the wrong thing to minimize since a good division is not just one with small number of edges between communities.  This motivated the use of Modularity (Q)<sup class="reference" id="cite_ref-npnas_13-0">[13]</sup> as a metric to optimize a balanced graph partition. The example in Figure 3 illustrates 2 instances of the same graph such that in <i>(a)</i> modularity (Q) is the partitioning metric and in <i>(b)</i>, ratio-cut is the partitioning metric.
+</p>
+
+<h2><span class="mw-headline" id="Applications">Applications</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Conductance">Conductance</span><span class="mw-editsection"></span></h3>
+<p>Another objective function used for graph partitioning is Conductance which is the ratio between the number of cut edges and the volume of the smallest part. Conductance is related to electrical flows and random walks. The Cheeger bound guarantees that spectral bisection provides partitions with nearly optimal conductance. The quality of this approximation depends on the second smallest eigenvalue of the Laplacian λ<sub>2</sub>.
+</p>
+<h3><span class="mw-headline" id="Immunization">Immunization</span><span class="mw-editsection"></span></h3>
+<p>Graph partition can be useful for identifying the minimal set of nodes or links that should be immunized in order to stop epidemics.<sup class="reference" id="cite_ref-14">[14]</sup>
+</p>
+<h2><span class="mw-headline" id="Other_graph_partition_methods">Other graph partition methods</span><span class="mw-editsection"></span></h2>
+<p>Spin models have been used for clustering of multivariate data wherein similarities are translated into coupling strengths.<sup class="reference" id="cite_ref-potts_15-0">[15]</sup> The properties of ground state spin configuration can be directly interpreted as communities. Thus, a graph is partitioned to minimize the Hamiltonian of the partitioned graph. The Hamiltonian (H) is derived by assigning the following partition rewards and penalties.
+</p>
+<ul><li>Reward internal edges between nodes of same group (same spin)</li>
+<li>Penalize missing edges in same group</li>
+<li>Penalize existing edges between different groups</li>
+<li>Reward non-links between different groups.</li></ul>
+<p>Additionally, Kernel-PCA-based Spectral clustering takes a form of least squares Support Vector Machine framework, and hence it becomes possible to project the data entries to a kernel induced feature space that has maximal variance, thus implying a high separation between the projected communities.<sup class="reference" id="cite_ref-pami_16-0">[16]</sup>
+</p><p>Some methods express graph partitioning as a multi-criteria optimization problem which can be solved using local methods expressed in a game theoretic framework where each node makes a decision on the partition it chooses.<sup class="reference" id="cite_ref-17">[17]</sup>
+</p><p>For very large-scale distributed graphs classical partition methods might not apply (e.g., spectral partitioning, Metis<sup class="reference" id="cite_ref-:0_7-1">[7]</sup>) since they require full access to graph data in order to perform global operations. For such large-scale scenarios distributed graph partitioning is used to perform partitioning through asynchronous local operations only.
+</p>
+<h2><span class="mw-headline" id="Software_tools">Software tools</span><span class="mw-editsection"></span></h2>
+<p>scikit-learn implements spectral clustering with the partitioning determined from eigenvectors of the graph Laplacian matrix for the original graph computed by ARPACK, or by LOBPCG solver with multigrid preconditioning.<sup class="reference" id="cite_ref-spectralmultigrid2006_9-1">[9]</sup>
+</p><p>Chaco,<sup class="reference" id="cite_ref-chaco_18-0">[18]</sup> due to Hendrickson and Leland, implements the multilevel approach outlined above and basic local search algorithms. 
+Moreover, they implement spectral partitioning techniques.
+</p><p>METIS<sup class="reference" id="cite_ref-:0_7-2">[7]</sup> is a graph partitioning family by Karypis and Kumar. Among this family, kMetis aims at greater partitioning speed, hMetis,<sup class="reference" id="cite_ref-hmetis_8-1">[8]</sup> applies to hypergraphs and aims at partition quality, and ParMetis<sup class="reference" id="cite_ref-:0_7-3">[7]</sup> is a parallel implementation of the Metis graph partitioning algorithm.
+</p><p>PaToH<sup class="reference" id="cite_ref-patoh_19-0">[19]</sup> is another hypergraph partitioner.
+</p><p>KaHyPar<sup class="reference" id="cite_ref-20">[20]</sup><sup class="reference" id="cite_ref-21">[21]</sup><sup class="reference" id="cite_ref-22">[22]</sup> is a multilevel hypergraph partitioning framework providing direct k-way and recursive bisection based partitioning algorithms. It instantiates the multilevel approach in its most extreme version, removing only a single vertex in every level of the hierarchy. By using this very fine grained <i>n</i>-level approach combined with strong local search heuristics, it computes solutions of very high quality.
+</p><p>Scotch<sup class="reference" id="cite_ref-scotch_23-0">[23]</sup> is graph partitioning framework by Pellegrini. It uses recursive multilevel bisection and includes sequential as well as parallel partitioning techniques.
+</p><p>Jostle<sup class="reference" id="cite_ref-jostle_24-0">[24]</sup> is a sequential and parallel graph partitioning solver developed by Chris Walshaw. 
+The commercialized version of this partitioner is known as NetWorks.
+</p><p>Party<sup class="reference" id="cite_ref-party_25-0">[25]</sup> implements the Bubble/shape-optimized framework and the Helpful Sets algorithm.
+</p><p>The software packages DibaP<sup class="reference" id="cite_ref-dibap_26-0">[26]</sup> and its MPI-parallel variant PDibaP<sup class="reference" id="cite_ref-pdibap_27-0">[27]</sup> by Meyerhenke implement the Bubble framework using diffusion; DibaP also uses AMG-based techniques for coarsening and solving linear systems arising in the diffusive approach.
+</p><p>Sanders and Schulz released a graph partitioning package KaHIP<sup class="reference" id="cite_ref-kahip_28-0">[28]</sup> (Karlsruhe High Quality Partitioning) that implements for example flow-based methods, more-localized local searches and several parallel and sequential meta-heuristics.
+</p><p>The tools Parkway<sup class="reference" id="cite_ref-parkway_29-0">[29]</sup> by Trifunovic and
+Knottenbelt as well as Zoltan<sup class="reference" id="cite_ref-zoltan_30-0">[30]</sup> by Devine et al. focus on hypergraph
+partitioning.
+</p><p><b>List of free open-source frameworks:</b>
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>Name
+</th>
+<th>License
+</th>
+<th>Brief info
+</th></tr>
+<tr>
+<td>Chaco</td>
+<td>GPL</td>
+<td>software package implementing spectral techniques and the multilevel approach
+</td></tr>
+<tr>
+<td>DiBaP</td>
+<td>*</td>
+<td>graph partitioning based on multilevel techniques, algebraic multigrid as well as graph based diffusion
+</td></tr>
+<tr>
+<td>Jostle</td>
+<td>*</td>
+<td>multilevel partitioning techniques and diffusive load-balancing, sequential and parallel
+</td></tr>
+<tr>
+<td>KaHIP</td>
+<td>MIT</td>
+<td>several parallel and sequential meta-heuristics, guarantees the balance constraint, support for Python
+</td></tr>
+<tr>
+<td>KaHyPar
+</td>
+<td>GPL
+</td>
+<td>direct k-way and recursive bisection based multilevel hypergraph partitioning framework
+</td></tr>
+<tr>
+<td>kMetis</td>
+<td>Apache 2.0</td>
+<td>graph partitioning package based on multilevel techniques and k-way local search
+</td></tr>
+<tr>
+<td>Mondriaan</td>
+<td>LGPL</td>
+<td>matrix partitioner to partition rectangular sparse matrices
+</td></tr>
+<tr>
+<td>PaToH</td>
+<td>BSD</td>
+<td>multilevel hypergraph partitioning
+</td></tr>
+<tr>
+<td>Parkway</td>
+<td>*</td>
+<td>parallel multilevel hypergraph partitioning
+</td></tr>
+<tr>
+<td>scikit-learn</td>
+<td>BSD</td>
+<td>spectral partitioning with algebraic multigrid preconditioning
+</td></tr>
+<tr>
+<td>Scotch</td>
+<td>CeCILL-C</td>
+<td>implements multilevel recursive bisection as well as diffusion techniques, sequential and parallel
+</td></tr>
+<tr>
+<td>Zoltan</td>
+<td>BSD</td>
+<td>hypergraph partitioning
+</td></tr></tbody></table>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>Chamberlain, Bradford L. (1998). "Graph Partitioning Algorithms for Distributing Workloads of Parallel Computations"<sup class="noprint Inline-Template"><span style="white-space: nowrap;">[<i><span title=" Dead link tagged January 2020">permanent dead link</span></i>]</span></sup></li></ul>
+<h2><span class="mw-headline" id="Bibliography">Bibliography</span><span class="mw-editsection"></span></h2>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFBichotSiarry2011">Bichot, Charles-Edmond; Siarry, Patrick (2011). <i>Graph Partitioning: Optimisation and Applications</i>. ISTE – Wiley. p. 384. ISBN <bdi>978-1848212336</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Graph+Partitioning%3A+Optimisation+and+Applications&amp;rft.pages=384&amp;rft.pub=ISTE+%E2%80%93+Wiley&amp;rft.date=2011&amp;rft.isbn=978-1848212336&amp;rft.aulast=Bichot&amp;rft.aufirst=Charles-Edmond&amp;rft.au=Siarry%2C+Patrick&amp;rft_id=http%3A%2F%2Fcebichot.netne.net%2Fgraph_partitioning_book%2F&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AGraph+partition"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFFeldmann2012">Feldmann, Andreas Emil (2012). <i>Balanced Partitioning of Grids and Related Graphs: A Theoretical Study of Data Distribution in Parallel Finite Element Model Simulations</i>. Goettingen, Germany: Cuvillier Verlag. p. 218. ISBN <bdi>978-3954041251</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Balanced+Partitioning+of+Grids+and+Related+Graphs%3A+A+Theoretical+Study+of+Data+Distribution+in+Parallel+Finite+Element+Model+Simulations&amp;rft.place=Goettingen%2C+Germany&amp;rft.pages=218&amp;rft.pub=Cuvillier+Verlag&amp;rft.date=2012&amp;rft.isbn=978-3954041251&amp;rft.aulast=Feldmann&amp;rft.aufirst=Andreas+Emil&amp;rft_id=https%3A%2F%2Fe-collection.library.ethz.ch%2Fview%2Feth%3A5739%3Fq%3DBalanced%2520Partitioning%2520of%2520Grids%2520and%2520Related%2520Graphs&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AGraph+partition"></span> An exhaustive analysis of the problem from a theoretical point of view.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFKernighanLin1970">Kernighan, B. W.; Lin, S. (1970). "An Efficient Heuristic Procedure for Partitioning Graphs" <span class="cs1-format">(PDF)</span>. <i>Bell System Technical Journal</i>. <b>49</b> (2): 291–307. doi:10.1002/j.1538-7305.1970.tb01770.x.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Bell+System+Technical+Journal&amp;rft.atitle=An+Efficient+Heuristic+Procedure+for+Partitioning+Graphs&amp;rft.volume=49&amp;rft.issue=2&amp;rft.pages=291-307&amp;rft.date=1970&amp;rft_id=info%3Adoi%2F10.1002%2Fj.1538-7305.1970.tb01770.x&amp;rft.aulast=Kernighan&amp;rft.aufirst=B.+W.&amp;rft.au=Lin%2C+S.&amp;rft_id=https%3A%2F%2Fwww.cs.princeton.edu%2F~bwk%2Fbtl.mirror%2Fpartitioning.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AGraph+partition"></span>  One of the early fundamental works in the field.  However, performance is O(n<sup>2</sup>), so it is no longer commonly used.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation conference cs1" id="CITEREFFiducciaMattheyses1982">Fiduccia, C. M.; Mattheyses, R. M. (1982). <i>A Linear-Time Heuristic for Improving Network Partitions</i>. Design Automation Conference. doi:10.1109/DAC.1982.1585498.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=conference&amp;rft.btitle=A+Linear-Time+Heuristic+for+Improving+Network+Partitions&amp;rft.date=1982&amp;rft_id=info%3Adoi%2F10.1109%2FDAC.1982.1585498&amp;rft.aulast=Fiduccia&amp;rft.aufirst=C.+M.&amp;rft.au=Mattheyses%2C+R.+M.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AGraph+partition"></span>  A later variant that is linear time, very commonly used, both by itself and as part of multilevel partitioning, see below.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFKarypisKumar1999">Karypis, G.; Kumar, V. (1999). "A Fast and High Quality Multilevel Scheme for Partitioning Irregular Graphs". <i>SIAM Journal on Scientific Computing</i>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=SIAM+Journal+on+Scientific+Computing&amp;rft.atitle=A+Fast+and+High+Quality+Multilevel+Scheme+for+Partitioning+Irregular+Graphs&amp;rft.date=1999&amp;rft.aulast=Karypis&amp;rft.aufirst=G.&amp;rft.au=Kumar%2C+V.&amp;rft_id=http%3A%2F%2Fglaros.dtc.umn.edu%2Fgkhome%2Fnode%2F107&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AGraph+partition"></span>  Multi-level partitioning is the current state of the art. This paper also has good explanations of many other methods, and comparisons of the various methods on a wide variety of problems.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFKarypisAggarwalKumarShekhar1999">Karypis, G.; Aggarwal, R.; Kumar, V.; Shekhar, S. (March 1999). "Multilevel hypergraph partitioning: applications in VLSI domain". <i>IEEE Transactions on Very Large Scale Integration (VLSI) Systems</i>. <b>7</b> (1): 69–79. CiteSeerX <span class="cs1-lock-free" title="Freely accessible">10.1.1.553.2367</span>. doi:10.1109/92.748202.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=IEEE+Transactions+on+Very+Large+Scale+Integration+%28VLSI%29+Systems&amp;rft.atitle=Multilevel+hypergraph+partitioning%3A+applications+in+VLSI+domain&amp;rft.volume=7&amp;rft.issue=1&amp;rft.pages=69-79&amp;rft.date=1999-03&amp;rft_id=%2F%2Fciteseerx.ist.psu.edu%2Fviewdoc%2Fsummary%3Fdoi%3D10.1.1.553.2367%23id-name%3DCiteSeerX&amp;rft_id=info%3Adoi%2F10.1109%2F92.748202&amp;rft.aulast=Karypis&amp;rft.aufirst=G.&amp;rft.au=Aggarwal%2C+R.&amp;rft.au=Kumar%2C+V.&amp;rft.au=Shekhar%2C+S.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AGraph+partition"></span>  Graph partitioning (and in particular, hypergraph partitioning) has many applications to IC design.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFKirkpatrickGelattVecchi1983">Kirkpatrick, S.; Gelatt, C. D., Jr.; Vecchi, M. P. (13 May 1983). "Optimization by Simulated Annealing". <i>Science</i>. <b>220</b> (4598): 671–680. Bibcode:1983Sci...220..671K. CiteSeerX <span class="cs1-lock-free" title="Freely accessible">10.1.1.123.7607</span>. doi:10.1126/science.220.4598.671. PMID 17813860. S2CID 205939.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Science&amp;rft.atitle=Optimization+by+Simulated+Annealing&amp;rft.volume=220&amp;rft.issue=4598&amp;rft.pages=671-680&amp;rft.date=1983-05-13&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A205939%23id-name%3DS2CID&amp;rft_id=info%3Abibcode%2F1983Sci...220..671K&amp;rft_id=%2F%2Fciteseerx.ist.psu.edu%2Fviewdoc%2Fsummary%3Fdoi%3D10.1.1.123.7607%23id-name%3DCiteSeerX&amp;rft_id=info%3Apmid%2F17813860&amp;rft_id=info%3Adoi%2F10.1126%2Fscience.220.4598.671&amp;rft.aulast=Kirkpatrick&amp;rft.aufirst=S.&amp;rft.au=Gelatt%2C+C.+D.%2C+Jr.&amp;rft.au=Vecchi%2C+M.+P.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AGraph+partition"></span>  Simulated annealing can be used as well.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFHagenKahng1992">Hagen, L.; Kahng, A. B. (September 1992). "New spectral methods for ratio cut partitioning and clustering". <i>IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems</i>. <b>11</b> (9): 1074–1085. doi:10.1109/43.159993.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=IEEE+Transactions+on+Computer-Aided+Design+of+Integrated+Circuits+and+Systems&amp;rft.atitle=New+spectral+methods+for+ratio+cut+partitioning+and+clustering&amp;rft.volume=11&amp;rft.issue=9&amp;rft.pages=1074-1085&amp;rft.date=1992-09&amp;rft_id=info%3Adoi%2F10.1109%2F43.159993&amp;rft.aulast=Hagen&amp;rft.aufirst=L.&amp;rft.au=Kahng%2C+A.+B.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AGraph+partition"></span>.  There is a whole class of <i>spectral partitioning</i> methods, which use the Eigenvectors of the Laplacian of the connectivity graph.  You can see a demo of this, using Matlab.</li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw2379
+Cached time: 20221224003217
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.421 seconds
+Real time usage: 0.537 seconds
+Preprocessor visited node count: 2279/1000000
+Post‐expand include size: 77991/2097152 bytes
+Template argument size: 1379/2097152 bytes
+Highest expansion depth: 15/100
+Expensive parser function count: 2/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 107154/5000000 bytes
+Lua time usage: 0.271/10.000 seconds
+Lua memory usage: 7909041/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  415.151      1 -total
+ 24.69%  102.512      8 Template:Cite_book
+ 22.17%   92.036     18 Template:Cite_journal
+ 12.31%   51.099      1 Template:Short_description
+ 10.45%   43.388      9 Template:Cite_conference
+  9.67%   40.165      1 Template:Harvtxt
+  5.86%   24.342      2 Template:Pagetype
+  5.02%   20.847      1 Template:Dead_link
+  4.23%   17.572      4 Template:Main_other
+  4.21%   17.486      1 Template:Main
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:11973947-0!canonical and timestamp 20221224003216 and revision id 1127640195.
+ -->
+</div></body>
+</html>

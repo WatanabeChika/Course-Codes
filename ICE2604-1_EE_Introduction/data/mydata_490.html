@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>in-place_sort</title>
+</head>
+<body>
+<div class="mw-parser-output"><style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-More_citations_needed plainlinks metadata ambox ambox-content ambox-Refimprove" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<p>In computer science, an <b>in-place algorithm</b> is an algorithm which transforms input using no auxiliary data structure. However, a small amount of extra storage space is allowed for auxiliary variables. The input is usually overwritten by the output as the algorithm executes. An in-place algorithm updates its input sequence only through replacement or swapping of elements. An algorithm which is not in-place is sometimes called <b>not-in-place</b> or <b>out-of-place</b>.
+</p><p>In-place can have slightly different meanings. In its strictest form, the algorithm can only have a constant amount of extra space, counting everything including function calls and pointers. However, this form is very limited as simply having an index to a length <span class="texhtml"><i>n</i></span> array requires <span class="texhtml"><i>O</i>(log <i>n</i>)</span> bits. More broadly, in-place means that the algorithm does not use extra space for manipulating the input but may require a small though nonconstant extra space for its operation. Usually, this space is <span class="texhtml"><i>O</i>(log <i>n</i>)</span>, though sometimes anything in <span class="texhtml"><i>O</i>(<i>n</i>)</span> is allowed. Note that space complexity also has varied choices in whether or not to count the index lengths as part of the space used. Often, the space complexity is given in terms of the number of indices or pointers needed, ignoring their length. In this article, we refer to total space complexity (DSPACE), counting pointer lengths. Therefore, the space requirements here have an extra <span class="texhtml">log <i>n</i></span> factor compared to an analysis that ignores the length of indices and pointers.  
+</p><p>An algorithm may or may not count the output as part of its space usage. Since in-place algorithms usually overwrite their input with output, no additional space is needed. When writing the output to write-only memory or a stream, it may be more appropriate to only consider the working space of the algorithm. In theoretical applications such as log-space reductions, it is more typical to always ignore output space (in these cases it is more essential that the output is <i>write-only</i>).
+</p>
+
+<h2><span class="mw-headline" id="Examples">Examples</span><span class="mw-editsection"></span></h2>
+<p>Given an array <code class="mw-highlight mw-highlight-lang-text mw-content-ltr" dir="ltr" id="" style="">a</code> of <span class="texhtml"><i>n</i></span> items, suppose we want an array that holds the same elements in reversed order and to dispose of the original. One seemingly simple way to do this is to create a new array of equal size, fill it with copies from <code class="mw-highlight mw-highlight-lang-text mw-content-ltr" dir="ltr" id="" style="">a</code> in the appropriate order and then delete <code class="mw-highlight mw-highlight-lang-text mw-content-ltr" dir="ltr" id="" style="">a</code>.
+</p>
+<pre> <b>function</b> reverse(a[0..n - 1])
+     allocate b[0..n - 1]
+     <b>for</b> i <b>from</b> 0 <b>to</b> n - 1
+         b[n − 1 − i] := a[i]
+     <b>return</b> b
+</pre>
+<p>Unfortunately, this requires <span class="texhtml"><i>O</i>(<i>n</i>)</span> extra space for having the arrays <code class="mw-highlight mw-highlight-lang-text mw-content-ltr" dir="ltr" id="" style="">a</code> and <code class="mw-highlight mw-highlight-lang-text mw-content-ltr" dir="ltr" id="" style="">b</code> available simultaneously. Also, allocation and deallocation are often slow operations. Since we no longer need <code class="mw-highlight mw-highlight-lang-text mw-content-ltr" dir="ltr" id="" style="">a</code>, we can instead overwrite it with its own reversal using this in-place algorithm which will only need constant number (2) of integers for the auxiliary variables <code class="mw-highlight mw-highlight-lang-text mw-content-ltr" dir="ltr" id="" style="">i</code> and <code class="mw-highlight mw-highlight-lang-text mw-content-ltr" dir="ltr" id="" style="">tmp</code>, no matter how large the array is.
+</p>
+<pre> <b>function</b> reverse_in_place(a[0..n-1])
+     <b>for</b> i <b>from</b> 0 <b>to</b> floor((n-2)/2)
+         tmp := a[i]
+         a[i] := a[n − 1 − i]
+         a[n − 1 − i] := tmp
+</pre>
+<p>As another example, many sorting algorithms rearrange arrays into sorted order in-place, including: bubble sort, comb sort, selection sort, insertion sort, heapsort, and Shell sort. These algorithms require only a few pointers, so their space complexity is <span class="texhtml"><i>O</i>(log <i>n</i>)</span>.<sup class="reference" id="cite_ref-1">[1]</sup>
+</p><p>Quicksort operates in-place on the data to be sorted. However, quicksort requires <span class="texhtml"><i>O</i>(log <i>n</i>)</span> stack space pointers to keep track of the subarrays in its divide and conquer strategy. Consequently, quicksort needs <span class="texhtml"><i>O</i>(log<sup>2</sup> <i>n</i>)</span> additional space. Although this non-constant space technically takes quicksort out of the in-place category, quicksort and other algorithms needing only <span class="texhtml"><i>O</i>(log <i>n</i>)</span> additional pointers are usually considered in-place algorithms.
+</p><p>Most selection algorithms are also in-place, although some considerably rearrange the input array in the process of finding the final, constant-sized result.
+</p><p>Some text manipulation algorithms such as trim and reverse may be done in-place.
+</p>
+<h2><span class="mw-headline" id="In_computational_complexity">In computational complexity</span><span class="mw-editsection"></span></h2>
+<p>In computational complexity theory, the strict definition of in-place algorithms includes all algorithms with <span class="texhtml"><i>O</i>(1)</span> space complexity, the class <b>DSPACE</b>(1). This class is very limited; it equals the regular languages.<sup class="reference" id="cite_ref-2">[2]</sup> In fact, it does not even include any of the examples listed above.
+</p><p>We usually consider algorithms in L, the class of problems requiring <span class="texhtml"><i>O</i>(log <i>n</i>)</span> additional space, to be in-place. This class is more in line with the practical definition, as it allows numbers of size <span class="texhtml"><i>n</i></span> as pointers or indices. This expanded definition still excludes quicksort, however, because of its recursive calls.  
+</p><p>Identifying the in-place algorithms with L has some interesting implications; for example, it means that there is a (rather complex) in-place algorithm to determine whether a path exists between two nodes in an undirected graph,<sup class="reference" id="cite_ref-3">[3]</sup> a problem that requires <span class="texhtml"><i>O</i>(<i>n</i>)</span> extra space using typical algorithms such as depth-first search (a visited bit for each node). This in turn yields in-place algorithms for problems such as determining if a graph is bipartite or testing whether two graphs have the same number of connected components. See SL for more information.
+</p>
+<h2><span class="mw-headline" id="Role_of_randomness">Role of randomness</span><span class="mw-editsection"></span></h2>
+<p>In many cases, the space requirements of an algorithm can be drastically cut by using a randomized algorithm. For example, say we wish to know if two vertices in a graph of <span class="texhtml"><i>n</i></span> vertices are in the same connected component of the graph. There is no known simple, deterministic, in-place algorithm to determine this, but if we simply start at one vertex and perform a random walk of about <span class="texhtml">20<i>n</i><sup>3</sup></span> steps, the chance that we will stumble across the other vertex provided that it is in the same component is very high. Similarly, there are simple randomized in-place algorithms for primality testing such as the Miller–Rabin primality test, and there are also simple in-place randomized factoring algorithms such as Pollard's rho algorithm. See RL and BPL for more discussion of this phenomenon.
+</p>
+<h2><span class="mw-headline" id="In_functional_programming">In functional programming</span><span class="mw-editsection"></span></h2>
+<p>Functional programming languages often discourage or do not support explicit in-place algorithms that overwrite data, since this is a type of side effect; instead, they only allow new data to be constructed. However, good functional language compilers will often recognize when an object very similar to an existing one is created and then the old one is thrown away, and will optimize this into a simple mutation "under the hood".
+</p><p>Note that it is possible in principle to carefully construct in-place algorithms that do not modify data (unless the data is no longer being used), but this is rarely done in practice. See purely functional data structures.
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Table of in-place and not-in-place sorting algorithms</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+
+<!-- 
+NewPP limit report
+Parsed by mw2379
+Cached time: 20221219073334
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.205 seconds
+Real time usage: 0.267 seconds
+Preprocessor visited node count: 1260/1000000
+Post‐expand include size: 16127/2097152 bytes
+Template argument size: 1366/2097152 bytes
+Highest expansion depth: 9/100
+Expensive parser function count: 11/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 7096/5000000 bytes
+Lua time usage: 0.131/10.000 seconds
+Lua memory usage: 3120896/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  238.469      1 -total
+ 35.20%   83.934      1 Template:Citation
+ 30.35%   72.374      1 Template:Ref_improve
+ 27.29%   65.078      1 Template:Ambox
+ 16.38%   39.064      1 Template:Redirect
+ 12.84%   30.615     18 Template:Math
+  5.56%   13.250      1 Template:Find_sources_mainspace
+  2.75%    6.555      8 Template:Code
+  2.32%    5.537     18 Template:Main_other
+  0.76%    1.805      1 Template:ECCC
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:219861-0!canonical and timestamp 20221219073334 and revision id 1120616738.
+ -->
+</div></body>
+</html>

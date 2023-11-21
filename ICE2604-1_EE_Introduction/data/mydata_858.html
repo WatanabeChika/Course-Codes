@@ -1,0 +1,2093 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>repeated_squaring</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-Confusing plainlinks metadata ambox ambox-style ambox-confusing" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<link href="mw-data:TemplateStyles:r1097763485" rel="mw-deduplicated-inline-style"/><table class="box-More_citations_needed plainlinks metadata ambox ambox-content ambox-Refimprove" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<p>In mathematics and computer programming, <b>exponentiating by squaring</b> is a general method for fast computation of large positive integer powers of a number, or more generally of an element of a semigroup, like a polynomial or a square matrix. Some variants are commonly referred to as <b>square-and-multiply</b> algorithms or <b>binary exponentiation</b>. These can be of quite general use, for example in modular arithmetic or powering of matrices. For semigroups for which additive notation is commonly used, like elliptic curves used in cryptography, this method is also referred to as <b>double-and-add</b>.
+</p>
+
+<h2><span class="mw-headline" id="Basic_method">Basic method</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Recursive_version">Recursive version</span><span class="mw-editsection"></span></h3>
+<p>The method is based on the observation that, for a positive integer <span class="texhtml"><i>n</i></span>, one has
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x^{n}={\begin{cases}x\,(x^{2})^{\frac {n-1}{2}},&amp;{\mbox{if }}n{\mbox{ is odd}}\\(x^{2})^{\frac {n}{2}},&amp;{\mbox{if }}n{\mbox{ is even}}.\end{cases}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>{</mo>
+<mtable columnalign="left left" columnspacing="1em" displaystyle="false" rowspacing=".2em">
+<mtr>
+<mtd>
+<mi>x</mi>
+<mspace width="thinmathspace"></mspace>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+<mn>2</mn>
+</mfrac>
+</mrow>
+</msup>
+<mo>,</mo>
+</mtd>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mtext>if </mtext>
+</mstyle>
+</mrow>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mtext> is odd</mtext>
+</mstyle>
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>n</mi>
+<mn>2</mn>
+</mfrac>
+</mrow>
+</msup>
+<mo>,</mo>
+</mtd>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mtext>if </mtext>
+</mstyle>
+</mrow>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mtext> is even</mtext>
+</mstyle>
+</mrow>
+<mo>.</mo>
+</mtd>
+</mtr>
+</mtable>
+<mo fence="true" stretchy="true" symmetric="true"></mo>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x^{n}={\begin{cases}x\,(x^{2})^{\frac {n-1}{2}},&amp;{\mbox{if }}n{\mbox{ is odd}}\\(x^{2})^{\frac {n}{2}},&amp;{\mbox{if }}n{\mbox{ is even}}.\end{cases}}}</annotation>
+</semantics>
+</math></span><img alt="x^{n}={\begin{cases}x\,(x^{2})^{\frac {n-1}{2}},&amp;{\mbox{if }}n{\mbox{ is odd}}\\(x^{2})^{\frac {n}{2}},&amp;{\mbox{if }}n{\mbox{ is even}}.\end{cases}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/46fe9e68c70c04df4c3d22c469a57d4655b50539" style="vertical-align: -3.338ex; width:32.015ex; height:7.843ex;"/></span></dd></dl>
+<p>This may be implemented directly as the following recursive algorithm: 
+</p>
+<p><b>Recursive exponentiation in C ++</b></p><p>In each recursive call, the least significant digits of the binary representation of <span class="texhtml mvar" style="font-style:italic;">n</span> is removed. It follows that the number of recursive calls is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \lceil \log _{2}n\rceil ,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">⌈<!-- ⌈ --></mo>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo fence="false" stretchy="false">⌉<!-- ⌉ --></mo>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \lceil \log _{2}n\rceil ,}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \lceil \log _{2}n\rceil ,}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/76c0e5d975c0f1550b1add9b44aa26be75f2db23" style="vertical-align: -0.838ex; width:8.519ex; height:2.843ex;"/></span> the number of bits of the binary representation of <span class="texhtml mvar" style="font-style:italic;">n</span>. So this algorithm computes this number of squares and a lower number of multiplication, which is equal to the number of <span class="texhtml">1</span> in the binary representation of <span class="texhtml mvar" style="font-style:italic;">n</span>. This logarithmic number of operations is to be compared with the trivial algorithm which requires <span class="texhtml"><i>n</i> − 1</span> multiplications.
+</p><p>This algorithm is not tail-recursive. This implies that it requires an auxiliary memory that is roughly proportional (or higher, if one takes the increasing size of datas into account) to the number of recursive calls. 
+</p><p>The algorithms of the next section use a different approach, and the resulting algorithms needs the same number of operations, but use an auxiliary memory that is roughly the same as the memory required to store the result.
+</p>
+<h3><span class="mw-headline" id="With_constant_auxiliary_memory">With constant auxiliary memory</span><span class="mw-editsection"></span></h3>
+<p>The variants described in this section are based on the formula
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle yx^{n}={\begin{cases}(yx)\,(x^{2})^{\frac {n-1}{2}},&amp;{\mbox{if }}n{\mbox{ is odd}}\\y\,(x^{2})^{\frac {n}{2}},&amp;{\mbox{if }}n{\mbox{ is even}}.\end{cases}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>y</mi>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>{</mo>
+<mtable columnalign="left left" columnspacing="1em" displaystyle="false" rowspacing=".2em">
+<mtr>
+<mtd>
+<mo stretchy="false">(</mo>
+<mi>y</mi>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mspace width="thinmathspace"></mspace>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+<mn>2</mn>
+</mfrac>
+</mrow>
+</msup>
+<mo>,</mo>
+</mtd>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mtext>if </mtext>
+</mstyle>
+</mrow>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mtext> is odd</mtext>
+</mstyle>
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mi>y</mi>
+<mspace width="thinmathspace"></mspace>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>n</mi>
+<mn>2</mn>
+</mfrac>
+</mrow>
+</msup>
+<mo>,</mo>
+</mtd>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mtext>if </mtext>
+</mstyle>
+</mrow>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mtext> is even</mtext>
+</mstyle>
+</mrow>
+<mo>.</mo>
+</mtd>
+</mtr>
+</mtable>
+<mo fence="true" stretchy="true" symmetric="true"></mo>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle yx^{n}={\begin{cases}(yx)\,(x^{2})^{\frac {n-1}{2}},&amp;{\mbox{if }}n{\mbox{ is odd}}\\y\,(x^{2})^{\frac {n}{2}},&amp;{\mbox{if }}n{\mbox{ is even}}.\end{cases}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle yx^{n}={\begin{cases}(yx)\,(x^{2})^{\frac {n-1}{2}},&amp;{\mbox{if }}n{\mbox{ is odd}}\\y\,(x^{2})^{\frac {n}{2}},&amp;{\mbox{if }}n{\mbox{ is even}}.\end{cases}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d83e51213d2f31191804f03eff3b85a80b589a33" style="vertical-align: -3.338ex; width:36.135ex; height:7.843ex;"/></span></dd></dl>
+<p>If one applies recursively this formula, by starting with <span class="texhtml"><i>y</i> = 1</span>, one gets eventually an exponent equal to <span class="texhtml">0</span>, and the desired result is then the left factor.
+</p><p>This may be implemented as a tail-recursive function: 
+</p>
+
+<p>The iterative version of the algorithm also uses a bounded auxiliary space, and is given by
+</p>
+
+<p>The correctness of the algorithm results from the fact that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle yx^{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>y</mi>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle yx^{n}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle yx^{n}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e3f9b44ef7f616dc9cdad834fbdede0cf998a66c" style="vertical-align: -0.671ex; width:3.704ex; height:2.676ex;"/></span> is invariant during the computation; it is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1\cdot x^{n}=x^{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mo>⋅<!-- ⋅ --></mo>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mo>=</mo>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1\cdot x^{n}=x^{n}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 1\cdot x^{n}=x^{n}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e304af6bd78df3edd1403fec95b102823ce98255" style="vertical-align: -0.338ex; width:11.036ex; height:2.343ex;"/></span> at the beginning; and it is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle yx^{0}=y}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>y</mi>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msup>
+<mo>=</mo>
+<mi>y</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle yx^{0}=y}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle yx^{0}=y}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/103170db1f06dc40ed9eb6cb790204403eb73390" style="vertical-align: -0.671ex; width:7.793ex; height:3.009ex;"/></span> at the end.
+</p><p>These algorithms use exactly the same number of operations as the algorithm of the preceding section, but the multiplications are done in a different order.
+</p>
+<h2><span class="mw-headline" id="Computational_complexity">Computational complexity</span><span class="mw-editsection"></span></h2>
+<p>A brief analysis shows that such an algorithm uses <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \lfloor \log _{2}n\rfloor }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">⌊<!-- ⌊ --></mo>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo fence="false" stretchy="false">⌋<!-- ⌋ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \lfloor \log _{2}n\rfloor }</annotation>
+</semantics>
+</math></span><img alt="\lfloor \log _{2}n\rfloor " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/992c9e2c99d88241b484aad58ab2f6875708d2fd" style="vertical-align: -0.838ex; width:7.873ex; height:2.843ex;"/></span> squarings and at most <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \lfloor \log _{2}n\rfloor }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">⌊<!-- ⌊ --></mo>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo fence="false" stretchy="false">⌋<!-- ⌋ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \lfloor \log _{2}n\rfloor }</annotation>
+</semantics>
+</math></span><img alt="\lfloor \log _{2}n\rfloor " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/992c9e2c99d88241b484aad58ab2f6875708d2fd" style="vertical-align: -0.838ex; width:7.873ex; height:2.843ex;"/></span> multiplications, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \lfloor \;\rfloor }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">⌊<!-- ⌊ --></mo>
+<mspace width="thickmathspace"></mspace>
+<mo fence="false" stretchy="false">⌋<!-- ⌋ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \lfloor \;\rfloor }</annotation>
+</semantics>
+</math></span><img alt="\lfloor \;\rfloor " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8d1d99deef81d9e1b3f2757b901042a218e2322a" style="vertical-align: -0.838ex; width:2.71ex; height:2.843ex;"/></span> denotes the floor function. More precisely, the number of multiplications is one less than the number of ones present in the binary expansion of <i>n</i>. For <i>n</i> greater than about 4 this is computationally more efficient than naively multiplying the base with itself repeatedly.
+</p><p>Each squaring results in approximately double the number of digits of the previous, and so, if multiplication of two <i>d</i>-digit numbers is implemented in O(<i>d</i><sup><i>k</i></sup>) operations for some fixed <i>k</i>, then the complexity of computing <i>x</i><sup><i>n</i></sup> is given by
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sum \limits _{i=0}^{O(\log n)}{\big (}2^{i}O(\log x){\big )}^{k}=O{\big (}(n\log x)^{k}{\big )}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<munderover>
+<mo movablelimits="false">∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</munderover>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mo maxsize="1.2em" minsize="1.2em">(</mo>
+</mrow>
+</mrow>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msup>
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mo maxsize="1.2em" minsize="1.2em">)</mo>
+</mrow>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msup>
+<mo>=</mo>
+<mi>O</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mo maxsize="1.2em" minsize="1.2em">(</mo>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>x</mi>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mo maxsize="1.2em" minsize="1.2em">)</mo>
+</mrow>
+</mrow>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sum \limits _{i=0}^{O(\log n)}{\big (}2^{i}O(\log x){\big )}^{k}=O{\big (}(n\log x)^{k}{\big )}.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \sum \limits _{i=0}^{O(\log n)}{\big (}2^{i}O(\log x){\big )}^{k}=O{\big (}(n\log x)^{k}{\big )}.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/133f326ab780f061c3b99474482eb428c9b01236" style="vertical-align: -3.005ex; width:36.864ex; height:7.676ex;"/></span></dd></dl>
+<h2><span class="mw-headline" id="2k-ary_method">2<sup><i>k</i></sup>-ary method</span><span class="mw-editsection"></span></h2>
+<p>This algorithm calculates the value of <i>x<sup>n</sup></i> after expanding the exponent in base 2<sup><i>k</i></sup>. It was first proposed by Brauer in 1939. In the algorithm below we make use of the following function <i>f</i>(0) = (<i>k</i>, 0) and <i>f</i>(<i>m</i>) = (<i>s</i>, <i>u</i>), where <i>m</i> = <i>u</i>·2<sup><i>s</i></sup> with <i>u</i> odd.
+</p><p>Algorithm:
+</p>
+<dl><dt>Input</dt>
+<dd>An element <i>x</i> of <i>G</i>, a parameter <i>k</i> &gt; 0, a non-negative integer <span class="texhtml"><i>n</i> = (<i>n</i><sub><i>l</i>−1</sub>, <i>n</i><sub><i>l</i>−2</sub>, ..., <i>n</i><sub>0</sub>)<sub>2<sup><i>k</i></sup></sub></span> and the precomputed values <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x^{3},x^{5},...,x^{2^{k}-1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+<mo>,</mo>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>5</mn>
+</mrow>
+</msup>
+<mo>,</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>,</mo>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msup>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x^{3},x^{5},...,x^{2^{k}-1}}</annotation>
+</semantics>
+</math></span><img alt="x^{3},x^{5},...,x^{2^{k}-1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/75e4594f1e36e3699798e6487ebefa527e041f8b" style="vertical-align: -0.671ex; width:16.315ex; height:3.343ex;"/></span>.</dd></dl>
+<dl><dt>Output</dt>
+<dd>The element <i>x<sup>n</sup></i> in <i>G</i></dd></dl>
+<pre>y := 1; i := l - 1
+<b>while</b> i ≥ 0 do
+    (s, u) := f(n<sub>i</sub>)
+    <b>for</b> j := 1 <b>to</b> k - s <b>do</b>
+        y := y<sup>2</sup> 
+    y := y * x<sup>u</sup>
+    <b>for</b> j := 1 <b>to</b> s <b>do</b>
+        y := y<sup>2</sup>
+    i := i - 1
+<b>return</b> y
+</pre>
+<p>For optimal efficiency, <i>k</i> should be the smallest integer satisfying<sup class="reference" id="cite_ref-frey_1-0">[1]</sup><sup class="noprint Inline-Template" style="margin-left:0.1em; white-space:nowrap;">[<i><span title="It should be specified if this logarithm is in base 2, base 2^k, or base e. (May 2020)">clarification needed</span></i>]</sup>
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \log n&lt;{\frac {k(k+1)\cdot 2^{2k}}{2^{k+1}-k-2}}+1.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo>&lt;</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mi>k</mi>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo>+</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo>⋅<!-- ⋅ --></mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+<mi>k</mi>
+</mrow>
+</msup>
+</mrow>
+<mrow>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mo>−<!-- − --></mo>
+<mi>k</mi>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+</mrow>
+</mfrac>
+</mrow>
+<mo>+</mo>
+<mn>1.</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \log n&lt;{\frac {k(k+1)\cdot 2^{2k}}{2^{k+1}-k-2}}+1.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \log n&lt;{\frac {k(k+1)\cdot 2^{2k}}{2^{k+1}-k-2}}+1.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dac4a247e3f97cb736791ca5288f9bf8f3cd6dac" style="vertical-align: -2.505ex; width:26.325ex; height:6.676ex;"/></span></dd></dl>
+<h2><span class="mw-headline" id="Sliding-window_method">Sliding-window method</span><span class="mw-editsection"></span></h2>
+<p>This method is an efficient variant of the 2<sup><i>k</i></sup>-ary method. For example, to calculate the exponent 398, which has binary expansion (110 001 110)<sub>2</sub>, we take a window of length 3 using the 2<sup><i>k</i></sup>-ary method algorithm and calculate 1, x<sup>3</sup>, x<sup>6</sup>, x<sup>12</sup>, x<sup>24</sup>, x<sup>48</sup>, x<sup>49</sup>, x<sup>98</sup>, x<sup>99</sup>, x<sup>198</sup>, x<sup>199</sup>, x<sup>398</sup>.  
+But, we can also compute 1, x<sup>3</sup>, x<sup>6</sup>, x<sup>12</sup>, x<sup>24</sup>, x<sup>48</sup>, x<sup>96</sup>, x<sup>192</sup>, x<sup>199</sup>, x<sup>398</sup>, which saves one multiplication and amounts to evaluating (110 001 110)<sub>2</sub>
+</p><p>Here is the general algorithm:
+</p><p>Algorithm:
+</p>
+<dl><dt>Input</dt>
+<dd>An element <i>x</i> of <i>G</i>, a non negative integer <span class="texhtml"><i>n</i>=(<i>n</i><sub><i>l</i>−1</sub>, <i>n</i><sub><i>l</i>−2</sub>, ..., <i>n</i><sub>0</sub>)<sub>2</sub></span>, a parameter <i>k</i> &gt; 0 and the pre-computed values <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x^{3},x^{5},...,x^{2^{k}-1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+<mo>,</mo>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>5</mn>
+</mrow>
+</msup>
+<mo>,</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>,</mo>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msup>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x^{3},x^{5},...,x^{2^{k}-1}}</annotation>
+</semantics>
+</math></span><img alt="x^{3},x^{5},...,x^{2^{k}-1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/75e4594f1e36e3699798e6487ebefa527e041f8b" style="vertical-align: -0.671ex; width:16.315ex; height:3.343ex;"/></span>.</dd></dl>
+<dl><dt>Output</dt>
+<dd>The element <i>x<sup>n</sup></i> ∈ <i>G</i>.</dd></dl>
+<p>Algorithm:
+</p>
+<pre>y := 1; i := l - 1
+<b>while</b> i &gt; -1 <b>do</b>
+    <b>if</b> n<sub>i</sub> = 0 <b>then</b>
+        y := y<sup>2</sup>' i := i - 1
+    <b>else</b>
+        s := max{i - k + 1, 0}
+        <b>while</b> n<sub>s</sub> = 0 <b>do</b>
+            s := s + 1<sup class="reference" id="cite_ref-2">[notes 1]</sup>
+        <b>for</b> h := 1 <b>to</b> i - s + 1 <b>do</b>
+            y := y<sup>2</sup>
+        u := (n<sub>i</sub>, n<sub>i-1</sub>, ..., n<sub>s</sub>)<sub>2</sub>
+        y := y * x<sup>u</sup>
+        i := s - 1
+<b>return</b> y
+</pre>
+<h2><span id="Montgomery.27s_ladder_technique"></span><span class="mw-headline" id="Montgomery's_ladder_technique">Montgomery's ladder technique</span><span class="mw-editsection"></span></h2>
+<p>Many algorithms for exponentiation do not provide defence against side-channel attacks. Namely, an attacker observing the sequence of squarings and multiplications can (partially) recover the exponent involved in the computation. This is a problem if the exponent should remain secret, as with many public-key cryptosystems. A technique called "Montgomery's ladder"<sup class="reference" id="cite_ref-ladder_3-0">[2]</sup> addresses this concern.
+</p><p>Given the binary expansion of a positive, non-zero integer <i>n</i> = (<i>n</i><sub><i>k</i>−1</sub>...<i>n</i><sub>0</sub>)<sub>2</sub> with <i>n</i><sub>k−1</sub> = 1, we can compute <i>x<sup>n</sup></i> as follows:
+</p>
+<pre>x<sub>1</sub> = x; x<sub>2</sub> = x<sup>2</sup>
+<b>for</b> i = k - 2 to 0 <b>do</b>
+    <b>if</b> n<sub>i</sub> = 0 <b>then</b>
+        x<sub>2</sub> = x<sub>1</sub> * x<sub>2</sub>; x<sub>1</sub> = x<sub>1</sub><sup>2</sup>
+    <b>else</b>
+        x<sub>1</sub> = x<sub>1</sub> * x<sub>2</sub>; x<sub>2</sub> = x<sub>2</sub><sup>2</sup>
+<b>return</b> x<sub>1</sub>
+</pre>
+<p>The algorithm performs a fixed sequence of operations (up to log <i>n</i>): a multiplication and squaring takes place for each bit in the exponent, regardless of the bit's specific value. A similar algorithm for multiplication by doubling exists.
+</p><p>This specific implementation of Montgomery's ladder is not yet protected against cache timing attacks: memory access latencies might still be observable to an attacker, as different variables are accessed depending on the value of bits of the secret exponent. Modern cryptographic implementations use a "scatter" technique to make sure the processor always misses the faster cache.<sup class="reference" id="cite_ref-4">[3]</sup>
+</p>
+<h2><span class="mw-headline" id="Fixed-base_exponent">Fixed-base exponent</span><span class="mw-editsection"></span></h2>
+<p>There are several methods which can be employed to calculate <i>x<sup>n</sup></i> when the base is fixed and the exponent varies. As one can see, precomputations play a key role in these algorithms.
+</p>
+<h3><span id="Yao.27s_method"></span><span class="mw-headline" id="Yao's_method">Yao's method</span><span class="mw-editsection"></span></h3>
+<p>Yao's method is orthogonal to the <span class="texhtml">2<sup><i>k</i></sup></span>-ary method where the exponent is expanded in radix <span class="texhtml"><i>b</i> = 2<sup><i>k</i></sup></span> and the computation is as performed in the algorithm above. Let <span class="texhtml mvar" style="font-style:italic;">n</span>, <span class="texhtml mvar" style="font-style:italic;">n<sub>i</sub></span>, <span class="texhtml mvar" style="font-style:italic;">b</span>, and <span class="texhtml mvar" style="font-style:italic;">b<sub>i</sub></span> be integers.
+</p><p>Let the exponent <span class="texhtml mvar" style="font-style:italic;">n</span> be written as
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n=\sum _{i=0}^{w-1}n_{i}b_{i},}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>=</mo>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>w</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</munderover>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<msub>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n=\sum _{i=0}^{w-1}n_{i}b_{i},}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n=\sum _{i=0}^{w-1}n_{i}b_{i},}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e5e5c8fa303212ca6f79206681be8823ab97ff72" style="vertical-align: -3.005ex; width:12.874ex; height:7.343ex;"/></span></dd></dl>
+<p>where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 0\leqslant n_{i}&lt;h}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>0</mn>
+<mo>⩽<!-- ⩽ --></mo>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>&lt;</mo>
+<mi>h</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 0\leqslant n_{i}&lt;h}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 0\leqslant n_{i}&lt;h}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/540c8cea55d3f6923a3996944dc478c69d3c957b" style="vertical-align: -0.671ex; width:10.893ex; height:2.509ex;"/></span> for all <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i\in [0,w-1]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+<mo>∈<!-- ∈ --></mo>
+<mo stretchy="false">[</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mi>w</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i\in [0,w-1]}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle i\in [0,w-1]}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4e3d737178aab390c9ff3e83eebff4146252e4a9" style="vertical-align: -0.838ex; width:12.8ex; height:2.843ex;"/></span>.
+</p><p>Let <span class="texhtml"><i>x<sub>i</sub></i> = <i>x<sup>b<sub>i</sub></sup></i></span>.
+</p><p>Then the algorithm uses the equality
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x^{n}=\prod _{i=0}^{w-1}x_{i}^{n_{i}}=\prod _{j=1}^{h-1}{\bigg [}\prod _{n_{i}=j}x_{i}{\bigg ]}^{j}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mo>=</mo>
+<munderover>
+<mo>∏<!-- ∏ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>w</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</munderover>
+<msubsup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mrow>
+</msubsup>
+<mo>=</mo>
+<munderover>
+<mo>∏<!-- ∏ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>h</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</munderover>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mo maxsize="2.047em" minsize="2.047em">[</mo>
+</mrow>
+</mrow>
+<munder>
+<mo>∏<!-- ∏ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mi>j</mi>
+</mrow>
+</munder>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mo maxsize="2.047em" minsize="2.047em">]</mo>
+</mrow>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msup>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x^{n}=\prod _{i=0}^{w-1}x_{i}^{n_{i}}=\prod _{j=1}^{h-1}{\bigg [}\prod _{n_{i}=j}x_{i}{\bigg ]}^{j}.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle x^{n}=\prod _{i=0}^{w-1}x_{i}^{n_{i}}=\prod _{j=1}^{h-1}{\bigg [}\prod _{n_{i}=j}x_{i}{\bigg ]}^{j}.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dfbb9e57efa46227d661003d10843d6d8121ef28" style="vertical-align: -3.338ex; width:29.499ex; height:7.676ex;"/></span></dd></dl>
+<p>Given the element <span class="texhtml mvar" style="font-style:italic;">x</span> of <span class="texhtml mvar" style="font-style:italic;">G</span>, and the exponent <span class="texhtml mvar" style="font-style:italic;">n</span> written in the above form, along with the precomputed values <span class="texhtml"><i>x</i><sup><i>b</i><sub>0</sub></sup>...<i>x</i><sup><i>b</i><sub><i>w</i>−1</sub></sup></span>, the element <span class="texhtml mvar" style="font-style:italic;">x<sup>n</sup></span> is calculated using the algorithm below:
+</p>
+<pre>y = 1, u = 1, j = h - 1
+<b>while</b> j &gt; 0 <b>do</b>
+    <b>for</b> i = 0 <b>to</b> w - 1 <b>do</b>
+        <b>if</b> n<sub>i</sub> = j <b>then</b>
+            u = u × x<sup>b<sub>i</sub></sup>
+    y = y × u
+    j = j - 1
+<b>return</b> y
+</pre>
+<p>If we set <span class="texhtml"><i>h</i> = 2<sup><i>k</i></sup></span> and <span class="texhtml"><i>b<sub>i</sub></i> = <i>h<sup>i</sup></i></span>, then the <span class="texhtml mvar" style="font-style:italic;">n<sub>i</sub></span> values are simply the digits of <span class="texhtml mvar" style="font-style:italic;">n</span> in base <span class="texhtml mvar" style="font-style:italic;">h</span>. Yao's method collects in <i>u</i> first those <span class="texhtml mvar" style="font-style:italic;">x<sub>i</sub></span> that appear to the highest power <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h-1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h-1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h-1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/98e6bd19265b6d8d6687ba7ecffeb872e0504cdc" style="vertical-align: -0.505ex; width:5.342ex; height:2.343ex;"/></span>; in the next round those with power <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h-2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h-2}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h-2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/31a0b7024d2bd815cfa118e7369fc43b90cdc9a2" style="vertical-align: -0.505ex; width:5.342ex; height:2.343ex;"/></span> are collected in <span class="texhtml mvar" style="font-style:italic;">u</span> as well etc. The variable <i>y</i> is multiplied <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h-1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h-1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h-1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/98e6bd19265b6d8d6687ba7ecffeb872e0504cdc" style="vertical-align: -0.505ex; width:5.342ex; height:2.343ex;"/></span> times with the initial <span class="texhtml mvar" style="font-style:italic;">u</span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h-2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h-2}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h-2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/31a0b7024d2bd815cfa118e7369fc43b90cdc9a2" style="vertical-align: -0.505ex; width:5.342ex; height:2.343ex;"/></span> times with the next highest powers, and so on.
+The algorithm uses <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w+h-2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+<mo>+</mo>
+<mi>h</mi>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w+h-2}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle w+h-2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2a71e3571e708d9bb67c62e695367b1a4c3328c4" style="vertical-align: -0.505ex; width:9.846ex; height:2.343ex;"/></span> multiplications, and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w+1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle w+1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/30729e83fb0c68d9fb9d5856cdd515b7ce4ffa68" style="vertical-align: -0.505ex; width:5.667ex; height:2.343ex;"/></span> elements must be stored to compute <span class="texhtml mvar" style="font-style:italic;">x<sup>n</sup></span>.<sup class="reference" id="cite_ref-frey_1-1">[1]</sup>
+</p>
+<h3><span class="mw-headline" id="Euclidean_method">Euclidean method</span><span class="mw-editsection"></span></h3>
+<p>The Euclidean method was first introduced in <i>Efficient exponentiation using precomputation and vector addition chains</i> by P.D Rooij.
+</p><p>This method for computing <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x^{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x^{n}}</annotation>
+</semantics>
+</math></span><img alt="x^{n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/150d38e238991bc4d0689ffc9d2a852547d2658d" style="vertical-align: -0.338ex; width:2.548ex; height:2.343ex;"/></span> in group <span class="texhtml"><b>G</b></span>, where <span class="texhtml mvar" style="font-style:italic;">n</span> is a natural integer, whose algorithm is given below, is using the following equality recursively:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{0}^{n_{0}}\cdot x_{1}^{n_{1}}=\left(x_{0}\cdot x_{1}^{q}\right)^{n_{0}}\cdot x_{1}^{n_{1}\mod n_{0}},}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msubsup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mrow>
+</msubsup>
+<mo>⋅<!-- ⋅ --></mo>
+<msubsup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mrow>
+</msubsup>
+<mo>=</mo>
+<msup>
+<mrow>
+<mo>(</mo>
+<mrow>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>⋅<!-- ⋅ --></mo>
+<msubsup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>q</mi>
+</mrow>
+</msubsup>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mrow>
+</msup>
+<mo>⋅<!-- ⋅ --></mo>
+<msubsup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mspace width="0.667em"></mspace>
+<mi>mod</mi>
+<mspace width="thinmathspace"></mspace>
+<mspace width="thinmathspace"></mspace>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mrow>
+</msubsup>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{0}^{n_{0}}\cdot x_{1}^{n_{1}}=\left(x_{0}\cdot x_{1}^{q}\right)^{n_{0}}\cdot x_{1}^{n_{1}\mod n_{0}},}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle x_{0}^{n_{0}}\cdot x_{1}^{n_{1}}=\left(x_{0}\cdot x_{1}^{q}\right)^{n_{0}}\cdot x_{1}^{n_{1}\mod n_{0}},}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7ee10198a660f6fa9a94f464dd929e1085b4e07b" style="vertical-align: -1.005ex; width:35.322ex; height:3.509ex;"/></span></dd></dl>
+<p>where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q=\left\lfloor {\frac {n_{1}}{n_{0}}}\right\rfloor }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>q</mi>
+<mo>=</mo>
+<mrow>
+<mo>⌊</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mfrac>
+</mrow>
+<mo>⌋</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q=\left\lfloor {\frac {n_{1}}{n_{0}}}\right\rfloor }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle q=\left\lfloor {\frac {n_{1}}{n_{0}}}\right\rfloor }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7f11f9c753697db78251586611b38d044af56956" style="vertical-align: -2.505ex; width:10.164ex; height:6.176ex;"/></span>.
+In other words, a Euclidean division of the exponent <span class="texhtml"><i>n</i><sub>1</sub></span> by <span class="texhtml"><i>n</i><sub>0</sub></span> is used to return a quotient <span class="texhtml mvar" style="font-style:italic;">q</span> and a rest <span class="texhtml"><i>n</i><sub>1</sub> mod <i>n</i><sub>0</sub></span>.
+</p><p>Given the base element <span class="texhtml mvar" style="font-style:italic;">x</span> in group <span class="texhtml"><b>G</b></span>, and the exponent <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span> written as in Yao's method, the element <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x^{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x^{n}}</annotation>
+</semantics>
+</math></span><img alt="x^{n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/150d38e238991bc4d0689ffc9d2a852547d2658d" style="vertical-align: -0.338ex; width:2.548ex; height:2.343ex;"/></span> is calculated using <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle l}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>l</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle l}</annotation>
+</semantics>
+</math></span><img alt="l" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/829091f745070b9eb97a80244129025440a1cfac" style="vertical-align: -0.338ex; width:0.693ex; height:2.176ex;"/></span> precomputed values <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x^{b_{0}},...,x^{b_{l_{i}}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mrow>
+</msup>
+<mo>,</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>,</mo>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>l</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mrow>
+</msub>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x^{b_{0}},...,x^{b_{l_{i}}}}</annotation>
+</semantics>
+</math></span><img alt="x^{b_{0}},...,x^{b_{l_{i}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a4f8a946b1a72a528a44578c63294e5886fc226c" style="vertical-align: -0.671ex; width:11.692ex; height:3.176ex;"/></span> and then the algorithm below.
+</p>
+<pre><b>Begin loop</b>   
+    <span class="nowrap">Find <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M\in [0,l-1]}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <mi>M</mi>
+        <mo>∈<!-- ∈ --></mo>
+        <mo stretchy="false">[</mo>
+        <mn>0</mn>
+        <mo>,</mo>
+        <mi>l</mi>
+        <mo>−<!-- − --></mo>
+        <mn>1</mn>
+        <mo stretchy="false">]</mo>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle M\in [0,l-1]}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle M\in [0,l-1]}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d51ee71090abf4e01424f772f361fe7bf1905d90" style="vertical-align: -0.838ex; width:13.469ex; height:2.843ex;"/></span>,</span> <span class="nowrap">such that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \forall i\in [0,l-1],n_{M}\geq n_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <mi mathvariant="normal">∀<!-- ∀ --></mi>
+        <mi>i</mi>
+        <mo>∈<!-- ∈ --></mo>
+        <mo stretchy="false">[</mo>
+        <mn>0</mn>
+        <mo>,</mo>
+        <mi>l</mi>
+        <mo>−<!-- − --></mo>
+        <mn>1</mn>
+        <mo stretchy="false">]</mo>
+        <mo>,</mo>
+        <msub>
+          <mi>n</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mi>M</mi>
+          </mrow>
+        </msub>
+        <mo>≥<!-- ≥ --></mo>
+        <msub>
+          <mi>n</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mi>i</mi>
+          </mrow>
+        </msub>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle \forall i\in [0,l-1],n_{M}\geq n_{i}}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle \forall i\in [0,l-1],n_{M}\geq n_{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/eef451ab1a23c27f08037270d9944bbf21ef9c2b" style="vertical-align: -0.838ex; width:22.803ex; height:2.843ex;"/></span>.</span>
+    <span class="nowrap">Find <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle N\in {\big (}[0,l-1]-M{\big )}}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <mi>N</mi>
+        <mo>∈<!-- ∈ --></mo>
+        <mrow class="MJX-TeXAtom-ORD">
+          <mrow class="MJX-TeXAtom-ORD">
+            <mo maxsize="1.2em" minsize="1.2em">(</mo>
+          </mrow>
+        </mrow>
+        <mo stretchy="false">[</mo>
+        <mn>0</mn>
+        <mo>,</mo>
+        <mi>l</mi>
+        <mo>−<!-- − --></mo>
+        <mn>1</mn>
+        <mo stretchy="false">]</mo>
+        <mo>−<!-- − --></mo>
+        <mi>M</mi>
+        <mrow class="MJX-TeXAtom-ORD">
+          <mrow class="MJX-TeXAtom-ORD">
+            <mo maxsize="1.2em" minsize="1.2em">)</mo>
+          </mrow>
+        </mrow>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle N\in {\big (}[0,l-1]-M{\big )}}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle N\in {\big (}[0,l-1]-M{\big )}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/78214b20074e7d879a7194df927cec1ffb62e0f8" style="vertical-align: -1.005ex; width:20.503ex; height:3.176ex;"/></span>,</span> <span class="nowrap">such that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \forall i\in {\big (}[0,l-1]-M{\big )},n_{N}\geq n_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <mi mathvariant="normal">∀<!-- ∀ --></mi>
+        <mi>i</mi>
+        <mo>∈<!-- ∈ --></mo>
+        <mrow class="MJX-TeXAtom-ORD">
+          <mrow class="MJX-TeXAtom-ORD">
+            <mo maxsize="1.2em" minsize="1.2em">(</mo>
+          </mrow>
+        </mrow>
+        <mo stretchy="false">[</mo>
+        <mn>0</mn>
+        <mo>,</mo>
+        <mi>l</mi>
+        <mo>−<!-- − --></mo>
+        <mn>1</mn>
+        <mo stretchy="false">]</mo>
+        <mo>−<!-- − --></mo>
+        <mi>M</mi>
+        <mrow class="MJX-TeXAtom-ORD">
+          <mrow class="MJX-TeXAtom-ORD">
+            <mo maxsize="1.2em" minsize="1.2em">)</mo>
+          </mrow>
+        </mrow>
+        <mo>,</mo>
+        <msub>
+          <mi>n</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mi>N</mi>
+          </mrow>
+        </msub>
+        <mo>≥<!-- ≥ --></mo>
+        <msub>
+          <mi>n</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mi>i</mi>
+          </mrow>
+        </msub>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle \forall i\in {\big (}[0,l-1]-M{\big )},n_{N}\geq n_{i}}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle \forall i\in {\big (}[0,l-1]-M{\big )},n_{N}\geq n_{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e1440ac3eecdeaa8335ee16f88e46d682a28bfb3" style="vertical-align: -1.005ex; width:29.947ex; height:3.176ex;"/></span>.</span>
+    <b>Break loop</b> <span class="nowrap">if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n_{N}=0}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>n</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mi>N</mi>
+          </mrow>
+        </msub>
+        <mo>=</mo>
+        <mn>0</mn>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle n_{N}=0}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle n_{N}=0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/91d1613ac4d712082bcd66e19f385fd800a73663" style="vertical-align: -0.671ex; width:7.347ex; height:2.509ex;"/></span>.</span>
+    <span class="nowrap"><b>Let</b> <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q=\lfloor n_{M}/n_{N}\rfloor }" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <mi>q</mi>
+        <mo>=</mo>
+        <mo fence="false" stretchy="false">⌊<!-- ⌊ --></mo>
+        <msub>
+          <mi>n</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mi>M</mi>
+          </mrow>
+        </msub>
+        <mrow class="MJX-TeXAtom-ORD">
+          <mo>/</mo>
+        </mrow>
+        <msub>
+          <mi>n</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mi>N</mi>
+          </mrow>
+        </msub>
+        <mo fence="false" stretchy="false">⌋<!-- ⌋ --></mo>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle q=\lfloor n_{M}/n_{N}\rfloor }</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle q=\lfloor n_{M}/n_{N}\rfloor }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/750ada9cbf985782577f7adf9092860a1c4b9506" style="vertical-align: -0.838ex; width:13.835ex; height:2.843ex;"/></span>,</span> <span class="nowrap">and then <b>let</b> <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n_{N}=(n_{M}{\bmod {n}}_{N})}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>n</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mi>N</mi>
+          </mrow>
+        </msub>
+        <mo>=</mo>
+        <mo stretchy="false">(</mo>
+        <msub>
+          <mi>n</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mi>M</mi>
+          </mrow>
+        </msub>
+        <msub>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mo lspace="thickmathspace" rspace="thickmathspace">mod</mo>
+            <mrow class="MJX-TeXAtom-ORD">
+              <mi>n</mi>
+            </mrow>
+          </mrow>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mi>N</mi>
+          </mrow>
+        </msub>
+        <mo stretchy="false">)</mo>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle n_{N}=(n_{M}{\bmod {n}}_{N})}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle n_{N}=(n_{M}{\bmod {n}}_{N})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4e65b01848aebcbcde7a68c89235ff62ef0c5bc7" style="vertical-align: -0.838ex; width:20.115ex; height:2.843ex;"/></span>.</span>
+    <span class="nowrap">Compute recursively <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{M}^{q}}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msubsup>
+          <mi>x</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mi>M</mi>
+          </mrow>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mi>q</mi>
+          </mrow>
+        </msubsup>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle x_{M}^{q}}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle x_{M}^{q}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/032a5519a11caa4d3f558b91c05d3e24ee7a9bf1" style="vertical-align: -1.005ex; width:3.289ex; height:3.176ex;"/></span>,</span> <span class="nowrap">and then <b>let</b> <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{N}=x_{N}\cdot x_{M}^{q}}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>x</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mi>N</mi>
+          </mrow>
+        </msub>
+        <mo>=</mo>
+        <msub>
+          <mi>x</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mi>N</mi>
+          </mrow>
+        </msub>
+        <mo>⋅<!-- ⋅ --></mo>
+        <msubsup>
+          <mi>x</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mi>M</mi>
+          </mrow>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mi>q</mi>
+          </mrow>
+        </msubsup>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle x_{N}=x_{N}\cdot x_{M}^{q}}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle x_{N}=x_{N}\cdot x_{M}^{q}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/40066baaed52460efb79812b5fc40742e4eae73e" style="vertical-align: -1.005ex; width:14.109ex; height:3.176ex;"/></span>.</span>
+<b>End loop</b>;
+<span class="nowrap"><b>Return</b> <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x^{n}=x_{M}^{n_{M}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msup>
+          <mi>x</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mi>n</mi>
+          </mrow>
+        </msup>
+        <mo>=</mo>
+        <msubsup>
+          <mi>x</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mi>M</mi>
+          </mrow>
+          <mrow class="MJX-TeXAtom-ORD">
+            <msub>
+              <mi>n</mi>
+              <mrow class="MJX-TeXAtom-ORD">
+                <mi>M</mi>
+              </mrow>
+            </msub>
+          </mrow>
+        </msubsup>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle x^{n}=x_{M}^{n_{M}}}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle x^{n}=x_{M}^{n_{M}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/aa6dd8173181dca4c45eea4328fee0ce6da68fe9" style="vertical-align: -1.005ex; width:9.761ex; height:3.176ex;"/></span>.</span>
+</pre>
+<p>The algorithm first finds the largest value among the <span class="texhtml"><i>n</i><sub><i>i</i></sub></span> and then the supremum within the set of <span class="texhtml">{ <i>n</i><sub><i>i</i></sub> \ <i>i</i> ≠ <i>M</i> }</span>.
+Then it raises <span class="texhtml"><i>x</i><sub><i>M</i></sub></span> to the power <span class="texhtml mvar" style="font-style:italic;">q</span>, multiplies this value with <span class="texhtml"><i>x</i><sub><i>N</i></sub></span>, and then assigns <span class="texhtml"><i>x</i><sub><i>N</i></sub></span> the result of this computation and <span class="texhtml"><i>n</i><sub><i>M</i></sub></span> the value <span class="texhtml"><i>n</i><sub><i>M</i></sub></span> modulo <span class="texhtml"><i>n</i><sub><i>N</i></sub></span>.
+</p>
+<h2><span class="mw-headline" id="Further_applications">Further applications</span><span class="mw-editsection"></span></h2>
+<p>The same idea allows fast computation of large exponents modulo a number. Especially in cryptography, it is useful to compute powers in a ring of integers modulo <i>q</i>. It can also be used to compute integer powers in a group, using the rule
+</p>
+<dl><dd>Power(<i>x</i>, −<i>n</i>) = (Power(<i>x</i>, <i>n</i>))<sup>−1</sup>.</dd></dl>
+<p>The method works in every semigroup and is often used to compute powers of matrices.
+</p><p>For example, the evaluation of
+</p>
+<dl><dd>13789<sup>722341</sup> (mod 2345) = 2029</dd></dl>
+<p>would take a very long time and much storage space if the naïve method were used: compute 13789<sup>722341</sup>, then take the remainder when divided by 2345. Even using a more effective method will take a long time: square 13789, take the remainder when divided by 2345, multiply the result by 13789, and so on. This will take less than <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2\log _{2}(722340)\leq 40}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>2</mn>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mn>722340</mn>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mn>40</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2\log _{2}(722340)\leq 40}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 2\log _{2}(722340)\leq 40}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/11d8ccdf9a949151ba14ea22a0dbb6eb5cf46d11" style="vertical-align: -0.838ex; width:19.783ex; height:2.843ex;"/></span> modular multiplications.
+</p><p>Applying above <i>exp-by-squaring</i> algorithm, with "*" interpreted as <i>x</i> * <i>y</i> = <i>xy</i> mod 2345 (that is, a multiplication followed by a division with remainder) leads to only 27 multiplications and divisions of integers, which may all be stored in a single machine word.
+</p>
+<h2><span class="mw-headline" id="Signed-digit_recoding">Signed-digit recoding</span><span class="mw-editsection"></span></h2>
+<p>In certain computations it may be more efficient to allow negative coefficients and hence use the inverse of the base, provided inversion in <span class="texhtml mvar" style="font-style:italic;"><b>G</b></span> is "fast" or has been precomputed. For example, when computing <span class="texhtml"><i>x</i><sup>2<sup><i>k</i></sup>−1</sup></span>, the binary method requires <span class="texhtml"><i>k</i>−1</span> multiplications and <span class="texhtml"><i>k</i>−1</span> squarings. However, one could perform <span class="texhtml mvar" style="font-style:italic;">k</span> squarings to get <span class="texhtml"><i>x</i><sup>2<sup><i>k</i></sup></sup></span> and then multiply by <span class="texhtml"><i>x</i><sup>−1</sup></span> to obtain <span class="texhtml"><i>x</i><sup>2<sup><i>k</i></sup>−1</sup></span>.
+</p><p>To this end we define the signed-digit representation of an integer <span class="texhtml mvar" style="font-style:italic;">n</span> in radix <span class="texhtml mvar" style="font-style:italic;">b</span> as 
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n=\sum _{i=0}^{l-1}n_{i}b^{i}{\text{  with  }}|n_{i}|&lt;b.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>=</mo>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>l</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</munderover>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<msup>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext> with </mtext>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>&lt;</mo>
+<mi>b</mi>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n=\sum _{i=0}^{l-1}n_{i}b^{i}{\text{  with  }}|n_{i}|&lt;b.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n=\sum _{i=0}^{l-1}n_{i}b^{i}{\text{  with  }}|n_{i}|&lt;b.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/79e376a15a49cb5b2c3a3acc6dbcc5d6f7e35434" style="vertical-align: -3.005ex; width:26.141ex; height:7.343ex;"/></span></dd></dl>
+<p><i>Signed binary representation</i> corresponds to the particular choice <span class="texhtml"><i>b</i> = 2</span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n_{i}\in \{-1,0,1\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>∈<!-- ∈ --></mo>
+<mo fence="false" stretchy="false">{</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo>,</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mn>1</mn>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n_{i}\in \{-1,0,1\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n_{i}\in \{-1,0,1\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5306452b55f13295249a02125aefec54a5d32374" style="vertical-align: -0.838ex; width:14.723ex; height:2.843ex;"/></span>. It is denoted by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (n_{l-1}\dots n_{0})_{s}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>l</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>…<!-- … --></mo>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<msub>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>s</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (n_{l-1}\dots n_{0})_{s}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle (n_{l-1}\dots n_{0})_{s}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/037337f48f8aa046933f1574bd6114190dd5ba29" style="vertical-align: -0.838ex; width:12.977ex; height:2.843ex;"/></span>. There are several methods for computing this representation. The representation is not unique. For example, take <span class="texhtml"><i>n</i> = 478</span>: two distinct signed-binary representations are given by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (10{\bar {1}}1100{\bar {1}}10)_{s}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mn>10</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mn>1</mn>
+<mo stretchy="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mrow>
+<mn>1100</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mn>1</mn>
+<mo stretchy="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mrow>
+<mn>10</mn>
+<msub>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>s</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (10{\bar {1}}1100{\bar {1}}10)_{s}}</annotation>
+</semantics>
+</math></span><img alt="(10{\bar {1}}1100{\bar {1}}10)_{s}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0d98cb7e460012766d6ea600a196a7c484d9ca1a" style="vertical-align: -0.838ex; width:14.437ex; height:3.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (100{\bar {1}}1000{\bar {1}}0)_{s}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mn>100</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mn>1</mn>
+<mo stretchy="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mrow>
+<mn>1000</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mn>1</mn>
+<mo stretchy="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mrow>
+<mn>0</mn>
+<msub>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>s</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (100{\bar {1}}1000{\bar {1}}0)_{s}}</annotation>
+</semantics>
+</math></span><img alt="(100{\bar {1}}1000{\bar {1}}0)_{s}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0bab69825b5400d28511c5566eec5d63272dc58e" style="vertical-align: -0.838ex; width:14.437ex; height:3.009ex;"/></span>, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\bar {1}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mn>1</mn>
+<mo stretchy="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\bar {1}}}</annotation>
+</semantics>
+</math></span><img alt="{\bar {1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/33787267e125dbadb71bf531837ecb9858be9838" style="vertical-align: -0.338ex; width:1.162ex; height:2.509ex;"/></span> is used to denote <span class="texhtml">−1</span>. Since the binary method computes a multiplication for every non-zero entry in the base-2 representation of <span class="texhtml mvar" style="font-style:italic;">n</span>, we are interested in finding the signed-binary representation with the smallest number of non-zero entries, that is, the one with <i>minimal</i> Hamming weight. One method of doing this is to compute the representation in non-adjacent form, or NAF for short, which is one that satisfies <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n_{i}n_{i+1}=0{\text{ for all }}i\geqslant 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mn>0</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext> for all </mtext>
+</mrow>
+<mi>i</mi>
+<mo>⩾<!-- ⩾ --></mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n_{i}n_{i+1}=0{\text{ for all }}i\geqslant 0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n_{i}n_{i+1}=0{\text{ for all }}i\geqslant 0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/24589d2fe1f4cfc927d81422f1015f31d58ee253" style="vertical-align: -0.671ex; width:22.798ex; height:2.509ex;"/></span> and denoted by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (n_{l-1}\dots n_{0})_{\text{NAF}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>l</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>…<!-- … --></mo>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<msub>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>NAF</mtext>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (n_{l-1}\dots n_{0})_{\text{NAF}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle (n_{l-1}\dots n_{0})_{\text{NAF}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7cfcfa25bda955cd23e46ccd7b372200e1aaf37b" style="vertical-align: -0.838ex; width:15.744ex; height:2.843ex;"/></span>. For example, the NAF representation of 478 is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (1000{\bar {1}}000{\bar {1}}0)_{\text{NAF}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mn>1000</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mn>1</mn>
+<mo stretchy="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mrow>
+<mn>000</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mn>1</mn>
+<mo stretchy="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mrow>
+<mn>0</mn>
+<msub>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>NAF</mtext>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (1000{\bar {1}}000{\bar {1}}0)_{\text{NAF}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle (1000{\bar {1}}000{\bar {1}}0)_{\text{NAF}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/388004323f902b4d0b35ec2b1cb145914aca14f7" style="vertical-align: -0.838ex; width:17.204ex; height:3.009ex;"/></span>. This representation always has minimal Hamming weight. A simple algorithm to compute the NAF representation of a given integer <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n=(n_{l}n_{l-1}\dots n_{0})_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>l</mi>
+</mrow>
+</msub>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>l</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>…<!-- … --></mo>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<msub>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n=(n_{l}n_{l-1}\dots n_{0})_{2}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n=(n_{l}n_{l-1}\dots n_{0})_{2}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0aa51955e93c1db2c79433544f698440e168ebe6" style="vertical-align: -0.838ex; width:19.638ex; height:2.843ex;"/></span> with <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n_{l}=n_{l-1}=0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>l</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>l</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n_{l}=n_{l-1}=0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n_{l}=n_{l-1}=0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f405549321b6c338791804643ba819bfb4417901" style="vertical-align: -0.671ex; width:13.694ex; height:2.509ex;"/></span> is the following:
+</p>
+<pre><span class="nowrap"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c_{0}=0}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>c</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mn>0</mn>
+          </mrow>
+        </msub>
+        <mo>=</mo>
+        <mn>0</mn>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle c_{0}=0}</annotation>
+  </semantics>
+</math></span><img alt="c_{0}=0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/29af3d4e887815bb3b9b9eab4f7540a376fccd73" style="vertical-align: -0.671ex; width:6.322ex; height:2.509ex;"/></span></span>
+for <span class="texhtml"><i>i</i> = 0</span> to <span class="texhtml"><i>l</i> − 1</span> do
+  <span class="nowrap"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c_{i+1}=\left\lfloor {\frac {1}{2}}(c_{i}+n_{i}+n_{i+1})\right\rfloor }" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>c</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mi>i</mi>
+            <mo>+</mo>
+            <mn>1</mn>
+          </mrow>
+        </msub>
+        <mo>=</mo>
+        <mrow>
+          <mo>⌊</mo>
+          <mrow>
+            <mrow class="MJX-TeXAtom-ORD">
+              <mfrac>
+                <mn>1</mn>
+                <mn>2</mn>
+              </mfrac>
+            </mrow>
+            <mo stretchy="false">(</mo>
+            <msub>
+              <mi>c</mi>
+              <mrow class="MJX-TeXAtom-ORD">
+                <mi>i</mi>
+              </mrow>
+            </msub>
+            <mo>+</mo>
+            <msub>
+              <mi>n</mi>
+              <mrow class="MJX-TeXAtom-ORD">
+                <mi>i</mi>
+              </mrow>
+            </msub>
+            <mo>+</mo>
+            <msub>
+              <mi>n</mi>
+              <mrow class="MJX-TeXAtom-ORD">
+                <mi>i</mi>
+                <mo>+</mo>
+                <mn>1</mn>
+              </mrow>
+            </msub>
+            <mo stretchy="false">)</mo>
+          </mrow>
+          <mo>⌋</mo>
+        </mrow>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle c_{i+1}=\left\lfloor {\frac {1}{2}}(c_{i}+n_{i}+n_{i+1})\right\rfloor }</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle c_{i+1}=\left\lfloor {\frac {1}{2}}(c_{i}+n_{i}+n_{i+1})\right\rfloor }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/390a81945282bebae0876ca3d551bb0e020ff34b" style="vertical-align: -2.505ex; width:27.5ex; height:6.176ex;"/></span></span>
+  <span class="nowrap"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n_{i}'=c_{i}+n_{i}-2c_{i+1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msubsup>
+          <mi>n</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mi>i</mi>
+          </mrow>
+          <mo>′</mo>
+        </msubsup>
+        <mo>=</mo>
+        <msub>
+          <mi>c</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mi>i</mi>
+          </mrow>
+        </msub>
+        <mo>+</mo>
+        <msub>
+          <mi>n</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mi>i</mi>
+          </mrow>
+        </msub>
+        <mo>−<!-- − --></mo>
+        <mn>2</mn>
+        <msub>
+          <mi>c</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mi>i</mi>
+            <mo>+</mo>
+            <mn>1</mn>
+          </mrow>
+        </msub>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle n_{i}'=c_{i}+n_{i}-2c_{i+1}}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle n_{i}'=c_{i}+n_{i}-2c_{i+1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6087559c2f7ed0c20091e27afdfa01bf12b986d8" style="vertical-align: -1.005ex; width:20.044ex; height:2.843ex;"/></span></span>
+<span class="nowrap">return <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (n_{l-1}'\dots n_{0}')_{\text{NAF}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <mo stretchy="false">(</mo>
+        <msubsup>
+          <mi>n</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mi>l</mi>
+            <mo>−<!-- − --></mo>
+            <mn>1</mn>
+          </mrow>
+          <mo>′</mo>
+        </msubsup>
+        <mo>…<!-- … --></mo>
+        <msubsup>
+          <mi>n</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mn>0</mn>
+          </mrow>
+          <mo>′</mo>
+        </msubsup>
+        <msub>
+          <mo stretchy="false">)</mo>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mtext>NAF</mtext>
+          </mrow>
+        </msub>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle (n_{l-1}'\dots n_{0}')_{\text{NAF}}}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle (n_{l-1}'\dots n_{0}')_{\text{NAF}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f7d4af8d8b63c9fd5c99bd85825e5718f8eb91b3" style="vertical-align: -1.171ex; width:15.744ex; height:3.176ex;"/></span></span>
+</pre>
+<p>Another algorithm by Koyama and Tsuruoka does not require the condition that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n_{i}=n_{i+1}=0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n_{i}=n_{i+1}=0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n_{i}=n_{i+1}=0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b397ecb1d1049dd501e8a1dde896d29fd867a2c0" style="vertical-align: -0.671ex; width:13.849ex; height:2.509ex;"/></span>; it still minimizes the Hamming weight.
+</p>
+<h2><span class="mw-headline" id="Alternatives_and_generalizations">Alternatives and generalizations</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p>Exponentiation by squaring can be viewed as a suboptimal addition-chain exponentiation algorithm: it computes the exponent by an addition chain consisting of repeated exponent doublings (squarings) and/or incrementing exponents by <i>one</i> (multiplying by <i>x</i>) only.  More generally, if one allows <i>any</i> previously computed exponents to be summed (by multiplying those powers of <i>x</i>), one can sometimes perform the exponentiation using fewer multiplications (but typically using more memory).  The smallest power where this occurs is for <i>n</i> = 15:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x^{15}=x\times (x\times [x\times x^{2}]^{2})^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>15</mn>
+</mrow>
+</msup>
+<mo>=</mo>
+<mi>x</mi>
+<mo>×<!-- × --></mo>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo>×<!-- × --></mo>
+<mo stretchy="false">[</mo>
+<mi>x</mi>
+<mo>×<!-- × --></mo>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<msup>
+<mo stretchy="false">]</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x^{15}=x\times (x\times [x\times x^{2}]^{2})^{2}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle x^{15}=x\times (x\times [x\times x^{2}]^{2})^{2}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/be4067cec1fae174df3672301baf79f8ef2bb61d" style="vertical-align: -0.838ex; width:26.41ex; height:3.176ex;"/></span> (squaring, 6 multiplies),</dd>
+<dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x^{15}=x^{3}\times ([x^{3}]^{2})^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>15</mn>
+</mrow>
+</msup>
+<mo>=</mo>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+<mo>×<!-- × --></mo>
+<mo stretchy="false">(</mo>
+<mo stretchy="false">[</mo>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+<msup>
+<mo stretchy="false">]</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x^{15}=x^{3}\times ([x^{3}]^{2})^{2}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle x^{15}=x^{3}\times ([x^{3}]^{2})^{2}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/07dbf69afe4bf057005df8cdcc88d85ed4cba977" style="vertical-align: -0.838ex; width:19.124ex; height:3.176ex;"/></span> (optimal addition chain, 5 multiplies if <i>x</i><sup>3</sup> is re-used).</dd></dl>
+<p>In general, finding the <i>optimal</i> addition chain for a given exponent is a hard problem, for which no efficient algorithms are known, so optimal chains are typically only used for small exponents (e.g. in compilers where the chains for small powers have been pre-tabulated).  However, there are a number of heuristic algorithms that, while not being optimal, have fewer multiplications than exponentiation by squaring at the cost of additional bookkeeping work and memory usage.  Regardless, the number of multiplications never grows more slowly than Θ(log <i>n</i>), so these algorithms only improve asymptotically upon exponentiation by squaring by a constant factor at best.
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Modular exponentiation</li>
+<li>Vectorial addition chain</li>
+<li>Montgomery reduction</li>
+<li>Non-adjacent form</li>
+<li>Addition chain</li></ul>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1011085734" rel="mw-deduplicated-inline-style"/>
+<!-- 
+NewPP limit report
+Parsed by mw2271
+Cached time: 20221224012453
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.424 seconds
+Real time usage: 0.786 seconds
+Preprocessor visited node count: 3160/1000000
+Post‐expand include size: 34644/2097152 bytes
+Template argument size: 5264/2097152 bytes
+Highest expansion depth: 12/100
+Expensive parser function count: 8/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 29339/5000000 bytes
+Lua time usage: 0.177/10.000 seconds
+Lua memory usage: 4395614/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  377.230      1 -total
+ 32.83%  123.847      2 Template:Reflist
+ 22.79%   85.967      1 Template:Cite_book
+ 20.72%   78.179      2 Template:Ambox
+ 17.42%   65.703      1 Template:Confusing
+ 15.79%   59.583      1 Template:Short_description
+ 12.16%   45.876     37 Template:Math
+  8.65%   32.616      2 Template:Pagetype
+  5.71%   21.547     41 Template:Main_other
+  5.60%   21.121      1 Template:More_citations_needed
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:10237-0!canonical and timestamp 20221224012452 and revision id 1123579425.
+ -->
+</div></body>
+</html>

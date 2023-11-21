@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Fibonaccian_search</title>
+</head>
+<body>
+<div class="mw-parser-output"><style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-Technical plainlinks metadata ambox ambox-style ambox-technical" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<p>In computer science, the <b>Fibonacci search technique</b> is a method of searching a sorted array using a divide and conquer algorithm that narrows down possible locations with the aid of Fibonacci numbers.<sup class="reference" id="cite_ref-Ferguson1960_1-0">[1]</sup> Compared to binary search where the sorted array is divided into two equal-sized parts, one of which is examined further, Fibonacci search divides the array into two parts that have sizes that are consecutive Fibonacci numbers. On average, this leads to about 4% more comparisons to be executed,<sup class="reference" id="cite_ref-Overholt_2-0">[2]</sup> but it has the advantage that one only needs addition and subtraction to calculate the indices of the accessed array elements, while classical binary search needs bit-shift (see Bitwise operation), division or multiplication,<sup class="reference" id="cite_ref-Ferguson1960_1-1">[1]</sup> operations that were less common at the time Fibonacci search was first published. Fibonacci search has an average- and worst-case complexity of <i>O</i>(log <i>n</i>) (see Big O notation).
+</p><p>The Fibonacci sequence has the property that a number is the sum of its two predecessors. Therefore the sequence can be computed by repeated addition. The ratio of two consecutive numbers approaches the Golden ratio, 1.618... Binary search works by dividing the seek area in equal parts (1:1). Fibonacci search can divide it into parts approaching 1:1.618 while using the simpler operations.
+</p><p>If the elements being searched have non-uniform access memory storage (i. e., the time needed to access a storage location varies depending on the location accessed), the Fibonacci search may have the advantage over binary search in slightly reducing the average time needed to access a storage location. If the machine executing the search has a direct mapped CPU cache, binary search may lead to more cache misses because the elements that are accessed often tend to gather in only a few cache lines; this is mitigated by splitting the array in parts that do not tend to be powers of two. If the data is stored on a magnetic tape where seek time depends on the current head position, a tradeoff between longer seek time and more comparisons may lead to a search algorithm that is skewed similarly to Fibonacci search.
+</p><p>Fibonacci search is derived from Golden section search, an algorithm by Jack Kiefer (1953) to search for the maximum or minimum of a unimodal function in an interval.<sup class="reference" id="cite_ref-3">[3]</sup>
+</p>
+<h2><span class="mw-headline" id="Algorithm">Algorithm</span><span class="mw-editsection"></span></h2>
+<p>Let <i>k</i> be defined as an element in <i>F</i>, the array of Fibonacci numbers. <i>n</i> = <i>F<sub>m</sub></i> is the array size. If <i>n</i> is not a Fibonacci number, let <i>F<sub>m</sub></i> be the smallest number in <i>F</i> that is greater than <i>n</i>.
+</p><p>The array of Fibonacci numbers is defined where <i>F</i><sub><i>k</i>+2</sub> = <i>F</i><sub><i>k</i>+1</sub> + <i>F<sub>k</sub></i>, when <i>k</i> ≥ 0, <i>F</i><sub>1</sub> = 1, and <i>F<sub>0</sub></i> = 1.
+</p><p>To test whether an item is in the list of ordered numbers, follow these steps:
+</p>
+<ol><li>Set <i>k</i> = <i>m</i>.</li>
+<li>If <i>k</i> = 0, stop. There is no match; the item is not in the array.</li>
+<li>Compare the item against element in <i>F</i><sub><i>k</i>−1</sub>.</li>
+<li>If the item matches, stop.</li>
+<li>If the item is less than entry <i>F</i><sub><i>k</i>−1</sub>, discard the elements from positions <i>F</i><sub><i>k</i>−1</sub> + 1 to <i>n</i>. Set <i>k</i> = <i>k</i> − 1 and return to step 2.</li>
+<li>If the item is greater than entry <i>F</i><sub><i>k</i>−1</sub>, discard the elements from positions 1 to <i>F</i><sub><i>k</i>−1</sub>. Renumber the remaining elements from 1 to <i>F</i><sub><i>k</i>−2</sub>, set <i>k</i> = <i>k</i> − 2, and return to step 2.</li></ol>
+<p>Alternative implementation (from "Sorting and Searching" by Knuth<sup class="reference" id="cite_ref-4">[4]</sup>):
+</p><p>Given a table of records <i>R<sub>1</sub></i>, <i>R<sub>2</sub></i>, ..., <i>R<sub>N</sub></i> whose keys are in increasing order <i>K<sub>1</sub></i> &lt; <i>K<sub>2</sub></i> &lt; ... &lt; <i>K<sub>N</sub></i>, the algorithm searches for a given argument <i>K</i>. Assume <i>N+1</i> = <i>F</i><sub><i>k</i>+1</sub>
+</p><p><b>Step 1.</b> [Initialize] <i>i</i> ← <i>F</i><sub><i>k</i></sub>, <i>p</i> ← <i>F</i><sub><i>k</i>-1</sub>, <i>q</i> ← <i>F</i><sub><i>k</i>-2</sub> (throughout the algorithm, <i>p</i> and <i>q</i> will be consecutive Fibonacci numbers)
+</p><p><b>Step 2.</b> [Compare] If <i>K</i> &lt; <i>K<sub>i</sub></i>, go to <i>Step 3</i>; if <i>K</i> &gt; <i>K<sub>i</sub></i> go to <i>Step 4</i>; and if <i>K</i> = <i>K<sub>i</sub></i>, the algorithm terminates successfully.
+</p><p><b>Step 3.</b> [Decrease <i>i</i>] If <i>q</i>=0, the algorithm terminates unsuccessfully. Otherwise set (<i>i</i>, <i>p</i>, <i>q</i>) ← (<i>i - q</i>, <i>q</i>, <i>p - q</i>) (which moves <i>p</i> and <i>q</i> one position back in the Fibonacci sequence); then return to <i>Step 2</i>
+</p><p><b>Step 4.</b> [Increase <i>i</i>] If <i>p</i>=1, the algorithm terminates unsuccessfully. Otherwise set (<i>i</i>,<i>p</i>,<i>q</i>) ← (<i>i + q</i>, <i>p - q</i>, <i>2q - p</i>) (which moves <i>p</i> and <i>q</i> two positions back in the Fibonacci sequence); and return to <i>Step 2</i>
+</p><p>The two variants of the algorithm presented above always divide the current interval into a larger and a smaller subinterval. The original algorithm,<sup class="reference" id="cite_ref-Ferguson1960_1-2">[1]</sup> however, would divide the new interval into a smaller and a larger subinterval in Step 4. This has the advantage that the new <i>i</i> is closer to the old <i>i</i> and is more suitable for accelerating searching on magnetic tape.
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Search algorithms</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation web cs1" id="CITEREFLourakis">Lourakis, Manolis. "Fibonaccian search in C"<span class="reference-accessdate">. Retrieved <span class="nowrap">January 18,</span> 2007</span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=Fibonaccian+search+in+C&amp;rft.aulast=Lourakis&amp;rft.aufirst=Manolis&amp;rft_id=http%3A%2F%2Fwww.ics.forth.gr%2F~lourakis%2Ffibsrch%2F&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AFibonacci+search+technique"></span> Implements the above algorithm (not Ferguson's original one).</li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw2271
+Cached time: 20221214142243
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1]
+CPU time usage: 0.172 seconds
+Real time usage: 0.229 seconds
+Preprocessor visited node count: 311/1000000
+Post‐expand include size: 12505/2097152 bytes
+Template argument size: 9/2097152 bytes
+Highest expansion depth: 7/100
+Expensive parser function count: 2/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 16220/5000000 bytes
+Lua time usage: 0.115/10.000 seconds
+Lua memory usage: 3974834/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  199.723      1 -total
+ 39.47%   78.827      3 Template:Cite_journal
+ 27.33%   54.593      1 Template:About
+ 23.71%   47.358      1 Template:Technical
+ 21.11%   42.163      1 Template:Ambox
+  2.60%    5.201      1 Template:Cite_web
+  2.55%    5.092      1 Template:Cite_book
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:8995012-0!canonical and timestamp 20221214142242 and revision id 1126262433.
+ -->
+</div></body>
+</html>

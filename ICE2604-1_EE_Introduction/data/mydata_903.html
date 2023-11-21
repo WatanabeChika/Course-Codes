@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>shared_memory</title>
+</head>
+<body>
+<div class="mw-parser-output"><style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+
+
+<p>In computer science, <b>shared memory</b> is memory that may be simultaneously accessed by multiple programs with an intent to provide communication among them or avoid redundant copies. Shared memory is an efficient means of passing data between programs. Depending on context, programs may run on a single processor or on multiple separate processors.
+</p><p>Using memory for communication inside a single program, e.g. among its multiple threads, is also referred to as shared memory.
+</p>
+
+<h2><span class="mw-headline" id="In_hardware">In hardware</span><span class="mw-editsection"></span></h2>
+
+<p>In computer hardware, <i>shared memory</i> refers to a (typically large) block of random access memory (RAM) that can be accessed by several different central processing units (CPUs) in a multiprocessor computer system.
+</p><p>Shared memory systems may use:<sup class="reference" id="cite_ref-1">[1]</sup>
+</p>
+<ul><li>uniform memory access (UMA): all the processors share the physical memory uniformly;</li>
+<li>non-uniform memory access (NUMA): memory access time depends on the memory location relative to a processor;</li>
+<li>cache-only memory architecture (COMA): the local memories for the processors at each node is used as cache instead of as actual main memory.</li></ul>
+<p>A shared memory system is relatively easy to program since all processors share a single view of data and the communication between processors can be as fast as memory accesses to the same location. The issue with shared memory systems is that many CPUs need fast access to memory and will likely cache memory, which has two complications:
+</p>
+<ul><li>access time degradation: when several processors try to access the same memory location it causes contention. Trying to access nearby memory locations may cause false sharing. Shared memory computers cannot scale very well. Most of them have ten or fewer processors;</li>
+<li>lack of data coherence: whenever one cache is updated with information that may be used by other processors, the change needs to be reflected to the other processors, otherwise the different processors will be working with incoherent data. Such cache coherence protocols can, when they work well, provide extremely high-performance access to shared information between multiple processors. On the other hand, they can sometimes become overloaded and become a bottleneck to performance.</li></ul>
+<p>Technologies like crossbar switches, Omega networks, HyperTransport or front-side bus can be used to dampen the bottleneck-effects.
+</p><p>In case of a Heterogeneous System Architecture (processor architecture that integrates different types of processors, such as CPUs and GPUs, with shared memory), the memory management unit (MMU) of the CPU and the input–output memory management unit (IOMMU) of the GPU have to share certain characteristics, like a common address space.
+</p><p>The alternatives to shared memory are distributed memory and distributed shared memory, each having a similar set of issues.
+</p>
+<h2><span class="mw-headline" id="In_software">In software</span><span class="mw-editsection"></span></h2>
+<p>In computer software, <i>shared memory</i> is either
+</p>
+<ul><li>a method of inter-process communication (IPC), i.e. a way of exchanging data between programs running at the same time. One process will create an area in RAM which other processes can access;</li>
+<li>a method of conserving memory space by directing accesses to what would ordinarily be copies of a piece of data to a single instance instead, by using virtual memory mappings or with explicit support of the program in question. This is most often used for shared libraries and for Execute in place (XIP).</li></ul>
+<p>Since both processes can access the shared memory area like regular working memory, this is a very fast way of communication (as opposed to other mechanisms of IPC such as named pipes, Unix domain sockets or CORBA). On the other hand, it is less scalable, as for example the communicating processes must be running on the same machine (of other IPC methods, only Internet domain sockets—not Unix domain sockets—can use a computer network), and care must be taken to avoid issues if processes sharing memory are running on separate CPUs and the underlying architecture is not cache coherent.
+</p><p>IPC by shared memory is used for example to transfer images between the application and the X server on Unix systems, or inside the IStream object returned by CoMarshalInterThreadInterfaceInStream in the COM libraries under Windows.
+</p><p>Dynamic libraries are generally held in memory once and mapped to multiple processes, and only pages that had to be customized for the individual process (because a symbol resolved differently there) are duplicated, usually with a mechanism known as copy-on-write that transparently copies the page when a write is attempted, and then lets the write succeed on the private copy.
+</p><p>Compared to multiple address space operating systems,
+memory sharing -- especially of sharing procedures or pointer-based structures --
+is simpler in single address space operating systems.<sup class="reference" id="cite_ref-2">[2]</sup>
+</p>
+<h3><span class="mw-headline" id="Support_on_Unix-like_systems">Support on Unix-like systems</span><span class="mw-editsection"></span></h3>
+<p>POSIX provides a standardized API for using shared memory, <i>POSIX Shared Memory</i>. This uses the function <code>shm_open</code> from sys/mman.h.<sup class="reference" id="cite_ref-3">[3]</sup> POSIX interprocess communication (part of the POSIX:XSI Extension) includes the shared-memory functions <code>shmat</code>, <code>shmctl</code>, <code>shmdt</code> and <code>shmget</code>.<sup class="reference" id="cite_ref-4">[4]</sup><sup class="reference" id="cite_ref-5">[5]</sup> Unix System V provides an API for shared memory as well. This uses shmget from sys/shm.h. BSD systems provide "anonymous mapped memory" which can be used by several processes.
+</p><p>The shared memory created by <code>shm_open</code> is persistent. It stays in the system until explicitly removed by a process. This has a drawback in that if the process crashes and fails to clean up shared memory it will stay until system shutdown; that  limitation is not present in an Android-specific implementation dubbed <code>ashmem</code>.<sup class="reference" id="cite_ref-6">[6]</sup>
+</p><p>POSIX also provides the <code>mmap</code> API for mapping files into memory; a mapping can be shared, allowing the file's contents to be used as shared memory.
+</p><p>Linux distributions based on the 2.6 kernel and later offer /dev/shm as shared memory in the form of a RAM disk, more specifically as a world-writable directory (a directory in which every user of the system can create files) that is stored in memory. Both the RedHat and Debian based distributions include it by default. Support for this type of RAM disk is completely optional within the kernel configuration file.<sup class="reference" id="cite_ref-7">[7]</sup>
+</p>
+<h3><span class="mw-headline" id="Support_on_Windows">Support on Windows</span><span class="mw-editsection"></span></h3>
+<p>On Windows, one can use <code>CreateFileMapping</code> and <code>MapViewOfFile</code> functions to map a region of a file into memory in multiple processes.<sup class="reference" id="cite_ref-8">[8]</sup>
+</p>
+<h3><span class="mw-headline" id="Cross-platform_support">Cross-platform support</span><span class="mw-editsection"></span></h3>
+<p>Some C++ libraries provide a portable and object-oriented access to shared memory functionality. For example, Boost contains the Boost.Interprocess C++ Library<sup class="reference" id="cite_ref-9">[9]</sup> and Qt provides the QSharedMemory class.<sup class="reference" id="cite_ref-10">[10]</sup>
+</p>
+<h3><span class="mw-headline" id="Programming_language_support">Programming language support</span><span class="mw-editsection"></span></h3>
+<p>For programming languages with POSIX bindings (say, C/C++), shared memory regions can be created and accessed by calling the functions provided by the operating system. Other programming languages may have their own ways of using these operating facilities for similar effect. For example, PHP provides an API to create shared memory, similar to POSIX functions.<sup class="reference" id="cite_ref-11">[11]</sup>
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Distributed memory</li>
+<li>Distributed shared memory</li>
+<li>Shared graphics memory</li>
+<li>Heterogeneous System Architecture</li>
+<li>Global variable</li>
+<li>Nano-threads</li>
+<li>Execute in place</li>
+<li>Shared register</li>
+<li>Shared snapshot objects</li>
+<li>Von Neumann Architecture Bottleneck</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>IPC:Shared Memory by Dave Marshall</li>
+<li>Shared Memory Introduction, Ch. 12 from book by Richard Stevens "UNIX Network Programming, Volume 2, Second Edition: Interprocess Communications".</li>
+<li>SharedHashFile, An open source, shared memory hash table.</li></ul>
+
+
+
+<!-- 
+NewPP limit report
+Parsed by mw2307
+Cached time: 20221224002446
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.220 seconds
+Real time usage: 0.316 seconds
+Preprocessor visited node count: 797/1000000
+Post‐expand include size: 42657/2097152 bytes
+Template argument size: 764/2097152 bytes
+Highest expansion depth: 9/100
+Expensive parser function count: 3/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 27903/5000000 bytes
+Lua time usage: 0.124/10.000 seconds
+Lua memory usage: 4087820/52428800 bytes
+Number of Wikibase entities loaded: 1/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  252.443      1 -total
+ 40.80%  102.996      1 Template:Reflist
+ 26.44%   66.749      2 Template:Cite_book
+ 19.18%   48.415      2 Template:Navbox
+ 15.16%   38.280      1 Template:Inter-process_communication
+ 14.35%   36.218      1 Template:Short_description
+ 12.08%   30.487      1 Template:Confuse
+  9.83%   24.803      1 Template:Authority_control
+  6.25%   15.777      2 Template:Pagetype
+  5.99%   15.109      1 Template:Parallel_Computing
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:45081735-0!canonical and timestamp 20221224002446 and revision id 1126946013.
+ -->
+</div></body>
+</html>

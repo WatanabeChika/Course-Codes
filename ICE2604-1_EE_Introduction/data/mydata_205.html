@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Collatz_problem</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1105704213">.mw-parser-output .unsolved{margin:0.5em 0 1em 1em;border:#ccc solid;padding:0.35em 0.35em 0.35em 2.2em;background-color:#eee;background-image:url("https://upload.wikimedia.org/wikipedia/commons/2/26/Question%2C_Web_Fundamentals.svg");background-position:top 50%left 0.35em;background-size:1.5em;background-repeat:no-repeat}@media(min-width:720px){.mw-parser-output .unsolved{clear:right;float:right;max-width:25%}}.mw-parser-output .unsolved-label{font-weight:bold}.mw-parser-output .unsolved-body{margin:0.35em;font-style:italic}.mw-parser-output .unsolved-more{font-size:smaller}</style>
+
+
+<p>The <b>Collatz conjecture</b> is one of the most famous unsolved problems in mathematics.  The conjecture asks whether repeating two simple arithmetic operations will eventually transform every positive integer into 1. It concerns sequences of integers in which each term is obtained from the previous term as follows: if the previous term is even, the next term is one half of the previous term. If the previous term is odd, the next term is 3 times the previous term plus 1. The conjecture is that these sequences always reach 1, no matter which positive integer is chosen to start the sequence.
+</p><p>It is named after mathematician Lothar Collatz, who introduced the idea in 1937, two years after receiving his doctorate.<sup class="reference" id="cite_ref-1">[1]</sup>  It is also known as the <b><span class="texhtml">3<i>n</i> + 1</span> problem</b>, the <b><span class="texhtml">3<i>n</i> + 1</span> conjecture</b>, the <b>Ulam conjecture</b> (after Stanisław Ulam), <b>Kakutani's problem</b> (after Shizuo Kakutani), the <b>Thwaites conjecture</b> (after Sir Bryan Thwaites), <b>Hasse's algorithm</b> (after Helmut Hasse), or the <b>Syracuse problem</b>.<sup class="reference" id="cite_ref-2">[2]</sup><sup class="reference" id="cite_ref-4">[4]</sup> 
+The sequence of numbers involved is sometimes referred to as the <b>hailstone sequence</b>, <b>hailstone numbers</b> or <b>hailstone numerals</b> (because the values are usually subject to multiple descents and ascents like hailstones in a cloud),<sup class="reference" id="cite_ref-5">[5]</sup> or as <b>wondrous numbers</b>.<sup class="reference" id="cite_ref-6">[6]</sup>
+</p><p>Paul Erdős said about the Collatz conjecture: "Mathematics may not be ready for such problems."<sup class="reference" id="cite_ref-Guy_(2004)_7-0">[7]</sup> He also offered US$500 for its solution.<sup class="reference" id="cite_ref-8">[8]</sup> Jeffrey Lagarias stated in 2010 that the Collatz conjecture "is an extraordinarily difficult problem, completely out of reach of present day mathematics".<sup class="reference" id="cite_ref-Lagarias_(2010)_9-0">[9]</sup>
+</p>
+
+<h2><span class="mw-headline" id="Statement_of_the_problem">Statement of the problem</span><span class="mw-editsection"></span></h2>
+
+
+
+
+
+<p>Consider the following operation on an arbitrary positive integer:
+</p>
+<ul><li>If the number is even, divide it by two.</li>
+<li>If the number is odd, triple it and add one.</li></ul>
+<p>In modular arithmetic notation, define the function <span class="texhtml mvar" style="font-style:italic;">f</span> as follows:
+</p>
+<p>Now form a sequence by performing this operation repeatedly, beginning with any positive integer, and taking the result at each step as the input at the next.
+</p><p>In notation:
+</p>
+(that is: <span class="texhtml"><i>a<sub>i</sub></i></span> is the value of <span class="texhtml mvar" style="font-style:italic;">f</span> applied to <span class="texhtml mvar" style="font-style:italic;">n</span> recursively <span class="texhtml mvar" style="font-style:italic;">i</span> times;  <span class="texhtml"><i>a<sub>i</sub></i> = <i>f</i><span style="padding-left:0.12em;"><sup><i>i</i></sup></span>(<i>n</i>)</span>).
+<p>The Collatz conjecture is: <i>This process will eventually reach the number 1, regardless of which positive integer is chosen initially.</i>
+</p><p>If the conjecture is false, it can only be because there is some starting number which gives rise to a sequence that does not contain 1. Such a sequence would either enter a repeating cycle that excludes 1, or increase without bound. No such sequence has been found.
+</p><p>The smallest <span class="texhtml mvar" style="font-style:italic;">i</span> such that <span class="texhtml"><i>a<sub>i</sub></i> &lt; <i>a</i><sub>0</sub> </span> is called the <b>stopping time</b> of <span class="texhtml mvar" style="font-style:italic;">n</span>. Similarly, the smallest <span class="texhtml mvar" style="font-style:italic;">k</span> such that <span class="texhtml"><i>a<sub>k</sub></i> = 1</span> is called the <b>total stopping time</b> of <span class="texhtml mvar" style="font-style:italic;">n</span>.<sup class="reference" id="cite_ref-Lagarias_(1985)_3-1">[3]</sup> If one of the indexes <span class="texhtml mvar" style="font-style:italic;">i</span> or <span class="texhtml mvar" style="font-style:italic;">k</span> doesn't exist, we say that the stopping time or the total stopping time, respectively, is infinite.
+</p><p>The Collatz conjecture asserts that the total stopping time of every <span class="texhtml mvar" style="font-style:italic;">n</span> is finite. It is also equivalent to saying that every <span class="texhtml"><i>n</i> ≥ 2</span> has a finite stopping time.
+</p><p>Since <span class="texhtml">3<i>n</i> + 1</span> is even whenever <span class="texhtml mvar" style="font-style:italic;">n</span> is odd, one may instead use the "shortcut" form of the Collatz function:
+</p>
+This definition yields smaller values for the stopping time and total stopping time without changing the overall dynamics of the process.
+
+<h2><span class="mw-headline" id="Empirical_data">Empirical data</span><span class="mw-editsection"></span></h2>
+<p>For instance, starting with <span class="texhtml"><i>n</i> = 12</span> and applying the function <span class="texhtml"><i>f</i></span> without "shortcut", one gets the sequence 12, 6, 3, 10, 5, 16, 8, 4, 2, 1.
+</p><p>The number <span class="texhtml"><i>n</i> = 19</span> takes longer to reach 1: 19, 58, 29, 88, 44, 22, 11, 34, 17, 52, 26, 13, 40, 20, 10, 5, 16, 8, 4, 2, 1.
+</p><p>The sequence for <span class="texhtml"><i>n</i> = 27</span>, listed and graphed below, takes 111 steps (41 steps through odd numbers, in bold), climbing as high as 9232 before descending to 1.
+</p>
+<dl><dd><b>27</b>, 82, <b>41</b>, 124, 62, <b>31</b>, 94, <b>47</b>, 142, <b>71</b>, 214, <b>107</b>, 322, <b>161</b>, 484, 242, <b>121</b>, 364, 182, <b>91</b>, 274, <b>137</b>, 412, 206, <b>103</b>, 310, <b>155</b>, 466, <b>233</b>, 700, 350, <b>175</b>, 526, <b>263</b>, 790, <b>395</b>, 1186, <b>593</b>, 1780, 890, <b>445</b>, 1336, 668, 334, <b>167</b>, 502, <b>251</b>, 754, <b>377</b>, 1132, 566, <b>283</b>, 850, <b>425</b>, 1276, 638, <b>319</b>, 958, <b>479</b>, 1438, <b>719</b>, 2158, <b>1079</b>, 3238, <b>1619</b>, 4858, <b>2429</b>, 7288, 3644, 1822, <b>911</b>, 2734, <b>1367</b>, 4102, <b>2051</b>, 6154, <b>3077</b>, 9232, 4616, 2308, 1154, <b>577</b>, 1732, 866, <b>433</b>, 1300, 650, <b>325</b>, 976, 488, 244, 122, <b>61</b>, 184, 92, 46, <b>23</b>, 70, <b>35</b>, 106, <b>53</b>, 160, 80, 40, 20, 10, <b>5</b>, 16, 8, 4, 2, <b>1</b> (sequence <span class="nowrap external">A008884</span> in the OEIS)</dd></dl>
+
+<p>Numbers with a total stopping time longer than that of any smaller starting value form a sequence beginning with:
+</p>
+<dl><dd>1, 2, 3, 6, 7, 9, 18, 25, 27, 54, 73, 97, 129, 171, 231, 313, 327, 649, 703, 871, 1161, 2223, 2463, 2919, 3711, 6171, ... (sequence <span class="nowrap external">A006877</span> in the OEIS).</dd></dl>
+<p>The starting values whose maximum trajectory point is greater than that of any smaller starting value are as follows:
+</p>
+<dl><dd>1, 2, 3, 7, 15, 27, 255, 447, 639, 703, 1819, 4255, 4591, 9663, 20895, 26623, 31911, 60975, 77671, 113383, 138367, 159487, 270271, 665215, 704511, ... (sequence <span class="nowrap external">A006884</span> in the OEIS)</dd></dl>
+<p>Number of steps for <span class="texhtml mvar" style="font-style:italic;">n</span> to reach 1 are
+</p>
+<dl><dd>0, 1, 7, 2, 5, 8, 16, 3, 19, 6, 14, 9, 9, 17, 17, 4, 12, 20, 20, 7, 7, 15, 15, 10, 23, 10, 111, 18, 18, 18, 106, 5, 26, 13, 13, 21, 21, 21, 34, 8, 109, 8, 29, 16, 16, 16, 104, 11, 24, 24, ... (sequence <span class="nowrap external">A006577</span> in the OEIS)</dd></dl>
+<p>The starting value having the largest total stopping time while being
+</p>
+<dl><dd>less than 10 is 9, which has 19 steps,</dd>
+<dd>less than 100 is 97, which has 118 steps,</dd>
+<dd>less than 1000 is 871, which has 178 steps,</dd>
+<dd>less than 10<sup>4</sup> is 6171, which has 261 steps,</dd>
+<dd>less than 10<sup>5</sup> is <span class="nowrap"><span data-sort-value="7004770310000000000♠"></span>77<span style="margin-left:.25em;">031</span></span>, which has 350 steps,</dd>
+<dd>less than 10<sup>6</sup> is <span class="nowrap"><span data-sort-value="7005837799000000000♠"></span>837<span style="margin-left:.25em;">799</span></span>, which has 524 steps,</dd>
+<dd>less than 10<sup>7</sup> is <span class="nowrap"><span data-sort-value="7006840051100000000♠"></span>8<span style="margin-left:.25em;">400</span><span style="margin-left:.25em;">511</span></span>, which has 685 steps,</dd>
+<dd>less than 10<sup>8</sup> is <span class="nowrap"><span data-sort-value="7007637281270000000♠"></span>63<span style="margin-left:.25em;">728</span><span style="margin-left:.25em;">127</span></span>, which has 949 steps,</dd>
+<dd>less than 10<sup>9</sup> is <span class="nowrap"><span data-sort-value="7008670617279000000♠"></span>670<span style="margin-left:.25em;">617</span><span style="margin-left:.25em;">279</span></span>, which has 986 steps,</dd>
+<dd>less than 10<sup>10</sup> is <span class="nowrap"><span data-sort-value="7009978065763000000♠"></span>9<span style="margin-left:.25em;">780</span><span style="margin-left:.25em;">657</span><span style="margin-left:.25em;">630</span></span>, which has 1132 steps,<sup class="reference" id="cite_ref-10">[10]</sup></dd>
+<dd>less than 10<sup>11</sup> is <span class="nowrap"><span data-sort-value="7010751281382470000♠"></span>75<span style="margin-left:.25em;">128</span><span style="margin-left:.25em;">138</span><span style="margin-left:.25em;">247</span></span>, which has 1228 steps,</dd>
+<dd>less than 10<sup>12</sup> is <span class="nowrap"><span data-sort-value="7011989345275647000♠"></span>989<span style="margin-left:.25em;">345</span><span style="margin-left:.25em;">275</span><span style="margin-left:.25em;">647</span></span>, which has 1348 steps.<sup class="reference" id="cite_ref-Roosendaal_11-0">[11]</sup></dd></dl>
+<p>These numbers are the lowest ones with the indicated step count, but not necessarily the only ones below the given limit. As an example, <span class="nowrap"><span data-sort-value="7009978065763100000♠"></span>9<span style="margin-left:.25em;">780</span><span style="margin-left:.25em;">657</span><span style="margin-left:.25em;">631</span></span> has 1132 steps, as does <span class="nowrap"><span data-sort-value="7009978065763000000♠"></span>9<span style="margin-left:.25em;">780</span><span style="margin-left:.25em;">657</span><span style="margin-left:.25em;">630</span></span>.
+</p><p>The starting values having the smallest total stopping time with respect to their number of digits (in base 2) are the powers of two since <span class="texhtml">2<sup><i>n</i></sup></span> is halved <span class="texhtml mvar" style="font-style:italic;">n</span> times to reach 1, and is never increased.
+</p>
+<h2><span class="mw-headline" id="Visualizations">Visualizations</span><span class="mw-editsection"></span></h2>
+<ul class="gallery mw-gallery-traditional">
+<li class="gallerybox" style="width: 215px"></li>
+<li class="gallerybox" style="width: 215px"></li>
+<li class="gallerybox" style="width: 215px"></li>
+<li class="gallerybox" style="width: 215px"></li>
+<li class="gallerybox" style="width: 215px"></li>
+</ul>
+<h2><span class="mw-headline" id="Supporting_arguments">Supporting arguments</span><span class="mw-editsection"></span></h2>
+<p>Although the conjecture has not been proven, most mathematicians who have looked into the problem think the conjecture is true because experimental evidence and heuristic arguments support it.
+</p>
+<h3><span class="mw-headline" id="Experimental_evidence">Experimental evidence</span><span class="mw-editsection"></span></h3>
+<p>As of 2020<sup class="plainlinks noexcerpt noprint asof-tag update" style="display:none;">[update]</sup>, the conjecture has been checked by computer for all starting values up to 2<sup>68</sup> ≈ <span class="nowrap"><span data-sort-value="7020295000000000000♠"></span>2.95<span style="margin-left:0.25em;margin-right:0.15em;">×</span>10<sup>20</sup></span>.  All initial values tested so far eventually end in the repeating cycle <span class="texhtml">(4; 2; 1)</span> of period 3.<sup class="reference" id="cite_ref-Barina_12-0">[12]</sup>
+</p><p>This computer evidence is not sufficient to prove that the conjecture is true for all starting values. As in the case of some disproved conjectures, like the Pólya conjecture, counterexamples might be found when considering very large numbers.
+</p><p>However, such verifications may have other implications. For example, one can derive additional constraints on the period and structural form of a non-trivial cycle.<sup class="reference" id="cite_ref-Garner_(1981)_13-0">[13]</sup><sup class="reference" id="cite_ref-Eliahou_(1993)_14-0">[14]</sup><sup class="reference" id="cite_ref-Simons_&amp;_de_Weger_(2005)_15-0">[15]</sup>
+</p>
+<h3><span class="mw-headline" id="A_probabilistic_heuristic">A probabilistic heuristic</span><span class="mw-editsection"></span></h3>
+<p>If one considers only the <i>odd</i> numbers in the sequence generated by the Collatz process, then each odd number is on average <style data-mw-deduplicate="TemplateStyles:r1050945101">.mw-parser-output .sfrac{white-space:nowrap}.mw-parser-output .sfrac.tion,.mw-parser-output .sfrac .tion{display:inline-block;vertical-align:-0.5em;font-size:85%;text-align:center}.mw-parser-output .sfrac .num,.mw-parser-output .sfrac .den{display:block;line-height:1em;margin:0 0.1em}.mw-parser-output .sfrac .den{border-top:1px solid}.mw-parser-output .sr-only{border:0;clip:rect(0,0,0,0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px}</style><span class="sfrac tion" role="math"><span class="num">3</span><span class="sr-only">/</span><span class="den">4</span></span> of the previous one.<sup class="reference" id="cite_ref-16">[16]</sup> (More precisely, the geometric mean of the ratios of outcomes is <link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac tion" role="math"><span class="num">3</span><span class="sr-only">/</span><span class="den">4</span></span>.) This yields a heuristic argument that every Hailstone sequence should decrease in the long run, although this is not evidence against other cycles, only against divergence.  The argument is not a proof because it assumes that Hailstone sequences are assembled from uncorrelated probabilistic events.  (It does rigorously establish that the 2-adic extension of the Collatz process has two division steps for every multiplication step for almost all 2-adic starting values.)
+</p>
+<h3><span class="mw-headline" id="Stopping_times">Stopping times</span><span class="mw-editsection"></span></h3>
+<p>As proven by Riho Terras, almost every positive integer has a finite stopping time.<sup class="reference" id="cite_ref-Terras_(1976)_17-0">[17]</sup> In other words, almost every Collatz sequence reaches a point that is strictly below its initial value. The proof is based on the distribution of parity vectors and uses the central limit theorem.
+</p><p>In 2019, Terence Tao improved this result by showing, using logarithmic density, that almost all Collatz orbits are descending below any given function of the starting point, provided that this function diverges to infinity, no matter how slowly.  Responding to this work, <i>Quanta Magazine</i> wrote that Tao "came away with one of the most significant results on the Collatz conjecture in decades".<sup class="reference" id="cite_ref-18">[18]</sup><sup class="reference" id="cite_ref-19">[19]</sup>
+</p>
+<h3><span class="mw-headline" id="Lower_bounds">Lower bounds</span><span class="mw-editsection"></span></h3>
+<p>In a computer-aided proof, Krasikov and Lagarias showed that the number of integers in the interval <span class="texhtml">[1,<i>x</i>]</span> that eventually reach 1 is at least equal to <span class="texhtml"><i>x</i><sup>0.84</sup></span> for all sufficiently large <span class="texhtml mvar" style="font-style:italic;">x</span>.<sup class="reference" id="cite_ref-20">[20]</sup>
+</p>
+<h2><span class="mw-headline" id="Cycles">Cycles</span><span class="mw-editsection"></span></h2>
+<p>In this part, consider the shortcut form of the Collatz function
+</p>
+A cycle is a sequence <span class="texhtml">(<i>a</i><sub>0</sub>, <i>a</i><sub>1</sub>, ..., <i>a<sub>q</sub></i>)</span> of distinct positive integers where <span class="texhtml"><i>f</i>(<i>a</i><sub>0</sub>) = <i>a</i><sub>1</sub></span>, <span class="texhtml"><i>f</i>(<i>a</i><sub>1</sub>) = <i>a</i><sub>2</sub></span>, ..., and <span class="texhtml"><i>f</i>(<i>a<sub>q</sub></i>) = <i>a</i><sub>0</sub></span>.
+<p>The only known cycle is <span class="texhtml">(1,2)</span> of period 2, called the trivial cycle.
+</p>
+<h3><span class="mw-headline" id="Cycle_length">Cycle length</span><span class="mw-editsection"></span></h3>
+<p>The length of a non-trivial cycle is known to be at least <span class="nowrap"><span data-sort-value="7007170879150000000♠"></span>17<span style="margin-left:.25em;">087</span><span style="margin-left:.25em;">915</span></span>. In fact, Eliahou (1993) proved that the period <span class="texhtml mvar" style="font-style:italic;">p</span> of any non-trivial cycle is of the form 
+</p>
+where <span class="texhtml mvar" style="font-style:italic;">a</span>, <span class="texhtml mvar" style="font-style:italic;">b</span> and <span class="texhtml mvar" style="font-style:italic;">c</span> are non-negative integers, <span class="texhtml"><i>b</i> ≥ 1</span> and <span class="texhtml"><i>ac</i> = 0</span>. This result is based on the continued fraction expansion of <span class="texhtml"><link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac tion" role="math"><span class="num">ln 3</span><span class="sr-only">/</span><span class="den">ln 2</span></span></span>.<sup class="reference" id="cite_ref-Eliahou_(1993)_14-1">[14]</sup>
+<h3><span class="mw-headline" id="k-cycles"><span class="texhtml mvar" style="font-style:italic;">k</span>-cycles</span><span class="mw-editsection"></span></h3>
+<p>A <span class="texhtml mvar" style="font-style:italic;">k</span>-cycle is a cycle that can be partitioned into <span class="texhtml">2<i>k</i></span> contiguous subsequences: <span class="texhtml mvar" style="font-style:italic;">k</span> increasing sequences of odd numbers alternating with <span class="texhtml mvar" style="font-style:italic;">k</span> decreasing sequences of even numbers.<sup class="reference" id="cite_ref-Simons_&amp;_de_Weger_(2005)_15-1">[15]</sup> For instance, if the cycle consists of a single increasing sequence of odd numbers followed by a decreasing sequence of even numbers, it is called a <i>1-cycle</i>.
+</p><p>Steiner (1977) proved that there is no 1-cycle other than the trivial <span class="texhtml">(1; 2)</span>.<sup class="reference" id="cite_ref-Steiner_(1977)_21-0">[21]</sup> Simons (2005) used Steiner's method to prove that there is no 2-cycle.<sup class="reference" id="cite_ref-22">[22]</sup> Simons &amp; de Weger (2005) extended this proof up to 68-cycles: there is no <span class="texhtml mvar" style="font-style:italic;">k</span>-cycle up to <span class="texhtml"><i>k</i> = 68</span>.<sup class="reference" id="cite_ref-Simons_&amp;_de_Weger_(2005)_15-2">[15]</sup> For each <span class="texhtml"><i>k</i></span> beyond 68, this method gives an upper bound for the smallest term of a <span class="texhtml mvar" style="font-style:italic;">k</span>-cycle: for example, if there is a 77-cycle, then at least one element of the cycle is less than <span style="white-space:nowrap">38137<span style="margin-left:0.25em">×</span><span style="margin-left:0.25em">2<sup>50</sup></span></span>.<sup class="reference" id="cite_ref-Simons_&amp;_de_Weger_(2005)_15-3">[15]</sup> Along with the verification of the conjecture up to <span class="texhtml">2<sup>68</sup></span>, this implies the nonexistence of a non-trivial <span class="texhtml mvar" style="font-style:italic;">k</span>-cycle up to <span class="texhtml"><i>k</i> = 77</span>.<sup class="reference" id="cite_ref-Barina_12-1">[12]</sup> As exhaustive computer searches continue, larger <span class="texhtml"><i>k</i></span> values may be ruled out. To state the argument more intuitively: we need not look for cycles that have at most 77 circuits, where each circuit consists of consecutive ups followed by consecutive downs.
+</p>
+<h2><span class="mw-headline" id="Other_formulations_of_the_conjecture">Other formulations of the conjecture</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="In_reverse">In reverse</span><span class="mw-editsection"></span></h3>
+
+<p>There is another approach to prove the conjecture, which considers the bottom-up
+method of growing the so-called <i>Collatz graph</i>. The <i>Collatz graph</i> is a graph defined by the inverse relation
+</p>
+<p>So, instead of proving that all positive integers eventually lead to 1, we can try to prove that 1 leads backwards to all positive integers. For any integer <span class="texhtml mvar" style="font-style:italic;">n</span>, <span class="texhtml"><i>n</i> ≡ 1 (mod 2)</span> if and only if <span class="texhtml">3<i>n</i> + 1 ≡ 4 (mod 6)</span>. Equivalently, <span class="texhtml"><link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac tion" role="math"><span class="num"><i>n</i> − 1</span><span class="sr-only">/</span><span class="den">3</span></span> ≡ 1 (mod 2)</span> if and only if <span class="texhtml"><i>n</i> ≡ 4 (mod 6)</span>. Conjecturally, this inverse relation forms a tree except for the 1–2–4 loop (the inverse of the 4–2–1 loop of the unaltered function <span class="texhtml mvar" style="font-style:italic;">f</span> defined in the Statement of the problem section of this article).
+</p><p>When the relation <span class="texhtml">3<i>n</i> + 1</span> of the function <span class="texhtml mvar" style="font-style:italic;">f</span> is replaced by the common substitute "shortcut" relation <span class="texhtml"><link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac tion" role="math"><span class="num">3<i>n</i> + 1</span><span class="sr-only">/</span><span class="den">2</span></span></span>, the Collatz graph is defined by the inverse relation,
+</p>
+<p>For any integer <span class="texhtml mvar" style="font-style:italic;">n</span>, <span class="texhtml"><i>n</i> ≡ 1 (mod 2)</span> if and only if <span class="texhtml"><link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac tion" role="math"><span class="num">3<i>n</i> + 1</span><span class="sr-only">/</span><span class="den">2</span></span> ≡ 2 (mod 3)</span>. Equivalently, <span class="texhtml"><link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac tion" role="math"><span class="num">2<i>n</i> − 1</span><span class="sr-only">/</span><span class="den">3</span></span> ≡ 1 (mod 2)</span> if and only if <span class="texhtml"><i>n</i> ≡ 2 (mod 3)</span>. Conjecturally, this inverse relation forms a tree except for a 1–2 loop (the inverse of the 1–2 loop of the function f(n) revised as indicated above).
+</p><p>Alternatively, replace the <span class="texhtml">3<i>n</i> + 1</span>  with <span class="texhtml"><link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac tion" role="math"><span class="num"><i>n</i><span class="nowrap" style="padding-left:0.15em;">′</span></span><span class="sr-only">/</span><span class="den"><i>H</i>(<i>n</i><span class="nowrap" style="padding-left:0.15em;">′</span>)</span></span></span> where <span class="texhtml"><i>n</i><span class="nowrap" style="padding-left:0.15em;">′</span> = 3<i>n</i> + 1</span>  and <span class="texhtml"><i>H</i>(<i>n</i><span class="nowrap" style="padding-left:0.15em;">′</span>)</span> is the highest power of 2 that divides <span class="texhtml"><i>n</i><span class="nowrap" style="padding-left:0.15em;">′</span></span> (with no remainder).  The resulting function <span class="texhtml mvar" style="font-style:italic;">f</span> maps from odd numbers to odd numbers.  Now suppose that for some odd number <span class="texhtml mvar" style="font-style:italic;">n</span>, applying this operation <span class="texhtml mvar" style="font-style:italic;">k</span> times yields the number 1 (that is, <span class="texhtml"><i>f</i><span style="padding-left:0.12em;"><sup><i>k</i></sup></span>(<i>n</i>) = 1</span>).  Then in binary, the number <span class="texhtml mvar" style="font-style:italic;">n</span> can be written as the concatenation of strings <span class="texhtml"><i>w</i><sub><i>k</i></sub> <i>w</i><sub><i>k</i>−1</sub> ... <i>w</i><sub>1</sub></span> where each <span class="texhtml"><i>w</i><sub><i>h</i></sub></span> is a finite and contiguous extract from the representation of <span class="texhtml"><link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac tion" role="math"><span class="num">1</span><span class="sr-only">/</span><span class="den">3<sup><i>h</i></sup></span></span></span>.<sup class="reference" id="cite_ref-Colussi2011_23-0">[23]</sup> The representation of <span class="texhtml mvar" style="font-style:italic;">n</span> therefore holds the repetends of <span class="texhtml"><link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac tion" role="math"><span class="num">1</span><span class="sr-only">/</span><span class="den">3<sup><i>h</i></sup></span></span></span>, where each repetend is optionally rotated and then replicated up to a finite number of bits.  It is only in binary that this occurs.<sup class="reference" id="cite_ref-Hew2016_24-0">[24]</sup> Conjecturally, every binary string <span class="texhtml mvar" style="font-style:italic;">s</span> that ends with a '1' can be reached by a representation of this form (where we may add or delete leading '0's to <span class="texhtml mvar" style="font-style:italic;">s</span>).
+</p>
+<h3><span class="mw-headline" id="As_an_abstract_machine_that_computes_in_base_two">As an abstract machine that computes in base two</span><span class="mw-editsection"></span></h3>
+<p>Repeated applications of the Collatz function can be represented as an abstract machine that handles strings of bits.  The machine will perform the following three steps on any odd number until only one <style data-mw-deduplicate="TemplateStyles:r886049734">.mw-parser-output .monospaced{font-family:monospace,monospace}</style><span class="monospaced">1</span> remains:
+</p>
+<ol><li>Append <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">1</span> to the (right) end of the number in binary (giving <span class="texhtml">2<i>n</i> + 1</span>);</li>
+<li>Add this to the original number by binary addition (giving <span class="texhtml">2<i>n</i> + 1 + <i>n</i> = 3<i>n</i> + 1</span>);</li>
+<li>Remove all trailing <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">0</span>s (that is, repeatedly divide by 2 until the result is odd).</li></ol>
+<h4><span class="mw-headline" id="Example">Example</span><span class="mw-editsection"></span></h4>
+<p>The starting number 7 is written in base two as <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">111</span>.  The resulting Collatz sequence is:
+</p>
+
+<h3><span class="mw-headline" id="As_a_parity_sequence">As a parity sequence</span><span class="mw-editsection"></span></h3>
+<p>For this section, consider the Collatz function  in the slightly modified form
+</p>
+<p>This can be done because when <span class="texhtml mvar" style="font-style:italic;">n</span> is odd, <span class="texhtml">3<i>n</i> + 1</span> is always even.
+</p><p>If <span class="texhtml">P(...)</span> is the parity of a number, that is <span class="texhtml">P(2<i>n</i>) = 0</span> and <span class="texhtml">P(2<i>n</i> + 1) = 1</span>, then we can define the Collatz parity sequence (or parity vector) for a number <span class="texhtml mvar" style="font-style:italic;">n</span> as <span class="texhtml"><i>p<sub>i</sub></i> = P(<i>a<sub>i</sub></i>)</span>, where <span class="texhtml"><i>a</i><sub>0</sub> = <i>n</i></span>, and <span class="texhtml"><i>a</i><sub><i>i</i>+1</sub> = <i>f</i>(<i>a</i><sub><i>i</i></sub>)</span>.
+</p><p>Which operation is performed, <span class="texhtml"><link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac tion" role="math"><span class="num">3<i>n</i> + 1</span><span class="sr-only">/</span><span class="den">2</span></span></span> or <span class="texhtml"><link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac tion" role="math"><span class="num"><i>n</i></span><span class="sr-only">/</span><span class="den">2</span></span></span>, depends on the parity. The parity sequence is the same as the sequence of operations.
+</p><p>Using this form for <span class="texhtml"><i>f</i>(<i>n</i>)</span>, it can be shown that the parity sequences for two numbers <span class="texhtml mvar" style="font-style:italic;">m</span> and <span class="texhtml mvar" style="font-style:italic;">n</span> will agree in the first <span class="texhtml mvar" style="font-style:italic;">k</span> terms if and only if <span class="texhtml mvar" style="font-style:italic;">m</span> and <span class="texhtml mvar" style="font-style:italic;">n</span> are equivalent modulo <span class="texhtml">2<sup><i>k</i></sup></span>.  This implies that every number is uniquely identified by its parity sequence, and moreover that if there are multiple Hailstone cycles, then their corresponding parity cycles must be different.<sup class="reference" id="cite_ref-Lagarias_(1985)_3-3">[3]</sup><sup class="reference" id="cite_ref-Terras_(1976)_17-1">[17]</sup>
+</p><p>Applying the <span class="texhtml mvar" style="font-style:italic;">f</span> function <span class="texhtml mvar" style="font-style:italic;">k</span> times to the number <span class="texhtml"><i>n</i> = 2<sup><i>k</i></sup><i>a</i> + <i>b</i></span> will give the result <span class="texhtml">3<sup><i>c</i></sup><i>a</i> + <i>d</i></span>, where <span class="texhtml mvar" style="font-style:italic;">d</span> is the result of applying the <span class="texhtml mvar" style="font-style:italic;">f</span> function <span class="texhtml mvar" style="font-style:italic;">k</span> times to <span class="texhtml mvar" style="font-style:italic;">b</span>, and <span class="texhtml mvar" style="font-style:italic;">c</span> is how many increases were encountered during that sequence.  For example, for <span class="texhtml">2<sup>5</sup><i>a</i> + 1</span> there are 3 increases as 1 iterates to 2, 1, 2, 1, and finally to 2 so the result is <span class="texhtml">3<sup>3</sup><i>a</i> + 2</span>; for <span class="texhtml">2<sup>2</sup><i>a</i> + 1</span> there is only 1 increase as 1 rises to 2 and falls to 1 so the result is <span class="texhtml">3<i>a</i> + 1</span>. When <span class="texhtml mvar" style="font-style:italic;">b</span> is <span class="texhtml">2<sup><i>k</i></sup> − 1</span> then there will be <span class="texhtml mvar" style="font-style:italic;">k</span> rises and the result will be <span class="texhtml">2 × 3<sup><i>k</i></sup><i>a</i> − 1</span>. The factor of 3 multiplying <span class="texhtml mvar" style="font-style:italic;">a</span> is independent of the value of <span class="texhtml mvar" style="font-style:italic;">a</span>; it depends only on the behavior of <span class="texhtml mvar" style="font-style:italic;">b</span>. This allows one to predict that certain forms of numbers will always lead to a smaller number after a certain number of iterations: for example, <span class="texhtml">4<i>a</i> + 1</span> becomes <span class="texhtml">3<i>a</i> + 1</span> after two applications of <span class="texhtml mvar" style="font-style:italic;">f</span> and <span class="texhtml">16<i>a</i> + 3</span> becomes <span class="texhtml">9<i>a</i> + 2</span> after 4 applications of <span class="texhtml mvar" style="font-style:italic;">f</span>. Whether those smaller numbers continue to 1, however, depends on the value of <span class="texhtml mvar" style="font-style:italic;">a</span>.
+</p>
+<h3><span class="mw-headline" id="As_a_tag_system">As a tag system</span><span class="mw-editsection"></span></h3>
+<p>For the Collatz function in the form
+</p><p><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(n)={\begin{cases}{\frac {n}{2}}&amp;{\text{if }}n\equiv 0\\[4px]{\frac {3n+1}{2}}&amp;{\text{if }}n\equiv 1.\end{cases}}{\pmod {2}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>{</mo>
+<mtable columnalign="left left" columnspacing="1em" displaystyle="false" rowspacing="0.6em 0.2em">
+<mtr>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>n</mi>
+<mn>2</mn>
+</mfrac>
+</mrow>
+</mtd>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>if </mtext>
+</mrow>
+<mi>n</mi>
+<mo>≡<!-- ≡ --></mo>
+<mn>0</mn>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mn>3</mn>
+<mi>n</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+<mn>2</mn>
+</mfrac>
+</mrow>
+</mtd>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>if </mtext>
+</mrow>
+<mi>n</mi>
+<mo>≡<!-- ≡ --></mo>
+<mn>1.</mn>
+</mtd>
+</mtr>
+</mtable>
+<mo fence="true" stretchy="true" symmetric="true"></mo>
+</mrow>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mspace width="1em"></mspace>
+<mo stretchy="false">(</mo>
+<mi>mod</mi>
+<mspace width="0.333em"></mspace>
+<mn>2</mn>
+<mo stretchy="false">)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(n)={\begin{cases}{\frac {n}{2}}&amp;{\text{if }}n\equiv 0\\[4px]{\frac {3n+1}{2}}&amp;{\text{if }}n\equiv 1.\end{cases}}{\pmod {2}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle f(n)={\begin{cases}{\frac {n}{2}}&amp;{\text{if }}n\equiv 0\\[4px]{\frac {3n+1}{2}}&amp;{\text{if }}n\equiv 1.\end{cases}}{\pmod {2}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8fbad5e3e25f45b2f51c7ef1d36bfc3da5c3e5e2" style="vertical-align: -3.146ex; margin-bottom: -0.192ex; width:36.361ex; height:7.843ex;"/></span>
+</p><p>Hailstone sequences can be computed by the 2-tag system with production rules
+</p>
+<dl><dd><span class="texhtml"><i>a</i> → <i>bc</i></span>, <span class="texhtml"><i>b</i> → <i>a</i></span>, <span class="texhtml"><i>c</i> → <i>aaa</i></span>.</dd></dl>
+<p>In this system, the positive integer <span class="texhtml mvar" style="font-style:italic;">n</span> is represented by a string of <span class="texhtml mvar" style="font-style:italic;">n</span> copies of <span class="texhtml mvar" style="font-style:italic;">a</span>, and iteration of the tag operation halts on any word of length less than 2. (Adapted from De Mol.)
+</p><p>The Collatz conjecture equivalently states that this tag system, with an arbitrary finite string of <span class="texhtml mvar" style="font-style:italic;">a</span> as the initial word, eventually halts (see <i>Tag system</i> for a worked example).
+</p>
+<h2><span class="mw-headline" id="Extensions_to_larger_domains">Extensions to larger domains</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Iterating_on_all_integers">Iterating on all integers</span><span class="mw-editsection"></span></h3>
+<p>An extension to the Collatz conjecture is to include all integers, not just positive integers. Leaving aside the cycle 0 → 0 which cannot be entered from outside, there are a total of four known cycles, which all nonzero integers seem to eventually fall into under iteration of <span class="texhtml mvar" style="font-style:italic;">f</span>.  These cycles are listed here, starting with the well-known cycle for positive <span class="texhtml mvar" style="font-style:italic;">n</span>:
+</p><p>Odd values are listed in large bold. Each cycle is listed with its member of least absolute value (which is always odd) first.
+</p>
+<table class="wikitable" style="text-align: center;">
+<tbody><tr>
+<th>Cycle</th>
+<th>Odd-value cycle length</th>
+<th>Full cycle length
+</th></tr>
+<tr>
+<td style="text-align: left;"><big><b>1</b></big> → 4 → 2 → <big><b>1</b></big> <b>...</b></td>
+<td>1</td>
+<td>3
+</td></tr>
+<tr>
+<td style="text-align: left;"><big><b>−1</b></big> → −2 → <big><b>−1</b></big> <b>...</b></td>
+<td>1</td>
+<td>2
+</td></tr>
+<tr>
+<td style="text-align: left;"><big><b>−5</b></big> → −14 → <big><b>−7</b></big> → −20 → −10 → <big><b>−5</b></big> <b>...</b></td>
+<td>2</td>
+<td>5
+</td></tr>
+<tr>
+<td style="text-align: left;"><big><b>−17</b></big> → −50 → <big><b>−25</b></big> → −74 → <big><b>−37</b></big> → −110 → <big><b>−55</b></big> → −164 → −82 → <big><b>−41</b></big> → −122 → <big><b>−61</b></big> → −182 → <big><b>−91</b></big> → −272 → −136 → −68 → −34 → <big><b>−17</b></big> <b>...</b></td>
+<td>7</td>
+<td>18
+</td></tr></tbody></table>
+<p><br/>
+The generalized Collatz conjecture is the assertion that every integer, under iteration by <span class="texhtml mvar" style="font-style:italic;">f</span>, eventually falls into one of the four cycles above or the cycle 0 → 0. (The 0 → 0 cycle is only included for the sake of completeness.)
+</p>
+<h3><span class="mw-headline" id="Iterating_on_rationals_with_odd_denominators">Iterating on rationals with odd denominators</span><span class="mw-editsection"></span></h3>
+<p>The Collatz map can be extended to (positive or negative) rational numbers which have odd denominators when written in lowest terms. 
+The number is taken to be 'odd' or 'even' according to whether its numerator is odd or even.  Then the formula for the map is exactly the same as when the domain is the integers: an 'even' such rational is divided by 2; an 'odd' such rational is multiplied by 3 and then 1 is added. A closely related fact is that the Collatz map extends to the ring of 2-adic integers, which contains the ring of rationals with odd denominators as a subring.
+</p><p>When using the "shortcut" definition of the Collatz map, it is known that any periodic parity sequence is generated by exactly one rational.<sup class="reference" id="cite_ref-25">[25]</sup> Conversely, it is conjectured that every rational with an odd denominator has an eventually cyclic parity sequence (Periodicity Conjecture<sup class="reference" id="cite_ref-Lagarias_(1985)_3-4">[3]</sup>).
+</p><p>If a parity cycle has length <span class="texhtml mvar" style="font-style:italic;">n</span> and includes odd numbers exactly <span class="texhtml mvar" style="font-style:italic;">m</span> times at indices <span class="texhtml"><i>k</i><sub>0</sub> &lt; ⋯ &lt; <i>k</i><sub><i>m</i>−1</sub></span>, then the unique rational which generates immediately and periodically this parity cycle is
+</p>
+<dl><dd>
+<table style="border-collapse:collapse; background:none; margin:0; border:none;">
+<tbody><tr>
+<td class="nowrap" style="vertical-align:middle; border:none; padding:0.08em;">
+</td>
+<td style="vertical-align:middle; width:99%; border:none; padding:0.08em;">
+
+</td>
+<td class="nowrap" style="vertical-align:middle; border:none; padding:0.08em;"><p style="margin:0pt;"><b>(<span class="reference nourlexpansion" id="math_1" style="font-weight:bold;">1</span>)</b></p>
+</td></tr></tbody></table></dd></dl>
+<p>For example, the parity cycle <span class="nowrap">(1 0 1 1 0 0 1)</span> has length 7 and four odd terms at indices 0, 2, 3, and 6. It is repeatedly generated by the fraction
+</p>
+as the latter leads to the rational cycle 
+
+<p>Any cyclic permutation of <span class="nowrap">(1 0 1 1 0 0 1)</span> is associated to one of the above fractions. For instance, the cycle <span class="nowrap">(0 1 1 0 0 1 1)</span> is produced by the fraction
+</p>
+<p>For a one-to-one correspondence, a parity cycle should be <i>irreducible</i>, that is, not partitionable into identical sub-cycles. As an illustration of this, the parity cycle <span class="nowrap">(1 1 0 0 1 1 0 0)</span> and its sub-cycle <span class="nowrap">(1 1 0 0)</span> are associated to the same fraction <link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac tion" role="math"><span class="num">5</span><span class="sr-only">/</span><span class="den">7</span></span> when reduced to lowest terms.
+</p><p>In this context, assuming the validity of the Collatz conjecture implies that <span class="nowrap">(1 0)</span> and <span class="nowrap">(0 1)</span> are the only parity cycles generated by positive whole numbers (1 and 2, respectively).
+</p><p>If the odd denominator <span class="texhtml mvar" style="font-style:italic;">d</span> of a rational is not a multiple of 3, then all the iterates have the same denominator and the sequence of numerators can be obtained by applying the "<span class="texhtml">3<i>n</i> + <i>d</i></span> " generalization<sup class="reference" id="cite_ref-Belaga_(1998a)_26-0">[26]</sup> of the Collatz function
+</p>
+<h3><span class="mw-headline" id="2-adic_extension">2-adic extension</span><span class="mw-editsection"></span></h3>
+<p>The function 
+</p>
+is well-defined on the ring <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathbb {Z} _{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">Z</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathbb {Z} _{2}}</annotation>
+</semantics>
+</math></span><img alt="\mathbb {Z} _{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/92aedfb5c02eff978ab963421ce930f46801657e" style="vertical-align: -0.671ex; width:2.605ex; height:2.509ex;"/></span> of 2-adic integers, where it is continuous and measure-preserving with respect to the 2-adic measure. Moreover, its dynamics is known to be ergodic.<sup class="reference" id="cite_ref-Lagarias_(1985)_3-5">[3]</sup>
+<p>Define the <i>parity vector</i> function <span class="texhtml mvar" style="font-style:italic;">Q</span> acting on <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathbb {Z} _{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">Z</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathbb {Z} _{2}}</annotation>
+</semantics>
+</math></span><img alt="\mathbb {Z} _{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/92aedfb5c02eff978ab963421ce930f46801657e" style="vertical-align: -0.671ex; width:2.605ex; height:2.509ex;"/></span> as
+</p>
+<p>The function <span class="texhtml mvar" style="font-style:italic;">Q</span> is a 2-adic isometry.<sup class="reference" id="cite_ref-27">[27]</sup> Consequently, every infinite parity sequence occurs for exactly one 2-adic integer, so that almost all trajectories are acyclic in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathbb {Z} _{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">Z</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathbb {Z} _{2}}</annotation>
+</semantics>
+</math></span><img alt="\mathbb {Z} _{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/92aedfb5c02eff978ab963421ce930f46801657e" style="vertical-align: -0.671ex; width:2.605ex; height:2.509ex;"/></span>.
+</p><p>An equivalent formulation of the Collatz conjecture is that
+</p>
+<h3><span class="mw-headline" id="Iterating_on_real_or_complex_numbers">Iterating on real or complex numbers<span class="anchor" id="Collatz_fractal"></span></span><span class="mw-editsection"></span></h3>
+
+<p>The Collatz map (with shortcut) can be viewed as the restriction to the integers of the smooth map
+</p>
+<p><br/>
+</p>
+
+<p>The iterations of this map on the real line lead to a dynamical system, further investigated by Chamberland.<sup class="reference" id="cite_ref-Chamberland_(1996)_28-0">[28]</sup>
+He showed that the conjecture does not hold for positive real numbers since there are infinitely many fixed points, as well as orbits escaping monotonically to infinity. The function <span class="texhtml mvar" style="font-style:italic;">f</span> has two attracting cycles of period 2, <span class="texhtml">(1; 2)</span> and <span class="texhtml">(1.1925...; 2.1386...)</span>. Moreover, the set of unbounded orbits is conjectured to be of measure 0.
+</p><p>Letherman, Schleicher, and Wood extended the study to the complex plane, where most of the points have orbits that diverge to infinity (colored region on the illustration).<sup class="reference" id="cite_ref-Letherman,_Schleicher,_and_Wood_(1999)_29-0">[29]</sup> The boundary between the colored region and the black components, namely the Julia set of <span class="texhtml mvar" style="font-style:italic;">f</span>, is a fractal pattern, sometimes called the "Collatz fractal".
+</p>
+
+<h2><span class="mw-headline" id="Optimizations">Optimizations</span><span class="mw-editsection"></span></h2>
+<h3><span id="Time.E2.80.93space_tradeoff"></span><span class="mw-headline" id="Time–space_tradeoff">Time–space tradeoff</span><span class="mw-editsection"></span></h3>
+<p>The section <i>As a parity sequence</i> above gives a way to speed up simulation of the sequence.  To jump ahead <span class="texhtml mvar" style="font-style:italic;">k</span> steps on each iteration (using the <span class="texhtml mvar" style="font-style:italic;">f</span> function from that section), break up the current number into two parts, <span class="texhtml mvar" style="font-style:italic;">b</span> (the <span class="texhtml mvar" style="font-style:italic;">k</span> least significant bits, interpreted as an integer), and <span class="texhtml mvar" style="font-style:italic;">a</span> (the rest of the bits as an integer).  The result of jumping ahead <span class="texhtml mvar" style="font-style:italic;">k</span> steps can be found as:
+</p>
+<dl><dd><span class="texhtml"><i>f</i><span style="padding-left:0.12em;"><sup><i>k</i></sup></span>(2<sup><i>k</i></sup><i>a</i> + <i>b</i>) = 3<sup><i>c</i>(<i>b</i>)</sup><i>a</i> + <i>d</i>(<i>b</i>)</span>.</dd></dl>
+<p>The <span class="texhtml mvar" style="font-style:italic;">c</span> (or better <span class="texhtml">3<sup><i>c</i></sup></span>) and <span class="texhtml mvar" style="font-style:italic;">d</span> arrays are precalculated for all possible <span class="texhtml mvar" style="font-style:italic;">k</span>-bit numbers <span class="texhtml mvar" style="font-style:italic;">b</span>, where <span class="texhtml"><i>d</i>(<i>b</i>)</span> is the result of applying the <span class="texhtml mvar" style="font-style:italic;">f</span> function <span class="texhtml mvar" style="font-style:italic;">k</span> times to <span class="texhtml mvar" style="font-style:italic;">b</span>, and <span class="texhtml"><i>c</i>(<i>b</i>)</span> is the number of odd numbers encountered on the way.<sup class="reference" id="cite_ref-30">[30]</sup>  For example, if <span class="texhtml mvar" style="font-style:italic;"><i>k</i> = 5</span>, one can jump ahead 5 steps on each iteration by separating out the 5 least significant bits of a number and using:
+</p>
+<dl><dd><span class="texhtml mvar" style="font-style:italic;">c</span>(0...31) = { 0, 3, 2, 2, 2, 2, 2, 4, 1, 4, 1, 3, 2, 2, 3, 4, 1, 2, 3, 3, 1, 1, 3, 3, 2, 3, 2, 4, 3, 3, 4, 5 }</dd>
+<dd><span class="texhtml mvar" style="font-style:italic;">d</span>(0...31) = { 0, 2, 1, 1, 2, 2, 2, 20, 1, 26, 1, 10, 4, 4, 13, 40, 2, 5, 17, 17, 2, 2, 20, 20, 8, 22, 8, 71, 26, 26, 80, 242 }.</dd></dl>
+<p>This requires <span class="texhtml">2<sup><i>k</i></sup></span> precomputation and storage to speed up the resulting calculation by a factor of <span class="texhtml mvar" style="font-style:italic;">k</span>, a space–time tradeoff.
+</p>
+<h3><span class="mw-headline" id="Modular_restrictions">Modular restrictions</span><span class="mw-editsection"></span></h3>
+<p>For the special purpose of searching for a counterexample to the Collatz conjecture, this precomputation leads to an even more important acceleration, used by Tomás Oliveira e Silva in his computational confirmations of the Collatz conjecture up to large values of <span class="texhtml mvar" style="font-style:italic;">n</span>.  If, for some given <span class="texhtml mvar" style="font-style:italic;">b</span> and <span class="texhtml mvar" style="font-style:italic;">k</span>, the inequality
+</p>
+<dl><dd><span class="texhtml"><i>f</i><span style="padding-left:0.12em;"><sup><i>k</i></sup></span>(2<sup><i>k</i></sup><i>a</i> + <i>b</i>)  = 3<sup><i>c</i>(<i>b</i>)</sup><i>a</i> + <i>d</i>(<i>b</i>) &lt; 2<sup><i>k</i></sup><i>a</i> + <i>b</i></span></dd></dl>
+<p>holds for all <span class="texhtml mvar" style="font-style:italic;">a</span>, then the first counterexample, if it exists, cannot be <span class="texhtml mvar" style="font-style:italic;">b</span> modulo <span class="texhtml">2<sup><i>k</i></sup></span>.<sup class="reference" id="cite_ref-Garner_(1981)_13-1">[13]</sup>  For instance, the first counterexample must be odd because <span class="texhtml"><i>f</i>(2<i>n</i>) = <i>n</i></span>, smaller than <span class="texhtml">2<i>n</i></span>; and it must be 3 mod 4 because <span class="texhtml"><i>f</i><span style="padding-left:0.12em;"><sup>2</sup></span>(4<i>n</i> + 1) = 3<i>n</i> + 1</span>, smaller than <span class="texhtml">4<i>n</i> + 1</span>.  For each starting value <span class="texhtml mvar" style="font-style:italic;">a</span> which is not a counterexample to the Collatz conjecture, there is a <span class="texhtml mvar" style="font-style:italic;">k</span> for which such an inequality holds, so checking the Collatz conjecture for one starting value is as good as checking an entire congruence class.  As <span class="texhtml mvar" style="font-style:italic;">k</span> increases, the search only needs to check those residues <span class="texhtml mvar" style="font-style:italic;">b</span> that are not eliminated by lower values of <span class="texhtml mvar" style="font-style:italic;">k</span>.  Only an exponentially small fraction of the residues survive.<sup class="reference" id="cite_ref-31">[31]</sup> For example, the only surviving residues mod 32 are 7, 15, 27, and 31.
+</p>
+<h2><span class="mw-headline" id="Syracuse_function">Syracuse function</span><span class="mw-editsection"></span></h2>
+<p>If <span class="texhtml mvar" style="font-style:italic;">k</span> is an odd integer, then <span class="texhtml">3<i>k</i> + 1</span> is even, so <span class="texhtml">3<i>k</i> + 1 = 2<sup><i>a</i></sup><i>k</i><span class="nowrap" style="padding-left:0.15em;">′</span></span> with <span class="texhtml"><i>k</i><span class="nowrap" style="padding-left:0.15em;">′</span></span> odd and <span class="texhtml"><i>a</i> ≥ 1</span>.  The <b>Syracuse function</b> is the function <span class="texhtml mvar" style="font-style:italic;">f</span> from the set <span class="texhtml mvar" style="font-style:italic;">I</span> of odd integers into itself, for which <span class="texhtml"><i>f</i>(<i>k</i>) = <i>k</i><span class="nowrap" style="padding-left:0.15em;">′</span></span> (sequence <span class="nowrap external">A075677</span> in the OEIS).
+</p><p>Some properties of the Syracuse function are:
+</p>
+<ul><li>For all <span class="texhtml"><i>k</i> ∈ <i>I</i></span>, <span class="texhtml"><i>f</i>(4<i>k</i> + 1) = <i>f</i>(<i>k</i>)</span>. (Because <span class="texhtml">3(4<i>k</i> + 1) + 1 = 12<i>k</i> + 4 = 4(3<i>k</i> + 1)</span>.)</li>
+<li>In more generality: For all <span class="texhtml"><i>p</i> ≥ 1</span> and odd <span class="texhtml mvar" style="font-style:italic;">h</span>, <span class="texhtml"><i>f</i><span style="padding-left:0.12em;"><sup><i>p</i> − 1</sup></span>(2<sup><i>p</i></sup><i>h</i> − 1) = 2 × 3<sup><i>p</i> − 1</sup><i>h</i> − 1</span>. (Here <span class="texhtml"><i>f</i><span style="padding-left:0.12em;"><sup><i>p</i> − 1</sup></span></span> is function iteration notation.)</li>
+<li>For all odd <span class="texhtml mvar" style="font-style:italic;">h</span>, <span class="texhtml"><i>f</i>(2<i>h</i> − 1) ≤ <link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac tion" role="math"><span class="num">3<i>h</i> − 1</span><span class="sr-only">/</span><span class="den">2</span></span></span></li></ul>
+<p>The Collatz conjecture is equivalent to the statement that, for all <span class="texhtml mvar" style="font-style:italic;">k</span> in <span class="texhtml mvar" style="font-style:italic;">I</span>, there exists an integer <span class="texhtml"><i>n</i> ≥ 1</span> such that <span class="texhtml"><i>f</i><span style="padding-left:0.12em;"><sup><i>n</i></sup></span>(<i>k</i>) = 1</span>.
+</p>
+<h2><span class="mw-headline" id="Undecidable_generalizations">Undecidable generalizations</span><span class="mw-editsection"></span></h2>
+<p>In 1972, John Horton Conway proved that a natural generalization of the Collatz problem is algorithmically undecidable.<sup class="reference" id="cite_ref-32">[32]</sup>
+</p><p>Specifically, he considered functions of the form
+</p>
+and <span class="texhtml"><i>a</i><sub>0</sub>, <i>b</i><sub>0</sub>, ..., <i>a</i><sub><i>P</i> − 1</sub>, <i>b</i><sub><i>P</i> − 1</sub></span> are rational numbers which are so chosen that <span class="texhtml"><i>g</i>(<i>n</i>)</span> is always an integer.
+<p>The standard Collatz function is given by <span class="texhtml"><i>P</i> = 2</span>, <span class="texhtml"><i>a</i><sub>0</sub> = <link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac tion" role="math"><span class="num">1</span><span class="sr-only">/</span><span class="den">2</span></span></span>, <span class="texhtml"><i>b</i><sub>0</sub> = 0</span>, <span class="texhtml"><i>a</i><sub>1</sub> = 3</span>, <span class="texhtml"><i>b</i><sub>1</sub> = 1</span>. Conway proved that the problem:
+</p>
+<dl><dd>Given <span class="texhtml mvar" style="font-style:italic;">g</span> and <span class="texhtml mvar" style="font-style:italic;">n</span>, does the sequence of iterates <span class="texhtml"><i>g<sup>k</sup></i>(<i>n</i>)</span> reach 1?</dd></dl>
+<p>is undecidable, by representing the halting problem in this way.
+</p><p>Closer to the Collatz problem is the following <i>universally quantified</i> problem:
+</p>
+<dl><dd>Given <span class="texhtml mvar" style="font-style:italic;">g</span> does the sequence of iterates <span class="texhtml"><i>g<sup>k</sup></i>(<i>n</i>)</span> reach 1, for all <span class="texhtml"><i>n</i> &gt; 0</span>?</dd></dl>
+<p>Modifying the condition in this way can make a problem either harder or easier to solve (intuitively, it is harder to justify a positive answer but might be easier to justify a negative one). Kurtz and Simon<sup class="reference" id="cite_ref-KurtzSimon_33-0">[33]</sup> proved that the above problem is, in fact, undecidable and even higher in the arithmetical hierarchy, specifically <span class="texhtml">Π<span style="display:inline-block;margin-bottom:-0.3em;vertical-align:-0.4em;line-height:1.2em;font-size:80%;text-align:left"><sup style="font-size:inherit;line-height:inherit;vertical-align:baseline">0</sup><br/><sub style="font-size:inherit;line-height:inherit;vertical-align:baseline">2</sub></span></span>-complete. This hardness result holds even if one restricts the class of functions <span class="texhtml mvar" style="font-style:italic;">g</span> by fixing the modulus <span class="texhtml mvar" style="font-style:italic;">P</span> to 6480.<sup class="reference" id="cite_ref-34">[34]</sup>
+</p>
+<h2><span class="mw-headline" id="In_popular_culture">In popular culture</span><span class="mw-editsection"></span></h2>
+<p>In the movie <i>Incendies</i>, a graduate student in pure mathematics explains the Collatz conjecture to a group of undergraduates. She puts her studies on hold for a time to address some unresolved questions about her family's past. Late in the movie, the Collatz conjecture turns out to have foreshadowed a disturbing and difficult discovery that she makes about her family.<sup class="reference" id="cite_ref-emmer_35-0">[35]</sup><sup class="reference" id="cite_ref-mazmanian_36-0">[36]</sup>
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1128808480">.mw-parser-output .portalbox{padding:0;display:table;box-sizing:border-box;max-width:175px}.mw-parser-output .portalborder{border:solid #aaa 1px;padding:0.1em;background:#f9f9f9}.mw-parser-output .portalbox-entry{display:table-row;font-size:85%;line-height:110%;font-style:italic;font-weight:bold}.mw-parser-output .portalbox-image{display:table-cell;padding:0.2em;vertical-align:middle;text-align:center}.mw-parser-output .portalbox-link{display:table-cell;padding:0.2em 0.2em 0.2em 0.3em;vertical-align:middle}@media(min-width:720px){.mw-parser-output .portalleft{clear:left;float:left;margin:0.5em 1em 0.5em 0}.mw-parser-output .portalright{clear:right;float:right;margin:0.5em 0 0.5em 1em}}</style>
+<style data-mw-deduplicate="TemplateStyles:r1097025294">.mw-parser-output .side-box{margin:4px 0;box-sizing:border-box;border:1px solid #aaa;font-size:88%;line-height:1.25em;background-color:#f9f9f9}.mw-parser-output .side-box-abovebelow,.mw-parser-output .side-box-text{padding:0.25em 0.9em}.mw-parser-output .side-box-image{padding:2px 0 2px 0.9em;text-align:center}.mw-parser-output .side-box-imageright{padding:2px 0.9em 2px 0;text-align:center}@media(min-width:500px){.mw-parser-output .side-box-flex{display:flex;align-items:center}.mw-parser-output .side-box-text{flex:1}}@media(min-width:720px){.mw-parser-output .side-box{width:238px}.mw-parser-output .side-box-right{clear:right;float:right;margin-left:1em}.mw-parser-output .side-box-left{margin-right:1em}}</style>
+<ul><li><span class="texhtml">3<i>x</i> + 1</span> semigroup</li>
+<li>Arithmetic dynamics</li>
+<li>Modular arithmetic</li>
+<li>Residue-class-wise affine group</li></ul>
+<h2><span class="mw-headline" id="Further_reading">Further reading</span><span class="mw-editsection"></span></h2>
+<dl><dd><ul><li><i>The Ultimate Challenge: The <span class="nowrap"> 3<span class="texhtml mvar" style="font-style:italic;">x</span> + 1 </span> Problem</i>,<sup class="reference" id="cite_ref-Lagarias_(2010)_9-1">[9]</sup> published in 2010 by the American Mathematical Society and edited by Jeffrey Lagarias, is a compendium of information on the Collatz conjecture, methods of approaching it, and generalizations. It includes two survey papers by the editor and five by other authors concerning the history of the problem, generalizations, statistical approaches, and results from the theory of computation. It also includes reprints of early papers on the subject, including the paper by Lothar Collatz.</li></ul></dd></dl>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation web cs1" id="CITEREFMatthews">Matthews, Keith. "<span class="nowrap">3 <span class="texhtml mvar" style="font-style:italic;">x</span> + 1</span> page".</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=%3Cspan+class%3D%22nowrap%22%3E3+%3Cspan+class%3D%22texhtml+mvar%22+style%3D%22font-style%3Aitalic%3B%22%3Ex%3C%2Fspan%3E+%2B+1%3C%2Fspan%3E+page&amp;rft.aulast=Matthews&amp;rft.aufirst=Keith&amp;rft_id=http%3A%2F%2Fwww.numbertheory.org%2F3x%2B1%2F&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACollatz+conjecture"></span></li>
+<li>An ongoing volunteer computing project Archived 2021-08-30 at the Wayback Machine by David Bařina verifies Convergence of the Collatz conjecture for large values. (furthest progress so far)</li>
+<li>(BOINC) volunteer computing project that verifies the Collatz conjecture for larger values.</li>
+<li>An ongoing volunteer computing project by Eric Roosendaal verifies the Collatz conjecture for larger and larger values.</li>
+<li>Another ongoing volunteer computing project by Tomás Oliveira e Silva continues to verify the Collatz conjecture (with fewer statistics than Eric Roosendaal's page but with further progress made).</li>
+<li><span class="citation mathworld" id="Reference-Mathworld-Collatz_Problem"><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation web cs1" id="CITEREFWeisstein">Weisstein, Eric W. "Collatz Problem". <i>MathWorld</i>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=unknown&amp;rft.jtitle=MathWorld&amp;rft.atitle=Collatz+Problem&amp;rft.au=Weisstein%2C+Eric+W.&amp;rft_id=https%3A%2F%2Fmathworld.wolfram.com%2FCollatzProblem.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACollatz+conjecture"></span></span></li>
+<li>Collatz Problem at PlanetMath..</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation web cs1" id="CITEREFNochella">Nochella, Jesse. "Collatz Paths". <i>Wolfram Demonstrations Project</i>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=unknown&amp;rft.jtitle=Wolfram+Demonstrations+Project&amp;rft.atitle=Collatz+Paths&amp;rft.aulast=Nochella&amp;rft.aufirst=Jesse&amp;rft_id=http%3A%2F%2Fdemonstrations.wolfram.com%2FCollatzPaths%2F&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACollatz+conjecture"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation audio-visual cs1">Eisenbud, D. (8 August 2016). <i>Uncrackable? The Collatz conjecture</i> (short video). Numberphile. Archived from the original on 2021-12-11 – via YouTube.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=Uncrackable%3F+The+Collatz+conjecture&amp;rft.series=Numberphile&amp;rft.date=2016-08-08&amp;rft_id=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D5mFpVDpKX70&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACollatz+conjecture"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation audio-visual cs1">Eisenbud, D. (August 9, 2016). <i>Uncrackable? Collatz conjecture</i> (extra footage). Numberphile. Archived from the original on 2021-12-11 – via YouTube.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=Uncrackable%3F+Collatz+conjecture&amp;rft.series=Numberphile&amp;rft.date=2016-08-09&amp;rft_id=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DO2_h3z1YgEU&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACollatz+conjecture"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation audio-visual cs1">Alex Kontorovich<span class="noprint" style="font-size:85%; font-style: normal;"> [de]</span> (featuring) (30 July 2021). <i>The simplest math problem no one can solve</i> (short video). Veritasium – via YouTube.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=The+simplest+math+problem+no+one+can+solve&amp;rft.series=Veritasium&amp;rft.date=2021-07-30&amp;rft_id=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D094y1Z2wpJg&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACollatz+conjecture"></span></li>
+<li>Are computers ready to solve this notoriously unwieldy math problem?</li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw2387
+Cached time: 20221223230741
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.726 seconds
+Real time usage: 0.951 seconds
+Preprocessor visited node count: 10610/1000000
+Post‐expand include size: 130225/2097152 bytes
+Template argument size: 17127/2097152 bytes
+Highest expansion depth: 14/100
+Expensive parser function count: 3/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 140221/5000000 bytes
+Lua time usage: 0.340/10.000 seconds
+Lua memory usage: 11250186/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  720.962      1 -total
+ 33.51%  241.611      1 Template:Reflist
+ 19.92%  143.582    123 Template:Math
+ 12.40%   89.365      6 Template:Cite_web
+ 10.86%   78.285     19 Template:Cite_journal
+  7.29%   52.554      1 Template:Short_description
+  6.18%   44.563      1 Template:Commons_category
+  5.91%   42.626      1 Template:Sister_project
+  5.66%   40.809      1 Template:Side_box
+  5.53%   39.846     13 Template:Val
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:37895-0!canonical and timestamp 20221223230740 and revision id 1128940753.
+ -->
+</div></body>
+</html>

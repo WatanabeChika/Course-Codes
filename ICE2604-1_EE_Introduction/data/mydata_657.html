@@ -1,0 +1,3439 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>nondeterministic_finite_state_machine</title>
+</head>
+<body>
+<div class="mw-parser-output">
+
+<p>In automata theory, a finite-state machine is called a deterministic finite automaton (DFA), if
+</p>
+<ul><li>each of its transitions is <i>uniquely</i> determined by its source state and input symbol, and</li>
+<li>reading an input symbol is required for each state transition.</li></ul>
+<p>A <b>nondeterministic finite automaton</b> (<b>NFA</b>), or <b>nondeterministic finite-state machine</b>, does not need to obey these restrictions. In particular, every DFA is also an NFA. Sometimes the term <b>NFA</b> is used in a narrower sense, referring to an NFA that is <i>not</i> a DFA, but not in this article.
+</p><p>Using the subset construction algorithm, each NFA can be translated to an equivalent DFA; i.e., a DFA recognizing the same formal language.<sup class="reference" id="cite_ref-1">[1]</sup>
+Like DFAs, NFAs only recognize regular languages.
+</p><p>NFAs were introduced in 1959 by Michael O. Rabin and Dana Scott,<sup class="reference" id="cite_ref-2">[2]</sup>  who also showed their equivalence to DFAs. NFAs are used in the implementation of regular expressions: Thompson's construction is an algorithm for compiling a regular expression to an NFA that can efficiently perform pattern matching on strings. Conversely, Kleene's algorithm can be used to convert an NFA into a regular expression (whose size is generally exponential in the input automaton).
+</p><p>NFAs have been generalized in multiple ways, e.g., nondeterministic finite automata with ε-moves, finite-state transducers, pushdown automata, alternating automata, ω-automata, and probabilistic automata.
+Besides the DFAs, other known special cases of NFAs
+are unambiguous finite automata (UFA)
+and self-verifying finite automata (SVFA).
+</p>
+
+<h2><span class="mw-headline" id="Informal_introduction">Informal introduction</span><span class="mw-editsection"></span></h2>
+<p>There are two ways to describe the behavior of an NFA, and both of them are equivalent. The first way makes use of the nondeterminism in the name of an NFA. For each input symbol, the NFA transitions to a new state until all input symbols have been consumed. In each step, the automaton nondeterministically "chooses" one of the applicable transitions. If there exists at least one "lucky run", i.e. some sequence of choices leading to an accepting state after completely consuming the input, it is accepted. Otherwise, i.e. if no choice sequence at all can consume all the input<sup class="reference" id="cite_ref-3">[3]</sup> and lead to an accepting state, the input is rejected.<sup class="reference" id="cite_ref-Hopcroft.Ullman.1979_4-0">[4]</sup><sup class="reference nowrap"><span title="Page / location: 19">: 19 </span></sup><sup class="reference" id="cite_ref-Aho.Hopcroft.Ullman.1974_5-0">[5]</sup><sup class="reference nowrap"><span title="Page / location: 319">: 319 </span></sup>
+</p><p>In the second way, the NFA consumes a string of input symbols, one by one. In each step, whenever two or more transitions are applicable, it "clones" itself into appropriately many copies, each one following a different transition. If no transition is applicable, the current copy is in a dead end, and it "dies". If, after consuming the complete input, any of the copies is in an accept state, the input is accepted, else, it is rejected.<sup class="reference" id="cite_ref-Hopcroft.Ullman.1979_4-1">[4]</sup><sup class="reference nowrap"><span title="Page / location: 19–20">: 19–20 </span></sup><sup class="reference" id="cite_ref-Sipser.1997_6-0">[6]</sup><sup class="reference nowrap"><span title="Page / location: 48">: 48 </span></sup><sup class="reference" id="cite_ref-Hopcroft.Motwani.Ullman.2003_7-0">[7]</sup><sup class="reference nowrap"><span title="Page / location: 56">: 56 </span></sup>
+</p>
+<h2><span class="mw-headline" id="Formal_definition">Formal definition</span><span class="mw-editsection"></span></h2>
+<p>For a more elementary introduction of the formal definition see automata theory.
+</p>
+<h3><span class="mw-headline" id="Automaton">Automaton</span><span class="mw-editsection"></span></h3>
+<p>An <i>NFA</i> is represented formally by a 5-tuple,
+<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (Q,\Sigma ,\delta ,q_{0},F)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mi>Q</mi>
+<mo>,</mo>
+<mi mathvariant="normal">Σ<!-- Σ --></mi>
+<mo>,</mo>
+<mi>δ<!-- δ --></mi>
+<mo>,</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>F</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (Q,\Sigma ,\delta ,q_{0},F)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle (Q,\Sigma ,\delta ,q_{0},F)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ef5beb14aa36f7e44c058bab50d0f2aeaf7e4059" style="vertical-align: -0.838ex; width:14.342ex; height:2.843ex;"/></span>, consisting of
+</p>
+<ul><li>a finite set of states <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>Q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Q}</annotation>
+</semantics>
+</math></span><img alt="Q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8752c7023b4b3286800fe3238271bbca681219ed" style="vertical-align: -0.671ex; width:1.838ex; height:2.509ex;"/></span>.</li>
+<li>a finite set of input symbols <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Sigma }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Σ<!-- Σ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Sigma }</annotation>
+</semantics>
+</math></span><img alt="\Sigma " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9e1f558f53cda207614abdf90162266c70bc5c1e" style="vertical-align: -0.338ex; width:1.678ex; height:2.176ex;"/></span>.</li>
+<li>a transition function <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>δ<!-- δ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta }</annotation>
+</semantics>
+</math></span><img alt="\delta " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c5321cfa797202b3e1f8620663ff43c4660ea03a" style="vertical-align: -0.338ex; width:1.049ex; height:2.343ex;"/></span> : <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Q\times \Sigma \rightarrow {\mathcal {P}}(Q)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>Q</mi>
+<mo>×<!-- × --></mo>
+<mi mathvariant="normal">Σ<!-- Σ --></mi>
+<mo stretchy="false">→<!-- → --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">P</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>Q</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Q\times \Sigma \rightarrow {\mathcal {P}}(Q)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle Q\times \Sigma \rightarrow {\mathcal {P}}(Q)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fb602734cde581df713ff9abdaffa81e4a4b81de" style="vertical-align: -0.838ex; width:15.322ex; height:2.843ex;"/></span>.</li>
+<li>an <i>initial</i> (or <i>start</i>) state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q_{0}\in Q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>∈<!-- ∈ --></mo>
+<mi>Q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q_{0}\in Q}</annotation>
+</semantics>
+</math></span><img alt="q_{0}\in Q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ad0e7ce55cfad982929c93e29139a65108c37263" style="vertical-align: -0.671ex; width:6.77ex; height:2.509ex;"/></span>.</li>
+<li>a set of states <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle F}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>F</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle F}</annotation>
+</semantics>
+</math></span><img alt="F" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/545fd099af8541605f7ee55f08225526be88ce57" style="vertical-align: -0.338ex; width:1.741ex; height:2.176ex;"/></span> distinguished as <i>accepting</i> (or <i>final</i>) <i>states</i> <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle F\subseteq Q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>F</mi>
+<mo>⊆<!-- ⊆ --></mo>
+<mi>Q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle F\subseteq Q}</annotation>
+</semantics>
+</math></span><img alt="F\subseteq Q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9ada8f098adcf02f7a674d2a5f2dda5e4917881e" style="vertical-align: -0.671ex; width:6.678ex; height:2.509ex;"/></span>.</li></ul>
+<p>Here, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {P}}(Q)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">P</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>Q</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {P}}(Q)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\mathcal {P}}(Q)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7a5873da70011079141ccfc5a0ce2eb9f17fe840" style="vertical-align: -0.838ex; width:5.351ex; height:2.843ex;"/></span> denotes the power set of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>Q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Q}</annotation>
+</semantics>
+</math></span><img alt="Q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8752c7023b4b3286800fe3238271bbca681219ed" style="vertical-align: -0.671ex; width:1.838ex; height:2.509ex;"/></span>.
+</p>
+<h3><span class="mw-headline" id="Recognized_language">Recognized language</span><span class="mw-editsection"></span></h3>
+<p>Given an NFA <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M=(Q,\Sigma ,\delta ,q_{0},F)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<mi>Q</mi>
+<mo>,</mo>
+<mi mathvariant="normal">Σ<!-- Σ --></mi>
+<mo>,</mo>
+<mi>δ<!-- δ --></mi>
+<mo>,</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>F</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M=(Q,\Sigma ,\delta ,q_{0},F)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle M=(Q,\Sigma ,\delta ,q_{0},F)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fbd4a0841c154d4f448f8001ce4ea0c33f1816cb" style="vertical-align: -0.838ex; width:19.883ex; height:2.843ex;"/></span>, its recognized language is denoted by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle L(M)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>L</mi>
+<mo stretchy="false">(</mo>
+<mi>M</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle L(M)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle L(M)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c75fce3884ce58c16485107a1cef1b907db6c9ef" style="vertical-align: -0.838ex; width:5.834ex; height:2.843ex;"/></span>, and is defined as the set of all strings over the alphabet <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Sigma }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Σ<!-- Σ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Sigma }</annotation>
+</semantics>
+</math></span><img alt="\Sigma " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9e1f558f53cda207614abdf90162266c70bc5c1e" style="vertical-align: -0.338ex; width:1.678ex; height:2.176ex;"/></span> that are accepted by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span>.
+</p><p>Loosely corresponding to the above informal explanations, there are several equivalent formal definitions of a string <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w=a_{1}a_{2}...a_{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+<mo>=</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w=a_{1}a_{2}...a_{n}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle w=a_{1}a_{2}...a_{n}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9d740175de3a4fb922587199a97c2cc93302ca6f" style="vertical-align: -0.671ex; width:14.881ex; height:2.009ex;"/></span> being accepted by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span>:
+</p>
+<ul><li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w}</annotation>
+</semantics>
+</math></span><img alt="w" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/88b1e0c8e1be5ebe69d18a8010676fa42d7961e6" style="vertical-align: -0.338ex; width:1.664ex; height:1.676ex;"/></span> is accepted if a sequence of states, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r_{0},r_{1},...,r_{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>,</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r_{0},r_{1},...,r_{n}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle r_{0},r_{1},...,r_{n}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0d70633fea7bf95513a06210235cc65ebf44590a" style="vertical-align: -0.671ex; width:12.677ex; height:2.009ex;"/></span>, exists in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>Q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Q}</annotation>
+</semantics>
+</math></span><img alt="Q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8752c7023b4b3286800fe3238271bbca681219ed" style="vertical-align: -0.671ex; width:1.838ex; height:2.509ex;"/></span> such that:
+<ol><li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r_{0}=q_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r_{0}=q_{0}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle r_{0}=q_{0}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/afb366744c29d49b0b3d4cab4df2e4e678864b70" style="vertical-align: -0.671ex; width:7.293ex; height:2.009ex;"/></span></li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r_{i+1}\in \delta (r_{i},a_{i+1})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>∈<!-- ∈ --></mo>
+<mi>δ<!-- δ --></mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r_{i+1}\in \delta (r_{i},a_{i+1})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle r_{i+1}\in \delta (r_{i},a_{i+1})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e729d4ed131289ec9591ee9559921c3d63b3bc85" style="vertical-align: -0.838ex; width:16.66ex; height:2.843ex;"/></span>, for <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i=0,\ldots ,n-1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+<mo>=</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i=0,\ldots ,n-1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle i=0,\ldots ,n-1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a24c993042b221ec2ea57ac190a1e8f07a9c42d3" style="vertical-align: -0.671ex; width:15.639ex; height:2.509ex;"/></span></li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r_{n}\in F}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mo>∈<!-- ∈ --></mo>
+<mi>F</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r_{n}\in F}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle r_{n}\in F}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e8fa9d715529a5013af508b3ac080dac7ca4ef82" style="vertical-align: -0.671ex; width:6.849ex; height:2.509ex;"/></span>.</li></ol></li></ul>
+<dl><dd>In words, the first condition says that the machine starts in the start state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q_{0}}</annotation>
+</semantics>
+</math></span><img alt="q_0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9d68d37de188ac61f0c0e3f31d5322d1c486f2f4" style="vertical-align: -0.671ex; width:2.091ex; height:2.009ex;"/></span>. The second condition says that given each character of string <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w}</annotation>
+</semantics>
+</math></span><img alt="w" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/88b1e0c8e1be5ebe69d18a8010676fa42d7961e6" style="vertical-align: -0.338ex; width:1.664ex; height:1.676ex;"/></span>, the machine will transition from state to state according to the transition function <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>δ<!-- δ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta }</annotation>
+</semantics>
+</math></span><img alt="\delta " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c5321cfa797202b3e1f8620663ff43c4660ea03a" style="vertical-align: -0.338ex; width:1.049ex; height:2.343ex;"/></span>. The last condition says that the machine accepts <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w}</annotation>
+</semantics>
+</math></span><img alt="w" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/88b1e0c8e1be5ebe69d18a8010676fa42d7961e6" style="vertical-align: -0.338ex; width:1.664ex; height:1.676ex;"/></span> if the last input of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w}</annotation>
+</semantics>
+</math></span><img alt="w" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/88b1e0c8e1be5ebe69d18a8010676fa42d7961e6" style="vertical-align: -0.338ex; width:1.664ex; height:1.676ex;"/></span> causes the machine to halt in one of the accepting states. In order for <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w}</annotation>
+</semantics>
+</math></span><img alt="w" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/88b1e0c8e1be5ebe69d18a8010676fa42d7961e6" style="vertical-align: -0.338ex; width:1.664ex; height:1.676ex;"/></span> to be accepted by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span>, it is not required that every state sequence ends in an accepting state, it is sufficient if one does. Otherwise, <i>i.e.</i> if it is impossible at all to get from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q_{0}}</annotation>
+</semantics>
+</math></span><img alt="q_0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9d68d37de188ac61f0c0e3f31d5322d1c486f2f4" style="vertical-align: -0.671ex; width:2.091ex; height:2.009ex;"/></span> to a state from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle F}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>F</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle F}</annotation>
+</semantics>
+</math></span><img alt="F" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/545fd099af8541605f7ee55f08225526be88ce57" style="vertical-align: -0.338ex; width:1.741ex; height:2.176ex;"/></span> by following <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w}</annotation>
+</semantics>
+</math></span><img alt="w" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/88b1e0c8e1be5ebe69d18a8010676fa42d7961e6" style="vertical-align: -0.338ex; width:1.664ex; height:1.676ex;"/></span>, it is said that the automaton <i>rejects</i> the string. The set of strings <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span> accepts is the language <i>recognized</i> by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span> and this language is denoted by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle L(M)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>L</mi>
+<mo stretchy="false">(</mo>
+<mi>M</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle L(M)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle L(M)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c75fce3884ce58c16485107a1cef1b907db6c9ef" style="vertical-align: -0.838ex; width:5.834ex; height:2.843ex;"/></span>.<sup class="reference" id="cite_ref-Aho.Hopcroft.Ullman.1974_5-1">[5]</sup><sup class="reference nowrap"><span title="Page / location: 320">: 320 </span></sup><sup class="reference" id="cite_ref-Sipser.1997_6-1">[6]</sup><sup class="reference nowrap"><span title="Page / location: 54">: 54 </span></sup></dd></dl>
+<ul><li>Alternatively, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w}</annotation>
+</semantics>
+</math></span><img alt="w" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/88b1e0c8e1be5ebe69d18a8010676fa42d7961e6" style="vertical-align: -0.338ex; width:1.664ex; height:1.676ex;"/></span> is accepted if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta ^{*}(q_{0},w)\cap F\not =\emptyset }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>w</mi>
+<mo stretchy="false">)</mo>
+<mo>∩<!-- ∩ --></mo>
+<mi>F</mi>
+<mo>≠</mo>
+<mi mathvariant="normal">∅<!-- ∅ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta ^{*}(q_{0},w)\cap F\not =\emptyset }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta ^{*}(q_{0},w)\cap F\not =\emptyset }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/86eea979e8a50fd9ee6e4afeb1063f171d8ff201" style="vertical-align: -0.838ex; width:17.291ex; height:2.843ex;"/></span>, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta ^{*}:Q\times \Sigma ^{*}\rightarrow {\mathcal {P}}(Q)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo>:</mo>
+<mi>Q</mi>
+<mo>×<!-- × --></mo>
+<msup>
+<mi mathvariant="normal">Σ<!-- Σ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">→<!-- → --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">P</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>Q</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta ^{*}:Q\times \Sigma ^{*}\rightarrow {\mathcal {P}}(Q)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta ^{*}:Q\times \Sigma ^{*}\rightarrow {\mathcal {P}}(Q)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c6fcadd86317dd9e9763b7e905f36293bc8eab84" style="vertical-align: -0.838ex; width:20.421ex; height:2.843ex;"/></span> is defined recursively by:
+<ol><li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta ^{*}(r,\epsilon )=\{r\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>r</mi>
+<mo>,</mo>
+<mi>ϵ<!-- ϵ --></mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mo fence="false" stretchy="false">{</mo>
+<mi>r</mi>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta ^{*}(r,\epsilon )=\{r\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta ^{*}(r,\epsilon )=\{r\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/65873d9176dc17cc726bb57b3f6f4dafdee7b608" style="vertical-align: -0.838ex; width:13.416ex; height:2.843ex;"/></span> where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \epsilon }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>ϵ<!-- ϵ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \epsilon }</annotation>
+</semantics>
+</math></span><img alt="\epsilon " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3837cad72483d97bcdde49c85d3b7b859fb3fd2" style="vertical-align: -0.338ex; width:0.944ex; height:1.676ex;"/></span> is the empty string, and</li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta ^{*}(r,xa)=\bigcup _{r'\in \delta ^{*}(r,x)}\delta (r',a)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>r</mi>
+<mo>,</mo>
+<mi>x</mi>
+<mi>a</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<munder>
+<mo>⋃<!-- ⋃ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mi>r</mi>
+<mo>′</mo>
+</msup>
+<mo>∈<!-- ∈ --></mo>
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>r</mi>
+<mo>,</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</munder>
+<mi>δ<!-- δ --></mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>r</mi>
+<mo>′</mo>
+</msup>
+<mo>,</mo>
+<mi>a</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta ^{*}(r,xa)=\bigcup _{r'\in \delta ^{*}(r,x)}\delta (r',a)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta ^{*}(r,xa)=\bigcup _{r'\in \delta ^{*}(r,x)}\delta (r',a)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d5b406d45e0e5b208a3815e46c9dd19ba4b104f1" style="vertical-align: -3.671ex; width:26.264ex; height:6.176ex;"/></span> for all <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x\in \Sigma ^{*},a\in \Sigma }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+<mo>∈<!-- ∈ --></mo>
+<msup>
+<mi mathvariant="normal">Σ<!-- Σ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo>,</mo>
+<mi>a</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi mathvariant="normal">Σ<!-- Σ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x\in \Sigma ^{*},a\in \Sigma }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle x\in \Sigma ^{*},a\in \Sigma }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c9dcfc3192d4657fb2d4c428e6780a05c4f7eda3" style="vertical-align: -0.671ex; width:13.685ex; height:2.676ex;"/></span>.</li></ol></li></ul>
+<dl><dd>In words, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta ^{*}(r,x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>r</mi>
+<mo>,</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta ^{*}(r,x)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta ^{*}(r,x)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1fa7c49fafa7da95660ef76f10e3059c8b609a6f" style="vertical-align: -0.838ex; width:7.329ex; height:2.843ex;"/></span> is the set of all states reachable from state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>r</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r}</annotation>
+</semantics>
+</math></span><img alt="r" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0d1ecb613aa2984f0576f70f86650b7c2a132538" style="vertical-align: -0.338ex; width:1.049ex; height:1.676ex;"/></span> by consuming the string <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span>. The string <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w}</annotation>
+</semantics>
+</math></span><img alt="w" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/88b1e0c8e1be5ebe69d18a8010676fa42d7961e6" style="vertical-align: -0.338ex; width:1.664ex; height:1.676ex;"/></span> is accepted if some accepting state in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle F}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>F</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle F}</annotation>
+</semantics>
+</math></span><img alt="F" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/545fd099af8541605f7ee55f08225526be88ce57" style="vertical-align: -0.338ex; width:1.741ex; height:2.176ex;"/></span> can be reached from the start state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q_{0}}</annotation>
+</semantics>
+</math></span><img alt="q_0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9d68d37de188ac61f0c0e3f31d5322d1c486f2f4" style="vertical-align: -0.671ex; width:2.091ex; height:2.009ex;"/></span> by consuming <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w}</annotation>
+</semantics>
+</math></span><img alt="w" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/88b1e0c8e1be5ebe69d18a8010676fa42d7961e6" style="vertical-align: -0.338ex; width:1.664ex; height:1.676ex;"/></span>.<sup class="reference" id="cite_ref-Hopcroft.Ullman.1979_4-2">[4]</sup><sup class="reference nowrap"><span title="Page / location: 21">: 21 </span></sup><sup class="reference" id="cite_ref-Hopcroft.Motwani.Ullman.2003_7-1">[7]</sup><sup class="reference nowrap"><span title="Page / location: 59">: 59 </span></sup></dd></dl>
+<h3><span class="mw-headline" id="Initial_state">Initial state</span><span class="mw-editsection"></span></h3>
+<p>The above automaton definition uses a <i>single initial state</i>, which is not necessary. Sometimes, NFAs are defined with a set of initial states. There is an easy construction that translates an NFA with multiple initial states to an NFA with a single initial state, which provides a convenient notation.
+</p>
+<h2><span class="mw-headline" id="Example">Example</span><span class="mw-editsection"></span></h2>
+<table style="float: right; border-spacing: 0;">
+<tbody><tr>
+<td valign="TOP">
+</td>
+<td valign="TOP">
+</td></tr>
+<tr>
+<td colspan="2">
+</td></tr></tbody></table>
+<p>The following automaton <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span>, with a binary alphabet, determines if the input ends with a 1.
+Let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M=(\{p,q\},\{0,1\},\delta ,p,\{q\})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<mo fence="false" stretchy="false">{</mo>
+<mi>p</mi>
+<mo>,</mo>
+<mi>q</mi>
+<mo fence="false" stretchy="false">}</mo>
+<mo>,</mo>
+<mo fence="false" stretchy="false">{</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mn>1</mn>
+<mo fence="false" stretchy="false">}</mo>
+<mo>,</mo>
+<mi>δ<!-- δ --></mi>
+<mo>,</mo>
+<mi>p</mi>
+<mo>,</mo>
+<mo fence="false" stretchy="false">{</mo>
+<mi>q</mi>
+<mo fence="false" stretchy="false">}</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M=(\{p,q\},\{0,1\},\delta ,p,\{q\})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle M=(\{p,q\},\{0,1\},\delta ,p,\{q\})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2c15f6c7ad5047b431b181b46c762b7e6a9667f5" style="vertical-align: -0.838ex; width:28.38ex; height:2.843ex;"/></span> where
+the transition function <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>δ<!-- δ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta }</annotation>
+</semantics>
+</math></span><img alt="\delta " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c5321cfa797202b3e1f8620663ff43c4660ea03a" style="vertical-align: -0.338ex; width:1.049ex; height:2.343ex;"/></span> can be defined by this state transition table (cf. upper left picture):
+</p>
+<table class="wikitable" style="text-align:center;">
+<tbody><tr>
+<th style="background:#EAECF0;background:linear-gradient(to top right,#EAECF0 49%,#AAA 49.5%,#AAA 50.5%,#EAECF0 51%);line-height:1.2;padding:0.1em 0.4em;">
+</th>
+<th>0
+</th>
+<th>1
+</th></tr>
+<tr>
+<th><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>p</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p}</annotation>
+</semantics>
+</math></span><img alt="p" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/81eac1e205430d1f40810df36a0edffdc367af36" style="vertical-align: -0.671ex; margin-left: -0.089ex; width:1.259ex; height:2.009ex;"/></span>
+</th>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \{p\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">{</mo>
+<mi>p</mi>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \{p\}}</annotation>
+</semantics>
+</math></span><img alt="\{p\}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4a51b4d14ebfbef2ccdd2c4f108fa8e5bfc31796" style="vertical-align: -0.838ex; width:3.494ex; height:2.843ex;"/></span>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \{p,q\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">{</mo>
+<mi>p</mi>
+<mo>,</mo>
+<mi>q</mi>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \{p,q\}}</annotation>
+</semantics>
+</math></span><img alt="\{p,q\}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bbc4bf30345d33ef9dca8944f51ea15fbb73fb3c" style="vertical-align: -0.838ex; width:5.598ex; height:2.843ex;"/></span>
+</td></tr>
+<tr>
+<th><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q}</annotation>
+</semantics>
+</math></span><img alt="q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/06809d64fa7c817ffc7e323f85997f783dbdf71d" style="vertical-align: -0.671ex; width:1.07ex; height:2.009ex;"/></span>
+</th>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \emptyset }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">∅<!-- ∅ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \emptyset }</annotation>
+</semantics>
+</math></span><img alt="\emptyset " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6af50205f42bb2ec3c666b7b847d2c7f96e464c7" style="vertical-align: -0.505ex; width:1.162ex; height:2.509ex;"/></span>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \emptyset }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">∅<!-- ∅ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \emptyset }</annotation>
+</semantics>
+</math></span><img alt="\emptyset " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6af50205f42bb2ec3c666b7b847d2c7f96e464c7" style="vertical-align: -0.505ex; width:1.162ex; height:2.509ex;"/></span>
+</td></tr></tbody></table>
+<p>Since the set <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta (p,1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>δ<!-- δ --></mi>
+<mo stretchy="false">(</mo>
+<mi>p</mi>
+<mo>,</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta (p,1)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta (p,1)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9487b9785ce54948b3572bd2c60aa8a8401fdfb3" style="vertical-align: -0.838ex; width:6.224ex; height:2.843ex;"/></span> contains more than one state, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span> is nondeterministic.
+The language of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span> can be described by the regular language given by the regular expression <code>(0|1)*1</code>.
+</p><p>All possible state sequences for the input string "1011" are shown in the lower picture.
+The string is accepted by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span> since one state sequence satisfies the above definition; it doesn't matter that other sequences fail to do so.
+The picture can be interpreted in a couple of ways:
+</p>
+<ul><li>In terms of the above "lucky-run" explanation, each path in the picture denotes a sequence of choices of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span>.</li>
+<li>In terms of the "cloning" explanation, each vertical column shows all clones of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span> at a given point in time, multiple arrows emanating from a node indicate cloning, a node without emanating arrows indicating the "death" of a clone.</li></ul>
+<p>The feasibility to read the same picture in two ways also indicates the equivalence of both above explanations.
+</p>
+<ul><li>Considering the first of the above formal definitions, "1011" is accepted since when reading it <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span> may traverse the state sequence <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \langle r_{0},r_{1},r_{2},r_{3},r_{4}\rangle =\langle p,p,p,p,q\rangle }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">⟨<!-- ⟨ --></mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>4</mn>
+</mrow>
+</msub>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo>=</mo>
+<mo fence="false" stretchy="false">⟨<!-- ⟨ --></mo>
+<mi>p</mi>
+<mo>,</mo>
+<mi>p</mi>
+<mo>,</mo>
+<mi>p</mi>
+<mo>,</mo>
+<mi>p</mi>
+<mo>,</mo>
+<mi>q</mi>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \langle r_{0},r_{1},r_{2},r_{3},r_{4}\rangle =\langle p,p,p,p,q\rangle }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \langle r_{0},r_{1},r_{2},r_{3},r_{4}\rangle =\langle p,p,p,p,q\rangle }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8b0805a7508f4e0026b204fa88d9d4cefe7da681" style="vertical-align: -0.838ex; width:31.25ex; height:2.843ex;"/></span>, which satisfies conditions 1 to 3.</li>
+<li>Concerning the second formal definition, bottom-up computation shows that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta ^{*}(p,\epsilon )=\{p\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>p</mi>
+<mo>,</mo>
+<mi>ϵ<!-- ϵ --></mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mo fence="false" stretchy="false">{</mo>
+<mi>p</mi>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta ^{*}(p,\epsilon )=\{p\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta ^{*}(p,\epsilon )=\{p\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/da817a31168df6faa3a56609502b7f1ed5b2d7fb" style="vertical-align: -0.838ex; width:13.657ex; height:2.843ex;"/></span>, hence <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta ^{*}(p,1)=\delta (p,1)=\{p,q\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>p</mi>
+<mo>,</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>δ<!-- δ --></mi>
+<mo stretchy="false">(</mo>
+<mi>p</mi>
+<mo>,</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mo fence="false" stretchy="false">{</mo>
+<mi>p</mi>
+<mo>,</mo>
+<mi>q</mi>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta ^{*}(p,1)=\delta (p,1)=\{p,q\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta ^{*}(p,1)=\delta (p,1)=\{p,q\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ee2e469d0c30163ff5be682ebe6233e7da8befbd" style="vertical-align: -0.838ex; width:25.302ex; height:2.843ex;"/></span>, hence <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta ^{*}(p,10)=\delta (p,0)\cup \delta (q,0)=\{p\}\cup \{\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>p</mi>
+<mo>,</mo>
+<mn>10</mn>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>δ<!-- δ --></mi>
+<mo stretchy="false">(</mo>
+<mi>p</mi>
+<mo>,</mo>
+<mn>0</mn>
+<mo stretchy="false">)</mo>
+<mo>∪<!-- ∪ --></mo>
+<mi>δ<!-- δ --></mi>
+<mo stretchy="false">(</mo>
+<mi>q</mi>
+<mo>,</mo>
+<mn>0</mn>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mo fence="false" stretchy="false">{</mo>
+<mi>p</mi>
+<mo fence="false" stretchy="false">}</mo>
+<mo>∪<!-- ∪ --></mo>
+<mo fence="false" stretchy="false">{</mo>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta ^{*}(p,10)=\delta (p,0)\cup \delta (q,0)=\{p\}\cup \{\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta ^{*}(p,10)=\delta (p,0)\cup \delta (q,0)=\{p\}\cup \{\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87ca536ffb9ad7eaf1f5e7d3c6f49c3f4d9cb085" style="vertical-align: -0.838ex; width:37.974ex; height:2.843ex;"/></span>, hence <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta ^{*}(p,101)=\delta (p,1)=\{p,q\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>p</mi>
+<mo>,</mo>
+<mn>101</mn>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>δ<!-- δ --></mi>
+<mo stretchy="false">(</mo>
+<mi>p</mi>
+<mo>,</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mo fence="false" stretchy="false">{</mo>
+<mi>p</mi>
+<mo>,</mo>
+<mi>q</mi>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta ^{*}(p,101)=\delta (p,1)=\{p,q\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta ^{*}(p,101)=\delta (p,1)=\{p,q\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1e0903939c940b7e71630c9ae1c51e480a66b9a3" style="vertical-align: -0.838ex; width:27.626ex; height:2.843ex;"/></span>, and hence <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta ^{*}(p,1011)=\delta (p,1)\cup \delta (q,1)=\{p,q\}\cup \{\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>p</mi>
+<mo>,</mo>
+<mn>1011</mn>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>δ<!-- δ --></mi>
+<mo stretchy="false">(</mo>
+<mi>p</mi>
+<mo>,</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo>∪<!-- ∪ --></mo>
+<mi>δ<!-- δ --></mi>
+<mo stretchy="false">(</mo>
+<mi>q</mi>
+<mo>,</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mo fence="false" stretchy="false">{</mo>
+<mi>p</mi>
+<mo>,</mo>
+<mi>q</mi>
+<mo fence="false" stretchy="false">}</mo>
+<mo>∪<!-- ∪ --></mo>
+<mo fence="false" stretchy="false">{</mo>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta ^{*}(p,1011)=\delta (p,1)\cup \delta (q,1)=\{p,q\}\cup \{\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta ^{*}(p,1011)=\delta (p,1)\cup \delta (q,1)=\{p,q\}\cup \{\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9ff573c063d407506e78719e9ad52ef3c1bf8641" style="vertical-align: -0.838ex; width:42.403ex; height:2.843ex;"/></span>; since that set is not disjoint from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \{q\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">{</mo>
+<mi>q</mi>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \{q\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \{q\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/776a93f310cc623c2dfecbe153dad9066c6c3712" style="vertical-align: -0.838ex; width:3.394ex; height:2.843ex;"/></span>, the string "1011" is accepted.</li></ul>
+<p>In contrast, the string "10" is rejected by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span> (all possible state sequences for that input are shown in the upper right picture), since there is no way to reach the only accepting state, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q}</annotation>
+</semantics>
+</math></span><img alt="q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/06809d64fa7c817ffc7e323f85997f783dbdf71d" style="vertical-align: -0.671ex; width:1.07ex; height:2.009ex;"/></span>, by reading the final 0 symbol. While <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q}</annotation>
+</semantics>
+</math></span><img alt="q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/06809d64fa7c817ffc7e323f85997f783dbdf71d" style="vertical-align: -0.671ex; width:1.07ex; height:2.009ex;"/></span> can be reached after consuming the initial "1", this does not mean that the input "10" is accepted; rather, it means that an input string "1" would be accepted.
+</p>
+<h2><span class="mw-headline" id="Equivalence_to_DFA">Equivalence to DFA</span><span class="mw-editsection"></span></h2>
+<p>A deterministic finite automaton (DFA) can be seen as a special kind of NFA, in which for each state and symbol, the transition function has exactly one state. Thus, it is clear that every formal language that can be recognized by a DFA can be recognized by an NFA.
+</p><p>Conversely, for each NFA, there is a DFA such that it recognizes the same formal language. The DFA can be constructed using the powerset construction.
+</p><p>This result shows that NFAs, despite their additional flexibility, are unable to recognize  languages that cannot be recognized by some DFA. It is also important in practice for converting easier-to-construct NFAs into more efficiently executable DFAs. However, if the NFA has <i>n</i> states, the resulting DFA may have up to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{n}}</annotation>
+</semantics>
+</math></span><img alt="2^{n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8226f30650ee4fe4e640c6d2798127e80e9c160d" style="vertical-align: -0.338ex; width:2.381ex; height:2.343ex;"/></span> states, which sometimes makes the construction impractical for large NFAs.
+</p>
+<h2><span id="NFA_with_.CE.B5-moves"></span><span class="mw-headline" id="NFA_with_ε-moves">NFA with ε-moves</span><span class="mw-editsection"></span></h2>
+<p>Nondeterministic finite automaton with ε-moves (NFA-ε) is a further generalization to NFA. In this kind of automaton, the transition function is additionally defined on the empty string ε. A transition without consuming an input symbol is called an ε-transition and is represented in state diagrams by an arrow labeled "ε". ε-transitions provide a convenient way of modeling systems whose current states are not precisely known: i.e., if we are modeling a system and it is not clear whether the current state (after processing some input string) should be q or q', then we can add an ε-transition between these two states, thus putting the automaton in both states simultaneously.
+</p>
+<h3><span class="mw-headline" id="Formal_definition_2">Formal definition</span><span class="mw-editsection"></span></h3>
+<p>An <i>NFA-ε</i> is represented formally by a 5-tuple, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (Q,\Sigma ,\delta ,q_{0},F)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mi>Q</mi>
+<mo>,</mo>
+<mi mathvariant="normal">Σ<!-- Σ --></mi>
+<mo>,</mo>
+<mi>δ<!-- δ --></mi>
+<mo>,</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>F</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (Q,\Sigma ,\delta ,q_{0},F)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle (Q,\Sigma ,\delta ,q_{0},F)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ef5beb14aa36f7e44c058bab50d0f2aeaf7e4059" style="vertical-align: -0.838ex; width:14.342ex; height:2.843ex;"/></span>, consisting of
+</p>
+<ul><li>a finite set of states <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>Q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Q}</annotation>
+</semantics>
+</math></span><img alt="Q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8752c7023b4b3286800fe3238271bbca681219ed" style="vertical-align: -0.671ex; width:1.838ex; height:2.509ex;"/></span></li>
+<li>a finite set of input symbols called the alphabet <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Sigma }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Σ<!-- Σ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Sigma }</annotation>
+</semantics>
+</math></span><img alt="\Sigma " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9e1f558f53cda207614abdf90162266c70bc5c1e" style="vertical-align: -0.338ex; width:1.678ex; height:2.176ex;"/></span></li>
+<li>a transition function <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta :Q\times (\Sigma \cup \{\epsilon \})\rightarrow {\mathcal {P}}(Q)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>δ<!-- δ --></mi>
+<mo>:</mo>
+<mi>Q</mi>
+<mo>×<!-- × --></mo>
+<mo stretchy="false">(</mo>
+<mi mathvariant="normal">Σ<!-- Σ --></mi>
+<mo>∪<!-- ∪ --></mo>
+<mo fence="false" stretchy="false">{</mo>
+<mi>ϵ<!-- ϵ --></mi>
+<mo fence="false" stretchy="false">}</mo>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">→<!-- → --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">P</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>Q</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta :Q\times (\Sigma \cup \{\epsilon \})\rightarrow {\mathcal {P}}(Q)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta :Q\times (\Sigma \cup \{\epsilon \})\rightarrow {\mathcal {P}}(Q)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f552f415735889fa2273b3cc16fffc5a1017f2df" style="vertical-align: -0.838ex; width:25.969ex; height:2.843ex;"/></span></li>
+<li>an <i>initial</i> (or <i>start</i>) state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q_{0}\in Q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>∈<!-- ∈ --></mo>
+<mi>Q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q_{0}\in Q}</annotation>
+</semantics>
+</math></span><img alt="q_{0}\in Q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ad0e7ce55cfad982929c93e29139a65108c37263" style="vertical-align: -0.671ex; width:6.77ex; height:2.509ex;"/></span></li>
+<li>a set of states <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle F}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>F</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle F}</annotation>
+</semantics>
+</math></span><img alt="F" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/545fd099af8541605f7ee55f08225526be88ce57" style="vertical-align: -0.338ex; width:1.741ex; height:2.176ex;"/></span> distinguished as <i>accepting</i> (or <i>final</i>) <i>states</i> <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle F\subseteq Q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>F</mi>
+<mo>⊆<!-- ⊆ --></mo>
+<mi>Q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle F\subseteq Q}</annotation>
+</semantics>
+</math></span><img alt="F\subseteq Q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9ada8f098adcf02f7a674d2a5f2dda5e4917881e" style="vertical-align: -0.671ex; width:6.678ex; height:2.509ex;"/></span>.</li></ul>
+<p>Here, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {P}}(Q)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">P</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>Q</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {P}}(Q)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\mathcal {P}}(Q)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7a5873da70011079141ccfc5a0ce2eb9f17fe840" style="vertical-align: -0.838ex; width:5.351ex; height:2.843ex;"/></span> denotes the power set of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>Q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Q}</annotation>
+</semantics>
+</math></span><img alt="Q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8752c7023b4b3286800fe3238271bbca681219ed" style="vertical-align: -0.671ex; width:1.838ex; height:2.509ex;"/></span> and ε denotes empty string.
+</p>
+<h3><span id=".CE.B5-closure_of_a_state_or_set_of_states"></span><span class="mw-headline" id="ε-closure_of_a_state_or_set_of_states">ε-closure of a state or set of states</span><span class="mw-editsection"></span></h3>
+<p>For a state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q\in Q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>q</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>Q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q\in Q}</annotation>
+</semantics>
+</math></span><img alt="q\in Q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/960b889a6324eeccc02725962bf11ac1a96c32fd" style="vertical-align: -0.671ex; width:5.749ex; height:2.509ex;"/></span>, let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle E(q)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>E</mi>
+<mo stretchy="false">(</mo>
+<mi>q</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle E(q)}</annotation>
+</semantics>
+</math></span><img alt="E(q)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8e03fe6862ce8f46b62b36fd9730e3808f400e85" style="vertical-align: -0.838ex; width:4.654ex; height:2.843ex;"/></span> denote the set of states that are reachable from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q}</annotation>
+</semantics>
+</math></span><img alt="q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/06809d64fa7c817ffc7e323f85997f783dbdf71d" style="vertical-align: -0.671ex; width:1.07ex; height:2.009ex;"/></span> by following ε-transitions in the transition function <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>δ<!-- δ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta }</annotation>
+</semantics>
+</math></span><img alt="\delta " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c5321cfa797202b3e1f8620663ff43c4660ea03a" style="vertical-align: -0.338ex; width:1.049ex; height:2.343ex;"/></span>, i.e.,
+<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p\in E(q)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>p</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>E</mi>
+<mo stretchy="false">(</mo>
+<mi>q</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p\in E(q)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle p\in E(q)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5437c541c9fda362bdf3ecc1167bc2946da1b62a" style="vertical-align: -0.838ex; margin-left: -0.089ex; width:8.754ex; height:2.843ex;"/></span> if there is a sequence of states <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q_{1},...,q_{k}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>,</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q_{1},...,q_{k}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle q_{1},...,q_{k}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b413a4f8670c58776757c4b0de56f34e1912fe82" style="vertical-align: -0.671ex; width:9.387ex; height:2.009ex;"/></span> such that
+</p>
+<ul><li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q_{1}=q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mi>q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q_{1}=q}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle q_{1}=q}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/192792d44fe8c8417c98e39fd2fad2bb984321df" style="vertical-align: -0.671ex; width:6.259ex; height:2.009ex;"/></span>,</li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q_{i+1}\in \delta (q_{i},\varepsilon )}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>∈<!-- ∈ --></mo>
+<mi>δ<!-- δ --></mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>ε<!-- ε --></mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q_{i+1}\in \delta (q_{i},\varepsilon )}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle q_{i+1}\in \delta (q_{i},\varepsilon )}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dcb31db25f8855a4af9429f839699787dbb84217" style="vertical-align: -0.838ex; width:13.59ex; height:2.843ex;"/></span> for each <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1\leq i&lt;k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>i</mi>
+<mo>&lt;</mo>
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1\leq i&lt;k}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 1\leq i&lt;k}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cdccfd5688fa25d55795b547995e09eec83f9a0d" style="vertical-align: -0.505ex; width:9.373ex; height:2.343ex;"/></span>, and</li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q_{k}=p}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mi>p</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q_{k}=p}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle q_{k}=p}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5be96f62cf6ab8a6a07b50a5518e9b6918845642" style="vertical-align: -0.671ex; width:6.394ex; height:2.009ex;"/></span>.</li></ul>
+<p><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle E(q)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>E</mi>
+<mo stretchy="false">(</mo>
+<mi>q</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle E(q)}</annotation>
+</semantics>
+</math></span><img alt="E(q)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8e03fe6862ce8f46b62b36fd9730e3808f400e85" style="vertical-align: -0.838ex; width:4.654ex; height:2.843ex;"/></span> is known as the <b>epsilon closure</b>, (also <b>ε-closure</b>) of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q}</annotation>
+</semantics>
+</math></span><img alt="q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/06809d64fa7c817ffc7e323f85997f783dbdf71d" style="vertical-align: -0.671ex; width:1.07ex; height:2.009ex;"/></span>.
+</p><p>The ε-closure of a set <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P}</annotation>
+</semantics>
+</math></span><img alt="P" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b4dc73bf40314945ff376bd363916a738548d40a" style="vertical-align: -0.338ex; width:1.745ex; height:2.176ex;"/></span> of states of an NFA is defined as the set of states reachable from any state in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P}</annotation>
+</semantics>
+</math></span><img alt="P" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b4dc73bf40314945ff376bd363916a738548d40a" style="vertical-align: -0.338ex; width:1.745ex; height:2.176ex;"/></span> following ε-transitions. Formally, for <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P\subseteq Q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+<mo>⊆<!-- ⊆ --></mo>
+<mi>Q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P\subseteq Q}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle P\subseteq Q}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8e34254b0983c5c0c24431161c2392c54f2b03ae" style="vertical-align: -0.671ex; width:6.682ex; height:2.509ex;"/></span>, define <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle E(P)=\bigcup \limits _{q\in P}E(q)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>E</mi>
+<mo stretchy="false">(</mo>
+<mi>P</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<munder>
+<mo movablelimits="false">⋃<!-- ⋃ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>q</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>P</mi>
+</mrow>
+</munder>
+<mi>E</mi>
+<mo stretchy="false">(</mo>
+<mi>q</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle E(P)=\bigcup \limits _{q\in P}E(q)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle E(P)=\bigcup \limits _{q\in P}E(q)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/50ba8aa0a860c6aea120e3e3b85ae431f80cf07d" style="vertical-align: -3.338ex; width:16.557ex; height:5.843ex;"/></span>.
+</p>
+<h3><span class="mw-headline" id="Extended_transition_function">Extended transition function</span><span class="mw-editsection"></span></h3>
+<p>Similar to NFA without ε-moves, the transition function <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>δ<!-- δ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta }</annotation>
+</semantics>
+</math></span><img alt="\delta " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c5321cfa797202b3e1f8620663ff43c4660ea03a" style="vertical-align: -0.338ex; width:1.049ex; height:2.343ex;"/></span> of an NFA-ε can be extended to strings.
+Informally, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta ^{*}(q,w)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>q</mi>
+<mo>,</mo>
+<mi>w</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta ^{*}(q,w)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta ^{*}(q,w)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bcb5fd9fd8726dcf8be5938202c31a0ca3172e0b" style="vertical-align: -0.838ex; width:7.685ex; height:2.843ex;"/></span> denotes the set of all states the automaton may have reached when starting in state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q\in Q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>q</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>Q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q\in Q}</annotation>
+</semantics>
+</math></span><img alt="q\in Q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/960b889a6324eeccc02725962bf11ac1a96c32fd" style="vertical-align: -0.671ex; width:5.749ex; height:2.509ex;"/></span> and reading the string <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w\in \Sigma ^{*}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+<mo>∈<!-- ∈ --></mo>
+<msup>
+<mi mathvariant="normal">Σ<!-- Σ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w\in \Sigma ^{*}.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle w\in \Sigma ^{*}.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b728045fd0603484dec632e384147e5c049baa58" style="vertical-align: -0.338ex; width:7.884ex; height:2.343ex;"/></span>
+The function <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta ^{*}:Q\times \Sigma ^{*}\rightarrow {\mathcal {P}}(Q)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo>:</mo>
+<mi>Q</mi>
+<mo>×<!-- × --></mo>
+<msup>
+<mi mathvariant="normal">Σ<!-- Σ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">→<!-- → --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">P</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>Q</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta ^{*}:Q\times \Sigma ^{*}\rightarrow {\mathcal {P}}(Q)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta ^{*}:Q\times \Sigma ^{*}\rightarrow {\mathcal {P}}(Q)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c6fcadd86317dd9e9763b7e905f36293bc8eab84" style="vertical-align: -0.838ex; width:20.421ex; height:2.843ex;"/></span> can be defined recursively as follows.
+</p>
+<ul><li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta ^{*}(q,\varepsilon )=E(q)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>q</mi>
+<mo>,</mo>
+<mi>ε<!-- ε --></mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>E</mi>
+<mo stretchy="false">(</mo>
+<mi>q</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta ^{*}(q,\varepsilon )=E(q)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta ^{*}(q,\varepsilon )=E(q)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b866b071f948622c4aa41fdbbf442949c9b98d66" style="vertical-align: -0.838ex; width:14.857ex; height:2.843ex;"/></span>, for each state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q\in Q,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>q</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>Q</mi>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q\in Q,}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle q\in Q,}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2abe81bb346f363f9db277df89f0f94b4308c225" style="vertical-align: -0.671ex; width:6.395ex; height:2.509ex;"/></span> and where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle E}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>E</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle E}</annotation>
+</semantics>
+</math></span><img alt="E" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4232c9de2ee3eec0a9c0a19b15ab92daa6223f9b" style="vertical-align: -0.338ex; width:1.776ex; height:2.176ex;"/></span> denotes the epsilon closure;</li></ul>
+<dl><dd><i>Informally:</i> Reading the empty string may drive the automaton from state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q}</annotation>
+</semantics>
+</math></span><img alt="q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/06809d64fa7c817ffc7e323f85997f783dbdf71d" style="vertical-align: -0.671ex; width:1.07ex; height:2.009ex;"/></span> to any state of the epsilon closure of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>q</mi>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle q.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9b77c4dfff8774d73f815f799aa68d83a96d7095" style="vertical-align: -0.671ex; width:1.716ex; height:2.009ex;"/></span></dd></dl>
+<ul><li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle \delta ^{*}(q,wa)=\bigcup _{r\in \delta ^{*}(q,w)}E(\delta (r,a)),}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>q</mi>
+<mo>,</mo>
+<mi>w</mi>
+<mi>a</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<munder>
+<mo>⋃<!-- ⋃ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>r</mi>
+<mo>∈<!-- ∈ --></mo>
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>q</mi>
+<mo>,</mo>
+<mi>w</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</munder>
+<mi>E</mi>
+<mo stretchy="false">(</mo>
+<mi>δ<!-- δ --></mi>
+<mo stretchy="false">(</mo>
+<mi>r</mi>
+<mo>,</mo>
+<mi>a</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle \delta ^{*}(q,wa)=\bigcup _{r\in \delta ^{*}(q,w)}E(\delta (r,a)),}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle \delta ^{*}(q,wa)=\bigcup _{r\in \delta ^{*}(q,w)}E(\delta (r,a)),}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1c983a34d59198d33ecff68392f43ca8484fedce" style="vertical-align: -1.338ex; width:32.055ex; height:3.343ex;"/></span> for each state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q\in Q,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>q</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>Q</mi>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q\in Q,}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle q\in Q,}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2abe81bb346f363f9db277df89f0f94b4308c225" style="vertical-align: -0.671ex; width:6.395ex; height:2.509ex;"/></span> each string <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w\in \Sigma ^{*}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+<mo>∈<!-- ∈ --></mo>
+<msup>
+<mi mathvariant="normal">Σ<!-- Σ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w\in \Sigma ^{*}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle w\in \Sigma ^{*}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8861ae978b1183cafefa37263b531d68ca4df792" style="vertical-align: -0.338ex; width:7.237ex; height:2.343ex;"/></span> and each symbol <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a\in \Sigma .}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi mathvariant="normal">Σ<!-- Σ --></mi>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a\in \Sigma .}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle a\in \Sigma .}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/105f71f88a0738bc004f3dd0091ed8c18d34223e" style="vertical-align: -0.338ex; width:6.395ex; height:2.176ex;"/></span></li></ul>
+<dl><dd><i>Informally:</i> Reading the string <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w}</annotation>
+</semantics>
+</math></span><img alt="w" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/88b1e0c8e1be5ebe69d18a8010676fa42d7961e6" style="vertical-align: -0.338ex; width:1.664ex; height:1.676ex;"/></span> may drive the automaton from state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q}</annotation>
+</semantics>
+</math></span><img alt="q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/06809d64fa7c817ffc7e323f85997f783dbdf71d" style="vertical-align: -0.671ex; width:1.07ex; height:2.009ex;"/></span> to any state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>r</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r}</annotation>
+</semantics>
+</math></span><img alt="r" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0d1ecb613aa2984f0576f70f86650b7c2a132538" style="vertical-align: -0.338ex; width:1.049ex; height:1.676ex;"/></span> in the recursively computed set <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta ^{*}(q,w)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>q</mi>
+<mo>,</mo>
+<mi>w</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta ^{*}(q,w)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta ^{*}(q,w)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bcb5fd9fd8726dcf8be5938202c31a0ca3172e0b" style="vertical-align: -0.838ex; width:7.685ex; height:2.843ex;"/></span>; after that, reading the symbol <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a}</annotation>
+</semantics>
+</math></span><img alt="a" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ffd2487510aa438433a2579450ab2b3d557e5edc" style="vertical-align: -0.338ex; width:1.23ex; height:1.676ex;"/></span> may drive it from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>r</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r}</annotation>
+</semantics>
+</math></span><img alt="r" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0d1ecb613aa2984f0576f70f86650b7c2a132538" style="vertical-align: -0.338ex; width:1.049ex; height:1.676ex;"/></span> to any state in the epsilon closure of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta (r,a).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>δ<!-- δ --></mi>
+<mo stretchy="false">(</mo>
+<mi>r</mi>
+<mo>,</mo>
+<mi>a</mi>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta (r,a).}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta (r,a).}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/adce7e341163f61c7e570d259f77b32f8153bd00" style="vertical-align: -0.838ex; width:6.817ex; height:2.843ex;"/></span></dd></dl>
+<p>The automaton is said to accept a string <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w}</annotation>
+</semantics>
+</math></span><img alt="w" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/88b1e0c8e1be5ebe69d18a8010676fa42d7961e6" style="vertical-align: -0.338ex; width:1.664ex; height:1.676ex;"/></span> if 
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta ^{*}(q_{0},w)\cap F\neq \emptyset ,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>w</mi>
+<mo stretchy="false">)</mo>
+<mo>∩<!-- ∩ --></mo>
+<mi>F</mi>
+<mo>≠<!-- ≠ --></mo>
+<mi mathvariant="normal">∅<!-- ∅ --></mi>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta ^{*}(q_{0},w)\cap F\neq \emptyset ,}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta ^{*}(q_{0},w)\cap F\neq \emptyset ,}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f862e2207f187febf355173b9af8f384efdfc578" style="vertical-align: -0.838ex; width:17.938ex; height:2.843ex;"/></span></dd></dl>
+<p>that is, if reading <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w}</annotation>
+</semantics>
+</math></span><img alt="w" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/88b1e0c8e1be5ebe69d18a8010676fa42d7961e6" style="vertical-align: -0.338ex; width:1.664ex; height:1.676ex;"/></span> may drive the automaton from its start state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q_{0}}</annotation>
+</semantics>
+</math></span><img alt="q_0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9d68d37de188ac61f0c0e3f31d5322d1c486f2f4" style="vertical-align: -0.671ex; width:2.091ex; height:2.009ex;"/></span> to some accepting state in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle F.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>F</mi>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle F.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle F.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a6b34655c2ef19b56c81af0e6d1f2f6df0d3ed33" style="vertical-align: -0.338ex; width:2.388ex; height:2.176ex;"/></span><sup class="reference" id="cite_ref-Hopcroft.Ullman.1979_4-3">[4]</sup><sup class="reference nowrap"><span title="Page / location: 25">: 25 </span></sup>
+</p>
+<h3><span class="mw-headline" id="Example_2">Example</span><span class="mw-editsection"></span></h3>
+
+<p>Let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span> be a NFA-ε, with a binary alphabet, that determines if the input contains an even number of 0s or an even number of 1s. Note that 0 occurrences is an even number of occurrences as well.
+</p><p>In formal notation, let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M=(\{S_{0},S_{1},S_{2},S_{3},S_{4}\},\{0,1\},\delta ,S_{0},\{S_{1},S_{3}\})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<mo fence="false" stretchy="false">{</mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>4</mn>
+</mrow>
+</msub>
+<mo fence="false" stretchy="false">}</mo>
+<mo>,</mo>
+<mo fence="false" stretchy="false">{</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mn>1</mn>
+<mo fence="false" stretchy="false">}</mo>
+<mo>,</mo>
+<mi>δ<!-- δ --></mi>
+<mo>,</mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo fence="false" stretchy="false">{</mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+<mo fence="false" stretchy="false">}</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M=(\{S_{0},S_{1},S_{2},S_{3},S_{4}\},\{0,1\},\delta ,S_{0},\{S_{1},S_{3}\})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle M=(\{S_{0},S_{1},S_{2},S_{3},S_{4}\},\{0,1\},\delta ,S_{0},\{S_{1},S_{3}\})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/84cb76379d6b46fecb1556c8be582c64f5551a27" style="vertical-align: -0.838ex; width:47.871ex; height:2.843ex;"/></span> where
+the transition relation <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>δ<!-- δ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta }</annotation>
+</semantics>
+</math></span><img alt="\delta " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c5321cfa797202b3e1f8620663ff43c4660ea03a" style="vertical-align: -0.338ex; width:1.049ex; height:2.343ex;"/></span> can be defined by this state transition table:
+</p>
+<table class="wikitable" style="margin-left:auto;margin-right:auto; text-align:center;">
+<tbody><tr>
+<th style="background:#EAECF0;background:linear-gradient(to top right,#EAECF0 49%,#AAA 49.5%,#AAA 50.5%,#EAECF0 51%);line-height:1.2;padding:0.1em 0.4em;">
+</th>
+<th>0
+</th>
+<th>1
+</th>
+<th>ε
+</th></tr>
+<tr>
+<th><i>S</i><sub>0</sub>
+</th>
+<td>{}
+</td>
+<td>{}
+</td>
+<td>{<i>S</i><sub>1</sub>, <i>S</i><sub>3</sub>}
+</td></tr>
+<tr>
+<th><i>S</i><sub>1</sub>
+</th>
+<td>{<i>S</i><sub>2</sub>}
+</td>
+<td>{<i>S</i><sub>1</sub>}
+</td>
+<td>{}
+</td></tr>
+<tr>
+<th><i>S</i><sub>2</sub>
+</th>
+<td>{<i>S</i><sub>1</sub>}
+</td>
+<td>{<i>S</i><sub>2</sub>}
+</td>
+<td>{}
+</td></tr>
+<tr>
+<th><i>S</i><sub>3</sub>
+</th>
+<td>{<i>S</i><sub>3</sub>}
+</td>
+<td>{<i>S</i><sub>4</sub>}
+</td>
+<td>{}
+</td></tr>
+<tr>
+<th><i>S</i><sub>4</sub>
+</th>
+<td>{<i>S</i><sub>4</sub>}
+</td>
+<td>{<i>S</i><sub>3</sub>}
+</td>
+<td>{}
+</td></tr></tbody></table>
+<p><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span> can be viewed as the union of two DFAs: one with states <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \{S_{1},S_{2}\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">{</mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \{S_{1},S_{2}\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \{S_{1},S_{2}\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1078765299713a13464155783a45c8975fea9413" style="vertical-align: -0.838ex; width:8.317ex; height:2.843ex;"/></span> and the other with states <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \{S_{3},S_{4}\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">{</mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>4</mn>
+</mrow>
+</msub>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \{S_{3},S_{4}\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \{S_{3},S_{4}\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6c5f0d97d0fae89556d6954b85dcd3156f553fb0" style="vertical-align: -0.838ex; width:8.317ex; height:2.843ex;"/></span>. 
+The language of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span> can be described by the regular language given by this regular expression <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (1^{*}01^{*}0)^{*}\cup (0^{*}10^{*}1)^{*}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<msup>
+<mn>1</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<msup>
+<mn>01</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mn>0</mn>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo>∪<!-- ∪ --></mo>
+<mo stretchy="false">(</mo>
+<msup>
+<mn>0</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<msup>
+<mn>10</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mn>1</mn>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (1^{*}01^{*}0)^{*}\cup (0^{*}10^{*}1)^{*}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle (1^{*}01^{*}0)^{*}\cup (0^{*}10^{*}1)^{*}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8b73735c9e5b9820942bd19526b3ae9c4614a666" style="vertical-align: -0.838ex; width:21.826ex; height:2.843ex;"/></span>.
+We define <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span> using ε-moves but <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span> can be defined without using ε-moves.
+</p>
+<h3><span class="mw-headline" id="Equivalence_to_NFA">Equivalence to NFA</span><span class="mw-editsection"></span></h3>
+<p>To show NFA-ε is equivalent to NFA, first note that NFA is a special case of NFA-ε, so it remains to show for every NFA-ε, there exists an equivalent NFA.
+</p><p>Given an NFA with epsilon moves <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M=(Q,\Sigma ,\delta ,q_{0},F),}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<mi>Q</mi>
+<mo>,</mo>
+<mi mathvariant="normal">Σ<!-- Σ --></mi>
+<mo>,</mo>
+<mi>δ<!-- δ --></mi>
+<mo>,</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>F</mi>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M=(Q,\Sigma ,\delta ,q_{0},F),}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle M=(Q,\Sigma ,\delta ,q_{0},F),}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/89de960a7635ff8047bb84e11b6a0bae3bf8f268" style="vertical-align: -0.838ex; width:20.53ex; height:2.843ex;"/></span>
+define an NFA <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M'=(Q,\Sigma ,\delta ',q_{0},F'),}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>M</mi>
+<mo>′</mo>
+</msup>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<mi>Q</mi>
+<mo>,</mo>
+<mi mathvariant="normal">Σ<!-- Σ --></mi>
+<mo>,</mo>
+<msup>
+<mi>δ<!-- δ --></mi>
+<mo>′</mo>
+</msup>
+<mo>,</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msup>
+<mi>F</mi>
+<mo>′</mo>
+</msup>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M'=(Q,\Sigma ,\delta ',q_{0},F'),}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle M'=(Q,\Sigma ,\delta ',q_{0},F'),}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4fb53b0fb6ab0a4601a890c3ff0fb42546300c93" style="vertical-align: -0.838ex; width:22.719ex; height:3.009ex;"/></span> where
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle F'={\begin{cases}F\cup \{q_{0}\}&amp;{\text{ if }}E(q_{0})\cap F\neq \{\}\\F&amp;{\text{ otherwise }}\\\end{cases}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>F</mi>
+<mo>′</mo>
+</msup>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>{</mo>
+<mtable columnalign="left left" columnspacing="1em" displaystyle="false" rowspacing=".2em">
+<mtr>
+<mtd>
+<mi>F</mi>
+<mo>∪<!-- ∪ --></mo>
+<mo fence="false" stretchy="false">{</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo fence="false" stretchy="false">}</mo>
+</mtd>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext> if </mtext>
+</mrow>
+<mi>E</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>∩<!-- ∩ --></mo>
+<mi>F</mi>
+<mo>≠<!-- ≠ --></mo>
+<mo fence="false" stretchy="false">{</mo>
+<mo fence="false" stretchy="false">}</mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mi>F</mi>
+</mtd>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext> otherwise </mtext>
+</mrow>
+</mtd>
+</mtr>
+</mtable>
+<mo fence="true" stretchy="true" symmetric="true"></mo>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle F'={\begin{cases}F\cup \{q_{0}\}&amp;{\text{ if }}E(q_{0})\cap F\neq \{\}\\F&amp;{\text{ otherwise }}\\\end{cases}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle F'={\begin{cases}F\cup \{q_{0}\}&amp;{\text{ if }}E(q_{0})\cap F\neq \{\}\\F&amp;{\text{ otherwise }}\\\end{cases}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b52ae46165e28b8a50c8079ccc521e98a9e8ab30" style="vertical-align: -2.505ex; width:37.098ex; height:6.176ex;"/></span></dd></dl>
+<p>and
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta '(q,a)=\delta ^{*}(q,a)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mo>′</mo>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>q</mi>
+<mo>,</mo>
+<mi>a</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>q</mi>
+<mo>,</mo>
+<mi>a</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta '(q,a)=\delta ^{*}(q,a)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta '(q,a)=\delta ^{*}(q,a)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8387717881d50a70b4e29423a96198cc25bdb0ba" style="vertical-align: -0.838ex; width:17.23ex; height:3.009ex;"/></span> for each state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q\in Q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>q</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>Q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q\in Q}</annotation>
+</semantics>
+</math></span><img alt="q\in Q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/960b889a6324eeccc02725962bf11ac1a96c32fd" style="vertical-align: -0.671ex; width:5.749ex; height:2.509ex;"/></span> and each symbol <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a\in \Sigma ,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi mathvariant="normal">Σ<!-- Σ --></mi>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a\in \Sigma ,}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle a\in \Sigma ,}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bbe9444aabbbfb77b0d4115462cae0ca2d801924" style="vertical-align: -0.671ex; width:6.395ex; height:2.509ex;"/></span> using the extended transition function <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta ^{*}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta ^{*}}</annotation>
+</semantics>
+</math></span><img alt="\delta^*" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/565529ce5877b69cc83c07882dcbadc01102b05c" style="vertical-align: -0.338ex; width:2.108ex; height:2.343ex;"/></span> defined above.</dd></dl>
+<p>One has to distinguish the transition functions of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M',}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>M</mi>
+<mo>′</mo>
+</msup>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M',}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle M',}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/25107a19b72535114c13007143129e6d150d70c3" style="vertical-align: -0.671ex; width:3.83ex; height:2.843ex;"/></span> viz. <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>δ<!-- δ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta }</annotation>
+</semantics>
+</math></span><img alt="\delta " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c5321cfa797202b3e1f8620663ff43c4660ea03a" style="vertical-align: -0.338ex; width:1.049ex; height:2.343ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta ',}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mo>′</mo>
+</msup>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta ',}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta ',}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d6fa6452224a83feac5e7f7246bde8d9dc775461" style="vertical-align: -0.671ex; width:2.385ex; height:2.843ex;"/></span> and their extensions to strings, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>δ<!-- δ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta }</annotation>
+</semantics>
+</math></span><img alt="\delta " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c5321cfa797202b3e1f8620663ff43c4660ea03a" style="vertical-align: -0.338ex; width:1.049ex; height:2.343ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta '^{*},}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow>
+<mo class="MJX-variant">′</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</mrow>
+</msup>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta '^{*},}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta '^{*},}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/94763357b1fdf68ad0c8332511a249fc535ea477" style="vertical-align: -0.671ex; width:3.207ex; height:2.843ex;"/></span> respectively.
+By construction, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M'}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>M</mi>
+<mo>′</mo>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M'}</annotation>
+</semantics>
+</math></span><img alt="M'" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5a3b2ef3304c46b5e7859eec0b1bc057c8eb3f75" style="vertical-align: -0.338ex; width:3.183ex; height:2.509ex;"/></span> has no ε-transitions.
+</p><p>One can prove that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta '^{*}(q_{0},w)=\delta ^{*}(q_{0},w)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow>
+<mo class="MJX-variant">′</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>w</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>w</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta '^{*}(q_{0},w)=\delta ^{*}(q_{0},w)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta '^{*}(q_{0},w)=\delta ^{*}(q_{0},w)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cfe6c38e815cb8faeeeddabb7724dc275a972d42" style="vertical-align: -0.838ex; width:20.964ex; height:3.009ex;"/></span> for each string <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w\neq \varepsilon }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+<mo>≠<!-- ≠ --></mo>
+<mi>ε<!-- ε --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w\neq \varepsilon }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle w\neq \varepsilon }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a0b750b79d8487263aa8d03deb7ad48042420060" style="vertical-align: -0.838ex; width:5.846ex; height:2.676ex;"/></span>, by induction on the length of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle w.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d358cd6be4381ccfa44bd5702785437956d6e23f" style="vertical-align: -0.338ex; width:2.311ex; height:1.676ex;"/></span>
+</p><p>Based on this, one can show that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta '^{*}(q_{0},w)\cap F'\neq \{\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow>
+<mo class="MJX-variant">′</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>w</mi>
+<mo stretchy="false">)</mo>
+<mo>∩<!-- ∩ --></mo>
+<msup>
+<mi>F</mi>
+<mo>′</mo>
+</msup>
+<mo>≠<!-- ≠ --></mo>
+<mo fence="false" stretchy="false">{</mo>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta '^{*}(q_{0},w)\cap F'\neq \{\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta '^{*}(q_{0},w)\cap F'\neq \{\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d2ad2b9004b93a97a5aa520e8bad7664a7c58648" style="vertical-align: -0.838ex; width:19.664ex; height:3.009ex;"/></span> if, and only if, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta ^{*}(q_{0},w)\cap F\neq \{\},}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>w</mi>
+<mo stretchy="false">)</mo>
+<mo>∩<!-- ∩ --></mo>
+<mi>F</mi>
+<mo>≠<!-- ≠ --></mo>
+<mo fence="false" stretchy="false">{</mo>
+<mo fence="false" stretchy="false">}</mo>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta ^{*}(q_{0},w)\cap F\neq \{\},}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta ^{*}(q_{0},w)\cap F\neq \{\},}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d2d0f4aca860ab061a6f165519b214d8b7bd4b76" style="vertical-align: -0.838ex; width:19.1ex; height:2.843ex;"/></span> for each string <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w\in \Sigma ^{*}:}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+<mo>∈<!-- ∈ --></mo>
+<msup>
+<mi mathvariant="normal">Σ<!-- Σ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo>:</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w\in \Sigma ^{*}:}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle w\in \Sigma ^{*}:}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a5f244848236589b6f758afaefb8b7bfc82b0c90" style="vertical-align: -0.338ex; width:8.529ex; height:2.343ex;"/></span>
+</p>
+<ul><li>If <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w=\varepsilon ,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+<mo>=</mo>
+<mi>ε<!-- ε --></mi>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w=\varepsilon ,}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle w=\varepsilon ,}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/abb0704f006bdf642db67da0dd1381a2f1f9d756" style="vertical-align: -0.671ex; width:6.493ex; height:2.009ex;"/></span> this follows from the definition of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle F'.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>F</mi>
+<mo>′</mo>
+</msup>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle F'.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle F'.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b4a4888b25e8e48f9c8debdaf3a8780072b37852" style="vertical-align: -0.338ex; width:3.146ex; height:2.509ex;"/></span></li>
+<li>Otherwise, let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w=va}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+<mo>=</mo>
+<mi>v</mi>
+<mi>a</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w=va}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle w=va}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/09515a352d106fbd916d7bd25c8e4518f4390bfd" style="vertical-align: -0.338ex; width:7.12ex; height:1.676ex;"/></span> with <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v\in \Sigma ^{*}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>v</mi>
+<mo>∈<!-- ∈ --></mo>
+<msup>
+<mi mathvariant="normal">Σ<!-- Σ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v\in \Sigma ^{*}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle v\in \Sigma ^{*}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e80835841b3a05d5fc1bea63be33f801176b440d" style="vertical-align: -0.338ex; width:6.701ex; height:2.343ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a\in \Sigma .}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi mathvariant="normal">Σ<!-- Σ --></mi>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a\in \Sigma .}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle a\in \Sigma .}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/105f71f88a0738bc004f3dd0091ed8c18d34223e" style="vertical-align: -0.338ex; width:6.395ex; height:2.176ex;"/></span></li></ul>
+<dl><dd>From <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta '^{*}(q_{0},w)=\delta ^{*}(q_{0},w)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow>
+<mo class="MJX-variant">′</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>w</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>w</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta '^{*}(q_{0},w)=\delta ^{*}(q_{0},w)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta '^{*}(q_{0},w)=\delta ^{*}(q_{0},w)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cfe6c38e815cb8faeeeddabb7724dc275a972d42" style="vertical-align: -0.838ex; width:20.964ex; height:3.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle F\subseteq F',}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>F</mi>
+<mo>⊆<!-- ⊆ --></mo>
+<msup>
+<mi>F</mi>
+<mo>′</mo>
+</msup>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle F\subseteq F',}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle F\subseteq F',}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/45f98bd0000f2a9d825bb33f9722bbe82daf3316" style="vertical-align: -0.671ex; width:7.986ex; height:2.843ex;"/></span> we have <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta '^{*}(q_{0},w)\cap F'\neq \{\}\;\Leftarrow \;\delta ^{*}(q_{0},w)\cap F\neq \{\};}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow>
+<mo class="MJX-variant">′</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>w</mi>
+<mo stretchy="false">)</mo>
+<mo>∩<!-- ∩ --></mo>
+<msup>
+<mi>F</mi>
+<mo>′</mo>
+</msup>
+<mo>≠<!-- ≠ --></mo>
+<mo fence="false" stretchy="false">{</mo>
+<mo fence="false" stretchy="false">}</mo>
+<mspace width="thickmathspace"></mspace>
+<mo stretchy="false">⇐<!-- ⇐ --></mo>
+<mspace width="thickmathspace"></mspace>
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>w</mi>
+<mo stretchy="false">)</mo>
+<mo>∩<!-- ∩ --></mo>
+<mi>F</mi>
+<mo>≠<!-- ≠ --></mo>
+<mo fence="false" stretchy="false">{</mo>
+<mo fence="false" stretchy="false">}</mo>
+<mo>;</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta '^{*}(q_{0},w)\cap F'\neq \{\}\;\Leftarrow \;\delta ^{*}(q_{0},w)\cap F\neq \{\};}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta '^{*}(q_{0},w)\cap F'\neq \{\}\;\Leftarrow \;\delta ^{*}(q_{0},w)\cap F\neq \{\};}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/99c98e4401238a5f4fcbe78929eb71b63025066a" style="vertical-align: -0.838ex; width:43.669ex; height:3.009ex;"/></span> we still have to show the "<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Rightarrow }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">⇒<!-- ⇒ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Rightarrow }</annotation>
+</semantics>
+</math></span><img alt="\Rightarrow " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/469b737d167b9b28a74e27c7f5e35b5ea9256100" style="vertical-align: -0.338ex; width:2.324ex; height:1.843ex;"/></span>" direction.
+<ul><li>If <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta '^{*}(q_{0},w)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow>
+<mo class="MJX-variant">′</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>w</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta '^{*}(q_{0},w)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta '^{*}(q_{0},w)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9cf126e6a14be43930545b351c1fed97833b8b5c" style="vertical-align: -0.838ex; width:9.159ex; height:3.009ex;"/></span> contains a state in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle F'\setminus \{q_{0}\},}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>F</mi>
+<mo>′</mo>
+</msup>
+<mo class="MJX-variant">∖<!-- ∖ --></mo>
+<mo fence="false" stretchy="false">{</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo fence="false" stretchy="false">}</mo>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle F'\setminus \{q_{0}\},}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle F'\setminus \{q_{0}\},}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e61980329a232f8b00c5083ed26b57eb76c33a81" style="vertical-align: -0.838ex; width:9.757ex; height:3.009ex;"/></span> then <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta ^{*}(q_{0},w)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>w</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta ^{*}(q_{0},w)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta ^{*}(q_{0},w)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/97c38cb10820c6cee0a0c807f109e640b6ffb89b" style="vertical-align: -0.838ex; width:8.707ex; height:2.843ex;"/></span> contains the same state, which lies in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle F}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>F</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle F}</annotation>
+</semantics>
+</math></span><img alt="F" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/545fd099af8541605f7ee55f08225526be88ce57" style="vertical-align: -0.338ex; width:1.741ex; height:2.176ex;"/></span>.</li>
+<li>If <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta '^{*}(q_{0},w)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow>
+<mo class="MJX-variant">′</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>w</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta '^{*}(q_{0},w)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta '^{*}(q_{0},w)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9cf126e6a14be43930545b351c1fed97833b8b5c" style="vertical-align: -0.838ex; width:9.159ex; height:3.009ex;"/></span> contains <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q_{0},}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q_{0},}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle q_{0},}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2d82d824827d2308348c6f0d67e576517a957022" style="vertical-align: -0.671ex; width:2.738ex; height:2.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q_{0}\in F,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>∈<!-- ∈ --></mo>
+<mi>F</mi>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q_{0}\in F,}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle q_{0}\in F,}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e9c54bb592e724d7052141af387f0205fc9bfd28" style="vertical-align: -0.671ex; width:7.32ex; height:2.509ex;"/></span> then  <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta ^{*}(q_{0},w)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>w</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta ^{*}(q_{0},w)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta ^{*}(q_{0},w)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/97c38cb10820c6cee0a0c807f109e640b6ffb89b" style="vertical-align: -0.838ex; width:8.707ex; height:2.843ex;"/></span> also contains a state in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle F,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>F</mi>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle F,}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle F,}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ed179a16e860b290a2c25c573d3fc0b2360f0fc1" style="vertical-align: -0.671ex; width:2.388ex; height:2.509ex;"/></span> viz. <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q_{0}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q_{0}.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle q_{0}.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d18ad9690771fb720ec7555a733e7d0f5a032c8f" style="vertical-align: -0.671ex; width:2.738ex; height:2.009ex;"/></span></li>
+<li>If <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta '^{*}(q_{0},w)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow>
+<mo class="MJX-variant">′</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>w</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta '^{*}(q_{0},w)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \delta '^{*}(q_{0},w)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9cf126e6a14be43930545b351c1fed97833b8b5c" style="vertical-align: -0.838ex; width:9.159ex; height:3.009ex;"/></span> contains <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q_{0},}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q_{0},}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle q_{0},}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2d82d824827d2308348c6f0d67e576517a957022" style="vertical-align: -0.671ex; width:2.738ex; height:2.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q_{0}\not \in F,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>∉</mo>
+<mi>F</mi>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q_{0}\not \in F,}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle q_{0}\not \in F,}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c598288c8f8e4f8750b3375b5e68133fe525a983" style="vertical-align: -0.838ex; width:7.32ex; height:2.676ex;"/></span> then <span class="clarify-content" style="padding-left:0.1em; padding-right:0.1em; color:#595959; border:1px solid #DDD;">the state in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle E(q_{0})\cap F}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>E</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>∩<!-- ∩ --></mo>
+<mi>F</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle E(q_{0})\cap F}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle E(q_{0})\cap F}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c843249a44b6bbd394191a24705f29a73d70b7b1" style="vertical-align: -0.838ex; width:10ex; height:2.843ex;"/></span></span><sup class="noprint Inline-Template Template-Clarify" style="margin-left:0.1em; white-space:nowrap;">[<i><span title="Which one? Why should such a state exist? (April 2022)">clarify</span></i>]</sup> must be in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle \delta ^{*}(q_{0},w)=\bigcup _{r\in \delta ^{*}(q,v)}E(\delta (r,a)).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>w</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<munder>
+<mo>⋃<!-- ⋃ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>r</mi>
+<mo>∈<!-- ∈ --></mo>
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>q</mi>
+<mo>,</mo>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</munder>
+<mi>E</mi>
+<mo stretchy="false">(</mo>
+<mi>δ<!-- δ --></mi>
+<mo stretchy="false">(</mo>
+<mi>r</mi>
+<mo>,</mo>
+<mi>a</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle \delta ^{*}(q_{0},w)=\bigcup _{r\in \delta ^{*}(q,v)}E(\delta (r,a)).}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle \delta ^{*}(q_{0},w)=\bigcup _{r\in \delta ^{*}(q,v)}E(\delta (r,a)).}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c56b64d6e346b171bfe42fe13c61e5cc490f22b9" style="vertical-align: -1.338ex; width:31.467ex; height:3.343ex;"/></span><sup class="reference" id="cite_ref-Hopcroft.Ullman.1979_4-4">[4]</sup><sup class="reference nowrap"><span title="Page / location: 26–27">: 26–27 </span></sup></li></ul></dd></dl>
+<p>Since NFA is equivalent to DFA, NFA-ε is also equivalent to DFA.
+</p>
+<h2><span class="mw-headline" id="Closure_properties">Closure properties</span><span class="mw-editsection"></span></h2>
+
+<p>The set of languages recognized by NFAs is closed under the following operations. These closure operations are used in Thompson's construction algorithm, which constructs an NFA from any regular expression. They can also be used to prove that NFAs recognize exactly the regular languages.
+</p>
+<ul><li>Union (cf. picture); that is, if the language <i>L</i><sub>1</sub> is accepted by some NFA <i>A</i><sub>1</sub> and <i>L</i><sub>2</sub> by some <i>A</i><sub>2</sub>, then an NFA <i>A</i><sub>u</sub> can be constructed that accepts the language <i>L</i><sub>1</sub>∪<i>L</i><sub>2</sub>.</li>
+<li>Intersection; similarly, from <i>A</i><sub>1</sub> and <i>A</i><sub>2</sub> an NFA <i>A</i><sub>i</sub> can be constructed that accepts <i>L</i><sub>1</sub>∩<i>L</i><sub>2</sub>.</li>
+<li>Concatenation</li>
+<li>Negation; similarly, from <i>A</i><sub>1</sub> an NFA <i>A</i><sub>n</sub> can be constructed that accepts Σ<sup>*</sup>\<i>L</i><sub>1</sub>.</li>
+<li>Kleene closure</li></ul>
+<p>Since NFAs are equivalent to nondeterministic finite automaton with ε-moves (NFA-ε), the above closures are proved using closure properties of NFA-ε.
+</p>
+<h2><span class="mw-headline" id="Properties">Properties</span><span class="mw-editsection"></span></h2>
+<p>The machine starts in the specified initial state and reads in a string of symbols from its alphabet. The automaton uses the state transition function Δ to determine the next state using the current state, and the symbol just read or the empty string. However, "the next state of an NFA depends not only on the current input event, but also on an arbitrary number of subsequent input events. Until these subsequent events occur it is not possible to determine which state the machine is in".<sup class="reference" id="cite_ref-8">[8]</sup> If, when the automaton has finished reading, it is in an accepting state, the NFA is said to accept the string, otherwise it is said to reject the string.
+</p><p>The set of all strings accepted by an NFA is the language the NFA accepts. This language is a regular language.
+</p><p>For every NFA a deterministic finite automaton (DFA) can be found that accepts the same language. Therefore, it is possible to convert an existing NFA into a DFA for the purpose of implementing a (perhaps) simpler machine. This can be performed using the powerset construction, which may lead to an exponential rise in the number of necessary states. For a formal proof of the powerset construction, please see the Powerset construction article.
+</p>
+<h2><span class="mw-headline" id="Implementation">Implementation</span><span class="mw-editsection"></span></h2>
+<p>There are many ways to implement a NFA:
+</p>
+<ul><li>Convert to the equivalent DFA. In some cases this may cause exponential blowup in the number of states.<sup class="reference" id="cite_ref-9">[9]</sup></li>
+<li>Keep a set data structure of all states which the NFA might currently be in. On the consumption of an input symbol, unite the results of the transition function applied to all current states to get the set of next states; if ε-moves are allowed, include all states reachable by such a move (ε-closure). Each step requires at most <i>s</i><sup>2</sup> computations, where <i>s</i> is the number of states of the NFA. On the consumption of the last input symbol, if one of the current states is a final state, the machine accepts the string. A string of length <i>n</i> can be processed in time <i>O</i>(ns<sup>2</sup>),<sup class="reference" id="cite_ref-Hopcroft.Motwani.Ullman.2003_7-2">[7]</sup><sup class="reference nowrap"><span title="Page / location: 153">: 153 </span></sup> and space <i>O</i>(<i>s</i>).</li>
+<li>Create multiple copies. For each n way decision, the NFA creates up to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n-1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n-1}</annotation>
+</semantics>
+</math></span><img alt="n-1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fbd0b0f32b28f51962943ee9ede4fb34198a2521" style="vertical-align: -0.505ex; width:5.398ex; height:2.343ex;"/></span> copies of the machine. Each will enter a separate state. If, upon consuming the last input symbol, at least one copy of the NFA is in the accepting state, the NFA will accept.  (This, too, requires linear storage with respect to the number of NFA states, as there can be one machine for every NFA state.)</li>
+<li>Explicitly propagate tokens through the transition structure of the NFA and match whenever a token reaches the final state. This is sometimes useful when the NFA should encode additional context about the events that triggered the transition. (For an implementation that uses this technique to keep track of object references have a look at Tracematches.<sup class="reference" id="cite_ref-10">[10]</sup>)</li>
+<li>It is PSPACE-complete to test, given an NFA, whether it is <i>universal</i>, i.e., if there is a string that it does not accept.<sup class="reference" id="cite_ref-11">[11]</sup> The same is true of the <i>inclusion problem</i>, i.e., given two NFAs, is the language of one a subset of the language of the other.</li></ul>
+<h2><span class="mw-headline" id="Application_of_NFA">Application of NFA</span><span class="mw-editsection"></span></h2>
+<p>NFAs and DFAs are equivalent in that if a language is recognized by an NFA, it is also recognized by a DFA and vice versa.  The establishment of such equivalence is important and useful.  It is useful because constructing an NFA to recognize a given language is sometimes much easier than constructing a DFA for that language.  It is important because NFAs can be used to reduce the complexity of the mathematical work required to establish many important properties in the theory of computation.  For example, it is much easier to prove closure properties of regular languages using NFAs than DFAs.
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Deterministic finite automaton</li>
+<li>Two-way nondeterministic finite automaton</li>
+<li>Pushdown automaton</li>
+<li>Nondeterministic Turing machine</li></ul>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<ul><li>M. O. Rabin and D. Scott, "Finite Automata and their Decision Problems", <i>IBM Journal of Research and Development</i>, <b>3</b>:2 (1959) pp. 115–125.</li>
+<li>Michael Sipser, <i>Introduction to the Theory of Computation</i>. PWS, Boston. 1997. <link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/>ISBN 0-534-94728-X. <i>(see section 1.2: Nondeterminism, pp. 47–63.)</i></li>
+<li>John E. Hopcroft and Jeffrey D. Ullman, <i>Introduction to Automata Theory, Languages, and Computation</i>, Addison-Wesley Publishing, Reading Massachusetts, 1979. <link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/>ISBN 0-201-02988-X. <i>(See chapter 2.)</i></li></ul>
+
+
+<!-- 
+NewPP limit report
+Parsed by mw2275
+Cached time: 20221224002331
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.629 seconds
+Real time usage: 0.889 seconds
+Preprocessor visited node count: 5896/1000000
+Post‐expand include size: 59653/2097152 bytes
+Template argument size: 7970/2097152 bytes
+Highest expansion depth: 16/100
+Expensive parser function count: 2/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 42922/5000000 bytes
+Lua time usage: 0.212/10.000 seconds
+Lua memory usage: 5734180/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  464.198      1 -total
+ 31.57%  146.553      1 Template:Reflist
+ 19.32%   89.688      5 Template:Cite_book
+ 17.79%   82.561     12 Template:Rp
+ 17.33%   80.452      1 Template:Formal_languages_and_grammars
+ 16.84%   78.167     12 Template:R/superscript
+ 16.80%   77.978      1 Template:Navbox_with_columns
+ 13.58%   63.061      1 Template:Short_description
+  8.67%   40.244     36 Template:R/where
+  7.77%   36.053      1 Template:Clarify_span
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:653406-0!canonical and timestamp 20221224002330 and revision id 1121857081.
+ -->
+</div></body>
+</html>

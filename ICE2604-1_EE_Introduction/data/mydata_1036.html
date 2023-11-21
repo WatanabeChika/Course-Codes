@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>tree_contraction</title>
+</head>
+<body>
+<div class="mw-parser-output"><style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-Orphan plainlinks metadata ambox ambox-style ambox-Orphan" role="presentation" style="display: none"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<p>In computer science, <b>parallel tree contraction</b> is a broadly applicable technique for the parallel solution of a large number of tree problems, and is used as an algorithm design technique for the design of a large number of parallel graph algorithms.  Parallel tree contraction was introduced by Gary L. Miller and John H. Reif,<sup class="reference" id="cite_ref-Miller89book_1-0">[1]</sup>  and has subsequently been modified to improve efficiency by X. He and Y. Yesha,<sup class="reference" id="cite_ref-2">[2]</sup> Hillel Gazit, Gary L. Miller and Shang-Hua Teng<sup class="reference" id="cite_ref-3">[3]</sup> and many others.<sup class="reference" id="cite_ref-4">[4]</sup>
+</p><p>Tree contraction has been used in designing many efficient parallel algorithms, including expression evaluation, finding lowest common ancestors, tree isomorphism, graph isomorphism, maximal subtree isomorphism, common subexpression elimination, computing the 3-connected components of a graph, and finding an explicit planar embedding of a planar graph<sup class="reference" id="cite_ref-Reif94dynamic_5-0">[5]</sup>
+</p><p>Based on the research and work on parallel tree contraction, various algorithms have been proposed targeting to improve the efficiency or simplicity of this topic. This article hereby focuses on a particular solution, which is a variant of the algorithm by Miller and Reif, and its application.
+</p>
+
+<h2><span class="mw-headline" id="Introduction">Introduction</span><span class="mw-editsection"></span></h2>
+<p>Over the past several decades there has been significant research on deriving new parallel algorithms for a variety of problems, with the goal of designing highly parallel (polylogarithmic depth), work-efficient (linear in the sequential running time) algorithms.<sup class="reference" id="cite_ref-Miller89book_1-1">[1]</sup> For some problems, tree turns out to be a nice solution. Addressing these problems, we can sometimes get more parallelism simply by representing our problem as a tree.
+</p><p>Considering a generic definition of a tree, there is a root vertex, and several child vertices attached to the root.<sup class="reference" id="cite_ref-6">[6]</sup> And the child vertices might have children themselves, and so on so forth. Eventually, the paths come down to leaves, which are defined to be the terminal of a tree. Then based on this generic tree, we can further come up with some special cases: (1) balanced binary tree; (2) linked list.<sup class="reference" id="cite_ref-7">[7]</sup> A balanced binary tree has exactly two branches for each vertex except for leaves. This gives a O(log n) bound on the depth of the tree.<sup class="reference" id="cite_ref-8">[8]</sup> A linked list is also a tree where every vertex has only one child. We can also achieve O(log n) depth using symmetry breaking.<sup class="reference" id="cite_ref-9">[9]</sup>
+</p><p>Given the general case of a tree, we would like to keep the bound at O(log n) no matter it is unbalanced or list-like or a mix of both. To address this problem, we make use of an algorithm called prefix sum by using the Euler tour technique.<sup class="reference" id="cite_ref-10">[10]</sup> With the Euler tour technique, a tree could be represented in a flat style, and thus prefix sum could be applied to an arbitrary tree in this format. In fact, prefix sum can be used on any set of values and binary operation which form a group: the binary operation must be associative, every value must have an inverse, and there exists an identity value.
+</p><p>With a bit of thought, we can find some exceptional cases where prefix sum becomes incapable or inefficient. Consider the example of multiplication when the set of values includes 0. Or there are some commonly desired operations are max() and min() which do not have inverses. The goal is to seek an algorithm which works on all trees, in expected O(n) work and O(log n) depth. In the following sections, a Rake/Compress algorithm will be proposed to fulfill this goal.<sup class="reference" id="cite_ref-Miller85app_11-0">[11]</sup>
+</p>
+<h2><span class="mw-headline" id="Definitions">Definitions</span><span class="mw-editsection"></span></h2>
+
+
+<p>Before going into the algorithm itself, we first look at a few terminologies that will be used later.
+</p>
+<ul><li><b>Rake</b><sup class="reference" id="cite_ref-cmutrees_12-0">[12]</sup> – Rake step joins every left leaf of binary nodes to the parent. By join, we mean that it undergoes a functional process which achieves the operation we want to make. An example of rake is given in Figure 1.</li>
+<li><b>Compress</b><sup class="reference" id="cite_ref-cmutrees_12-1">[12]</sup> – Compress step is actually a sequence of several events: (1) Find an independent set of unary nodes. (Independence here is defined such that no two are neighbors, meaning no parent to child relation) (2) Join each node in independent set with its child (Note that independent set is not unique). An example of compress is given in Figure 2.</li></ul>
+<p>And in order to solve actual problems using tree contraction, the algorithm has a structure:
+</p>
+<pre>Repeat until tree becomes a unary node
+{
+    Rake;
+    Compress;
+}
+</pre>
+<p><br/>
+</p>
+<h2><span class="mw-headline" id="Analysis">Analysis</span><span class="mw-editsection"></span></h2>
+<p>For the moment, let us assume that all nodes have less than three children, namely binary. Generally speaking, as long as the degree is bounded, the bounds will hold.<sup class="reference" id="cite_ref-13">[13]</sup> But we will analyze the binary case for simplicity. In the two “degenerate” cases listed above, the rake is the best tool for dealing with balanced binary trees, and compress is the best for linked lists. However, arbitrary trees will have to require a combination of these operations. By this combination, we claim a theorem that
+</p>
+<ul><li><b>Theorem</b>: After O(log n) expected rake and compress steps, a tree is reduced to a single node.</li></ul>
+<p>Now rephrase the tree contraction algorithm as follows:
+</p>
+<ul><li>Input: A binary tree rooted at r</li>
+<li>Output: A single node</li>
+<li>Operation:  A sequence of contraction steps, each consisting of a rake operation and a compress operation (in any order). The rake operation removes all the leaf nodes in parallel. The compress operation finds an independent set of unary nodes and splice out the selected nodes.</li></ul>
+<p>To approach the theorem, we first take a look at a property of a binary tree. Given a binary tree T, we can partition the nodes of T into 3 groups: <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T_{0}}</annotation>
+</semantics>
+</math></span><img alt="T_{0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/55b9e7d7b96196b5a6a26f4349caa3ac82fd67e3" style="vertical-align: -0.671ex; width:2.412ex; height:2.509ex;"/></span> contains all leaf nodes, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T_{1}}</annotation>
+</semantics>
+</math></span><img alt="T_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2f304724948a3ef606c4a92459e22b87a954d993" style="vertical-align: -0.671ex; width:2.412ex; height:2.509ex;"/></span> contains all nodes with 1 child, and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T_{2}}</annotation>
+</semantics>
+</math></span><img alt="T_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d1ba5f12fbb0ff766aec6e22148b429373608555" style="vertical-align: -0.671ex; width:2.412ex; height:2.509ex;"/></span> contains all nodes with 2 children. It is easy to see that: <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle V(T)=T_{0}\cup T_{1}\cup T_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>V</mi>
+<mo stretchy="false">(</mo>
+<mi>T</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>∪<!-- ∪ --></mo>
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>∪<!-- ∪ --></mo>
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle V(T)=T_{0}\cup T_{1}\cup T_{2}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle V(T)=T_{0}\cup T_{1}\cup T_{2}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1af430b9767eaa0674e7938bab08dce13c789442" style="vertical-align: -0.838ex; width:20.732ex; height:2.843ex;"/></span>. Now we propose:
+</p>
+<ul><li>Claim: <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |T_{0}|=|T_{2}|+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |T_{0}|=|T_{2}|+1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle |T_{0}|=|T_{2}|+1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/06d9ddbb8d6dc6c6b4b28a44441682e26dc2279f" style="vertical-align: -0.838ex; width:14.512ex; height:2.843ex;"/></span></li></ul>
+<p>This claim can be proved by strong induction on the number of nodes. It is easy to see that the base case of n=1 trivially holds. And we further assume the claim also holds for any tree with at most n nodes. Then given a tree with n+1 nodes rooted at r, there appears to be two cases:
+</p>
+<ol><li>If r has only one subtree, consider the subtree of r. We know that the subtree has the same number of binary nodes and the same number of leaf nodes as the whole tree itself. This is true since the root is a unary node. And based the previous assumption, a unary node does not change either <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T_{0}}</annotation>
+</semantics>
+</math></span><img alt="T_{0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/55b9e7d7b96196b5a6a26f4349caa3ac82fd67e3" style="vertical-align: -0.671ex; width:2.412ex; height:2.509ex;"/></span> or <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T_{2}}</annotation>
+</semantics>
+</math></span><img alt="T_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d1ba5f12fbb0ff766aec6e22148b429373608555" style="vertical-align: -0.671ex; width:2.412ex; height:2.509ex;"/></span>.</li>
+<li>If r has two subtrees, we define <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{0}^{L},T_{2}^{L}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msubsup>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>L</mi>
+</mrow>
+</msubsup>
+<mo>,</mo>
+<msubsup>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>L</mi>
+</mrow>
+</msubsup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T_{0}^{L},T_{2}^{L}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle T_{0}^{L},T_{2}^{L}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f0ffc547dbbd8926777fa49f17c86b0a498e95b6" style="vertical-align: -1.005ex; width:7.177ex; height:3.176ex;"/></span> to be the leaf nodes and binary nodes in the left subtree, respectively. Similarly, we define the same <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{0}^{R},T_{2}^{R}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msubsup>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>R</mi>
+</mrow>
+</msubsup>
+<mo>,</mo>
+<msubsup>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>R</mi>
+</mrow>
+</msubsup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T_{0}^{R},T_{2}^{R}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle T_{0}^{R},T_{2}^{R}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/20b42fc711c3f6b66f490d3385c6b0248b33082a" style="vertical-align: -1.005ex; width:7.433ex; height:3.176ex;"/></span> for the right subtree. From previous, there is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |T_{0}^{L}|=|T_{2}^{L}|+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msubsup>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>L</mi>
+</mrow>
+</msubsup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msubsup>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>L</mi>
+</mrow>
+</msubsup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |T_{0}^{L}|=|T_{2}^{L}|+1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle |T_{0}^{L}|=|T_{2}^{L}|+1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0c5d8243fe9bdb14dfc6aee3c869c16f778713f3" style="vertical-align: -1.005ex; width:15.832ex; height:3.176ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |T_{0}^{R}|=|T_{2}^{R}|+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msubsup>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>R</mi>
+</mrow>
+</msubsup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msubsup>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>R</mi>
+</mrow>
+</msubsup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |T_{0}^{R}|=|T_{2}^{R}|+1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle |T_{0}^{R}|=|T_{2}^{R}|+1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/640e9ffbce8e629d711a935d932dd3a5b8eb2549" style="vertical-align: -1.005ex; width:16.088ex; height:3.176ex;"/></span>. Also we know that T has <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |T_{0}^{L}|+|T_{0}^{R}|}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msubsup>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>L</mi>
+</mrow>
+</msubsup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msubsup>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>R</mi>
+</mrow>
+</msubsup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |T_{0}^{L}|+|T_{0}^{R}|}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle |T_{0}^{L}|+|T_{0}^{R}|}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7dc7cb7fc58387f1b8fc115b23feb0debfab178a" style="vertical-align: -1.005ex; width:11.699ex; height:3.176ex;"/></span> leaf nodes and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |T_{2}^{L}|+|T_{2}^{R}|+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msubsup>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>L</mi>
+</mrow>
+</msubsup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msubsup>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>R</mi>
+</mrow>
+</msubsup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |T_{2}^{L}|+|T_{2}^{R}|+1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle |T_{2}^{L}|+|T_{2}^{R}|+1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4687b50e3d2d7027d47bb79dc144cb422d40b140" style="vertical-align: -1.005ex; width:15.702ex; height:3.176ex;"/></span> binary nodes. Thus, we can derive:</li></ol>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |T_{0}^{L}|+|T_{0}^{R}|=|T_{2}^{L}|+1+|T_{2}^{R}|+1=(|T_{2}^{L}|+|T_{2}^{R}|+1)+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msubsup>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>L</mi>
+</mrow>
+</msubsup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msubsup>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>R</mi>
+</mrow>
+</msubsup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msubsup>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>L</mi>
+</mrow>
+</msubsup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mn>1</mn>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msubsup>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>R</mi>
+</mrow>
+</msubsup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mn>1</mn>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msubsup>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>L</mi>
+</mrow>
+</msubsup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msubsup>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>R</mi>
+</mrow>
+</msubsup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |T_{0}^{L}|+|T_{0}^{R}|=|T_{2}^{L}|+1+|T_{2}^{R}|+1=(|T_{2}^{L}|+|T_{2}^{R}|+1)+1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle |T_{0}^{L}|+|T_{0}^{R}|=|T_{2}^{L}|+1+|T_{2}^{R}|+1=(|T_{2}^{L}|+|T_{2}^{R}|+1)+1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a5a1687fd5c33dd5e2db1e459ee61f67df3d9414" style="vertical-align: -1.005ex; width:59.114ex; height:3.176ex;"/></span></dd></dl>
+<p>which proves the claim.
+</p><p>Following the claim, we then prove a lemma, which leads us to the theorem.
+</p>
+<ul><li>Lemma: The number of nodes of after a contraction step is reduced by a constant factor in expectation.</li></ul>
+<p>Assume the number of nodes before the contraction to be m, and m' after the contraction. By definition, the rake operation deletes all <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T_{0}}</annotation>
+</semantics>
+</math></span><img alt="T_{0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/55b9e7d7b96196b5a6a26f4349caa3ac82fd67e3" style="vertical-align: -0.671ex; width:2.412ex; height:2.509ex;"/></span> and the compress operation deletes at least 1/4 of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T_{1}}</annotation>
+</semantics>
+</math></span><img alt="T_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2f304724948a3ef606c4a92459e22b87a954d993" style="vertical-align: -0.671ex; width:2.412ex; height:2.509ex;"/></span> in expectation. All <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T_{2}}</annotation>
+</semantics>
+</math></span><img alt="T_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d1ba5f12fbb0ff766aec6e22148b429373608555" style="vertical-align: -0.671ex; width:2.412ex; height:2.509ex;"/></span> remains. Therefore, we can see:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle E[m']\leq |T_{2}|+{\tfrac {3}{4}}*|T_{1}|\leq {\tfrac {3}{4}}+{\tfrac {3}{4}}*|T_{1}|+{\tfrac {3}{2}}*|T_{2}|={\tfrac {3}{4}}(1+|T_{1}|+2*|T_{2}|)={\tfrac {3}{4}}(|T_{0}|+|T_{1}|+|T_{2}|)={\tfrac {3}{4}}m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>E</mi>
+<mo stretchy="false">[</mo>
+<msup>
+<mi>m</mi>
+<mo>′</mo>
+</msup>
+<mo stretchy="false">]</mo>
+<mo>≤<!-- ≤ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>3</mn>
+<mn>4</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mo>∗<!-- ∗ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>≤<!-- ≤ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>3</mn>
+<mn>4</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>3</mn>
+<mn>4</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mo>∗<!-- ∗ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>3</mn>
+<mn>2</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mo>∗<!-- ∗ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>3</mn>
+<mn>4</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mn>2</mn>
+<mo>∗<!-- ∗ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>3</mn>
+<mn>4</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>3</mn>
+<mn>4</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle E[m']\leq |T_{2}|+{\tfrac {3}{4}}*|T_{1}|\leq {\tfrac {3}{4}}+{\tfrac {3}{4}}*|T_{1}|+{\tfrac {3}{2}}*|T_{2}|={\tfrac {3}{4}}(1+|T_{1}|+2*|T_{2}|)={\tfrac {3}{4}}(|T_{0}|+|T_{1}|+|T_{2}|)={\tfrac {3}{4}}m}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle E[m']\leq |T_{2}|+{\tfrac {3}{4}}*|T_{1}|\leq {\tfrac {3}{4}}+{\tfrac {3}{4}}*|T_{1}|+{\tfrac {3}{2}}*|T_{2}|={\tfrac {3}{4}}(1+|T_{1}|+2*|T_{2}|)={\tfrac {3}{4}}(|T_{0}|+|T_{1}|+|T_{2}|)={\tfrac {3}{4}}m}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e53e9d55bb4736d31d8e256dc9e6ab3f66ddf25a" style="vertical-align: -1.171ex; width:102.888ex; height:3.509ex;"/></span></dd></dl>
+<p>Finally, based on this lemma, we can conclude that if the nodes are reduced by a constant factor in each iteration, after <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(\log n)}</annotation>
+</semantics>
+</math></span><img alt="O(\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/aae0f22048ba6b7c05dbae17b056bfa16e21807d" style="vertical-align: -0.838ex; width:8.336ex; height:2.843ex;"/></span>, there will be only one node left.<sup class="reference" id="cite_ref-14">[14]</sup>
+</p>
+<h2><span class="mw-headline" id="Applications">Applications</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Expression_Evaluation">Expression Evaluation</span><span class="mw-editsection"></span></h3>
+<p>To evaluate an expression given as a binary tree (this problem also known as binary expression tree),<sup class="reference" id="cite_ref-15">[15]</sup> consider that:
+An arithmetic expression is a tree where the leaves have values from some domain and each internal vertex has two children and a label from {+, x, %}. And further assume that these binary operations can be performed in constant time.
+</p><p>We now show the evaluation can be done with parallel tree contraction.<sup class="reference" id="cite_ref-16">[16]</sup>
+</p>
+<ul><li>Step 1. Assign expressions to every node. The expression of a leaf is simply the value that it contains. Write L + R, L − R, or L × R for the operators, where L and R are the values of the expressions in the left and right subtrees, respectively.</li>
+<li>Step 2. When a left (right) child with 0 children is merged into an operator, replace L (R) with the value of the child.</li>
+<li>Step 3. When a node has 1 child, it has an expression that is a function of one variable. When a left (right) child with 1 child is merged into an operator, replace L (R) with the expression and change the variable in the expression to L (R) if appropriate.</li></ul>
+<p>In a node with 2 children, the operands in the expression are f(L) and g(R), where f and g are linear functions, and in a node with 1 child, the expression is h(x), where h is a linear function and x is either L or R. We prove this invariant by induction. At the beginning, the invariant is clearly satisfied. There are three types of merges that result in a not fully evaluated expression. (1) A 1-child node is merged into a 2-children node. (2) A leaf is merged into a 2-children node. (3) A 1-child node is merged into a 1-child node. All three types of merges do not change the invariant. Therefore, every merge simply evaluates or composes linear functions, which takes constant time <sup class="reference" id="cite_ref-17">[17]</sup>
+</p>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<style data-mw-deduplicate="TemplateStyles:r1054258005">.mw-parser-output .refbegin{font-size:90%;margin-bottom:0.5em}.mw-parser-output .refbegin-hanging-indents>ul{margin-left:0}.mw-parser-output .refbegin-hanging-indents>ul>li{margin-left:0;padding-left:3.2em;text-indent:-3.2em}.mw-parser-output .refbegin-hanging-indents ul,.mw-parser-output .refbegin-hanging-indents ul li{list-style:none}@media(max-width:720px){.mw-parser-output .refbegin-hanging-indents>ul>li{padding-left:1.6em;text-indent:-1.6em}}.mw-parser-output .refbegin-columns{margin-top:0.3em}.mw-parser-output .refbegin-columns ul{margin-top:0}.mw-parser-output .refbegin-columns li{page-break-inside:avoid;break-inside:avoid-column}</style>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>6.851: Advanced Data Structures by Prof. Erik Demaine</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw1399
+Cached time: 20221223181130
+Cache expiry: 86400
+Reduced expiry: true
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.240 seconds
+Real time usage: 0.356 seconds
+Preprocessor visited node count: 1356/1000000
+Post‐expand include size: 28333/2097152 bytes
+Template argument size: 2640/2097152 bytes
+Highest expansion depth: 17/100
+Expensive parser function count: 2/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 23042/5000000 bytes
+Lua time usage: 0.096/10.000 seconds
+Lua memory usage: 3119549/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  243.530      1 -total
+ 48.70%  118.596      1 Template:Reflist
+ 26.27%   63.966      1 Template:Orphan
+ 21.20%   51.640      1 Template:Draft_other
+ 20.62%   50.221      1 Template:Ambox
+ 19.55%   47.610      1 Template:Citation
+ 17.29%   42.117      1 Template:CS-Trees
+ 16.24%   39.544      2 Template:ISBN
+ 15.97%   38.883      1 Template:Navbox
+ 11.76%   28.638      2 Template:Catalog_lookup_link
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:48789236-0!canonical and timestamp 20221223181130 and revision id 1098932795.
+ -->
+</div></body>
+</html>

@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>model_checking</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-More_citations_needed plainlinks metadata ambox ambox-content ambox-Refimprove" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+
+<p>In computer science, <b>model checking</b> or <b>property checking</b> is a method for checking whether a finite-state model of a system meets a given specification (also known as correctness). This is typically associated with hardware or software systems, where the specification contains liveness requirements (such as avoidance of livelock) as well as safety requirements (such as avoidance of states representing a system crash).
+</p><p>In order to solve such a problem algorithmically, both the model of the system and its specification are formulated in some precise mathematical language. To this end, the problem is formulated as a task in logic, namely to check whether a structure satisfies a given logical formula. This general concept applies to many kinds of logic and many kinds of structures. A simple model-checking problem consists of verifying whether a formula in the propositional logic is satisfied by a given structure.
+</p>
+
+<h2><span class="mw-headline" id="Overview">Overview</span><span class="mw-editsection"></span></h2>
+<p>Property checking is used for verification when two descriptions are not equivalent. During refinement, the specification is complemented with details that are unnecessary in the higher-level specification. There is no need to verify the newly introduced properties against the original specification since this is not possible. Therefore, the strict bi-directional equivalence check is relaxed to a one-way property check. The implementation or design is regarded as a model of the system, whereas the specifications are properties that the model must satisfy.<sup class="reference" id="cite_ref-2">[2]</sup>
+</p><p>An important class of model-checking methods has been developed for checking models of hardware and software designs where the specification is given by a temporal logic formula. Pioneering work in temporal logic specification was done by Amir Pnueli, who received the 1996 Turing award for "seminal work introducing temporal logic into computing science".<sup class="reference" id="cite_ref-3">[3]</sup>  Model checking began with the pioneering work of E. M. Clarke, E. A. Emerson,<sup class="reference" id="cite_ref-Allen1980_4-0">[4]</sup><sup class="reference" id="cite_ref-LoP81_5-0">[5]</sup><sup class="reference" id="cite_ref-Clarke1986_6-0">[6]</sup> by J. P. Queille, and J. Sifakis.<sup class="reference" id="cite_ref-Queille1982_7-0">[7]</sup> Clarke, Emerson, and Sifakis shared the 2007 Turing Award for their seminal work founding and developing the field of model checking.<sup class="reference" id="cite_ref-8">[8]</sup><sup class="reference" id="cite_ref-9">[9]</sup>
+</p><p>Model checking is most often applied to hardware designs. For software, because of undecidability (see computability theory) the approach cannot be fully algorithmic, apply to all systems, and always give an answer; in the general case, it may fail to prove or disprove a given property. In embedded-systems hardware, it is possible to validate a specification delivered, e.g., by means of UML activity diagrams<sup class="reference" id="cite_ref-10">[10]</sup> or control-interpreted Petri nets.<sup class="reference" id="cite_ref-11">[11]</sup>
+</p><p>The structure is usually given as a source code description in an industrial hardware description language or a special-purpose language. Such a program corresponds to a finite state machine (FSM), i.e., a directed graph consisting of nodes (or vertices) and edges. A set of atomic propositions is associated with each node, typically stating which memory elements are one. The nodes represent states of a system, the edges represent possible transitions that may alter the state, while the atomic propositions represent the basic properties that hold at a point of execution.
+</p><p>Formally, the problem can be stated as follows: given a desired property, expressed as a temporal logic formula <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>p</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p}</annotation>
+</semantics>
+</math></span><img alt="p" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/81eac1e205430d1f40810df36a0edffdc367af36" style="vertical-align: -0.671ex; margin-left: -0.089ex; width:1.259ex; height:2.009ex;"/></span>, and a structure <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span> with initial state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>s</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s}</annotation>
+</semantics>
+</math></span><img alt="s" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/01d131dfd7673938b947072a13a9744fe997e632" style="vertical-align: -0.338ex; width:1.09ex; height:1.676ex;"/></span>, decide if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M,s\models p}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+<mo>,</mo>
+<mi>s</mi>
+<mo>⊨<!-- ⊨ --></mo>
+<mi>p</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M,s\models p}</annotation>
+</semantics>
+</math></span><img alt="M,s \models p" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2a89df063b4aaa61216a2151b7672e09ee1f5765" style="vertical-align: -0.838ex; width:9.041ex; height:2.843ex;"/></span>.  If <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span> is finite, as it is in hardware, model checking reduces to a graph search.
+</p>
+<h2><span class="mw-headline" id="Symbolic_model_checking">Symbolic model checking</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1097763485" rel="mw-deduplicated-inline-style"/><table class="box-Expand_section plainlinks metadata ambox mbox-small-left ambox-content" role="presentation"><tbody><tr><td class="mbox-image"><img alt="[icon]" data-file-height="31" data-file-width="44" decoding="async" height="14" src="//upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Wiki_letter_w_cropped.svg/20px-Wiki_letter_w_cropped.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Wiki_letter_w_cropped.svg/30px-Wiki_letter_w_cropped.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Wiki_letter_w_cropped.svg/40px-Wiki_letter_w_cropped.svg.png 2x" width="20"/></td><td class="mbox-text"></td></tr></tbody></table>
+<p>Instead of enumerating reachable states one at a time, the state space can sometimes be traversed more efficiently by considering large numbers of states at a single step. When such state-space traversal is based on representations of a set of states and transition relations as logical formulas, binary decision diagrams (BDD) or other related data structures, the model-checking method is <i>symbolic</i>.
+</p><p>Historically, the first symbolic methods used BDDs. After the success of propositional satisfiability in solving the planning problem in artificial intelligence (see satplan) in 1996, the same approach was generalized to model checking for linear temporal logic (LTL): the planning problem corresponds to model checking for safety properties. This method is known as bounded model checking.<sup class="reference" id="cite_ref-12">[12]</sup> The success of Boolean satisfiability solvers in bounded model checking led to the widespread use of satisfiability solvers in symbolic model checking.<sup class="reference" id="cite_ref-13">[13]</sup>
+</p>
+<h3><span class="mw-headline" id="Example">Example</span><span class="mw-editsection"></span></h3>
+<p>One example of such a system requirement:  
+<i>Between the time an elevator is called at a floor and the time it opens its doors at that floor, the elevator can arrive at that floor at most twice</i>. The authors of "Patterns in Property Specification for Finite-State Verification" translate this requirement into the following LTL formula:<sup class="reference" id="cite_ref-Dwyer,_Avrunin,_Corbett_14-0">[14]</sup>
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{aligned}\Box {\Big (}({\texttt {call}}\lor \Diamond {\texttt {open}})\to &amp;{\big (}(\lnot {\texttt {atfloor}}\lor \lnot {\texttt {open}})~{\mathcal {U}}\\&amp;({\texttt {open}}\lor (({\texttt {atfloor}}\land \lnot {\texttt {open}})~{\mathcal {U}}\\&amp;({\texttt {open}}\lor ((\lnot {\texttt {atfloor}}\land \lnot {\texttt {open}})~{\mathcal {U}}\\&amp;({\texttt {open}}\lor (({\texttt {atfloor}}\land \lnot {\texttt {open}})~{\mathcal {U}}\\&amp;({\texttt {open}}\lor (\lnot {\texttt {atfloor}}~{\mathcal {U}}~{\texttt {open}})))))))){\big )}{\Big )}\end{aligned}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="right left right left right left right left right left right left" columnspacing="0em 2em 0em 2em 0em 2em 0em 2em 0em 2em 0em" displaystyle="true" rowspacing="3pt">
+<mtr>
+<mtd>
+<mi>◻<!-- ◻ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mo maxsize="1.623em" minsize="1.623em">(</mo>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext mathvariant="monospace">call</mtext>
+</mrow>
+</mrow>
+<mo>∨<!-- ∨ --></mo>
+<mi>◊<!-- ◊ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext mathvariant="monospace">open</mtext>
+</mrow>
+</mrow>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">→<!-- → --></mo>
+</mtd>
+<mtd>
+<mi></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mo maxsize="1.2em" minsize="1.2em">(</mo>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi mathvariant="normal">¬<!-- ¬ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext mathvariant="monospace">atfloor</mtext>
+</mrow>
+</mrow>
+<mo>∨<!-- ∨ --></mo>
+<mi mathvariant="normal">¬<!-- ¬ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext mathvariant="monospace">open</mtext>
+</mrow>
+</mrow>
+<mo stretchy="false">)</mo>
+<mtext> </mtext>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">U</mi>
+</mrow>
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext mathvariant="monospace">open</mtext>
+</mrow>
+</mrow>
+<mo>∨<!-- ∨ --></mo>
+<mo stretchy="false">(</mo>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext mathvariant="monospace">atfloor</mtext>
+</mrow>
+</mrow>
+<mo>∧<!-- ∧ --></mo>
+<mi mathvariant="normal">¬<!-- ¬ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext mathvariant="monospace">open</mtext>
+</mrow>
+</mrow>
+<mo stretchy="false">)</mo>
+<mtext> </mtext>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">U</mi>
+</mrow>
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext mathvariant="monospace">open</mtext>
+</mrow>
+</mrow>
+<mo>∨<!-- ∨ --></mo>
+<mo stretchy="false">(</mo>
+<mo stretchy="false">(</mo>
+<mi mathvariant="normal">¬<!-- ¬ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext mathvariant="monospace">atfloor</mtext>
+</mrow>
+</mrow>
+<mo>∧<!-- ∧ --></mo>
+<mi mathvariant="normal">¬<!-- ¬ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext mathvariant="monospace">open</mtext>
+</mrow>
+</mrow>
+<mo stretchy="false">)</mo>
+<mtext> </mtext>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">U</mi>
+</mrow>
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext mathvariant="monospace">open</mtext>
+</mrow>
+</mrow>
+<mo>∨<!-- ∨ --></mo>
+<mo stretchy="false">(</mo>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext mathvariant="monospace">atfloor</mtext>
+</mrow>
+</mrow>
+<mo>∧<!-- ∧ --></mo>
+<mi mathvariant="normal">¬<!-- ¬ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext mathvariant="monospace">open</mtext>
+</mrow>
+</mrow>
+<mo stretchy="false">)</mo>
+<mtext> </mtext>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">U</mi>
+</mrow>
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext mathvariant="monospace">open</mtext>
+</mrow>
+</mrow>
+<mo>∨<!-- ∨ --></mo>
+<mo stretchy="false">(</mo>
+<mi mathvariant="normal">¬<!-- ¬ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext mathvariant="monospace">atfloor</mtext>
+</mrow>
+</mrow>
+<mtext> </mtext>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">U</mi>
+</mrow>
+</mrow>
+<mtext> </mtext>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext mathvariant="monospace">open</mtext>
+</mrow>
+</mrow>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mo maxsize="1.2em" minsize="1.2em">)</mo>
+</mrow>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mo maxsize="1.623em" minsize="1.623em">)</mo>
+</mrow>
+</mrow>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{aligned}\Box {\Big (}({\texttt {call}}\lor \Diamond {\texttt {open}})\to &amp;{\big (}(\lnot {\texttt {atfloor}}\lor \lnot {\texttt {open}})~{\mathcal {U}}\\&amp;({\texttt {open}}\lor (({\texttt {atfloor}}\land \lnot {\texttt {open}})~{\mathcal {U}}\\&amp;({\texttt {open}}\lor ((\lnot {\texttt {atfloor}}\land \lnot {\texttt {open}})~{\mathcal {U}}\\&amp;({\texttt {open}}\lor (({\texttt {atfloor}}\land \lnot {\texttt {open}})~{\mathcal {U}}\\&amp;({\texttt {open}}\lor (\lnot {\texttt {atfloor}}~{\mathcal {U}}~{\texttt {open}})))))))){\big )}{\Big )}\end{aligned}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\begin{aligned}\Box {\Big (}({\texttt {call}}\lor \Diamond {\texttt {open}})\to &amp;{\big (}(\lnot {\texttt {atfloor}}\lor \lnot {\texttt {open}})~{\mathcal {U}}\\&amp;({\texttt {open}}\lor (({\texttt {atfloor}}\land \lnot {\texttt {open}})~{\mathcal {U}}\\&amp;({\texttt {open}}\lor ((\lnot {\texttt {atfloor}}\land \lnot {\texttt {open}})~{\mathcal {U}}\\&amp;({\texttt {open}}\lor (({\texttt {atfloor}}\land \lnot {\texttt {open}})~{\mathcal {U}}\\&amp;({\texttt {open}}\lor (\lnot {\texttt {atfloor}}~{\mathcal {U}}~{\texttt {open}})))))))){\big )}{\Big )}\end{aligned}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/46e0404c2156b714b5e0f8615cf34d6304f4abf9" style="vertical-align: -8.838ex; width:59.321ex; height:18.843ex;"/></span></dd></dl>
+<p>Here, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Box }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>◻<!-- ◻ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Box }</annotation>
+</semantics>
+</math></span><img alt="\Box " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/029b77f09ebeaf7528fc831fe57848be51f2240b" style="vertical-align: -0.338ex; width:1.808ex; height:2.176ex;"/></span> should be read as "always", <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Diamond }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>◊<!-- ◊ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Diamond }</annotation>
+</semantics>
+</math></span><img alt="\Diamond " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1e5e6f31a91de53f443e2cd4c7478693a1a6a57b" style="vertical-align: -0.505ex; width:1.55ex; height:2.343ex;"/></span> as "eventually", <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {U}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">U</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {U}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathcal {U}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4e63ea009de5efbca2fc285b8550daaed577c6b8" style="vertical-align: -0.338ex; margin-left: -0.038ex; width:1.635ex; height:2.176ex;"/></span> as "until" and the other symbols are standard logical symbols, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \lor }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>∨<!-- ∨ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \lor }</annotation>
+</semantics>
+</math></span><img alt="\lor " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ab47f6b1f589aedcf14638df1d63049d233d851a" style="vertical-align: -0.338ex; width:1.55ex; height:2.009ex;"/></span> for "or", <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \land }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>∧<!-- ∧ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \land }</annotation>
+</semantics>
+</math></span><img alt="\land " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d6823e5a222eb3ca49672818ac3d13ec607052c4" style="vertical-align: -0.338ex; width:1.55ex; height:2.009ex;"/></span> for "and" and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \lnot }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">¬<!-- ¬ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \lnot }</annotation>
+</semantics>
+</math></span><img alt="\lnot " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/099107443792f5fec9bebe39b919a690db7198c1" style="vertical-align: 0.204ex; margin-bottom: -0.376ex; width:1.55ex; height:1.176ex;"/></span> for "not".
+</p>
+<h2><span class="mw-headline" id="Techniques">Techniques</span><span class="mw-editsection"></span></h2>
+<p>Model-checking tools face a combinatorial blow up of the state-space, commonly known as the state explosion problem, that must be addressed to solve most real-world problems.  There are several approaches to combat this problem.
+</p>
+<ol><li>Symbolic algorithms avoid ever explicitly constructing the graph for the finite state machines (FSM); instead, they represent the graph implicitly using a formula in quantified propositional logic.  The use of binary decision diagrams (BDDs) was made popular by the work of Ken McMillan<sup class="reference" id="cite_ref-15">[15]</sup> and the development of open-source BDD manipulation libraries such as CUDD<sup class="reference" id="cite_ref-16">[16]</sup> and BuDDy.<sup class="reference" id="cite_ref-17">[17]</sup></li>
+<li>Bounded model-checking algorithms unroll the FSM for a fixed number of steps, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k}</annotation>
+</semantics>
+</math></span><img alt="k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3c9a2c7b599b37105512c5d570edc034056dd40" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span>, and check whether a property violation can occur in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k}</annotation>
+</semantics>
+</math></span><img alt="k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3c9a2c7b599b37105512c5d570edc034056dd40" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> or fewer steps. This typically involves encoding the restricted model as an instance of SAT. The process can be repeated with larger and larger values of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k}</annotation>
+</semantics>
+</math></span><img alt="k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3c9a2c7b599b37105512c5d570edc034056dd40" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> until all possible violations have been ruled out (cf. Iterative deepening depth-first search).</li>
+<li>Abstraction attempts to prove properties of a system by first simplifying it.  The simplified system usually does not satisfy exactly the same properties as the original one so that a process of refinement may be necessary. Generally, one requires the abstraction to be <i>sound</i> (the properties proved on the abstraction are true of the original system); however, sometimes the abstraction is not <i>complete</i> (not all true properties of the original system are true of the abstraction). An example of abstraction is to ignore the values of non-boolean variables and to only consider boolean variables and the control flow of the program; such an abstraction, though it may appear coarse, may, in fact, be sufficient to prove e.g. properties of mutual exclusion.</li>
+<li>Counterexample-guided abstraction refinement (CEGAR) begins checking with a coarse (i.e. imprecise) abstraction and iteratively refines it. When a violation (i.e. counterexample) is found, the tool analyzes it for feasibility (i.e., is the violation genuine or the result of an incomplete abstraction?). If the violation is feasible, it is reported to the user. If it is not, the proof of infeasibility is used to refine the abstraction and checking begins again.<sup class="reference" id="cite_ref-Clarke2000_18-0">[18]</sup></li></ol>
+<p>Model-checking tools were initially developed to reason about the logical correctness of discrete state systems, but have since been extended to deal with real-time and limited forms of hybrid systems.
+</p>
+<h2><span class="mw-headline" id="First-order_logic">First-order logic</span><span class="mw-editsection"></span></h2>
+<p>Model checking is also studied in the field of computational complexity theory. Specifically, a first-order logical formula is fixed without free variables and the following decision problem is considered: 
+</p><p><i>Given a finite interpretation, for instance, one described as a relational database, decide whether the interpretation is a model of the formula.</i>
+</p><p>This problem is in the circuit class <b>AC<sup>0</sup></b>. It is tractable when imposing some restrictions on the input structure: for instance, requiring that it has treewidth bounded by a constant (which more generally implies the tractability of model checking for monadic second-order logic), bounding the degree of every domain element, and more general conditions such as bounded expansion, locally bounded expansion, and nowhere-dense structures.<sup class="reference" id="cite_ref-19">[19]</sup> These results have been extended to the task of enumerating all solutions to a first-order formula with free variables.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (May 2019)">citation needed</span></i>]</sup>
+</p>
+<h2><span class="mw-headline" id="Tools">Tools</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>Here is a list of significant model-checking tools:
+</p>
+<ul><li>Alloy (Alloy Analyzer)</li>
+<li>BLAST (Berkeley Lazy Abstraction Software Verification Tool)</li>
+<li>CADP (Construction and Analysis of Distributed Processes) a toolbox for the design of communication protocols and distributed systems</li>
+<li>CPAchecker: an open-source software model checker for C programs, based on the CPA framework</li>
+<li>ECLAIR: a platform for the automatic analysis, verification, testing, and transformation of C and C++ programs</li>
+<li>FDR2: a model checker for verifying real-time systems modelled and specified as CSP Processes</li>
+<li>ISP code level verifier for MPI programs</li>
+<li>Java Pathfinder: an open-source model checker for Java programs</li>
+<li>Libdmc: a framework for distributed model checking</li>
+<li>mCRL2 Toolset, Boost Software License, Based on ACP</li>
+<li>NuSMV: a new symbolic model checker</li>
+<li>PAT: an enhanced simulator, model checker and refinement checker for concurrent and real-time systems</li>
+<li>Prism: a probabilistic symbolic model checker</li>
+<li>Roméo: an integrated tool environment for modelling, simulation, and verification of real-time systems modelled as parametric, time, and stopwatch Petri nets</li>
+<li>SPIN: a general tool for verifying the correctness of distributed software models in a rigorous and mostly automated fashion</li>
+<li>TAPAs: a tool for the analysis of process algebra</li>
+<li>TAPAAL: an integrated tool environment for modelling, validation, and verification of Timed-Arc Petri Nets</li>
+<li>TLA+ model checker by Leslie Lamport</li>
+<li>UPPAAL: an integrated tool environment for modelling, validation, and verification of real-time systems modelled as networks of timed automata</li>
+<li>Zing<sup class="reference" id="cite_ref-20">[20]</sup> – experimental tool from Microsoft to validate state models of software at various levels: high-level protocol descriptions, work-flow specifications, web services, device drivers, and protocols in the core of the operating system. Zing is currently being used for developing drivers for Windows.</li></ul>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r998391716">.mw-parser-output .div-col{margin-top:0.3em;column-width:30em}.mw-parser-output .div-col-small{font-size:90%}.mw-parser-output .div-col-rules{column-rule:1px solid #aaa}.mw-parser-output .div-col dl,.mw-parser-output .div-col ol,.mw-parser-output .div-col ul{margin-top:0}.mw-parser-output .div-col li,.mw-parser-output .div-col dd{page-break-inside:avoid;break-inside:avoid-column}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="Further_reading">Further reading</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1054258005">.mw-parser-output .refbegin{font-size:90%;margin-bottom:0.5em}.mw-parser-output .refbegin-hanging-indents>ul{margin-left:0}.mw-parser-output .refbegin-hanging-indents>ul>li{margin-left:0;padding-left:3.2em;text-indent:-3.2em}.mw-parser-output .refbegin-hanging-indents ul,.mw-parser-output .refbegin-hanging-indents ul li{list-style:none}@media(max-width:720px){.mw-parser-output .refbegin-hanging-indents>ul>li{padding-left:1.6em;text-indent:-1.6em}}.mw-parser-output .refbegin-columns{margin-top:0.3em}.mw-parser-output .refbegin-columns ul{margin-top:0}.mw-parser-output .refbegin-columns li{page-break-inside:avoid;break-inside:avoid-column}</style>
+<!-- 
+NewPP limit report
+Parsed by mw2369
+Cached time: 20221224134036
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.400 seconds
+Real time usage: 0.561 seconds
+Preprocessor visited node count: 2285/1000000
+Post‐expand include size: 70945/2097152 bytes
+Template argument size: 2287/2097152 bytes
+Highest expansion depth: 16/100
+Expensive parser function count: 5/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 79175/5000000 bytes
+Lua time usage: 0.242/10.000 seconds
+Lua memory usage: 8486178/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  449.833      1 -total
+ 38.40%  172.739      1 Template:Reflist
+ 33.85%  152.287     12 Template:Cite_book
+ 11.69%   52.581      1 Template:Refimprove
+ 11.23%   50.499      1 Template:Short_description
+ 10.89%   49.004      2 Template:Ambox
+  8.02%   36.082      1 Template:Harvnb
+  6.17%   27.766      2 Template:Pagetype
+  5.06%   22.740      4 Template:Citation
+  4.38%   19.682      4 Template:Cite_journal
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:321157-0!canonical and timestamp 20221224134036 and revision id 1129282435.
+ -->
+</div></body>
+</html>

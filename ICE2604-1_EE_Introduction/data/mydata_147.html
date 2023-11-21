@@ -1,0 +1,2084 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bresenham's_algorithm</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p><b>Bresenham's line algorithm</b> is a line drawing algorithm that determines the points of an <i>n</i>-dimensional raster that should be selected in order to form a close approximation to a straight line between two points. It is commonly used to draw line primitives in a bitmap image (e.g. on a computer screen), as it uses only integer addition, subtraction and bit shifting, all of which are very cheap operations in commonly used computer instruction sets such as x86_64. It is an incremental error algorithm, and one of the earliest algorithms developed in the field of computer graphics. An extension to the original algorithm may be used for drawing circles.
+</p><p>While algorithms such as Wu's algorithm are also frequently used in modern computer graphics because they can support antialiasing, Bresenham's line algorithm is still important because of its speed and simplicity. The algorithm is used in hardware such as plotters and in the graphics chips of modern graphics cards. It can also be found in many software graphics libraries. Because the algorithm is very simple, it is often implemented in either the firmware or the graphics hardware of modern graphics cards.
+</p><p>The label "Bresenham" is used today for a family of algorithms extending or modifying Bresenham's original algorithm.
+</p>
+
+<h2><span class="mw-headline" id="History">History</span><span class="mw-editsection"></span></h2>
+<p>Bresenham's line algorithm is named after Jack Elton Bresenham who developed it in 1962 at IBM. In 2001 Bresenham wrote:<sup class="reference" id="cite_ref-DADS_1-0">[1]</sup>
+</p>
+<blockquote><p>I was working in the computation lab at IBM's San Jose development lab. A Calcomp plotter had been attached to an IBM 1401 via the 1407 typewriter console. [The algorithm] was in production use by summer 1962, possibly a month or so earlier. Programs in those days were freely exchanged among corporations so Calcomp (Jim Newland and Calvin Hefte) had copies. When I returned to Stanford in Fall 1962, I put a copy in the Stanford comp center library.
+A description of the line drawing routine was accepted for presentation at the 1963 ACM national convention in Denver, Colorado. It was a year in which no proceedings were published, only the agenda of speakers and topics in an issue of Communications of the ACM. A person from the IBM Systems Journal asked me after I made my presentation if they could publish the paper. I happily agreed, and they printed it in 1965.</p></blockquote>
+<p>Bresenham's algorithm has been extended to produce circles, ellipses, cubic and quadratic bezier curves, as well as native anti-aliased versions of those.<sup class="reference" id="cite_ref-Zingl_2-0">[2]</sup>
+</p>
+<h2><span class="mw-headline" id="Method">Method</span><span class="mw-editsection"></span></h2>
+
+<p>The following conventions will be used:
+</p>
+<ul><li>the top-left is (0,0) such that pixel coordinates increase in the right and down directions (e.g. that the pixel at (7,4) is directly above the pixel at (7,5)), and</li>
+<li>the pixel centers have integer coordinates.</li></ul>
+<p>The endpoints of the line are the pixels at <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (x_{0},y_{0})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (x_{0},y_{0})}</annotation>
+</semantics>
+</math></span><img alt="(x_{0},y_{0})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/29c296094af9a1c665425debeac5eaab99a37a04" style="vertical-align: -0.838ex; width:7.421ex; height:2.843ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (x_{1},y_{1})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (x_{1},y_{1})}</annotation>
+</semantics>
+</math></span><img alt="(x_{1},y_{1})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7fc74086e56542bd28b46a84faaee3cebdd4a899" style="vertical-align: -0.838ex; width:7.421ex; height:2.843ex;"/></span>, where the first coordinate of the pair is the column and the second is the row.
+</p><p>The algorithm will be initially presented only for the octant in which the segment goes down and to the right (<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{0}\leq x_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>≤<!-- ≤ --></mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{0}\leq x_{1}}</annotation>
+</semantics>
+</math></span><img alt="x_{0}\leq x_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/df5414ab5b6adbf0239fe63fcdd6b1e62e62d679" style="vertical-align: -0.671ex; width:7.866ex; height:2.343ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y_{0}\leq y_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>≤<!-- ≤ --></mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y_{0}\leq y_{1}}</annotation>
+</semantics>
+</math></span><img alt="y_{0}\leq y_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b75bfc815fe0873b41a5caefb63b8ea3e62039e8" style="vertical-align: -0.671ex; width:7.485ex; height:2.343ex;"/></span>), and its horizontal projection <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{1}-x_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{1}-x_{0}}</annotation>
+</semantics>
+</math></span><img alt="x_{1}-x_{0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c2be377fc132914a5a9e9a747065b89768311e0b" style="vertical-align: -0.671ex; width:7.608ex; height:2.343ex;"/></span> is longer than the vertical projection <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y_{1}-y_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y_{1}-y_{0}}</annotation>
+</semantics>
+</math></span><img alt="y_{1}-y_{0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8d6bbb0999a44b785b893e8e31db9ac75332e368" style="vertical-align: -0.671ex; width:7.227ex; height:2.343ex;"/></span> (the line has a positive slope less than 1).
+In this octant, for each column <i>x</i> between <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{0}}</annotation>
+</semantics>
+</math></span><img alt="x_{0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/86f21d0e31751534cd6584264ecf864a6aa792cf" style="vertical-align: -0.671ex; width:2.384ex; height:2.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{1}}</annotation>
+</semantics>
+</math></span><img alt="x_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a8788bf85d532fa88d1fb25eff6ae382a601c308" style="vertical-align: -0.671ex; width:2.384ex; height:2.009ex;"/></span>, there is exactly one row <i>y</i> (computed by the algorithm) containing a pixel of the line, while each row between <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y_{0}}</annotation>
+</semantics>
+</math></span><img alt="y_{0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6d943dbbb0b56ca750c4d62c5b54b4ae29a773da" style="vertical-align: -0.671ex; width:2.193ex; height:2.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y_{1}}</annotation>
+</semantics>
+</math></span><img alt="y_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/eef4db76d658a98219aca14df06d9869d2b43c42" style="vertical-align: -0.671ex; width:2.193ex; height:2.009ex;"/></span> may contain multiple rasterized pixels.
+</p><p>Bresenham's algorithm chooses the integer <i>y</i> corresponding to the pixel center that is closest to the ideal (fractional) <i>y</i> for the same <i>x</i>; on successive columns <i>y</i> can remain the same or increase by 1.
+The general equation of the line through the endpoints is given by:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\frac {y-y_{0}}{y_{1}-y_{0}}}={\frac {x-x_{0}}{x_{1}-x_{0}}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mi>y</mi>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mrow>
+<mrow>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mrow>
+</mfrac>
+</mrow>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mi>x</mi>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mrow>
+<mrow>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mrow>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\frac {y-y_{0}}{y_{1}-y_{0}}}={\frac {x-x_{0}}{x_{1}-x_{0}}}}</annotation>
+</semantics>
+</math></span><img alt="{\frac {y-y_{0}}{y_{1}-y_{0}}}={\frac {x-x_{0}}{x_{1}-x_{0}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a4970334be031f5bd1e2e0f60742ad0e8d0157f7" style="vertical-align: -2.338ex; width:19.606ex; height:5.676ex;"/></span>.</dd></dl>
+<p>Since we know the column, <i>x</i>, the pixel's row, <i>y</i>, is given by rounding this quantity to the nearest integer:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y={\frac {y_{1}-y_{0}}{x_{1}-x_{0}}}(x-x_{0})+y_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>y</mi>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mrow>
+<mrow>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mrow>
+</mfrac>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y={\frac {y_{1}-y_{0}}{x_{1}-x_{0}}}(x-x_{0})+y_{0}}</annotation>
+</semantics>
+</math></span><img alt="y={\frac {y_{1}-y_{0}}{x_{1}-x_{0}}}(x-x_{0})+y_{0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0da7a539c063858f0f176a176d2bad86a797d13a" style="vertical-align: -2.171ex; width:26.095ex; height:5.509ex;"/></span>.</dd></dl>
+<p>The slope <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (y_{1}-y_{0})/(x_{1}-x_{0})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (y_{1}-y_{0})/(x_{1}-x_{0})}</annotation>
+</semantics>
+</math></span><img alt="(y_{1}-y_{0})/(x_{1}-x_{0})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6756618b3157d130e93ed1a8b06971f2d3ac5b64" style="vertical-align: -0.838ex; width:19.617ex; height:2.843ex;"/></span> depends on the endpoint coordinates only and can be precomputed, and the ideal <i>y</i> for successive integer values of <i>x</i> can be computed starting from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y_{0}}</annotation>
+</semantics>
+</math></span><img alt="y_{0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6d943dbbb0b56ca750c4d62c5b54b4ae29a773da" style="vertical-align: -0.671ex; width:2.193ex; height:2.009ex;"/></span> and repeatedly adding the slope.
+</p><p>In practice, the algorithm does not keep track of the y coordinate, which increases by <i>m</i> = <i>∆y/∆x</i> each time the <i>x</i> increases by one; it keeps an error bound at each
+stage, which represents the negative of the distance from (a) the point where the line exits the pixel to (b) the top edge of the pixel. 
+This value is first set to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y_{0}-0.5}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<mn>0.5</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y_{0}-0.5}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle y_{0}-0.5}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e6dae0b3dba1d1a6944ba3adeb7485976cf32ebf" style="vertical-align: -0.671ex; width:8.006ex; height:2.509ex;"/></span> (due to using the pixel's center coordinates), and is incremented by <i>m</i> each time the <i>x</i> coordinate is incremented by one. If the error becomes greater than <i>0.5</i>, we know that the line has moved upwards
+one pixel, and that we must increment our <i>y</i> coordinate and readjust the error to represent the distance from the top of the new pixel – which is done by subtracting one from error.<sup class="reference" id="cite_ref-3">[3]</sup>
+</p>
+<h2><span class="mw-headline" id="Derivation">Derivation</span><span class="mw-editsection"></span></h2>
+<p>To derive Bresenham's algorithm, two steps must be taken.  The first step is transforming the equation of a line from the typical slope-intercept form into something different; and then using this new equation to draw a line based on the idea of accumulation of error.
+</p>
+<h3><span class="mw-headline" id="Line_equation">Line equation</span><span class="mw-editsection"></span></h3>
+
+
+<p>The slope-intercept form of a line is written as
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y=f(x)=mx+b}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>y</mi>
+<mo>=</mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>m</mi>
+<mi>x</mi>
+<mo>+</mo>
+<mi>b</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y=f(x)=mx+b}</annotation>
+</semantics>
+</math></span><img alt="y=f(x)=mx+b" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/af9880b15fdfd89cc583e3fde26f943d77708c2a" style="vertical-align: -0.838ex; width:18.978ex; height:2.843ex;"/></span></dd></dl>
+<p>where m is the slope and b is the y-intercept. Because this is a function of only <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span>, it can't represent a vertical line. Therefore, it would be useful to make this equation written as a function of both <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> <em>and</em> <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>y</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y}</annotation>
+</semantics>
+</math></span><img alt="y" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b8a6208ec717213d4317e666f1ae872e00620a0d" style="vertical-align: -0.671ex; width:1.155ex; height:2.009ex;"/></span>, to be able to draw lines at any angle. The angle (or slope) of a line can be stated as "rise over run," or <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Delta y/\Delta x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Delta y/\Delta x}</annotation>
+</semantics>
+</math></span><img alt="\Delta y/\Delta x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4108c3558a8ddd281302f63bfd8e3fbdc4fb3940" style="vertical-align: -0.838ex; width:7.519ex; height:2.843ex;"/></span>. Then, using algebraic manipulation,
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{aligned}y&amp;=mx+b\\y&amp;={\frac {(\Delta y)}{(\Delta x)}}x+b\\(\Delta x)y&amp;=(\Delta y)x+(\Delta x)b\\0&amp;=(\Delta y)x-(\Delta x)y+(\Delta x)b\end{aligned}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="right left right left right left right left right left right left" columnspacing="0em 2em 0em 2em 0em 2em 0em 2em 0em 2em 0em" displaystyle="true" rowspacing="3pt">
+<mtr>
+<mtd>
+<mi>y</mi>
+</mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mi>m</mi>
+<mi>x</mi>
+<mo>+</mo>
+<mi>b</mi>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mi>y</mi>
+</mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mo stretchy="false">(</mo>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+<mrow>
+<mo stretchy="false">(</mo>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</mfrac>
+</mrow>
+<mi>x</mi>
+<mo>+</mo>
+<mi>b</mi>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mo stretchy="false">(</mo>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mi>y</mi>
+</mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+<mi>x</mi>
+<mo>+</mo>
+<mo stretchy="false">(</mo>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mi>b</mi>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mn>0</mn>
+</mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+<mi>x</mi>
+<mo>−<!-- − --></mo>
+<mo stretchy="false">(</mo>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mi>y</mi>
+<mo>+</mo>
+<mo stretchy="false">(</mo>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mi>b</mi>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{aligned}y&amp;=mx+b\\y&amp;={\frac {(\Delta y)}{(\Delta x)}}x+b\\(\Delta x)y&amp;=(\Delta y)x+(\Delta x)b\\0&amp;=(\Delta y)x-(\Delta x)y+(\Delta x)b\end{aligned}}}</annotation>
+</semantics>
+</math></span><img alt="{\begin{aligned}y&amp;=mx+b\\y&amp;={\frac {(\Delta y)}{(\Delta x)}}x+b\\(\Delta x)y&amp;=(\Delta y)x+(\Delta x)b\\0&amp;=(\Delta y)x-(\Delta x)y+(\Delta x)b\end{aligned}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/845a7240ddd8a1be179c284abb6e8e5b520dd51c" style="vertical-align: -7.338ex; width:34.294ex; height:15.843ex;"/></span></dd></dl>
+<p>Letting this last equation be a function of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>y</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y}</annotation>
+</semantics>
+</math></span><img alt="y" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b8a6208ec717213d4317e666f1ae872e00620a0d" style="vertical-align: -0.671ex; width:1.155ex; height:2.009ex;"/></span>, it can be written as
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(x,y):=Ax+By+C=0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo>,</mo>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+<mo>:=</mo>
+<mi>A</mi>
+<mi>x</mi>
+<mo>+</mo>
+<mi>B</mi>
+<mi>y</mi>
+<mo>+</mo>
+<mi>C</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(x,y):=Ax+By+C=0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle f(x,y):=Ax+By+C=0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f7df58aa852bb8e15a778672e62333352b2ddbb2" style="vertical-align: -0.838ex; width:28.053ex; height:2.843ex;"/></span></dd></dl>
+<p>where the constants are
+</p>
+<ul><li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A=\Delta y=y_{1}-y_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+<mo>=</mo>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mi>y</mi>
+<mo>=</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A=\Delta y=y_{1}-y_{0}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle A=\Delta y=y_{1}-y_{0}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9334554b8eb9193525abef3b9bc2ec96515c0fae" style="vertical-align: -0.671ex; width:18.259ex; height:2.509ex;"/></span></li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle B=-\Delta x=-(x_{1}-x_{0})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>B</mi>
+<mo>=</mo>
+<mo>−<!-- − --></mo>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mi>x</mi>
+<mo>=</mo>
+<mo>−<!-- − --></mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle B=-\Delta x=-(x_{1}-x_{0})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle B=-\Delta x=-(x_{1}-x_{0})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1bd12b6b6a249ba26e2fd9b41e5653642165919a" style="vertical-align: -0.838ex; width:24.26ex; height:2.843ex;"/></span></li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle C=(\Delta x)b=x_{1}y_{0}-x_{0}y_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>C</mi>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mi>b</mi>
+<mo>=</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle C=(\Delta x)b=x_{1}y_{0}-x_{0}y_{1}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle C=(\Delta x)b=x_{1}y_{0}-x_{0}y_{1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/395cc2e5d8c9bc38bc81f17f6c53d7471cb75281" style="vertical-align: -0.838ex; width:26.031ex; height:2.843ex;"/></span></li></ul>
+<p>The line is then defined for some constants A, B, and C anywhere <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(x,y)=0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo>,</mo>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(x,y)=0}</annotation>
+</semantics>
+</math></span><img alt="f(x,y)=0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/01ede27471a9cc9a0c5eb6e1ebdc7afc8a086543" style="vertical-align: -0.838ex; width:10.868ex; height:2.843ex;"/></span>.  That is, for any <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (x,y)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo>,</mo>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (x,y)}</annotation>
+</semantics>
+</math></span><img alt="(x,y)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/41cf50e4a314ca8e2c30964baa8d26e5be7a9386" style="vertical-align: -0.838ex; width:5.328ex; height:2.843ex;"/></span> not on the line, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(x,y)\neq 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo>,</mo>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+<mo>≠<!-- ≠ --></mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(x,y)\neq 0}</annotation>
+</semantics>
+</math></span><img alt="f(x,y)\neq 0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5643d89f14ca705a892010af1bf37b3ccea56edf" style="vertical-align: -0.838ex; width:10.868ex; height:2.843ex;"/></span>. This form involves only integers if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>y</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y}</annotation>
+</semantics>
+</math></span><img alt="y" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b8a6208ec717213d4317e666f1ae872e00620a0d" style="vertical-align: -0.671ex; width:1.155ex; height:2.009ex;"/></span> are integers, since the constants A, B, and C are defined as integers.
+</p><p>As an example, the line <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y={\frac {1}{2}}x+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>y</mi>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mi>x</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y={\frac {1}{2}}x+1}</annotation>
+</semantics>
+</math></span><img alt="y={\frac {1}{2}}x+1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6f7477c2201c3e79e2285f91392d959cc62f08b1" style="vertical-align: -1.838ex; width:11.585ex; height:5.176ex;"/></span> then this could be written as <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(x,y)=x-2y+2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo>,</mo>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>x</mi>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<mi>y</mi>
+<mo>+</mo>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(x,y)=x-2y+2}</annotation>
+</semantics>
+</math></span><img alt="f(x,y)=x-2y+2" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6f995f04647fbc22a7ac5878e008ed39e6a14a82" style="vertical-align: -0.838ex; width:20.196ex; height:2.843ex;"/></span>.  The point (2,2) is on the line
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(2,2)=x-2y+2=(2)-2(2)+2=2-4+2=0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>2</mn>
+<mo>,</mo>
+<mn>2</mn>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>x</mi>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<mi>y</mi>
+<mo>+</mo>
+<mn>2</mn>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<mn>2</mn>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<mo stretchy="false">(</mo>
+<mn>2</mn>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mn>2</mn>
+<mo>=</mo>
+<mn>2</mn>
+<mo>−<!-- − --></mo>
+<mn>4</mn>
+<mo>+</mo>
+<mn>2</mn>
+<mo>=</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(2,2)=x-2y+2=(2)-2(2)+2=2-4+2=0}</annotation>
+</semantics>
+</math></span><img alt="f(2,2)=x-2y+2=(2)-2(2)+2=2-4+2=0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/192ee277196efa48c269f5c9ce00509abdfba08b" style="vertical-align: -0.838ex; width:53.611ex; height:2.843ex;"/></span></dd></dl>
+<p>and the point (2,3) is not on the line
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(2,3)=(2)-2(3)+2=2-6+2=-2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>2</mn>
+<mo>,</mo>
+<mn>3</mn>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<mn>2</mn>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<mo stretchy="false">(</mo>
+<mn>3</mn>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mn>2</mn>
+<mo>=</mo>
+<mn>2</mn>
+<mo>−<!-- − --></mo>
+<mn>6</mn>
+<mo>+</mo>
+<mn>2</mn>
+<mo>=</mo>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(2,3)=(2)-2(3)+2=2-6+2=-2}</annotation>
+</semantics>
+</math></span><img alt="f(2,3)=(2)-2(3)+2=2-6+2=-2" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1c67eb43ca78e0d96d3bbda2621f3cd7ebe3beaa" style="vertical-align: -0.838ex; width:41.83ex; height:2.843ex;"/></span></dd></dl>
+<p>and neither is the point (2,1)
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(2,1)=(2)-2(1)+2=2-2+2=2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mn>2</mn>
+<mo>,</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<mn>2</mn>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mn>2</mn>
+<mo>=</mo>
+<mn>2</mn>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<mo>+</mo>
+<mn>2</mn>
+<mo>=</mo>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(2,1)=(2)-2(1)+2=2-2+2=2}</annotation>
+</semantics>
+</math></span><img alt="f(2,1)=(2)-2(1)+2=2-2+2=2" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/41b660964b3012eeee06091a4560a984d11b7721" style="vertical-align: -0.838ex; width:40.022ex; height:2.843ex;"/></span></dd></dl>
+<p>Notice that the points (2,1) and (2,3) are on opposite sides of the line and f(x,y) evaluates to positive or negative.  A line splits a plane into halves and the half-plane that has a negative f(x,y) can be called the negative half-plane, and the other half can be called the positive half-plane.  This observation is very important in the remainder of the derivation.
+</p>
+<h3><span class="mw-headline" id="Algorithm">Algorithm</span><span class="mw-editsection"></span></h3>
+<p>Clearly, the starting point is on the line
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(x_{0},y_{0})=0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(x_{0},y_{0})=0}</annotation>
+</semantics>
+</math></span><img alt="f(x_{0},y_{0})=0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e261c0fd465936f7a74f57fc1c16b7698a103473" style="vertical-align: -0.838ex; width:12.96ex; height:2.843ex;"/></span></dd></dl>
+<p>only because the line is defined to start and end on integer coordinates (though it is entirely reasonable to want to draw a line with non-integer end points).
+</p>
+
+<p>Keeping in mind that the slope is at most <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1}</annotation>
+</semantics>
+</math></span><img alt="1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/92d98b82a3778f043108d4e20960a9193df57cbf" style="vertical-align: -0.338ex; width:1.162ex; height:2.176ex;"/></span>, the problem now presents itself as to whether the next point should be at <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (x_{0}+1,y_{0})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>1</mn>
+<mo>,</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (x_{0}+1,y_{0})}</annotation>
+</semantics>
+</math></span><img alt="(x_{0}+1,y_{0})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1b96ae348314e637518b77ec425d8cd31db4b4ec" style="vertical-align: -0.838ex; width:11.423ex; height:2.843ex;"/></span> or <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (x_{0}+1,y_{0}+1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>1</mn>
+<mo>,</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (x_{0}+1,y_{0}+1)}</annotation>
+</semantics>
+</math></span><img alt="(x_{0}+1,y_{0}+1)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b71c50a42505d807c4455f1623a9c2f1259adbc4" style="vertical-align: -0.838ex; width:15.426ex; height:2.843ex;"/></span>. Perhaps intuitively, the point should be chosen based upon which is closer to the line at <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{0}+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{0}+1}</annotation>
+</semantics>
+</math></span><img alt="x_{0}+1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7588b7e888460567449389be731315e590c0d875" style="vertical-align: -0.671ex; width:6.387ex; height:2.509ex;"/></span>.  If it is closer to the former then include the former point on the line, if the latter then the latter. To answer this, evaluate the line function at the midpoint between these two points:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(x_{0}+1,y_{0}+{\tfrac {1}{2}})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>1</mn>
+<mo>,</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>1</mn>
+<mn>2</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(x_{0}+1,y_{0}+{\tfrac {1}{2}})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle f(x_{0}+1,y_{0}+{\tfrac {1}{2}})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/77fee96bcc356a818f384499d8eda6b060d86339" style="vertical-align: -1.171ex; width:17.201ex; height:3.509ex;"/></span></dd></dl>
+<p>If the value of this is positive then the ideal line is below the midpoint and closer to the candidate point <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (x_{0}+1,y_{0}+1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>1</mn>
+<mo>,</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (x_{0}+1,y_{0}+1)}</annotation>
+</semantics>
+</math></span><img alt="(x_{0}+1,y_{0}+1)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b71c50a42505d807c4455f1623a9c2f1259adbc4" style="vertical-align: -0.838ex; width:15.426ex; height:2.843ex;"/></span>; in effect the y coordinate has advanced.  Otherwise, the ideal line passes through or above the midpoint, and the y coordinate has not advanced; in this case choose the point <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (x_{0}+1,y_{0})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>1</mn>
+<mo>,</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (x_{0}+1,y_{0})}</annotation>
+</semantics>
+</math></span><img alt="(x_{0}+1,y_{0})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1b96ae348314e637518b77ec425d8cd31db4b4ec" style="vertical-align: -0.838ex; width:11.423ex; height:2.843ex;"/></span>. The value of the line function at this midpoint is the sole determinant of which point should be chosen.
+</p><p>The adjacent image shows the blue point (2,2) chosen to be on the line with two candidate points in green (3,2) and (3,3).  The black point (3, 2.5) is the midpoint between the two candidate points.
+</p>
+<h4><span class="mw-headline" id="Algorithm_for_integer_arithmetic">Algorithm for integer arithmetic</span><span class="mw-editsection"></span></h4>
+<p>Alternatively, the difference between points can be used instead of evaluating f(x,y) at midpoints. This alternative method allows for integer-only arithmetic, which is generally faster than using floating-point arithmetic. To derive the alternative method, define the difference to be as follows: 
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle D=f(x_{0}+1,y_{0}+{\tfrac {1}{2}})-f(x_{0},y_{0})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>D</mi>
+<mo>=</mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>1</mn>
+<mo>,</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>1</mn>
+<mn>2</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle D=f(x_{0}+1,y_{0}+{\tfrac {1}{2}})-f(x_{0},y_{0})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle D=f(x_{0}+1,y_{0}+{\tfrac {1}{2}})-f(x_{0},y_{0})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2b0941eb7cf8b72e2ba986a883e4fb2461242bf5" style="vertical-align: -1.171ex; width:33.763ex; height:3.509ex;"/></span></dd></dl>
+<p>For the first decision, this formulation is equivalent to the midpoint method since <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(x_{0},y_{0})=0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(x_{0},y_{0})=0}</annotation>
+</semantics>
+</math></span><img alt="f(x_{0},y_{0})=0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e261c0fd465936f7a74f57fc1c16b7698a103473" style="vertical-align: -0.838ex; width:12.96ex; height:2.843ex;"/></span> at the starting point. Simplifying this expression yields:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{array}{rclcl}D&amp;=&amp;\left[A(x_{0}+1)+B\left(y_{0}+{\frac {1}{2}}\right)+C\right]&amp;-&amp;\left[Ax_{0}+By_{0}+C\right]\\&amp;=&amp;\left[Ax_{0}+By_{0}+C+A+{\frac {1}{2}}B\right]&amp;-&amp;\left[Ax_{0}+By_{0}+C\right]\\&amp;=&amp;A+{\frac {1}{2}}B=\Delta y-{\frac {1}{2}}\Delta x\end{array}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="right center left center left" columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<mi>D</mi>
+</mtd>
+<mtd>
+<mo>=</mo>
+</mtd>
+<mtd>
+<mrow>
+<mo>[</mo>
+<mrow>
+<mi>A</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>B</mi>
+<mrow>
+<mo>(</mo>
+<mrow>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<mn>2</mn>
+</mfrac>
+</mrow>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mo>+</mo>
+<mi>C</mi>
+</mrow>
+<mo>]</mo>
+</mrow>
+</mtd>
+<mtd>
+<mo>−<!-- − --></mo>
+</mtd>
+<mtd>
+<mrow>
+<mo>[</mo>
+<mrow>
+<mi>A</mi>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mi>B</mi>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mi>C</mi>
+</mrow>
+<mo>]</mo>
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mo>=</mo>
+</mtd>
+<mtd>
+<mrow>
+<mo>[</mo>
+<mrow>
+<mi>A</mi>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mi>B</mi>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mi>C</mi>
+<mo>+</mo>
+<mi>A</mi>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mi>B</mi>
+</mrow>
+<mo>]</mo>
+</mrow>
+</mtd>
+<mtd>
+<mo>−<!-- − --></mo>
+</mtd>
+<mtd>
+<mrow>
+<mo>[</mo>
+<mrow>
+<mi>A</mi>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mi>B</mi>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mi>C</mi>
+</mrow>
+<mo>]</mo>
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mo>=</mo>
+</mtd>
+<mtd>
+<mi>A</mi>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mi>B</mi>
+<mo>=</mo>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mi>y</mi>
+<mo>−<!-- − --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mi>x</mi>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{array}{rclcl}D&amp;=&amp;\left[A(x_{0}+1)+B\left(y_{0}+{\frac {1}{2}}\right)+C\right]&amp;-&amp;\left[Ax_{0}+By_{0}+C\right]\\&amp;=&amp;\left[Ax_{0}+By_{0}+C+A+{\frac {1}{2}}B\right]&amp;-&amp;\left[Ax_{0}+By_{0}+C\right]\\&amp;=&amp;A+{\frac {1}{2}}B=\Delta y-{\frac {1}{2}}\Delta x\end{array}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\begin{array}{rclcl}D&amp;=&amp;\left[A(x_{0}+1)+B\left(y_{0}+{\frac {1}{2}}\right)+C\right]&amp;-&amp;\left[Ax_{0}+By_{0}+C\right]\\&amp;=&amp;\left[Ax_{0}+By_{0}+C+A+{\frac {1}{2}}B\right]&amp;-&amp;\left[Ax_{0}+By_{0}+C\right]\\&amp;=&amp;A+{\frac {1}{2}}B=\Delta y-{\frac {1}{2}}\Delta x\end{array}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/78cbf24b6d560a2c24620171aa3aee3c8d271512" style="vertical-align: -5.171ex; width:62.706ex; height:11.509ex;"/></span></dd></dl>
+<p>Just as with the midpoint method, if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle D}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>D</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle D}</annotation>
+</semantics>
+</math></span><img alt="D" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f34a0c600395e5d4345287e21fb26efd386990e6" style="vertical-align: -0.338ex; width:1.924ex; height:2.176ex;"/></span> is positive, then choose <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (x_{0}+1,y_{0}+1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>1</mn>
+<mo>,</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (x_{0}+1,y_{0}+1)}</annotation>
+</semantics>
+</math></span><img alt="(x_{0}+1,y_{0}+1)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b71c50a42505d807c4455f1623a9c2f1259adbc4" style="vertical-align: -0.838ex; width:15.426ex; height:2.843ex;"/></span>, otherwise choose <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (x_{0}+1,y_{0})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>1</mn>
+<mo>,</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (x_{0}+1,y_{0})}</annotation>
+</semantics>
+</math></span><img alt="(x_{0}+1,y_{0})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1b96ae348314e637518b77ec425d8cd31db4b4ec" style="vertical-align: -0.838ex; width:11.423ex; height:2.843ex;"/></span>.
+</p><p>If <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (x_{0}+1,y_{0})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>1</mn>
+<mo>,</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (x_{0}+1,y_{0})}</annotation>
+</semantics>
+</math></span><img alt="(x_{0}+1,y_{0})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1b96ae348314e637518b77ec425d8cd31db4b4ec" style="vertical-align: -0.838ex; width:11.423ex; height:2.843ex;"/></span> is chosen, the change in D will be: 
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{array}{lclcl}\Delta D&amp;=&amp;f(x_{0}+2,y_{0}+{\tfrac {1}{2}})-f(x_{0}+1,y_{0}+{\tfrac {1}{2}})&amp;=&amp;A&amp;=&amp;\Delta y\\\end{array}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="left center left center left" columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mi>D</mi>
+</mtd>
+<mtd>
+<mo>=</mo>
+</mtd>
+<mtd>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>2</mn>
+<mo>,</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>1</mn>
+<mn>2</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>1</mn>
+<mo>,</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>1</mn>
+<mn>2</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mo stretchy="false">)</mo>
+</mtd>
+<mtd>
+<mo>=</mo>
+</mtd>
+<mtd>
+<mi>A</mi>
+</mtd>
+<mtd>
+<mo>=</mo>
+</mtd>
+<mtd>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mi>y</mi>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{array}{lclcl}\Delta D&amp;=&amp;f(x_{0}+2,y_{0}+{\tfrac {1}{2}})-f(x_{0}+1,y_{0}+{\tfrac {1}{2}})&amp;=&amp;A&amp;=&amp;\Delta y\\\end{array}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\begin{array}{lclcl}\Delta D&amp;=&amp;f(x_{0}+2,y_{0}+{\tfrac {1}{2}})-f(x_{0}+1,y_{0}+{\tfrac {1}{2}})&amp;=&amp;A&amp;=&amp;\Delta y\\\end{array}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/677ba594781c9fd83df4c99d1e690d7a792e1c76" style="vertical-align: -0.968ex; margin-bottom: -0.203ex; width:66.048ex; height:3.509ex;"/></span></dd></dl>
+<p>If <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (x_{0}+1,y_{0}+1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>1</mn>
+<mo>,</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (x_{0}+1,y_{0}+1)}</annotation>
+</semantics>
+</math></span><img alt="(x_{0}+1,y_{0}+1)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b71c50a42505d807c4455f1623a9c2f1259adbc4" style="vertical-align: -0.838ex; width:15.426ex; height:2.843ex;"/></span> is chosen the change in D will be:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{array}{lclcl}\Delta D&amp;=&amp;f(x_{0}+2,y_{0}+{\tfrac {3}{2}})-f(x_{0}+1,y_{0}+{\tfrac {1}{2}})&amp;=&amp;A+B&amp;=&amp;\Delta y-\Delta x\end{array}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="left center left center left" columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mi>D</mi>
+</mtd>
+<mtd>
+<mo>=</mo>
+</mtd>
+<mtd>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>2</mn>
+<mo>,</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>3</mn>
+<mn>2</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>1</mn>
+<mo>,</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>1</mn>
+<mn>2</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mo stretchy="false">)</mo>
+</mtd>
+<mtd>
+<mo>=</mo>
+</mtd>
+<mtd>
+<mi>A</mi>
+<mo>+</mo>
+<mi>B</mi>
+</mtd>
+<mtd>
+<mo>=</mo>
+</mtd>
+<mtd>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mi>y</mi>
+<mo>−<!-- − --></mo>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mi>x</mi>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{array}{lclcl}\Delta D&amp;=&amp;f(x_{0}+2,y_{0}+{\tfrac {3}{2}})-f(x_{0}+1,y_{0}+{\tfrac {1}{2}})&amp;=&amp;A+B&amp;=&amp;\Delta y-\Delta x\end{array}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\begin{array}{lclcl}\Delta D&amp;=&amp;f(x_{0}+2,y_{0}+{\tfrac {3}{2}})-f(x_{0}+1,y_{0}+{\tfrac {1}{2}})&amp;=&amp;A+B&amp;=&amp;\Delta y-\Delta x\end{array}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e300438887edebb04d1a3b42794fe0490ef69e66" style="vertical-align: -0.986ex; margin-bottom: -0.186ex; width:76.758ex; height:3.509ex;"/></span></dd></dl>
+<p>If the new D is positive then <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (x_{0}+2,y_{0}+1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>2</mn>
+<mo>,</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (x_{0}+2,y_{0}+1)}</annotation>
+</semantics>
+</math></span><img alt="(x_{0}+2,y_{0}+1)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/173d41653f967e888f78f96a7ebedca034240ad4" style="vertical-align: -0.838ex; width:15.426ex; height:2.843ex;"/></span> is chosen, otherwise <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (x_{0}+2,y_{0})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>2</mn>
+<mo>,</mo>
+<msub>
+<mi>y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (x_{0}+2,y_{0})}</annotation>
+</semantics>
+</math></span><img alt="(x_{0}+2,y_{0})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1037f9a3102b038179017305988c9486d7cf2412" style="vertical-align: -0.838ex; width:11.423ex; height:2.843ex;"/></span>. This decision can be generalized by accumulating the error on each subsequent point.
+</p>
+
+<p>All of the derivation for the algorithm is done.  One performance issue is the 1/2 factor in the initial value of D.  Since all of this is about the sign of the accumulated difference, then everything can be multiplied by 2 with no consequence.
+</p><p>This results in an algorithm that uses only integer arithmetic.
+</p>
+<pre>plotLine(x0, y0, x1, y1)
+    dx = x1 - x0
+    dy = y1 - y0
+    D = 2*dy - dx
+    y = y0
+
+    <b>for</b> x from x0 to x1
+        plot(x, y)
+        <b>if</b> D &gt; 0
+            y = y + 1
+            D = D - 2*dx
+        <b>end if</b>
+        D = D + 2*dy
+</pre>
+<p>Running this algorithm for <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(x,y)=x-2y+2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo>,</mo>
+<mi>y</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>x</mi>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<mi>y</mi>
+<mo>+</mo>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(x,y)=x-2y+2}</annotation>
+</semantics>
+</math></span><img alt="f(x,y)=x-2y+2" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6f995f04647fbc22a7ac5878e008ed39e6a14a82" style="vertical-align: -0.838ex; width:20.196ex; height:2.843ex;"/></span> from (0,1) to (6,4) yields the following differences with dx=6 and dy=3:
+</p>
+<pre>D=2*3-6=0
+Loop from 0 to 6
+ * x=0: <b>plot(0, 1)</b>, D≤0: D=0+6=6
+ * x=1: <b>plot(1, 1)</b>, D&gt;0: D=6-12=-6, y=1+1=2, D=-6+6=0
+ * x=2: <b>plot(2, 2)</b>, D≤0: D=0+6=6
+ * x=3: <b>plot(3, 2)</b>, D&gt;0: D=6-12=-6, y=2+1=3, D=-6+6=0
+ * x=4: <b>plot(4, 3)</b>, D≤0: D=0+6=6
+ * x=5: <b>plot(5, 3)</b>, D&gt;0: D=6-12=-6, y=3+1=4, D=-6+6=0
+ * x=6: <b>plot(6, 4)</b>, D≤0: D=0+6=6
+</pre>
+<p>The result of this plot is shown to the right.  The plotting can be viewed by plotting at the intersection of lines (blue circles) or filling in pixel boxes (yellow squares).  Regardless, the plotting is the same.
+</p>
+<h3><span class="mw-headline" id="All_cases">All cases</span><span class="mw-editsection"></span></h3>
+<p>However, as mentioned above this is only for octant zero, that is lines starting at the origin with a slope between 0 and 1 where x increases by exactly 1 per iteration and y increases by 0 or 1.
+</p><p>The algorithm can be extended to cover slopes between 0 and -1 by checking whether y needs to increase or decrease (i.e. dy &lt; 0)
+</p>
+<pre>plotLineLow(x0, y0, x1, y1)
+    dx = x1 - x0
+    dy = y1 - y0
+    yi = 1
+    <b>if</b> dy &lt; 0
+        yi = -1
+        dy = -dy
+    <b>end if</b>
+    D = (2 * dy) - dx
+    y = y0
+
+    <b>for</b> x from x0 to x1
+        plot(x, y)
+        <b>if</b> D &gt; 0
+            y = y + yi
+            D = D + (2 * (dy - dx))
+        <b>else</b>
+            D = D + 2*dy
+        <b>end if</b>
+</pre>
+<p>By switching the x and y axis an implementation for positive or negative steep slopes can be written as 
+</p>
+<pre>plotLineHigh(x0, y0, x1, y1)
+    dx = x1 - x0
+    dy = y1 - y0
+    xi = 1
+    <b>if</b> dx &lt; 0
+        xi = -1
+        dx = -dx
+    <b>end if</b>
+    D = (2 * dx) - dy
+    x = x0
+
+    <b>for</b> y from y0 to y1
+        plot(x, y)
+        <b>if</b> D &gt; 0
+            x = x + xi
+            D = D + (2 * (dx - dy))
+        <b>else</b>
+            D = D + 2*dx
+        <b>end if</b>
+</pre>
+<p>A complete solution would need to detect whether x1 &gt; x0 or y1 &gt; y0 and reverse the input coordinates before drawing, thus
+</p>
+<pre>plotLine(x0, y0, x1, y1)
+    <b>if</b> abs(y1 - y0) &lt; abs(x1 - x0)
+        <b>if</b> x0 &gt; x1
+            plotLineLow(x1, y1, x0, y0)
+        <b>else</b>
+            plotLineLow(x0, y0, x1, y1)
+        <b>end if</b>
+    <b>else</b>
+        <b>if</b> y0 &gt; y1
+            plotLineHigh(x1, y1, x0, y0)
+        <b>else</b>
+            plotLineHigh(x0, y0, x1, y1)
+        <b>end if</b>
+    <b>end if</b>
+</pre>
+<p>In low level implementations which access the video memory directly, it would be typical for the special cases of vertical and horizontal lines to be handled separately as they can be highly optimized.
+</p><p>Some versions use Bresenham's principles of integer incremental error to perform all octant line draws, balancing the positive and negative error between the x and y coordinates.<sup class="reference" id="cite_ref-Zingl_2-1">[2]</sup> Take note that the order is not necessarily guaranteed; in other words, the line may be drawn from (x0, y0) to (x1, y1) or from (x1, y1) to (x0, y0).
+</p>
+<pre>plotLine(x0, y0, x1, y1)
+    dx = abs(x1 - x0)
+    sx = x0 &lt; x1 ? 1 : -1
+    dy = -abs(y1 - y0)
+    sy = y0 &lt; y1 ? 1 : -1
+    error = dx + dy
+    
+    <b>while</b> true
+        plot(x0, y0)
+        <b>if</b> x0 == x1 &amp;&amp; y0 == y1 <b>break</b>
+        e2 = 2 * error
+        <b>if</b> e2 &gt;= dy
+            <b>if</b> x0 == x1 <b>break</b>
+            error = error + dy
+            x0 = x0 + sx
+        <b>end if</b>
+        <b>if</b> e2 &lt;= dx
+            <b>if</b> y0 == y1 <b>break</b>
+            error = error + dx
+            y0 = y0 + sy
+        <b>end if</b>
+    <b>end while</b>
+</pre>
+<h2><span class="mw-headline" id="Similar_algorithms">Similar algorithms</span><span class="mw-editsection"></span></h2>
+<p>The Bresenham algorithm can be interpreted as slightly modified digital differential analyzer (using 0.5 as error threshold instead of 0, which is required for non-overlapping polygon rasterizing).
+</p><p>The principle of using an incremental error in place of division operations has other applications in graphics. It is possible to use this technique to calculate the U,V co-ordinates during raster scan of texture mapped polygons.<sup class="reference" id="cite_ref-4">[4]</sup> The voxel heightmap software-rendering engines seen in some PC games also used this principle.
+</p><p>Bresenham also published a Run-Slice (as opposed to the Run-Length) computational algorithm.  This method has been represented in a number of US patents: 
+</p>
+<table class="wikitable">
+<tbody><tr>
+<td>5,815,163
+</td>
+<td>
+</td>
+<td>Method and apparatus to draw line slices during calculation
+</td></tr>
+<tr>
+<td>5,740,345
+</td>
+<td>
+</td>
+<td>Method and apparatus for displaying computer graphics data stored in a compressed format with an efficient color indexing system
+</td></tr>
+<tr>
+<td>5,657,435
+</td>
+<td>
+</td>
+<td>Run slice line draw engine with non-linear scaling capabilities
+</td></tr>
+<tr>
+<td>5,627,957
+</td>
+<td>
+</td>
+<td>Run slice line draw engine with enhanced processing capabilities
+</td></tr>
+<tr>
+<td>5,627,956
+</td>
+<td>
+</td>
+<td>Run slice line draw engine with stretching capabilities
+</td></tr>
+<tr>
+<td>5,617,524
+</td>
+<td>
+</td>
+<td>Run slice line draw engine with shading capabilities
+</td></tr>
+<tr>
+<td>5,611,029
+</td>
+<td>
+</td>
+<td>Run slice line draw engine with non-linear shading capabilities
+</td></tr>
+<tr>
+<td>5,604,852
+</td>
+<td>
+</td>
+<td>Method and apparatus for displaying a parametric curve on a video display
+</td></tr>
+<tr>
+<td>5,600,769
+</td>
+<td>
+</td>
+<td>Run slice line draw engine with enhanced clipping techniques
+</td></tr></tbody></table>
+<p>An extension to the algorithm that handles thick lines was created by Alan Murphy at IBM.<sup class="reference" id="cite_ref-5">[5]</sup>
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Digital differential analyzer (graphics algorithm), a simple and general method for rasterizing lines and triangles</li>
+<li>Xiaolin Wu's line algorithm, a similarly fast method of drawing lines with antialiasing</li>
+<li>Midpoint circle algorithm, a similar algorithm for drawing circles</li></ul>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFBresenham1965">Bresenham, J. E. (1965). "Algorithm for computer control of a digital plotter" <span class="cs1-format">(PDF)</span>. <i>IBM Systems Journal</i>. <b>4</b> (1): 25–30. doi:10.1147/sj.41.0025. Archived from the original <span class="cs1-format">(PDF)</span> on May 28, 2008.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=IBM+Systems+Journal&amp;rft.atitle=Algorithm+for+computer+control+of+a+digital+plotter&amp;rft.volume=4&amp;rft.issue=1&amp;rft.pages=25-30&amp;rft.date=1965&amp;rft_id=info%3Adoi%2F10.1147%2Fsj.41.0025&amp;rft.aulast=Bresenham&amp;rft.aufirst=J.+E.&amp;rft_id=http%3A%2F%2Fwww.research.ibm.com%2Fjournal%2Fsj%2F041%2FibmsjIVRIC.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ABresenham%27s+line+algorithm"></span></li>
+<li>"The Bresenham Line-Drawing Algorithm", by Colin Flanagan</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFAbrash1997">Abrash, Michael (1997). <span class="cs1-lock-registration" title="Free registration required"><i>Michael Abrash's graphics programming black book</i></span>. Albany, NY: Coriolis. pp. 654–678. ISBN <bdi>978-1-57610-174-2</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Michael+Abrash%27s+graphics+programming+black+book&amp;rft.place=Albany%2C+NY&amp;rft.pages=654-678&amp;rft.pub=Coriolis&amp;rft.date=1997&amp;rft.isbn=978-1-57610-174-2&amp;rft.aulast=Abrash&amp;rft.aufirst=Michael&amp;rft_id=https%3A%2F%2Farchive.org%2Fdetails%2Fmichaelabrashsgr00abra%2Fpage%2F654&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ABresenham%27s+line+algorithm"></span> A very optimized version of the algorithm in C and assembly for use in video games with complete details of its inner workings</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation news cs1" id="CITEREFZingl2012">Zingl, Alois (2012). "A Rasterizing Algorithm for Drawing Curves" <span class="cs1-format">(PDF)</span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.atitle=A+Rasterizing+Algorithm+for+Drawing+Curves&amp;rft.date=2012&amp;rft.aulast=Zingl&amp;rft.aufirst=Alois&amp;rft_id=http%3A%2F%2Fmembers.chello.at%2F~easyfilter%2FBresenham.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ABresenham%27s+line+algorithm"></span>, The Beauty of Bresenham's Algorithms</li></ul>
+<h2><span class="mw-headline" id="Further_reading">Further reading</span><span class="mw-editsection"></span></h2>
+<ul><li>Patrick-Gilles Maillot's Thesis an extension of the Bresenham line drawing algorithm to perform 3D hidden lines removal; also published in MICAD '87 proceedings on CAD/CAM and Computer Graphics, page 591 - <link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/>ISBN 2-86601-084-1.</li>
+<li>Line Thickening by Modification To Bresenham's Algorithm, A.S. Murphy, IBM Technical Disclosure Bulletin, Vol. 20, No. 12, May 1978.</li></ul>
+<p>rather than <i>[which]</i> for circle extension use:  Technical Report 1964 Jan-27 -11- Circle Algorithm TR-02-286 IBM San Jose Lab   or   A Linear Algorithm for Incremental Digital Display of Circular Arcs February 1977   Communications of the ACM 20(2):100-106   DOI:10.1145/359423.359432 
+</p>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097025294">.mw-parser-output .side-box{margin:4px 0;box-sizing:border-box;border:1px solid #aaa;font-size:88%;line-height:1.25em;background-color:#f9f9f9}.mw-parser-output .side-box-abovebelow,.mw-parser-output .side-box-text{padding:0.25em 0.9em}.mw-parser-output .side-box-image{padding:2px 0 2px 0.9em;text-align:center}.mw-parser-output .side-box-imageright{padding:2px 0.9em 2px 0;text-align:center}@media(min-width:500px){.mw-parser-output .side-box-flex{display:flex;align-items:center}.mw-parser-output .side-box-text{flex:1}}@media(min-width:720px){.mw-parser-output .side-box{width:238px}.mw-parser-output .side-box-right{clear:right;float:right;margin-left:1em}.mw-parser-output .side-box-left{margin-right:1em}}</style>
+<ul><li>Michael Abrash's Graphics Programming Black Book Special Edition: Chapter 35: Bresenham Is Fast, and Fast Is Good</li>
+<li><i>The Bresenham Line-Drawing Algorithm</i> by Colin Flanagan</li>
+<li>National Institute of Standards and Technology page on Bresenham's algorithm</li>
+<li>Calcomp 563 Incremental Plotter Information</li>
+<li>Bresenham Algorithm in several programming languages</li>
+<li>The Beauty of Bresenham's Algorithm – A simple implementation to plot lines, circles, ellipses and Bézier curves</li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw2383
+Cached time: 20221223230707
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.253 seconds
+Real time usage: 0.553 seconds
+Preprocessor visited node count: 1500/1000000
+Post‐expand include size: 16034/2097152 bytes
+Template argument size: 2329/2097152 bytes
+Highest expansion depth: 14/100
+Expensive parser function count: 0/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 19565/5000000 bytes
+Lua time usage: 0.096/10.000 seconds
+Lua memory usage: 4578660/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  216.640      1 -total
+ 43.34%   93.883      1 Template:Reflist
+ 30.61%   66.320      2 Template:Cite_web
+ 22.28%   48.264      1 Template:Short_description
+ 18.76%   40.639      1 Template:Commons_category
+ 17.68%   38.292      1 Template:Sister_project
+ 16.86%   36.531      1 Template:Side_box
+ 12.58%   27.248      2 Template:Pagetype
+  6.73%   14.580      1 Template:ISBN
+  5.82%   12.615      1 Template:Cite_patent
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:64005-0!canonical and timestamp 20221223230706 and revision id 1125209724.
+ -->
+</div></body>
+</html>

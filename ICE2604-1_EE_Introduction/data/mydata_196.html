@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>circular_queue</title>
+</head>
+<body>
+<div class="mw-parser-output"><style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-Cleanup_bare_URLs plainlinks metadata ambox ambox-style ambox-cleanup-link_rot" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+
+<p>In computer science, a <b>circular buffer</b>, <b>circular queue</b>, <b>cyclic buffer</b> or <b>ring buffer</b> is a data structure that uses a single, fixed-size buffer as if it were connected end-to-end. This structure lends itself easily to buffering data streams.<sup class="reference" id="cite_ref-1">[1]</sup> There were early circular buffer implementations in hardware.<sup class="reference" id="cite_ref-2">[2]</sup><sup class="reference" id="cite_ref-3">[3]</sup>
+</p>
+
+<h2><span class="mw-headline" id="Overview">Overview</span><span class="mw-editsection"></span></h2>
+
+<p>A circular buffer first starts out empty and has a set length. In the diagram below is a 7-element buffer:
+</p>
+<dl><dd><img alt="Circular buffer - empty.svg" data-file-height="85" data-file-width="390" decoding="async" height="54" src="//upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Circular_buffer_-_empty.svg/250px-Circular_buffer_-_empty.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Circular_buffer_-_empty.svg/375px-Circular_buffer_-_empty.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Circular_buffer_-_empty.svg/500px-Circular_buffer_-_empty.svg.png 2x" width="250"/></dd></dl>
+<p>Assume that 1 is written in the center of a circular buffer (the exact starting location is not important in a circular buffer):
+</p>
+<dl><dd><img alt="Circular buffer - XX1XXXX.svg" data-file-height="85" data-file-width="390" decoding="async" height="54" src="//upload.wikimedia.org/wikipedia/commons/thumb/8/89/Circular_buffer_-_XX1XXXX.svg/250px-Circular_buffer_-_XX1XXXX.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/8/89/Circular_buffer_-_XX1XXXX.svg/375px-Circular_buffer_-_XX1XXXX.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/8/89/Circular_buffer_-_XX1XXXX.svg/500px-Circular_buffer_-_XX1XXXX.svg.png 2x" width="250"/></dd></dl>
+<p>Then assume that two more elements are added to the circular buffer — 2 &amp; 3 — which get put after 1:
+</p>
+<dl><dd><img alt="Circular buffer - XX123XX.svg" data-file-height="85" data-file-width="390" decoding="async" height="54" src="//upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Circular_buffer_-_XX123XX.svg/250px-Circular_buffer_-_XX123XX.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Circular_buffer_-_XX123XX.svg/375px-Circular_buffer_-_XX123XX.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Circular_buffer_-_XX123XX.svg/500px-Circular_buffer_-_XX123XX.svg.png 2x" width="250"/></dd></dl>
+<p>If two elements are removed, the two oldest values inside of the circular buffer would be removed. Circular buffers use FIFO (<i>first in, first out</i>) logic. In the example, 1 &amp; 2 were the first to enter the circular buffer, they are the first to be removed, leaving 3 inside of the buffer.
+</p>
+<dl><dd><img alt="Circular buffer - XXXX3XX.svg" data-file-height="85" data-file-width="390" decoding="async" height="54" src="//upload.wikimedia.org/wikipedia/commons/thumb/1/11/Circular_buffer_-_XXXX3XX.svg/250px-Circular_buffer_-_XXXX3XX.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/1/11/Circular_buffer_-_XXXX3XX.svg/375px-Circular_buffer_-_XXXX3XX.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/1/11/Circular_buffer_-_XXXX3XX.svg/500px-Circular_buffer_-_XXXX3XX.svg.png 2x" width="250"/></dd></dl>
+<p>If the buffer has 7 elements, then it is completely full:
+</p>
+<dl><dd><img alt="Circular buffer - 6789345.svg" data-file-height="85" data-file-width="390" decoding="async" height="54" src="//upload.wikimedia.org/wikipedia/commons/thumb/6/67/Circular_buffer_-_6789345.svg/250px-Circular_buffer_-_6789345.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/6/67/Circular_buffer_-_6789345.svg/375px-Circular_buffer_-_6789345.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/6/67/Circular_buffer_-_6789345.svg/500px-Circular_buffer_-_6789345.svg.png 2x" width="250"/></dd></dl>
+<p>A property of the circular buffer is that when it is full and a subsequent write is performed, then it starts overwriting the oldest data. In the current example, two more elements — A &amp; B — are added and they <i>overwrite</i> the 3 &amp; 4:
+</p>
+<dl><dd><img alt="Circular buffer - 6789AB5.svg" data-file-height="85" data-file-width="390" decoding="async" height="54" src="//upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Circular_buffer_-_6789AB5.svg/250px-Circular_buffer_-_6789AB5.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Circular_buffer_-_6789AB5.svg/375px-Circular_buffer_-_6789AB5.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Circular_buffer_-_6789AB5.svg/500px-Circular_buffer_-_6789AB5.svg.png 2x" width="250"/></dd></dl>
+<p>Alternatively, the routines that manage the buffer could prevent overwriting the data and return an error or raise an exception. Whether or not data is overwritten is up to the semantics of the buffer routines or the application using the circular buffer.
+</p><p>Finally, if two elements are now removed then what would be returned is <b>not</b> 3 &amp; 4 but 5 &amp; 6 because A &amp; B overwrote the 3 &amp; the 4 yielding the buffer with:
+</p>
+<dl><dd><img alt="Circular buffer - X789ABX.svg" data-file-height="85" data-file-width="390" decoding="async" height="54" src="//upload.wikimedia.org/wikipedia/commons/thumb/4/43/Circular_buffer_-_X789ABX.svg/250px-Circular_buffer_-_X789ABX.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/4/43/Circular_buffer_-_X789ABX.svg/375px-Circular_buffer_-_X789ABX.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/4/43/Circular_buffer_-_X789ABX.svg/500px-Circular_buffer_-_X789ABX.svg.png 2x" width="250"/></dd></dl>
+<h2><span class="mw-headline" id="Uses">Uses</span><span class="mw-editsection"></span></h2>
+<p>The useful property of a circular buffer is that it does not need to have its elements shuffled around when one is consumed. (If a non-circular buffer were used then it would be necessary to shift all elements when one is consumed.) In other words, the circular buffer is well-suited as a FIFO (<i>first in, first out</i>) buffer while a standard, non-circular buffer is well suited as a LIFO (<i>last in, first out</i>) buffer.
+</p><p>Circular buffering makes a good implementation strategy for a queue that has fixed maximum size. Should a maximum size be adopted for a queue, then a circular buffer is a completely ideal implementation; all queue operations are constant time. However, expanding a circular buffer requires shifting memory, which is comparatively costly. For arbitrarily expanding queues, a linked list approach may be preferred instead.
+</p><p>In some situations, overwriting circular buffer can be used, e.g. in multimedia. If the buffer is used as the bounded buffer in the producer–consumer problem then it is probably desired for the producer (e.g., an audio generator) to overwrite old data if the consumer (e.g., the sound card) is unable to momentarily keep up. Also, the LZ77 family of lossless data compression algorithms operates on the assumption that strings seen more recently in a data stream are more likely to occur soon in the stream. Implementations store the most recent data in a circular buffer.
+</p>
+<h2><span class="mw-headline" id="Circular_buffer_mechanics">Circular buffer mechanics</span><span class="mw-editsection"></span></h2>
+<dl><dd></dd></dl>
+<p>A circular buffer can be implemented using a pointer and three integers:
+</p>
+<ul><li>buffer start in memory</li>
+<li>buffer capacity (Length)</li>
+<li>write to buffer index (end)</li>
+<li>read from buffer index (start)</li></ul>
+<p>This image shows a partially full buffer with Length = 7:
+</p>
+<dl><dd><img alt="Circular buffer - XX123XX with pointers.svg" data-file-height="85" data-file-width="390" decoding="async" height="54" src="//upload.wikimedia.org/wikipedia/commons/thumb/0/02/Circular_buffer_-_XX123XX_with_pointers.svg/250px-Circular_buffer_-_XX123XX_with_pointers.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/0/02/Circular_buffer_-_XX123XX_with_pointers.svg/375px-Circular_buffer_-_XX123XX_with_pointers.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/0/02/Circular_buffer_-_XX123XX_with_pointers.svg/500px-Circular_buffer_-_XX123XX_with_pointers.svg.png 2x" width="250"/></dd></dl>
+<p>This image shows a full buffer with four elements (numbers 1 through 4) having been overwritten:
+</p>
+<dl><dd><img alt="Circular buffer - 6789AB5 with pointers.svg" data-file-height="85" data-file-width="390" decoding="async" height="54" src="//upload.wikimedia.org/wikipedia/commons/thumb/0/05/Circular_buffer_-_6789AB5_with_pointers.svg/250px-Circular_buffer_-_6789AB5_with_pointers.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/0/05/Circular_buffer_-_6789AB5_with_pointers.svg/375px-Circular_buffer_-_6789AB5_with_pointers.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/0/05/Circular_buffer_-_6789AB5_with_pointers.svg/500px-Circular_buffer_-_6789AB5_with_pointers.svg.png 2x" width="250"/></dd></dl>
+<p>In the beginning the indexes end and start are set to 0. The circular buffer write operation writes an element to the end index position and the end index is incremented to the next buffer position. The circular buffer read operation reads an element from the start index position and the start index is incremented to the next buffer position.
+</p><p>The start and end indexes are not enough to tell buffer full or empty state while also utilizing all buffer slots,<sup class="reference" id="cite_ref-4">[4]</sup> but can if the buffer only has a maximum in-use size of Length - 1.<sup class="reference" id="cite_ref-5">[5]</sup> In this case, the buffer is empty if the start and end indexes are equal and full when the in-use size is Length - 1.
+Another solution is to have another integer count that is incremented at a write operation and decremented at a read operation. Then checking for emptiness means testing count equals 0 and checking for fullness means testing count equals Length.<sup class="reference" id="cite_ref-6">[6]</sup>
+</p><p>The following source code is a C implementation. Function put() puts an item in the buffer, function get() gets an item from the buffer:
+</p>
+
+<h2><span class="mw-headline" id="Optimization">Optimization</span><span class="mw-editsection"></span></h2>
+<p>A circular-buffer implementation may be optimized by mapping the underlying buffer to two contiguous regions of virtual memory.<sup class="reference" id="cite_ref-7">[7]</sup><sup class="noprint Inline-Template" style="white-space:nowrap;">[<i><span title="This claim has reliable sources with contradicting facts (January 2022)">disputed</span> <span class="metadata"> – discuss</span></i>]</sup> (Naturally, the underlying buffer‘s length must then equal some multiple of the system’s page size.) Reading from and writing to the circular buffer may then be carried out with greater efficiency by means of direct memory access; those accesses which fall beyond the end of the first virtual-memory region will automatically wrap around to the beginning of the underlying buffer. When the read offset is advanced into the second virtual-memory region, both offsets—read and write—are decremented by the length of the underlying buffer.
+</p>
+<h2><span class="mw-headline" id="Fixed-length-element_and_contiguous-block_circular_buffer">Fixed-length-element and contiguous-block circular buffer</span><span class="mw-editsection"></span></h2>
+<p>Perhaps the most common version of the circular buffer uses 8-bit bytes as elements.
+</p><p>Some implementations of the circular buffer use fixed-length elements that are bigger than 8-bit bytes—16-bit integers for audio buffers, 53-byte ATM cells for telecom buffers, etc. Each item is contiguous and has the correct data alignment, so software reading and writing these values can be faster than software that handles non-contiguous and non-aligned values.
+</p><p>Ping-pong buffering can be considered a very specialized circular buffer with exactly two large fixed-length elements.
+</p><p>The <i>bip buffer</i> (bipartite buffer) is very similar to a circular buffer, except it always returns contiguous blocks which can be variable length. This offers nearly all the efficiency advantages of a circular buffer while maintaining the ability for the buffer to be used in APIs that only accept contiguous blocks.<sup class="reference" id="cite_ref-cooke_8-0">[8]</sup>
+</p><p>Fixed-sized compressed circular buffers use an alternative indexing strategy based on elementary number theory to maintain a fixed-sized compressed representation of the entire data sequence.<sup class="reference" id="cite_ref-gunther_9-0">[9]</sup>
+</p>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>CircularBuffer at the Portland Pattern Repository</li>
+<li>Boost:
+<dl><dd>Templated Circular Buffer Container: circular_buffer/base.hpp</dd>
+<dd>Synchronized Bounded Queue:  sync_bounded_queue.hpp</dd></dl></li>
+<li>CB in Linux kernel</li>
+<li>CB in DSP</li>
+<li>Circular queue in C Archived 2018-10-29 at the Wayback Machine</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2313
+Cached time: 20221220214234
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.232 seconds
+Real time usage: 0.717 seconds
+Preprocessor visited node count: 753/1000000
+Post‐expand include size: 35800/2097152 bytes
+Template argument size: 1218/2097152 bytes
+Highest expansion depth: 12/100
+Expensive parser function count: 5/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 30681/5000000 bytes
+Lua time usage: 0.133/10.000 seconds
+Lua memory usage: 4641163/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  240.328      1 -total
+ 48.46%  116.459      1 Template:Reflist
+ 26.91%   64.667      1 Template:Citation
+ 25.39%   61.022      1 Template:Cleanup_bare_URLs
+ 20.40%   49.037      1 Template:Ambox
+ 16.94%   40.710      1 Template:Data_structures
+ 16.11%   38.715      1 Template:Navbox
+  7.41%   17.818      5 Template:Cite_web
+  6.82%   16.380      1 Template:Disputed_inline
+  6.07%   14.577      1 Template:Fix
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:11891734-0!canonical and timestamp 20221220214233 and revision id 1126478135.
+ -->
+</div></body>
+</html>

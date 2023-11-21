@@ -1,0 +1,2786 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>polynomial_time</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+
+<p>In computer science, the <b>time complexity</b> is the computational complexity that describes the amount of computer time it takes to run an algorithm. Time complexity is commonly estimated by counting the number of elementary operations performed by the algorithm, supposing that each elementary operation takes a fixed amount of time to perform. Thus, the amount of time taken and the number of elementary operations performed by the algorithm are taken to be related by a constant factor.
+</p><p>Since an algorithm's running time may vary among different inputs of the same size, one commonly considers the worst-case time complexity, which is the maximum amount of time required for inputs of a given size. Less common, and usually specified explicitly, is the average-case complexity, which is the average of the time taken on inputs of a given size (this makes sense because there are only a finite number of possible inputs of a given size). In both cases, the time complexity is generally expressed as a function of the size of the input.<sup class="reference" id="cite_ref-Sipser_1-0">[1]</sup><sup class="reference nowrap"><span title="Page / location: 226">: 226 </span></sup> Since this function is generally difficult to compute exactly, and the running time for small inputs is usually not consequential, one commonly focuses on the behavior of the complexity when the input size increases—that is, the asymptotic behavior of the complexity. Therefore, the time complexity is commonly expressed using big O notation, typically <span class="nowrap"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n)}</annotation>
+</semantics>
+</math></span><img alt="O(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34109fe397fdcff370079185bfdb65826cb5565a" style="vertical-align: -0.838ex; width:4.977ex; height:2.843ex;"/></span>,</span> <span class="nowrap"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n\log n)}</annotation>
+</semantics>
+</math></span><img alt="O(n\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9d2320768fb54880ca4356e61f60eb02a3f9d9f1" style="vertical-align: -0.838ex; width:10.118ex; height:2.843ex;"/></span>,</span> <span class="nowrap"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n^{\alpha })}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>α<!-- α --></mi>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n^{\alpha })}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(n^{\alpha })}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cec66a4a63247dd112a6ec9dd8eae41909e6b300" style="vertical-align: -0.838ex; width:6.261ex; height:2.843ex;"/></span>,</span> <span class="nowrap"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(2^{n})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(2^{n})}</annotation>
+</semantics>
+</math></span><img alt="O(2^{n})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d4b1a4ff0bc4f81ebf79f28260c6fb54ee08ff8d" style="vertical-align: -0.838ex; width:5.964ex; height:2.843ex;"/></span>,</span> etc., where <span class="texhtml mvar" style="font-style:italic;">n</span> is the size in units of bits needed to represent the input.
+</p><p>Algorithmic complexities are classified according to the type of function appearing in the big O notation. For example, an algorithm with time complexity <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n)}</annotation>
+</semantics>
+</math></span><img alt="O(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34109fe397fdcff370079185bfdb65826cb5565a" style="vertical-align: -0.838ex; width:4.977ex; height:2.843ex;"/></span> is a <i>linear time algorithm</i> and an algorithm with time complexity <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n^{\alpha })}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>α<!-- α --></mi>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n^{\alpha })}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(n^{\alpha })}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cec66a4a63247dd112a6ec9dd8eae41909e6b300" style="vertical-align: -0.838ex; width:6.261ex; height:2.843ex;"/></span> for some constant <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \alpha &gt;1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>α<!-- α --></mi>
+<mo>&gt;</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \alpha &gt;1}</annotation>
+</semantics>
+</math></span><img alt="\alpha &gt;1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/17d81dbbc4786493c7b8548cc324a978d7cf5dbd" style="vertical-align: -0.338ex; width:5.749ex; height:2.176ex;"/></span> is a <i>polynomial time algorithm</i>.
+</p>
+
+<h2><span class="mw-headline" id="Table_of_common_time_complexities">Table of common time complexities</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>The following table summarizes some classes of commonly encountered time complexities. In the table, <span class="nowrap">poly(<i>x</i>) = <i>x</i><sup><i>O</i>(1)</sup></span>, i.e., polynomial in <i>x</i>.
+</p>
+<table class="wikitable sortable">
+<tbody><tr>
+<th>Name</th>
+<th>Complexity class</th>
+<th>Running time <span class="nowrap">(<span class="texhtml"><i>T</i>(<i>n</i>)</span>)</span></th>
+<th>Examples of running times</th>
+<th>Example algorithms
+</th></tr>
+<tr>
+<td>constant time</td>
+<td></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(1)}</annotation>
+</semantics>
+</math></span><img alt="O(1)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e66384bc40452c5452f33563fe0e27e803b0cc21" style="vertical-align: -0.838ex; width:4.745ex; height:2.843ex;"/></span></td>
+<td>10</td>
+<td>Finding the median value in a sorted array of numbers.
+<p>Calculating  <span class="texhtml">(−1)<sup><i>n</i></sup></span>
+</p>
+</td></tr>
+<tr>
+<td>inverse Ackermann time</td>
+<td></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O{\bigl (}\alpha (n){\bigr )}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-OPEN">
+<mo maxsize="1.2em" minsize="1.2em">(</mo>
+</mrow>
+</mrow>
+<mi>α<!-- α --></mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-CLOSE">
+<mo maxsize="1.2em" minsize="1.2em">)</mo>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O{\bigl (}\alpha (n){\bigr )}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O{\bigl (}\alpha (n){\bigr )}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6325c00a7a6fdf5b3b05022c56d09054db68e156" style="vertical-align: -1.005ex; width:8.595ex; height:3.176ex;"/></span></td>
+<td></td>
+<td>Amortized time per operation using a disjoint set
+</td></tr>
+<tr>
+<td>iterated logarithmic time</td>
+<td></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(\log ^{*}n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(\log ^{*}n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(\log ^{*}n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ba846ca61ce56540d44c487534367163945ad17d" style="vertical-align: -0.838ex; width:9.39ex; height:2.843ex;"/></span></td>
+<td></td>
+<td>Distributed coloring of cycles
+</td></tr>
+<tr>
+<td>log-logarithmic</td>
+<td></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(\log \log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(\log \log n)}</annotation>
+</semantics>
+</math></span><img alt="O(\log \log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a9f3ded7e013a35c8039ff3276bee6e183d7f1a7" style="vertical-align: -0.838ex; width:11.695ex; height:2.843ex;"/></span></td>
+<td></td>
+<td>Amortized time per operation using a bounded priority queue<sup class="reference" id="cite_ref-2">[2]</sup>
+</td></tr>
+<tr>
+<td>logarithmic time</td>
+<td>DLOGTIME</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(\log n)}</annotation>
+</semantics>
+</math></span><img alt="O(\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/aae0f22048ba6b7c05dbae17b056bfa16e21807d" style="vertical-align: -0.838ex; width:8.336ex; height:2.843ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \log n}</annotation>
+</semantics>
+</math></span><img alt="\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/317ab5292da7c7935aec01a570461fe0613b21d5" style="vertical-align: -0.671ex; width:4.754ex; height:2.509ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \log(n^{2})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \log(n^{2})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \log(n^{2})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a8bbd9e54f53c3999490142142fc6282e21eaf42" style="vertical-align: -0.838ex; width:7.23ex; height:3.176ex;"/></span></td>
+<td>Binary search
+</td></tr>
+<tr>
+<td>polylogarithmic time</td>
+<td></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\text{poly}}(\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>poly</mtext>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\text{poly}}(\log n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\text{poly}}(\log n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/929c4038ec1df1559f60954467b18e80ca9ff362" style="vertical-align: -0.838ex; width:10.892ex; height:2.843ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (\log n)^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (\log n)^{2}}</annotation>
+</semantics>
+</math></span><img alt="(\log n)^2" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d5e8b416ed664f6e00aae39e3d275f82839adea0" style="vertical-align: -0.838ex; width:7.617ex; height:3.176ex;"/></span></td>
+<td>
+</td></tr>
+<tr>
+<td>fractional power</td>
+<td></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n^{c})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>c</mi>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n^{c})}</annotation>
+</semantics>
+</math></span><img alt="O(n^{c})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/949acd060374f98c6dc5f76ad962c7fe2d6636d4" style="vertical-align: -0.838ex; width:5.922ex; height:2.843ex;"/></span> where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 0&lt;c&lt;1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>0</mn>
+<mo>&lt;</mo>
+<mi>c</mi>
+<mo>&lt;</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 0&lt;c&lt;1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 0&lt;c&lt;1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7c2ef66b35dc03fb20aa2da7cf53cdaaaac18ad0" style="vertical-align: -0.338ex; width:9.529ex; height:2.176ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{\frac {1}{2}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>1</mn>
+<mn>2</mn>
+</mfrac>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{\frac {1}{2}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n^{\frac {1}{2}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cde54d7624bc2445a98cb673278df108b48cc786" style="vertical-align: -0.338ex; width:3.13ex; height:3.509ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{\frac {2}{3}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>2</mn>
+<mn>3</mn>
+</mfrac>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{\frac {2}{3}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n^{\frac {2}{3}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e6da2424ef7834dd547c2aac35892595cd112846" style="vertical-align: -0.338ex; width:3.13ex; height:3.509ex;"/></span></td>
+<td>Searching in a kd-tree
+</td></tr>
+<tr>
+<td>linear time</td>
+<td></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n)}</annotation>
+</semantics>
+</math></span><img alt="O(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34109fe397fdcff370079185bfdb65826cb5565a" style="vertical-align: -0.838ex; width:4.977ex; height:2.843ex;"/></span></td>
+<td><span class="texhtml mvar" style="font-style:italic;">n</span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2n+5}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>2</mn>
+<mi>n</mi>
+<mo>+</mo>
+<mn>5</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2n+5}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 2n+5}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/988be5c38cac9e34f9d6a9b180f26193ece9f41e" style="vertical-align: -0.505ex; width:6.56ex; height:2.343ex;"/></span></td>
+<td>Finding the smallest or largest item in an unsorted array.
+<p>Kadane's algorithm.
+Linear search
+</p>
+</td></tr>
+<tr>
+<td>"n log-star n" time</td>
+<td></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n\log ^{*}n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<msup>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n\log ^{*}n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(n\log ^{*}n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9c6a679f4e6f08c50bfbdf85386ff72f320fc384" style="vertical-align: -0.838ex; width:11.172ex; height:2.843ex;"/></span></td>
+<td></td>
+<td>Seidel's polygon triangulation algorithm.
+</td></tr>
+<tr>
+<td>linearithmic time</td>
+<td></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n\log n)}</annotation>
+</semantics>
+</math></span><img alt="O(n\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9d2320768fb54880ca4356e61f60eb02a3f9d9f1" style="vertical-align: -0.838ex; width:10.118ex; height:2.843ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n\log n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \log n!}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo>!</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \log n!}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \log n!}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/331273b9c429c44271590e75da654b7b60c3194c" style="vertical-align: -0.671ex; width:5.4ex; height:2.509ex;"/></span></td>
+<td>Fastest possible comparison sort
+<p>Fast Fourier transform.
+</p>
+</td></tr>
+<tr>
+<td>quasilinear time</td>
+<td></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n{\text{poly}}(\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>poly</mtext>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n{\text{poly}}(\log n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n{\text{poly}}(\log n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/01736a7413079f2b2d05d9339136baf7e767a464" style="vertical-align: -0.838ex; width:12.287ex; height:2.843ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log ^{2}n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<msup>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log ^{2}n}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n\log ^{2}n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8dcc3d3ab4d647731efd75119a13e8febd1a7e44" style="vertical-align: -0.671ex; width:7.59ex; height:3.009ex;"/></span></td>
+<td>Multipoint polynomial evaluation
+</td></tr>
+<tr>
+<td>quadratic time</td>
+<td></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n^{2})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n^{2})}</annotation>
+</semantics>
+</math></span><img alt="O(n^{2})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6cd9594a16cb898b8f2a2dff9227a385ec183392" style="vertical-align: -0.838ex; width:6.032ex; height:3.176ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></td>
+<td>Bubble sort, Insertion sort, Direct convolution
+</td></tr>
+<tr>
+<td>cubic time</td>
+<td></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n^{3})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n^{3})}</annotation>
+</semantics>
+</math></span><img alt="O(n^{3})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6b04f5c5cfea38f43406d9442387ad28555e2609" style="vertical-align: -0.838ex; width:6.032ex; height:3.176ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{3}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{3}}</annotation>
+</semantics>
+</math></span><img alt="n^{3}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3e9d1a52e455a7a5272a345b2697e35f1579b681" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></td>
+<td>Naive multiplication of two <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\times n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>×<!-- × --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\times n}</annotation>
+</semantics>
+</math></span><img alt="n\times n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/59d2b4cb72e304526cf5b5887147729ea259da78" style="vertical-align: -0.338ex; width:5.63ex; height:1.676ex;"/></span> matrices
+<p>Calculating partial correlation.
+</p>
+</td></tr>
+<tr>
+<td>polynomial time</td>
+<td>P</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{O(\log n)}={\text{poly}}(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>poly</mtext>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{O(\log n)}={\text{poly}}(n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 2^{O(\log n)}={\text{poly}}(n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1c6527f1fa349644568d2f1fecd79745b5328792" style="vertical-align: -0.838ex; width:18.034ex; height:3.343ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}+n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>+</mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}+n}</annotation>
+</semantics>
+</math></span><img alt="n^{2}+n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bc5a79f894693cebbe2030d2e3daa35a7e5cd9cf" style="vertical-align: -0.505ex; width:6.684ex; height:2.843ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{10}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>10</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{10}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n^{10}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/df654a91adfed0cbf842309de83715d2eb41ce0f" style="vertical-align: -0.338ex; width:3.271ex; height:2.676ex;"/></span></td>
+<td>Karmarkar's algorithm for linear programming
+<p>AKS primality test<sup class="reference" id="cite_ref-tao-aks_3-0">[3]</sup><sup class="reference" id="cite_ref-4">[4]</sup>
+</p>
+</td></tr>
+<tr>
+<td>quasi-polynomial time</td>
+<td>QP</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{{\text{poly}}(\log n)}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>poly</mtext>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{{\text{poly}}(\log n)}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 2^{{\text{poly}}(\log n)}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e7b709eec8bfb0fe5c287cc942ee0d2116505e6b" style="vertical-align: -0.338ex; width:9.21ex; height:2.843ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{\log \log n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{\log \log n}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n^{\log \log n}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/39561b8c2b523322a75d097915035e8fca3811b6" style="vertical-align: -0.338ex; width:7.59ex; height:2.676ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{\log n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{\log n}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n^{\log n}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c403a7c02eceb7217e79eafa65de2554c56ebb02" style="vertical-align: -0.338ex; width:5.102ex; height:2.676ex;"/></span></td>
+<td>Best-known <span class="texhtml"><i>O</i>(log<sup>2</sup><i>n</i>)</span>-approximation algorithm for the directed Steiner tree problem.
+</td></tr>
+<tr>
+<td>sub-exponential time<br/>(first definition)</td>
+<td>SUBEXP</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(2^{n^{\epsilon }})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>ϵ<!-- ϵ --></mi>
+</mrow>
+</msup>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(2^{n^{\epsilon }})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(2^{n^{\epsilon }})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b70ad01996d0c0c0b7274da0854edf54ecebf8f2" style="vertical-align: -0.838ex; width:6.67ex; height:3.176ex;"/></span> for all <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \epsilon &gt;0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>ϵ<!-- ϵ --></mi>
+<mo>&gt;</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \epsilon &gt;0}</annotation>
+</semantics>
+</math></span><img alt="\epsilon &gt;0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/568095ad3924314374a5ab68fae17343661f2a71" style="vertical-align: -0.338ex; width:5.205ex; height:2.176ex;"/></span></td>
+<td></td>
+<td>Contains BPP unless EXPTIME (see below) equals MA.<sup class="reference" id="cite_ref-bpp_5-0">[5]</sup>
+</td></tr>
+<tr>
+<td>sub-exponential time<br/>(second definition)</td>
+<td></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{o(n)}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>o</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{o(n)}}</annotation>
+</semantics>
+</math></span><img alt="2^{{o(n)}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/98ee27d18f582367c1c737ddc1c3380a92c93c0b" style="vertical-align: -0.338ex; width:4.458ex; height:2.843ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\sqrt[{3}]{2^{n}}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mroot>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</mroot>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\sqrt[{3}]{2^{n}}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\sqrt[{3}]{2^{n}}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/237679462e224dc20441bc0413cc5caf0e096664" style="vertical-align: -0.671ex; width:4.317ex; height:3.009ex;"/></span></td>
+<td>Best classical algorithm for integer factorization
+<p>formerly-best algorithm for graph isomorphism
+</p>
+</td></tr>
+<tr>
+<td>exponential time<br/>(with linear exponent)</td>
+<td>E</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{O(n)}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{O(n)}}</annotation>
+</semantics>
+</math></span><img alt="2^{{O(n)}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/69a16bd3fa1209d0c3a221916283c9c3a4006d33" style="vertical-align: -0.338ex; width:4.914ex; height:2.843ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1.1^{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>1.1</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1.1^{n}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 1.1^{n}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5b4386d7093a0147839223c0f43e5249aeaa6e38" style="vertical-align: -0.338ex; width:4.19ex; height:2.343ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 10^{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>10</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 10^{n}}</annotation>
+</semantics>
+</math></span><img alt="10^{n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/eeff06a7c9ad9455cb809047cfc97a92c51e1bf7" style="vertical-align: -0.338ex; width:3.543ex; height:2.343ex;"/></span></td>
+<td>Solving the traveling salesman problem using dynamic programming
+</td></tr>
+<tr>
+<td>exponential time</td>
+<td>EXPTIME</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{{\text{poly}}(n)}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>poly</mtext>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{{\text{poly}}(n)}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 2^{{\text{poly}}(n)}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a463533b7d73e0763dd81740925c28d6526b6087" style="vertical-align: -0.338ex; width:6.722ex; height:2.843ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{n}}</annotation>
+</semantics>
+</math></span><img alt="2^{n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8226f30650ee4fe4e640c6d2798127e80e9c160d" style="vertical-align: -0.338ex; width:2.381ex; height:2.343ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{n^{2}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{n^{2}}}</annotation>
+</semantics>
+</math></span><img alt="2^{n^2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e736acf2e0b9a29d97b91a1413af326c7175f117" style="vertical-align: -0.338ex; width:3.212ex; height:3.009ex;"/></span></td>
+<td>Solving matrix chain multiplication via brute-force search
+</td></tr>
+<tr>
+<td>factorial time</td>
+<td></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n!)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>!</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n!)}</annotation>
+</semantics>
+</math></span><img alt="O(n!)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/12921c489714d475a454bd39ef644d4334d97113" style="vertical-align: -0.838ex; width:5.624ex; height:2.843ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n!}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>!</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n!}</annotation>
+</semantics>
+</math></span><img alt="n!" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bae971720be3cc9b8d82f4cdac89cb89877514a6" style="vertical-align: -0.338ex; width:2.042ex; height:2.176ex;"/></span></td>
+<td>Solving the traveling salesman problem via brute-force search
+</td></tr>
+<tr>
+<td>double exponential time</td>
+<td>2-EXPTIME</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{2^{{\text{poly}}(n)}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>poly</mtext>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{2^{{\text{poly}}(n)}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 2^{2^{{\text{poly}}(n)}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cf75e36850e9ac9124d21e907fb2afb83d631f20" style="vertical-align: -0.338ex; width:6.706ex; height:3.176ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{2^{n}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{2^{n}}}</annotation>
+</semantics>
+</math></span><img alt="2^{2^{n}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6bcc9417763ad5d68870290ddaa2ca025ffdaf85" style="vertical-align: -0.338ex; width:3.182ex; height:2.676ex;"/></span></td>
+<td>Deciding the truth of a given statement in Presburger arithmetic
+</td></tr></tbody></table>
+<h2><span class="mw-headline" id="Constant_time">Constant time</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>An algorithm is said to be <b>constant time</b> (also written as <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O(1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O(1)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O(1)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/55a2cd47ca6554fafc21bbef3331256c7e1631ad" style="vertical-align: -0.838ex; width:4.745ex; height:2.843ex;"/></span> time) if the value of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle T(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle T(n)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle T(n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0b5ecab7146650b99bab59b6e97e228de0a4c61a" style="vertical-align: -0.838ex; width:4.84ex; height:2.843ex;"/></span> (the complexity of the algorithm)  is bounded by a value that does not depend on the size of the input. For example, accessing any single element in an array takes constant time as only one operation has to be performed to locate it. In a similar manner, finding the minimal value in an array sorted in ascending order; it is the first element. However, finding the minimal value in an unordered array is not a constant time operation as scanning over each element in the array is needed in order to determine the minimal value. Hence it is a linear time operation, taking <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O(n)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O(n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e73234cd485b947e68d1d78823313db65ef226d7" style="vertical-align: -0.838ex; width:4.977ex; height:2.843ex;"/></span> time. If the number of elements is known in advance and does not change, however, such an algorithm can still be said to run in constant time.
+</p><p>Despite the name "constant time", the running time does not have to be independent of the problem size, but an upper bound for the running time has to be independent of the problem size. For example, the task "exchange the values of <span class="texhtml mvar" style="font-style:italic;">a</span> and <span class="texhtml mvar" style="font-style:italic;">b</span> if necessary so that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle a\leq b}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>a</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>b</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle a\leq b}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle a\leq b}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/80bc3e45cdf18025be4beb90f84cf7b58cfcaf46" style="vertical-align: -0.505ex; width:5.326ex; height:2.343ex;"/></span>" is called constant time even though the time may depend on whether or not it is already true that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle a\leq b}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>a</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>b</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle a\leq b}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle a\leq b}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/80bc3e45cdf18025be4beb90f84cf7b58cfcaf46" style="vertical-align: -0.505ex; width:5.326ex; height:2.343ex;"/></span>. However, there is some constant <span class="texhtml mvar" style="font-style:italic;">t</span> such that the time required is always <i>at most</i> <span class="texhtml mvar" style="font-style:italic;">t</span>.
+</p><p>Here are some examples of code fragments that run in constant time:
+</p>
+<pre>int index = 5;
+int item = list[index];
+<b>if</b> (condition true) <b>then</b>
+    perform some operation that runs in constant time
+<b>else</b>
+    perform some other operation that runs in constant time
+<b>for</b> i = 1 <b>to</b> 100
+    <b>for</b> j = 1 <b>to</b> 200
+        perform some operation that runs in constant time
+</pre>
+<p>If <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T(n)}</annotation>
+</semantics>
+</math></span><img alt="T(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0be5a46684e1279c27414b285fa995f30407d002" style="vertical-align: -0.838ex; width:4.84ex; height:2.843ex;"/></span> is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(a)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(a)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(a)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dce111d97f41e5f2d88c91079a1572f8d45ee0d5" style="vertical-align: -0.838ex; width:4.812ex; height:2.843ex;"/></span>, where <span class="texhtml mvar" style="font-style:italic;">a</span> is any constant value, this is equivalent to and stated in standard notation as <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T(n)}</annotation>
+</semantics>
+</math></span><img alt="T(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0be5a46684e1279c27414b285fa995f30407d002" style="vertical-align: -0.838ex; width:4.84ex; height:2.843ex;"/></span> being <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(1)}</annotation>
+</semantics>
+</math></span><img alt="O(1)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e66384bc40452c5452f33563fe0e27e803b0cc21" style="vertical-align: -0.838ex; width:4.745ex; height:2.843ex;"/></span>.
+</p>
+<h2><span class="mw-headline" id="Logarithmic_time">Logarithmic time</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>An algorithm is said to take <b>logarithmic time</b> when <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T(n)=O(\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T(n)=O(\log n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle T(n)=O(\log n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/298f88c665173713636b659403fdabaf115a15e0" style="vertical-align: -0.838ex; width:16.275ex; height:2.843ex;"/></span>.  Since <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \log _{a}n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>a</mi>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \log _{a}n}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \log _{a}n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2170c522b640ec2801a86c6c8bc66f9ae10e2c34" style="vertical-align: -0.838ex; width:5.855ex; height:2.676ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \log _{b}n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>b</mi>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \log _{b}n}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \log _{b}n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/52d9386c0be26d3cd2bc042a9856d4c3dd9a6f2a" style="vertical-align: -0.838ex; width:5.691ex; height:2.676ex;"/></span> are related by a constant multiplier, and such a multiplier is irrelevant to big O classification, the standard usage for logarithmic-time algorithms is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(\log n)}</annotation>
+</semantics>
+</math></span><img alt="O(\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/aae0f22048ba6b7c05dbae17b056bfa16e21807d" style="vertical-align: -0.838ex; width:8.336ex; height:2.843ex;"/></span> regardless of the base of the logarithm appearing in the expression of <span class="texhtml mvar" style="font-style:italic;">T</span>.
+</p><p>Algorithms taking logarithmic time are commonly found in operations on binary trees or when using binary search.
+</p><p>An <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(\log n)}</annotation>
+</semantics>
+</math></span><img alt="O(\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/aae0f22048ba6b7c05dbae17b056bfa16e21807d" style="vertical-align: -0.838ex; width:8.336ex; height:2.843ex;"/></span> algorithm is considered highly efficient, as the ratio of the number of operations to the size of the input decreases and tends to zero when <span class="texhtml mvar" style="font-style:italic;">n</span> increases. An algorithm that must access all elements of its input cannot take logarithmic time, as the time taken for reading an input of size <span class="texhtml mvar" style="font-style:italic;">n</span> is of the order of <span class="texhtml mvar" style="font-style:italic;">n</span>.
+</p><p>An example of logarithmic time is given by dictionary search. Consider a dictionary <span class="texhtml"><i>D</i></span> which contains <span class="texhtml mvar" style="font-style:italic;">n</span> entries, sorted by alphabetical order. We suppose that, for <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1\leq k\leq n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>k</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1\leq k\leq n}</annotation>
+</semantics>
+</math></span><img alt="1\leq k\leq n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/78ec00bc2eb99b403bee93def3c12ae87f1e3c3d" style="vertical-align: -0.505ex; width:9.965ex; height:2.343ex;"/></span>, one may access the <span class="texhtml mvar" style="font-style:italic;">k</span>th entry of the dictionary in a constant time. Let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle D(k)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>D</mi>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle D(k)}</annotation>
+</semantics>
+</math></span><img alt="D(k)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f9c571e1520ae00f08fd58fb4d577491f592901a" style="vertical-align: -0.838ex; width:4.945ex; height:2.843ex;"/></span> denote this <span class="texhtml mvar" style="font-style:italic;">k</span>th entry. Under these hypotheses, the test to see if a word <span class="texhtml mvar" style="font-style:italic;">w</span> is in the dictionary may be done in logarithmic time: consider <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle D\left(\left\lfloor {\frac {n}{2}}\right\rfloor \right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>D</mi>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mo>⌊</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>n</mi>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mo>⌋</mo>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle D\left(\left\lfloor {\frac {n}{2}}\right\rfloor \right)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle D\left(\left\lfloor {\frac {n}{2}}\right\rfloor \right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2edee9939c593f103c81f5819e73e1de781e6532" style="vertical-align: -1.838ex; width:9.773ex; height:4.843ex;"/></span>, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \lfloor \;\rfloor }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">⌊<!-- ⌊ --></mo>
+<mspace width="thickmathspace"></mspace>
+<mo fence="false" stretchy="false">⌋<!-- ⌋ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \lfloor \;\rfloor }</annotation>
+</semantics>
+</math></span><img alt="\lfloor \;\rfloor " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8d1d99deef81d9e1b3f2757b901042a218e2322a" style="vertical-align: -0.838ex; width:2.71ex; height:2.843ex;"/></span> denotes the floor function. If <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w=D\left(\left\lfloor {\frac {n}{2}}\right\rfloor \right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+<mo>=</mo>
+<mi>D</mi>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mo>⌊</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>n</mi>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mo>⌋</mo>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w=D\left(\left\lfloor {\frac {n}{2}}\right\rfloor \right)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle w=D\left(\left\lfloor {\frac {n}{2}}\right\rfloor \right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/32c796b219fc3540120b41a96017eda688c08b3e" style="vertical-align: -1.838ex; width:14.535ex; height:4.843ex;"/></span>, then we are done. Else, if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w&lt;D\left(\left\lfloor {\frac {n}{2}}\right\rfloor \right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+<mo>&lt;</mo>
+<mi>D</mi>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mo>⌊</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>n</mi>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mo>⌋</mo>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w&lt;D\left(\left\lfloor {\frac {n}{2}}\right\rfloor \right)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle w&lt;D\left(\left\lfloor {\frac {n}{2}}\right\rfloor \right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a3a6bdb8f549a2be360fb7331528fbf3c13bd288" style="vertical-align: -1.838ex; width:14.535ex; height:4.843ex;"/></span>, continue the search in the same way in the left half of the dictionary, otherwise continue similarly with the right half of the dictionary. This algorithm is similar to the method often used to find an entry in a paper dictionary.
+</p>
+<h2><span class="mw-headline" id="Polylogarithmic_time">Polylogarithmic time</span><span class="mw-editsection"></span></h2>
+<p>An algorithm is said to run in <b>polylogarithmic time</b> if its time <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T(n)}</annotation>
+</semantics>
+</math></span><img alt="T(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0be5a46684e1279c27414b285fa995f30407d002" style="vertical-align: -0.838ex; width:4.84ex; height:2.843ex;"/></span> is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O{\bigl (}(\log n)^{k}{\bigr )}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-OPEN">
+<mo maxsize="1.2em" minsize="1.2em">(</mo>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-CLOSE">
+<mo maxsize="1.2em" minsize="1.2em">)</mo>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O{\bigl (}(\log n)^{k}{\bigr )}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O{\bigl (}(\log n)^{k}{\bigr )}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2d550792fa06ee0782c8d0e4b7668ede8f5388b2" style="vertical-align: -1.005ex; width:11.555ex; height:3.343ex;"/></span> for some constant <span class="texhtml mvar" style="font-style:italic;">k</span>. Another way to write this is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(\log ^{k}n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msup>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(\log ^{k}n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(\log ^{k}n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0261ca9897bad579fede1c3b4e2a20717b66fb5c" style="vertical-align: -0.838ex; width:9.425ex; height:3.176ex;"/></span>.
+</p><p>For example, matrix chain ordering can be solved in polylogarithmic time on a parallel random-access machine,<sup class="reference" id="cite_ref-6">[6]</sup> and a graph can be determined to be planar in a fully dynamic way in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(\log ^{3}n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(\log ^{3}n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(\log ^{3}n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a7f77c48b4c4e7b58b75244a9c512673896f6236" style="vertical-align: -0.838ex; width:9.39ex; height:3.176ex;"/></span> time per insert/delete operation.<sup class="reference" id="cite_ref-7">[7]</sup>
+</p>
+<h2><span class="mw-headline" id="Sub-linear_time">Sub-linear time</span><span class="mw-editsection"></span></h2>
+<p>An algorithm is said to run in <b>sub-linear time</b> (often spelled <b>sublinear time</b>) if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T(n)=o(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>o</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T(n)=o(n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle T(n)=o(n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cded9a3b1a3b5dc08a44b03338c5b54821c90a1b" style="vertical-align: -0.838ex; width:12.27ex; height:2.843ex;"/></span>. In particular this includes algorithms with the time complexities defined above.
+</p><p>Typical algorithms that are exact and yet run in sub-linear time use parallel processing (as the NC<sup>1</sup> matrix determinant calculation does), or alternatively have guaranteed assumptions on the input structure (as the logarithmic time binary search and many tree maintenance algorithms do). However, formal languages such as the set of all strings that have a 1-bit in the position indicated by the first <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \log n}</annotation>
+</semantics>
+</math></span><img alt="\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/317ab5292da7c7935aec01a570461fe0613b21d5" style="vertical-align: -0.671ex; width:4.754ex; height:2.509ex;"/></span> bits of the string may depend on every bit of the input and yet be computable in sub-linear time.
+</p><p>The specific term <i>sublinear time algorithm</i> is usually reserved to algorithms that are unlike the above in that they are run over classical serial machine models and are not allowed prior assumptions on the input.<sup class="reference" id="cite_ref-8">[8]</sup> They are however allowed to be randomized, and indeed must be randomized for all but the most trivial of tasks.
+</p><p>As such an algorithm must provide an answer without reading the entire input, its particulars heavily depend on the access allowed to the input. Usually for an input that is represented as a binary string <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle b_{1},...,b_{k}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>,</mo>
+<msub>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle b_{1},...,b_{k}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle b_{1},...,b_{k}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/586807ff530a8b77b84857fb728fa81274f8a976" style="vertical-align: -0.671ex; width:9.308ex; height:2.509ex;"/></span> it is assumed that the algorithm can in time <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(1)}</annotation>
+</semantics>
+</math></span><img alt="O(1)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e66384bc40452c5452f33563fe0e27e803b0cc21" style="vertical-align: -0.838ex; width:4.745ex; height:2.843ex;"/></span> request and obtain the value of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle b_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle b_{i}}</annotation>
+</semantics>
+</math></span><img alt="b_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/40a8c2db2990a53c683e75961826167c5adac7c3" style="vertical-align: -0.671ex; width:1.797ex; height:2.509ex;"/></span> for any <span class="texhtml mvar" style="font-style:italic;">i</span>.
+</p><p>Sub-linear time algorithms are typically randomized, and provide only approximate solutions. In fact, the property of a binary string having only zeros (and no ones) can be easily proved not to be decidable by a (non-approximate) sub-linear time algorithm. Sub-linear time algorithms arise naturally in the investigation of property testing.
+</p>
+<h2><span class="mw-headline" id="Linear_time">Linear time</span><span class="mw-editsection"></span></h2>
+<p>An algorithm is said to take <b>linear time</b>, or <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n)}</annotation>
+</semantics>
+</math></span><img alt="O(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34109fe397fdcff370079185bfdb65826cb5565a" style="vertical-align: -0.838ex; width:4.977ex; height:2.843ex;"/></span> time, if its time complexity is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n)}</annotation>
+</semantics>
+</math></span><img alt="O(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34109fe397fdcff370079185bfdb65826cb5565a" style="vertical-align: -0.838ex; width:4.977ex; height:2.843ex;"/></span>. Informally, this means that the running time increases at most linearly with the size of the input. More precisely, this means that there is a constant <span class="texhtml mvar" style="font-style:italic;">c</span> such that the running time is at most <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle cn}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle cn}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle cn}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7f0390269a433e7f1a987b5968c6229e43cd7a2b" style="vertical-align: -0.338ex; width:2.402ex; height:1.676ex;"/></span> for every input of size <span class="texhtml mvar" style="font-style:italic;">n</span>. For example, a procedure that adds up all elements of a list requires time proportional to the length of the list, if the adding time is constant, or, at least, bounded by a constant.
+</p><p>Linear time is the best possible time complexity in situations where the algorithm has to sequentially read its entire input. Therefore, much research has been invested into discovering algorithms exhibiting linear time or, at least, nearly linear time. This research includes both software and hardware methods. There are several hardware technologies which exploit parallelism to provide this. An example is content-addressable memory. This concept of linear time is used in string matching algorithms such as the Boyer–Moore algorithm and Ukkonen's algorithm.
+</p>
+<h2><span class="mw-headline" id="Quasilinear_time"><span id="Linearithmic_time"></span> Quasilinear time</span><span class="mw-editsection"></span></h2>
+<p>An algorithm is said to run in <b>quasilinear time</b> (also referred to as <b>log-linear time</b>) if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T(n)=O(n\log ^{k}n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<msup>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msup>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T(n)=O(n\log ^{k}n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle T(n)=O(n\log ^{k}n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fb4711e3053ab6bb92b05c83b9e3037f1213784b" style="vertical-align: -0.838ex; width:19.145ex; height:3.176ex;"/></span> for some positive constant <span class="texhtml mvar" style="font-style:italic;">k</span>;<sup class="reference" id="cite_ref-9">[9]</sup> <b>linearithmic time</b> is the case <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k=1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k=1}</annotation>
+</semantics>
+</math></span><img alt="k=1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6c035ffa69b5bca8bf2d16c3da3aaad79a8bcbfa" style="vertical-align: -0.338ex; width:5.472ex; height:2.176ex;"/></span>.<sup class="reference" id="cite_ref-10">[10]</sup> Using soft O notation these algorithms are <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\tilde {O}}(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>O</mi>
+<mo stretchy="false">~<!-- ~ --></mo>
+</mover>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\tilde {O}}(n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\tilde {O}}(n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/725007a6715e12268a37cbbc5194302dfb7e69a5" style="vertical-align: -0.838ex; width:4.977ex; height:3.176ex;"/></span>. Quasilinear time algorithms are also <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n^{1+\epsilon })}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+<mo>+</mo>
+<mi>ϵ<!-- ϵ --></mi>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n^{1+\epsilon })}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(n^{1+\epsilon })}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/36ef144085e2f223ca987a3322c689752fcbe6e9" style="vertical-align: -0.838ex; width:7.978ex; height:3.176ex;"/></span> for every constant <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \epsilon &gt;0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>ϵ<!-- ϵ --></mi>
+<mo>&gt;</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \epsilon &gt;0}</annotation>
+</semantics>
+</math></span><img alt="\epsilon &gt;0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/568095ad3924314374a5ab68fae17343661f2a71" style="vertical-align: -0.338ex; width:5.205ex; height:2.176ex;"/></span> and thus run faster than any polynomial time algorithm whose time bound includes a term <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{c}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>c</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{c}}</annotation>
+</semantics>
+</math></span><img alt="n^c" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3a62b39da47c098d4cec1ac794318335b381c436" style="vertical-align: -0.338ex; width:2.339ex; height:2.343ex;"/></span> for any <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c&gt;1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+<mo>&gt;</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c&gt;1}</annotation>
+</semantics>
+</math></span><img alt="c&gt;1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bd1d6b5c226641ad3def8e65631f0eb463d9c67a" style="vertical-align: -0.338ex; width:5.268ex; height:2.176ex;"/></span>.
+</p><p>Algorithms which run in quasilinear time include:
+</p>
+<ul><li>In-place merge sort, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n\log ^{2}n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<msup>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n\log ^{2}n)}</annotation>
+</semantics>
+</math></span><img alt="O(n\log^2n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/48c36489701bc8023db2f8d6bc809b14a7f8dd4e" style="vertical-align: -0.838ex; width:11.172ex; height:3.176ex;"/></span></li>
+<li>Quicksort, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n\log n)}</annotation>
+</semantics>
+</math></span><img alt="O(n\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9d2320768fb54880ca4356e61f60eb02a3f9d9f1" style="vertical-align: -0.838ex; width:10.118ex; height:2.843ex;"/></span>, in its randomized version, has a running time that is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n\log n)}</annotation>
+</semantics>
+</math></span><img alt="O(n\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9d2320768fb54880ca4356e61f60eb02a3f9d9f1" style="vertical-align: -0.838ex; width:10.118ex; height:2.843ex;"/></span> in expectation on the worst-case input. Its non-randomized version has an <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n\log n)}</annotation>
+</semantics>
+</math></span><img alt="O(n\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9d2320768fb54880ca4356e61f60eb02a3f9d9f1" style="vertical-align: -0.838ex; width:10.118ex; height:2.843ex;"/></span> running time only when considering average case complexity.</li>
+<li>Heapsort, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n\log n)}</annotation>
+</semantics>
+</math></span><img alt="O(n\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9d2320768fb54880ca4356e61f60eb02a3f9d9f1" style="vertical-align: -0.838ex; width:10.118ex; height:2.843ex;"/></span>, merge sort, introsort, binary tree sort, smoothsort, patience sorting, etc. in the worst case</li>
+<li>Fast Fourier transforms, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n\log n)}</annotation>
+</semantics>
+</math></span><img alt="O(n\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9d2320768fb54880ca4356e61f60eb02a3f9d9f1" style="vertical-align: -0.838ex; width:10.118ex; height:2.843ex;"/></span></li>
+<li>Monge array calculation, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n\log n)}</annotation>
+</semantics>
+</math></span><img alt="O(n\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9d2320768fb54880ca4356e61f60eb02a3f9d9f1" style="vertical-align: -0.838ex; width:10.118ex; height:2.843ex;"/></span></li></ul>
+<p>In many cases, the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n\log n)}</annotation>
+</semantics>
+</math></span><img alt="O(n\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9d2320768fb54880ca4356e61f60eb02a3f9d9f1" style="vertical-align: -0.838ex; width:10.118ex; height:2.843ex;"/></span> running time is simply the result of performing a <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta (\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta (\log n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \Theta (\log n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/65bac5223de9c91eb3e89a032b5c51fd3041dc66" style="vertical-align: -0.838ex; width:8.371ex; height:2.843ex;"/></span> operation <span class="texhtml mvar" style="font-style:italic;">n</span> times (for the notation, see Big O notation § Family of Bachmann–Landau notations). For example, binary tree sort creates a binary tree by inserting each element of the <span class="texhtml mvar" style="font-style:italic;">n</span>-sized array one by one. Since the insert operation on a self-balancing binary search tree takes <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(\log n)}</annotation>
+</semantics>
+</math></span><img alt="O(\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/aae0f22048ba6b7c05dbae17b056bfa16e21807d" style="vertical-align: -0.838ex; width:8.336ex; height:2.843ex;"/></span> time, the entire algorithm takes <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n\log n)}</annotation>
+</semantics>
+</math></span><img alt="O(n\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9d2320768fb54880ca4356e61f60eb02a3f9d9f1" style="vertical-align: -0.838ex; width:10.118ex; height:2.843ex;"/></span> time.
+</p><p>Comparison sorts require at least <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Omega (n\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Ω<!-- Ω --></mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Omega (n\log n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \Omega (n\log n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/00663e988b37b064dbfe30791c3ad477907cc3a4" style="vertical-align: -0.838ex; width:10.023ex; height:2.843ex;"/></span> comparisons in the worst case because <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \log(n!)=\Theta (n\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>!</mo>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \log(n!)=\Theta (n\log n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \log(n!)=\Theta (n\log n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/74ad099d9cb60cd65e4234ed770a3923973eea8a" style="vertical-align: -0.838ex; width:20.074ex; height:2.843ex;"/></span>, by Stirling's approximation. They also frequently arise from the recurrence relation <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle T(n)=2T\left({\frac {n}{2}}\right)+O(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>2</mn>
+<mi>T</mi>
+<mrow>
+<mo>(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>n</mi>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mo>+</mo>
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle T(n)=2T\left({\frac {n}{2}}\right)+O(n)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle T(n)=2T\left({\frac {n}{2}}\right)+O(n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b8cd0d7755d0bc79417b34d5a5ef603155de31d2" style="vertical-align: -1.171ex; width:22.894ex; height:3.343ex;"/></span>.
+</p>
+<h2><span class="mw-headline" id="Sub-quadratic_time">Sub-quadratic time</span><span class="mw-editsection"></span></h2>
+<p>An algorithm is said to be <b>subquadratic time</b> if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T(n)=o(n^{2})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>o</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T(n)=o(n^{2})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle T(n)=o(n^{2})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b5a1fa201043da51e8f5fcadfc9922764da3408b" style="vertical-align: -0.838ex; width:13.325ex; height:3.176ex;"/></span>.
+</p><p>For example, simple, comparison-based sorting algorithms are quadratic (e.g. insertion sort), but more advanced algorithms can be found that are subquadratic (e.g. shell sort). No general-purpose sorts run in linear time, but the change from quadratic to sub-quadratic is of great practical importance.
+</p>
+<h2><span class="mw-headline" id="Polynomial_time">Polynomial time</span><span class="mw-editsection"></span></h2>
+<p>An algorithm is said to be of <b>polynomial time</b> if its running time is upper bounded by a polynomial expression in the size of the input for the algorithm, that is, <span class="nowrap"><i>T</i>(<i>n</i>) = <i>O</i>(<i>n</i><sup><i>k</i></sup>)</span> for some positive constant <i>k</i>.<sup class="reference" id="cite_ref-Sipser_1-1">[1]</sup><sup class="reference" id="cite_ref-11">[11]</sup> Problems for which a deterministic polynomial-time algorithm exists belong to the complexity class <b>P</b>, which is central in the field of computational complexity theory. Cobham's thesis states that polynomial time is a synonym for "tractable", "feasible", "efficient", or "fast".<sup class="reference" id="cite_ref-12">[12]</sup>
+</p><p>Some examples of polynomial-time algorithms:
+</p>
+<ul><li>The selection sort sorting algorithm on <i>n</i> integers performs <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle An^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle An^{2}}</annotation>
+</semantics>
+</math></span><img alt="An^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2796e53b94e7bd410c057a6d425c4923ed580156" style="vertical-align: -0.338ex; width:4.192ex; height:2.676ex;"/></span> operations for some constant <i>A</i>. Thus it runs in time <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n^{2})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n^{2})}</annotation>
+</semantics>
+</math></span><img alt="O(n^{2})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6cd9594a16cb898b8f2a2dff9227a385ec183392" style="vertical-align: -0.838ex; width:6.032ex; height:3.176ex;"/></span> and is a polynomial-time algorithm.</li>
+<li>All the basic arithmetic operations (addition, subtraction, multiplication, division, and comparison) can be done in polynomial time.</li>
+<li>Maximum matchings in graphs can be found in polynomial time.</li></ul>
+<h3><span class="mw-headline" id="Strongly_and_weakly_polynomial_time">Strongly and weakly polynomial time</span><span class="mw-editsection"></span></h3>
+<p>In some contexts, especially in optimization, one differentiates between <b>strongly polynomial time</b> and <b>weakly polynomial time</b> algorithms. These two concepts are only relevant if the inputs to the algorithms consist of integers.
+</p><p>Strongly polynomial time is defined in the arithmetic model of computation. In this model of computation the basic arithmetic operations (addition, subtraction, multiplication, division, and comparison) take a unit time step to perform, regardless of the sizes of the operands. The algorithm runs in strongly polynomial time if:<sup class="reference" id="cite_ref-13">[13]</sup>
+</p>
+<ol><li>the number of operations in the arithmetic model of computation is bounded by a polynomial in the number of integers in the input instance; and</li>
+<li>the space used by the algorithm is bounded by a polynomial in the size of the input.</li></ol>
+<p>Any algorithm with these two properties can be converted to a polynomial time algorithm by replacing the arithmetic operations by suitable algorithms for performing the arithmetic operations on a Turing machine. The second condition is strictly necessary: given the integer <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{n}}</annotation>
+</semantics>
+</math></span><img alt="2^{n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8226f30650ee4fe4e640c6d2798127e80e9c160d" style="vertical-align: -0.338ex; width:2.381ex; height:2.343ex;"/></span> (which takes up space proportional to <i>n</i> in the Turing machine model), it is possible to compute <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{2^{n}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{2^{n}}}</annotation>
+</semantics>
+</math></span><img alt="2^{2^{n}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6bcc9417763ad5d68870290ddaa2ca025ffdaf85" style="vertical-align: -0.338ex; width:3.182ex; height:2.676ex;"/></span> with <i>n</i> multiplications using repeated squaring. However, the space used to represent <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{2^{n}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{2^{n}}}</annotation>
+</semantics>
+</math></span><img alt="2^{2^{n}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6bcc9417763ad5d68870290ddaa2ca025ffdaf85" style="vertical-align: -0.338ex; width:3.182ex; height:2.676ex;"/></span> is proportional to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{n}}</annotation>
+</semantics>
+</math></span><img alt="2^{n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8226f30650ee4fe4e640c6d2798127e80e9c160d" style="vertical-align: -0.338ex; width:2.381ex; height:2.343ex;"/></span>, and thus exponential rather than polynomial in the space used to represent the input. Hence, it is not possible to carry out this computation in polynomial time on a Turing machine, but it is possible to compute it by polynomially many arithmetic operations.
+</p><p>However, for the first condition, there are algorithms that run in a number of Turing machine steps bounded by a polynomial in the length of binary-encoded input, but do not take a number of arithmetic operations bounded by a polynomial in the number of input numbers. The Euclidean algorithm for computing the greatest common divisor of two integers is one example. Given two integers <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a}</annotation>
+</semantics>
+</math></span><img alt="a" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ffd2487510aa438433a2579450ab2b3d557e5edc" style="vertical-align: -0.338ex; width:1.23ex; height:1.676ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle b}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>b</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle b}</annotation>
+</semantics>
+</math></span><img alt="b" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f11423fbb2e967f986e36804a8ae4271734917c3" style="vertical-align: -0.338ex; width:0.998ex; height:2.176ex;"/></span>, the algorithm performs <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(\log a+\log b)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>a</mi>
+<mo>+</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(\log a+\log b)}</annotation>
+</semantics>
+</math></span><img alt="O(\log a+\log b)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f32e7c5654dc47429722485c64edcafc9e80a9af" style="vertical-align: -0.838ex; width:15.368ex; height:2.843ex;"/></span> arithmetic operations on numbers with 
+at most <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(\log a+\log b)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>a</mi>
+<mo>+</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(\log a+\log b)}</annotation>
+</semantics>
+</math></span><img alt="O(\log a+\log b)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f32e7c5654dc47429722485c64edcafc9e80a9af" style="vertical-align: -0.838ex; width:15.368ex; height:2.843ex;"/></span> bits. At the same time, the number of arithmetic operations cannot be bounded by the number of integers in the input (which is constant in this case, there are always only two integers in the input). Due to the latter observation, the algorithm does not run in strongly polynomial time. Its real running time depends <i>logarithmically</i> on the magnitudes of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a}</annotation>
+</semantics>
+</math></span><img alt="a" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ffd2487510aa438433a2579450ab2b3d557e5edc" style="vertical-align: -0.338ex; width:1.23ex; height:1.676ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle b}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>b</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle b}</annotation>
+</semantics>
+</math></span><img alt="b" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f11423fbb2e967f986e36804a8ae4271734917c3" style="vertical-align: -0.338ex; width:0.998ex; height:2.176ex;"/></span> (that is, on their length in bits) and not only on the number of integers in the input.
+</p><p>An algorithm that runs in polynomial time but that is not strongly polynomial is said to run in <b>weakly polynomial time</b>.<sup class="reference" id="cite_ref-14">[14]</sup>
+A well-known example of a problem for which a weakly polynomial-time algorithm is known, but is not known to admit a strongly polynomial-time algorithm, is linear programming. Weakly polynomial time should not be confused with pseudo-polynomial time, which depends <i>linearly</i> on the magnitude of values in the problem and is not truly polynomial time.
+</p>
+<h3><span class="mw-headline" id="Complexity_classes">Complexity classes</span><span class="mw-editsection"></span></h3>
+<p>The concept of polynomial time leads to several complexity classes in computational complexity theory. Some important classes defined using polynomial time are the following.
+</p>
+<ul><li><b>P</b>: The complexity class of decision problems that can be solved on a deterministic Turing machine in polynomial time</li>
+<li><b>NP</b>: The complexity class of decision problems that can be solved on a non-deterministic Turing machine in polynomial time</li>
+<li><b>ZPP</b>: The complexity class of decision problems that can be solved with zero error on a probabilistic Turing machine in polynomial time</li>
+<li><b>RP</b>: The complexity class of decision problems that can be solved with 1-sided error on a probabilistic Turing machine in polynomial time.</li>
+<li><b>BPP</b>: The complexity class of decision problems that can be solved with 2-sided error on a probabilistic Turing machine in polynomial time</li>
+<li><b>BQP</b>: The complexity class of decision problems that can be solved with 2-sided error on a quantum Turing machine in polynomial time</li></ul>
+<p>P is the smallest time-complexity class on a deterministic machine which is robust in terms of machine model changes. (For example, a change from a single-tape Turing machine to a multi-tape machine can lead to a quadratic speedup, but any algorithm that runs in polynomial time under one model also does so on the other.) Any given abstract machine will have a complexity class corresponding to the problems which can be solved in polynomial time on that machine.
+</p>
+<h2><span class="mw-headline" id="Superpolynomial_time">Superpolynomial time</span><span class="mw-editsection"></span></h2>
+<p>An algorithm is defined to take <b>superpolynomial time</b> if <i>T</i>(<i>n</i>) is not bounded above by any polynomial. Using little omega notation, it is <i>ω</i>(<i>n</i><sup><i>c</i></sup>) time for all constants <i>c</i>, where <i>n</i> is the input parameter, typically the number of bits in the input.
+</p><p>For example, an algorithm that runs for 2<sup><i>n</i></sup> steps on an input of size <i>n</i> requires superpolynomial time (more specifically, exponential time).
+</p><p>An algorithm that uses exponential resources is clearly superpolynomial, but some algorithms are only very weakly superpolynomial. For example, the Adleman–Pomerance–Rumely primality test runs for <span class="nowrap"><i>n</i><sup><i>O</i>(log log <i>n</i>)</sup></span> time on <i>n</i>-bit inputs; this grows faster than any polynomial for large enough <i>n</i>, but the input size must become impractically large before it cannot be dominated by a polynomial with small degree.
+</p><p>An algorithm that requires superpolynomial time lies outside the complexity class <b>P</b>. Cobham's thesis posits that these algorithms are impractical, and in many cases they are. Since the P versus NP problem is unresolved, it is unknown whether NP-complete problems require superpolynomial time.
+</p>
+<h2><span class="mw-headline" id="Quasi-polynomial_time">Quasi-polynomial time</span><span class="mw-editsection"></span></h2>
+<p><b>Quasi-polynomial time</b> algorithms are algorithms that run longer than polynomial time, yet not so long as to be exponential time. The worst case running time of a quasi-polynomial time algorithm is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{O(\log ^{c}n)}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>c</mi>
+</mrow>
+</msup>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{O(\log ^{c}n)}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 2^{O(\log ^{c}n)}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8bf734f7fea354217d29a8bc1a007044ab520aae" style="vertical-align: -0.338ex; width:8.145ex; height:2.843ex;"/></span> for some fixed <span class="nowrap"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c&gt;0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+<mo>&gt;</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c&gt;0}</annotation>
+</semantics>
+</math></span><img alt="c&gt;0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2ba126f626d61752f62eaacaf11761a54de4dc84" style="vertical-align: -0.338ex; width:5.268ex; height:2.176ex;"/></span>.</span> For <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c=1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c=1}</annotation>
+</semantics>
+</math></span><img alt="c=1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3e3467f9e219a5ea38a30da5c3a02c2c23f61a79" style="vertical-align: -0.338ex; width:5.268ex; height:2.176ex;"/></span> we get a polynomial time algorithm, for <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c&lt;1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+<mo>&lt;</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c&lt;1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle c&lt;1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d8f310fc940b3622eefb2bb82bb2cb2a049a60c2" style="vertical-align: -0.338ex; width:5.268ex; height:2.176ex;"/></span> we get a sub-linear time algorithm.
+</p><p>Quasi-polynomial time algorithms typically arise in reductions from an NP-hard problem to another problem. For example, one can take an instance of an NP hard problem, say 3SAT, and convert it to an instance of another problem B, but the size of the instance becomes <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{O(\log ^{c}n)}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>c</mi>
+</mrow>
+</msup>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{O(\log ^{c}n)}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 2^{O(\log ^{c}n)}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8bf734f7fea354217d29a8bc1a007044ab520aae" style="vertical-align: -0.338ex; width:8.145ex; height:2.843ex;"/></span>. In that case, this reduction does not prove that problem B is NP-hard; this reduction only shows that there is no polynomial time algorithm for B unless there is a quasi-polynomial time algorithm for 3SAT (and thus all of NP). Similarly, there are some problems for which we know quasi-polynomial time algorithms, but no polynomial time algorithm is known. Such problems arise in approximation algorithms; a famous example is the directed Steiner tree problem, for which there is a quasi-polynomial time approximation algorithm achieving an approximation factor of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(\log ^{3}n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(\log ^{3}n)}</annotation>
+</semantics>
+</math></span><img alt="O(\log ^{3}n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a7f77c48b4c4e7b58b75244a9c512673896f6236" style="vertical-align: -0.838ex; width:9.39ex; height:3.176ex;"/></span> (<i>n</i> being the number of vertices), but showing the existence of such a polynomial time algorithm is an open problem.
+</p><p>Other computational problems with quasi-polynomial time solutions but no known polynomial time solution include the planted clique problem in which the goal is to find a large clique in the union of a clique and a random graph. Although quasi-polynomially solvable, it has been conjectured that the planted clique problem has no polynomial time solution; this planted clique conjecture has been used as a computational hardness assumption to prove the difficulty of several other problems in computational game theory, property testing, and machine learning.<sup class="reference" id="cite_ref-15">[15]</sup>
+</p><p>The complexity class <b>QP</b> consists of all problems that have quasi-polynomial time algorithms. It can be defined in terms of DTIME as follows.<sup class="reference" id="cite_ref-16">[16]</sup>
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mbox{QP}}=\bigcup _{c\in \mathbb {N} }{\mbox{DTIME}}\left(2^{\log ^{c}n}\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mtext>QP</mtext>
+</mstyle>
+</mrow>
+<mo>=</mo>
+<munder>
+<mo>⋃<!-- ⋃ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>c</mi>
+<mo>∈<!-- ∈ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">N</mi>
+</mrow>
+</mrow>
+</munder>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mtext>DTIME</mtext>
+</mstyle>
+</mrow>
+<mrow>
+<mo>(</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>c</mi>
+</mrow>
+</msup>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mrow>
+</msup>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mbox{QP}}=\bigcup _{c\in \mathbb {N} }{\mbox{DTIME}}\left(2^{\log ^{c}n}\right)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\mbox{QP}}=\bigcup _{c\in \mathbb {N} }{\mbox{DTIME}}\left(2^{\log ^{c}n}\right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/efc34b706aa344b0652e533568b621f576904089" style="vertical-align: -3.171ex; width:26.653ex; height:6.176ex;"/></span></dd></dl>
+<h3><span class="mw-headline" id="Relation_to_NP-complete_problems">Relation to NP-complete problems</span><span class="mw-editsection"></span></h3>
+<p>In complexity theory, the unsolved P versus NP problem asks if all problems in NP have polynomial-time algorithms. All the best-known algorithms for NP-complete problems like 3SAT etc. take exponential time. Indeed, it is conjectured for many natural NP-complete problems that they do not have sub-exponential time algorithms. Here "sub-exponential time" is taken to mean the second definition presented below. (On the other hand, many graph problems represented in the natural way by adjacency matrices are solvable in subexponential time simply because the size of the input is the square of the number of vertices.) This conjecture (for the k-SAT problem) is known as the exponential time hypothesis.<sup class="reference" id="cite_ref-ETH_17-0">[17]</sup> Since it is conjectured that NP-complete problems do not have quasi-polynomial time algorithms, some inapproximability results in the field of approximation algorithms make the assumption that NP-complete problems do not have quasi-polynomial time algorithms. For example, see the known inapproximability results for the set cover problem.
+</p>
+<h2><span class="mw-headline" id="Sub-exponential_time"><span class="anchor" id="subexponential_time"></span>Sub-exponential time</span><span class="mw-editsection"></span></h2>
+<p>The term <b>sub-exponential time</b> is used to express that the running time of some algorithm may grow faster than any polynomial but is still significantly smaller than an exponential. In this sense, problems that have sub-exponential time algorithms are somewhat more tractable than those that only have exponential algorithms. The precise definition of "sub-exponential" is not generally agreed upon,<sup class="reference" id="cite_ref-18">[18]</sup> and we list the two most widely used ones below.
+</p>
+<h3><span class="mw-headline" id="First_definition">First definition</span><span class="mw-editsection"></span></h3>
+<p>A problem is said to be sub-exponential time solvable if it can be solved in running times whose logarithms grow smaller than any given polynomial. More precisely, a problem is in sub-exponential time if for every <span class="nowrap"><i>ε</i> &gt; 0</span> there exists an algorithm which solves the problem in time <i>O</i>(2<sup><i>n</i><sup><i>ε</i></sup></sup>). The set of all such problems is the complexity class <b>SUBEXP</b> which can be defined in terms of DTIME as follows.<sup class="reference" id="cite_ref-bpp_5-1">[5]</sup><sup class="reference" id="cite_ref-19">[19]</sup><sup class="reference" id="cite_ref-20">[20]</sup><sup class="reference" id="cite_ref-21">[21]</sup>
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\text{SUBEXP}}=\bigcap _{\varepsilon &gt;0}{\text{DTIME}}\left(2^{n^{\varepsilon }}\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>SUBEXP</mtext>
+</mrow>
+<mo>=</mo>
+<munder>
+<mo>⋂<!-- ⋂ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>ε<!-- ε --></mi>
+<mo>&gt;</mo>
+<mn>0</mn>
+</mrow>
+</munder>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>DTIME</mtext>
+</mrow>
+<mrow>
+<mo>(</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>ε<!-- ε --></mi>
+</mrow>
+</msup>
+</mrow>
+</msup>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\text{SUBEXP}}=\bigcap _{\varepsilon &gt;0}{\text{DTIME}}\left(2^{n^{\varepsilon }}\right)}</annotation>
+</semantics>
+</math></span><img alt="{\text{SUBEXP}}=\bigcap _{\varepsilon &gt;0}{\text{DTIME}}\left(2^{n^{\varepsilon }}\right)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4250b13f4892da1b3905e37beee2070232690b3f" style="vertical-align: -3.005ex; width:30.279ex; height:6.009ex;"/></span></dd></dl>
+<p>This notion of sub-exponential is non-uniform in terms of <i>ε</i> in the sense that <i>ε</i> is not part of the input and each ε may have its own algorithm for the problem.
+</p>
+<h3><span class="mw-headline" id="Second_definition">Second definition</span><span class="mw-editsection"></span></h3>
+<p>Some authors define sub-exponential time as running times in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{o(n)}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>o</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{o(n)}}</annotation>
+</semantics>
+</math></span><img alt="2^{{o(n)}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/98ee27d18f582367c1c737ddc1c3380a92c93c0b" style="vertical-align: -0.338ex; width:4.458ex; height:2.843ex;"/></span>.<sup class="reference" id="cite_ref-ETH_17-1">[17]</sup><sup class="reference" id="cite_ref-22">[22]</sup><sup class="reference" id="cite_ref-23">[23]</sup> This definition allows larger running times than the first definition of sub-exponential time. An example of such a sub-exponential time algorithm is the best-known classical algorithm for integer factorization, the general number field sieve, which runs in time about <span class="nowrap"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{{\tilde {O}}(n^{1/3})}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>O</mi>
+<mo stretchy="false">~<!-- ~ --></mo>
+</mover>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>3</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{{\tilde {O}}(n^{1/3})}}</annotation>
+</semantics>
+</math></span><img alt="2^{{\tilde {O}}(n^{1/3})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/30d319f41f6fb8ab309bf15ad8a64c870cb52021" style="vertical-align: -0.338ex; width:7.08ex; height:3.176ex;"/></span>,</span> where the length of the input is <span class="texhtml mvar" style="font-style:italic;">n</span>. Another example was the graph isomorphism problem, which the best known algorithm from 1982 to 2016 solved in <span class="nowrap"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{O\left({\sqrt {n\log n}}\right)}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>O</mi>
+<mrow>
+<mo>(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</msqrt>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{O\left({\sqrt {n\log n}}\right)}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 2^{O\left({\sqrt {n\log n}}\right)}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/421e4106c1d0cbf0b63861e4473c479865a04a07" style="vertical-align: -0.338ex; width:10.646ex; height:3.009ex;"/></span>.</span> However, at STOC 2016 a quasi-polynomial time algorithm was presented.<sup class="reference" id="cite_ref-24">[24]</sup>
+</p><p>It makes a difference whether the algorithm is allowed to be sub-exponential in the size of the instance, the number of vertices, or the number of edges. In parameterized complexity, this difference is made explicit by considering pairs <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (L,k)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mi>L</mi>
+<mo>,</mo>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (L,k)}</annotation>
+</semantics>
+</math></span><img alt="(L,k)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/60912d6e9f29e343e9e77d28e3a19ede88d9d655" style="vertical-align: -0.838ex; width:5.637ex; height:2.843ex;"/></span> of decision problems and parameters <i>k</i>. <b>SUBEPT</b> is the class of all parameterized problems that run in time sub-exponential in <i>k</i> and polynomial in the input size <i>n</i>:<sup class="reference" id="cite_ref-25">[25]</sup>
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\text{SUBEPT}}={\text{DTIME}}\left(2^{o(k)}\cdot {\text{poly}}(n)\right).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>SUBEPT</mtext>
+</mrow>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>DTIME</mtext>
+</mrow>
+<mrow>
+<mo>(</mo>
+<mrow>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>o</mi>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+<mo>⋅<!-- ⋅ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>poly</mtext>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\text{SUBEPT}}={\text{DTIME}}\left(2^{o(k)}\cdot {\text{poly}}(n)\right).}</annotation>
+</semantics>
+</math></span><img alt="{\text{SUBEPT}}={\text{DTIME}}\left(2^{o(k)}\cdot {\text{poly}}(n)\right)." aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ff05fe27e749e87ad729180e2538feb7414883e8" style="vertical-align: -1.838ex; width:38.367ex; height:4.843ex;"/></span></dd></dl>
+<p>More precisely, SUBEPT is the class of all parameterized problems <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (L,k)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mi>L</mi>
+<mo>,</mo>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (L,k)}</annotation>
+</semantics>
+</math></span><img alt="(L,k)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/60912d6e9f29e343e9e77d28e3a19ede88d9d655" style="vertical-align: -0.838ex; width:5.637ex; height:2.843ex;"/></span> for which there is a computable function <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f:\mathbb {N} \to \mathbb {N} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo>:</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">N</mi>
+</mrow>
+<mo stretchy="false">→<!-- → --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">N</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f:\mathbb {N} \to \mathbb {N} }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle f:\mathbb {N} \to \mathbb {N} }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dfa847e103c9e2e5075b1b510f67aad8ceae9349" style="vertical-align: -0.671ex; width:10.186ex; height:2.509ex;"/></span> with <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f\in o(k)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>o</mi>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f\in o(k)}</annotation>
+</semantics>
+</math></span><img alt="f\in o(k)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ea31b6df475b663254eeea2570f974d8ce662741" style="vertical-align: -0.838ex; width:8.267ex; height:2.843ex;"/></span> and an algorithm that decides <i>L</i> in time <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{f(k)}\cdot {\text{poly}}(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+<mo>⋅<!-- ⋅ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>poly</mtext>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{f(k)}\cdot {\text{poly}}(n)}</annotation>
+</semantics>
+</math></span><img alt="2^{f(k)}\cdot {\text{poly}}(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e830c3a9cf201dda30b0a6126e1cf7b7c66569a7" style="vertical-align: -0.838ex; width:13.647ex; height:3.343ex;"/></span>.
+</p>
+<h4><span class="mw-headline" id="Exponential_time_hypothesis">Exponential time hypothesis</span><span class="mw-editsection"></span></h4>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>The <b>exponential time hypothesis</b> (<b>ETH</b>) is that 3SAT, the satisfiability problem of Boolean formulas in conjunctive normal form with at most three literals per clause and with <i>n</i> variables, cannot be solved in time 2<sup><i>o</i>(<i>n</i>)</sup>. More precisely, the hypothesis is that there is some absolute constant <span class="texhtml"><i>c</i> &gt; 0</span> such that 3SAT cannot be decided in time 2<sup><i>cn</i></sup> by any deterministic Turing machine. With <i>m</i> denoting the number of clauses, ETH is equivalent to the hypothesis that <i>k</i>SAT cannot be solved in time 2<sup><i>o</i>(<i>m</i>)</sup> for any integer <span class="texhtml"><i>k</i> ≥ 3</span>.<sup class="reference" id="cite_ref-26">[26]</sup> The exponential time hypothesis implies P ≠ NP.
+</p>
+<h2><span class="mw-headline" id="Exponential_time">Exponential time</span><span class="mw-editsection"></span></h2>
+<p>An algorithm is said to be <b>exponential time</b>, if <i>T</i>(<i>n</i>) is upper bounded by 2<sup>poly(<i>n</i>)</sup>, where poly(<i>n</i>) is some polynomial in <i>n</i>. More formally, an algorithm is exponential time if <i>T</i>(<i>n</i>) is bounded by <i>O</i>(2<sup><i>n</i><sup><i>k</i></sup></sup>) for some constant <i>k</i>. Problems which admit exponential time algorithms on a deterministic Turing machine form the complexity class known as <b>EXP</b>.
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\text{EXP}}=\bigcup _{c\in \mathbb {N} }{\text{DTIME}}\left(2^{n^{c}}\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>EXP</mtext>
+</mrow>
+<mo>=</mo>
+<munder>
+<mo>⋃<!-- ⋃ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>c</mi>
+<mo>∈<!-- ∈ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">N</mi>
+</mrow>
+</mrow>
+</munder>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>DTIME</mtext>
+</mrow>
+<mrow>
+<mo>(</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>c</mi>
+</mrow>
+</msup>
+</mrow>
+</msup>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\text{EXP}}=\bigcup _{c\in \mathbb {N} }{\text{DTIME}}\left(2^{n^{c}}\right)}</annotation>
+</semantics>
+</math></span><img alt="{\text{EXP}}=\bigcup _{c\in \mathbb {N} }{\text{DTIME}}\left(2^{n^{c}}\right)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cab57d7deb67a1253b19de1d875abaa392fa1418" style="vertical-align: -3.171ex; width:25.682ex; height:6.176ex;"/></span></dd></dl>
+<p>Sometimes, exponential time is used to refer to algorithms that have <i>T</i>(<i>n</i>) = 2<sup><i>O</i>(<i>n</i>)</sup>, where the exponent is at most a linear function of <i>n</i>. This gives rise to the complexity class <b>E</b>.
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\text{E}}=\bigcup _{c\in \mathbb {N} }{\text{DTIME}}\left(2^{cn}\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>E</mtext>
+</mrow>
+<mo>=</mo>
+<munder>
+<mo>⋃<!-- ⋃ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>c</mi>
+<mo>∈<!-- ∈ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">N</mi>
+</mrow>
+</mrow>
+</munder>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>DTIME</mtext>
+</mrow>
+<mrow>
+<mo>(</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>c</mi>
+<mi>n</mi>
+</mrow>
+</msup>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\text{E}}=\bigcup _{c\in \mathbb {N} }{\text{DTIME}}\left(2^{cn}\right)}</annotation>
+</semantics>
+</math></span><img alt="{\text{E}}=\bigcup _{c\in \mathbb {N} }{\text{DTIME}}\left(2^{cn}\right)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/90a73905632297c23232f3ea47c87409aff8d53e" style="vertical-align: -3.171ex; width:21.36ex; height:5.676ex;"/></span></dd></dl>
+<h2><span class="mw-headline" id="Factorial_time">Factorial time</span><span class="mw-editsection"></span></h2>
+<p>An algorithm is said to be <b>factorial time</b> if <i>T(n)</i> is upper bounded by the factorial function <i>n!</i>. Factorial time is a subset of exponential time (EXP) because <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n!=O\left(2^{n^{1+\epsilon }}\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>!</mo>
+<mo>=</mo>
+<mi>O</mi>
+<mrow>
+<mo>(</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+<mo>+</mo>
+<mi>ϵ<!-- ϵ --></mi>
+</mrow>
+</msup>
+</mrow>
+</msup>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n!=O\left(2^{n^{1+\epsilon }}\right)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n!=O\left(2^{n^{1+\epsilon }}\right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/51bfe25034190d8d00edd86af3f36cc7d3c1962a" style="vertical-align: -1.838ex; width:14.868ex; height:4.843ex;"/></span> for all <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \epsilon &gt;0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>ϵ<!-- ϵ --></mi>
+<mo>&gt;</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \epsilon &gt;0}</annotation>
+</semantics>
+</math></span><img alt="\epsilon &gt;0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/568095ad3924314374a5ab68fae17343661f2a71" style="vertical-align: -0.338ex; width:5.205ex; height:2.176ex;"/></span>. However, it is not a subset of E.
+</p><p>An example of an algorithm that runs in factorial time is bogosort, a notoriously inefficient sorting algorithm based on trial and error.  Bogosort sorts a list of <i>n</i> items by repeatedly shuffling the list until it is found to be sorted. In the average case, each pass through the bogosort algorithm will examine one of the <i>n</i>! orderings of the <i>n</i> items.  If the items are distinct, only one such ordering is sorted. Bogosort shares patrimony with the infinite monkey theorem.
+</p>
+<h2><span class="mw-headline" id="Double_exponential_time">Double exponential time</span><span class="mw-editsection"></span></h2>
+<p>An algorithm is said to be double exponential time if <i>T</i>(<i>n</i>) is upper bounded by 2<sup>2<sup>poly(<i>n</i>)</sup></sup>, where poly(<i>n</i>) is some polynomial in <i>n</i>. Such algorithms belong to the complexity class 2-EXPTIME.
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mbox{2-EXPTIME}}=\bigcup _{c\in \mathbb {N} }{\mbox{DTIME}}\left(2^{2^{n^{c}}}\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mtext>2-EXPTIME</mtext>
+</mstyle>
+</mrow>
+<mo>=</mo>
+<munder>
+<mo>⋃<!-- ⋃ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>c</mi>
+<mo>∈<!-- ∈ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">N</mi>
+</mrow>
+</mrow>
+</munder>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mtext>DTIME</mtext>
+</mstyle>
+</mrow>
+<mrow>
+<mo>(</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>c</mi>
+</mrow>
+</msup>
+</mrow>
+</msup>
+</mrow>
+</msup>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mbox{2-EXPTIME}}=\bigcup _{c\in \mathbb {N} }{\mbox{DTIME}}\left(2^{2^{n^{c}}}\right)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\mbox{2-EXPTIME}}=\bigcup _{c\in \mathbb {N} }{\mbox{DTIME}}\left(2^{2^{n^{c}}}\right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0ae0eedc226c47bc0d6bf831c2796d3f4412762b" style="vertical-align: -3.171ex; width:34.62ex; height:6.176ex;"/></span></dd></dl>
+<p>Well-known double exponential time algorithms include:
+</p>
+<ul><li>Decision procedures for Presburger arithmetic</li>
+<li>Computing a Gröbner basis (in the worst case<sup class="reference" id="cite_ref-27">[27]</sup>)</li>
+<li>Quantifier elimination on real closed fields takes at least double exponential time,<sup class="reference" id="cite_ref-28">[28]</sup> and can be done in this time.<sup class="reference" id="cite_ref-29">[29]</sup></li></ul>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>L-notation</li>
+<li>Space complexity</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<p class="mw-empty-elt">
+</p>
+<!-- 
+NewPP limit report
+Parsed by mw2371
+Cached time: 20221223234512
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.484 seconds
+Real time usage: 0.655 seconds
+Preprocessor visited node count: 3611/1000000
+Post‐expand include size: 68139/2097152 bytes
+Template argument size: 2127/2097152 bytes
+Highest expansion depth: 16/100
+Expensive parser function count: 8/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 96051/5000000 bytes
+Lua time usage: 0.190/10.000 seconds
+Lua memory usage: 7599223/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  383.671      1 -total
+ 56.55%  216.983      1 Template:Reflist
+ 23.71%   90.958      8 Template:Cite_book
+ 15.22%   58.397     13 Template:Cite_journal
+ 13.21%   50.684      1 Template:Short_description
+  7.29%   27.979      2 Template:Pagetype
+  6.71%   25.740      2 Template:Redirect
+  5.64%   21.646      4 Template:Cite_conference
+  5.23%   20.055      1 Template:RP
+  4.40%   16.882      1 Template:R/superscript
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:405944-0!canonical and timestamp 20221223234512 and revision id 1129024467.
+ -->
+</div></body>
+</html>

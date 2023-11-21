@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>multiway_tree</title>
+</head>
+<body>
+<div class="mw-parser-output"><style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p>In computing, a <b>rose tree</b> is a term for the value of a tree data structure with a variable and unbounded number of branches per node.<sup class="reference" id="cite_ref-Bird1988_1-0">[1]</sup> The term is mostly used in the functional programming community, e.g., in the context of the Bird–Meertens formalism.<sup class="reference" id="cite_ref-2">[2]</sup> Apart from the multi-branching property, the most essential characteristic of rose trees is the coincidence of bisimilarity with identity: two distinct rose trees are never bisimilar.
+</p>
+
+<h2><span class="mw-headline" id="Naming">Naming</span><span class="mw-editsection"></span></h2>
+<p>The name "rose tree" was coined by Lambert Meertens to evoke the similarly named, and similarly structured, common rhododendron.<sup class="reference" id="cite_ref-Meertens1988_3-0">[3]</sup>
+</p>
+<blockquote><p>We shall call such trees <i>rose trees</i>, a literal translation of <i>rhododendron</i> (Greek <span title="Ancient Greek (to 1453)-language text"><span lang="grc">ῥόδον</span></span> = rose, <span title="Ancient Greek (to 1453)-language text"><span lang="grc">δένδρον</span></span> = tree), because of resemblance to the habitus of this shrub, except that the latter does not grow upside-down on the Northern hemisphere.</p></blockquote>
+<h2><span class="mw-headline" id="Recursive_definition">Recursive definition</span><span class="mw-editsection"></span></h2>
+<p>Well-founded rose trees can be defined by a recursive construction of entities of the following types:
+</p>
+<ol>
+<li style="list-style-type:'(1) '">
+
+A <i>base entity</i> is an element of a predefined ground set <span class="texhtml mvar" style="font-style:italic;">V</span> of values (the "tip"-values<sup class="reference" id="cite_ref-Meertens1988_3-1">[3]</sup>).
+
+</li><li style="list-style-type:'(2) '">
+
+A <i>branching entity</i> (alternatively, a <i>forking entity</i> or a <i>forest entity</i>) is either of the following sub-types:
+<ol>
+<li style="list-style-type:'(a) '"> 
+A <i>set</i> of entities.
+</li><li style="list-style-type:'(b) '"> 
+A <i>sequence</i> of entities.
+</li><li style="list-style-type:'(c) '"> 
+A partial <i>map</i> from a predefined set <span class="texhtml mvar" style="font-style:italic;">Σ</span> of <i>names</i> to entities.
+</li></ol>
+<p>Any of (a)(b)(c) can be empty. Note that (b) can be seen as a special case of (c) – a sequence is just a map from an initial segment of the set <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathbb {N} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">N</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathbb {N} }</annotation>
+</semantics>
+</math></span><img alt="\mathbb {N} " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fdf9a96b565ea202d0f4322e9195613fb26a9bed" style="vertical-align: -0.338ex; width:1.678ex; height:2.176ex;"/></span> of natural numbers.
+</p>
+</li><li style="list-style-type:'(3) '"> 
+A <i>pairing entity</i> is an ordered pair <span class="texhtml">(<i>F</i>, <i>x</i>)</span> such that <span class="texhtml mvar" style="font-style:italic;">F</span> is a branching entity and <span class="texhtml mvar" style="font-style:italic;">x</span> is an element of a predefined set <span class="texhtml mvar" style="font-style:italic;">L</span> of "label" values. 
+Since a pairing entity can only contain a branching entity as its component, there is an induced division into sub-types (3a), (3b) or (3c) corresponding to sub-types of branching entities.
+</li></ol>
+<p>Typically, only some combinations of entity types are used for the construction. The original paper<sup class="reference" id="cite_ref-Meertens1988_3-2">[3]</sup> only considers 1+2b ("sequence-forking" rose trees) and 1+2a ("set-forking" rose trees).
+In later literature, the 1+2b variant is usually introduced by the following definition:
+</p>
+
+<p><i><q>A rose tree [...] is either a
+leaf containing a value, or a node that can have an arbitrary list of subtrees</q></i>.<sup class="reference" id="cite_ref-Bird2020_4-0">[4]</sup>
+</p><p>The most common definition used in functional programming (particularly in Haskell) combines 3+2b:
+</p>
+
+<p><i><q>An element of Rose α consists of a labelled node together with a list of subtrees</q></i>.<sup class="reference" id="cite_ref-Bird1988_1-1">[1]</sup>
+That is, a rose tree is a pairing entity (type 3) whose branching entity is a sequence (thus of type 2b) of rose trees.
+</p><p>Sometimes even the combination 1+3b is considered.<sup class="reference" id="cite_ref-Skillicorn1996_5-0">[5]</sup><sup class="reference" id="cite_ref-Seemann2020_6-0">[6]</sup>
+The following table provides a summary of the most established combinations of entities.
+</p>
+
+<p><i>Notes:</i>
+</p>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="General_definition">General definition</span><span class="mw-editsection"></span></h2>
+<p>General rose trees can be defined via bisimilarity of accessible pointed multidigraphs with appropriate labelling of nodes and arrows.
+These structures are generalization of the notion of accessible pointed graph (abbreviated as <i>apg</i>) from non-well-founded set theory.
+We will use the <i>apq</i> acronym for the below described multidigraph structures. This is meant as an abbreviation of "accessible pointed quiver" where <i>quiver</i> is an established synonym for "multidigraph".
+</p><p>In a correspondence to the types of entities used in the recursive definition, each node of an apq is assigned a type (1), (2a), (2b), (2c) or (3).
+The apqs are subject to conditions that mimic the properties of recursively constructed entities. 
+</p>
+<ol>
+<li>
+<ol>
+<li style="list-style-type:'(a) '">
+A node of type (1) is an element of the predefined set <span class="texhtml mvar" style="font-style:italic;">V</span> of ground values.
+</li><li style="list-style-type:'(b) '">
+A node of type (1) does not appear as the source of an arrow.
+</li></ol>
+</li><li>
+<ol>
+<li style="list-style-type:'(a) '">
+A node of type (3) appears as the source of exactly one arrow.
+</li><li style="list-style-type:'(b) '">
+The target of the arrow mentioned in (a) is a node of type (2).
+</li></ol>
+</li><li>
+Two distinct arrows with the same source node of type (2a) have distinct targets.
+
+</li><li>
+A node is labelled iff it is of type (3). The label belongs to the predefined set <span class="texhtml mvar" style="font-style:italic;">L</span>.
+
+</li><li>
+<ol>
+<li style="list-style-type:'(a) '">
+An arrow is labelled by an index from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathbb {N} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">N</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathbb {N} }</annotation>
+</semantics>
+</math></span><img alt="\mathbb {N} " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fdf9a96b565ea202d0f4322e9195613fb26a9bed" style="vertical-align: -0.338ex; width:1.678ex; height:2.176ex;"/></span> if its source node is of type (2b).
+</li><li style="list-style-type:'(b) '">
+An arrow is labelled by a name from a predefined set <span class="texhtml mvar" style="font-style:italic;">Σ</span> if its source node is of type (2c).
+</li><li style="list-style-type:'(c) '">
+Otherwise an arrow is unlabelled.
+</li></ol>
+</li><li>
+Labels of arrows with the same source node are distinct.
+
+</li><li>
+Labels of arrows with the same source node of type (2b) form an initial segment of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathbb {N} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">N</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathbb {N} }</annotation>
+</semantics>
+</math></span><img alt="\mathbb {N} " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fdf9a96b565ea202d0f4322e9195613fb26a9bed" style="vertical-align: -0.338ex; width:1.678ex; height:2.176ex;"/></span>.
+
+</li></ol>
+<p>A <i>bisimilarity</i> between apqs 
+<span class="texhtml">𝒳 = (<i>X</i>, ...)</span> and <span class="texhtml">𝒴 = (<i>Y</i>, ...)</span>
+is a relation <span class="texhtml"><i>R</i> ⊆ <i>X</i> × <i>Y</i></span> between nodes such that
+the roots of <span class="texhtml">𝒳</span> and <span class="texhtml">𝒴</span> are <span class="texhtml mvar" style="font-style:italic;">R</span>-related and
+for every pair <span class="texhtml">(<i>x</i>,<i>y</i>)</span> of <span class="texhtml mvar" style="font-style:italic;">R</span>-related nodes, the following are satisfied:
+</p>
+<ol>
+<li>
+The nodes <span class="texhtml mvar" style="font-style:italic;">x</span> and <span class="texhtml mvar" style="font-style:italic;">y</span> have the same type.
+</li><li>
+If <span class="texhtml mvar" style="font-style:italic;">x</span> and <span class="texhtml mvar" style="font-style:italic;">y</span> are of type (1) then they are identical.
+</li><li>
+If <span class="texhtml mvar" style="font-style:italic;">x</span> and <span class="texhtml mvar" style="font-style:italic;">y</span> are of type (3) then they have the same label.
+</li><li>
+For every arrow <span class="texhtml mvar" style="font-style:italic;">a</span> of <span class="texhtml">𝒳</span> whose source node is <span class="texhtml mvar" style="font-style:italic;">x</span> there exists an arrow <span class="texhtml mvar" style="font-style:italic;">b</span> of <span class="texhtml">𝒴</span> whose source is <span class="texhtml mvar" style="font-style:italic;">y</span> and
+
+<ol>
+<li style="list-style-type:'(a) '">
+the target nodes of <span class="texhtml mvar" style="font-style:italic;">a</span> and <var style="padding-right: 1px;">b</var> are <span class="texhtml mvar" style="font-style:italic;">R</span>-related,
+</li><li style="list-style-type:'(b) '">
+the labels of <span class="texhtml mvar" style="font-style:italic;">a</span> and <var style="padding-right: 1px;">b</var>, if defined, are identical.
+</li></ol>
+<p>A symmetric condition is satisfied with <span class="texhtml">𝒳</span> and <span class="texhtml">𝒴</span> interchanged.
+</p>
+</li></ol>
+<p>Two apqs <span class="texhtml">𝒳</span> and <span class="texhtml">𝒴</span> are said to be <i>bisimilar</i> if there exists a bisimilarity relation <span class="texhtml mvar" style="font-style:italic;">R</span> for them. This establishes an equivalence relation on the class of all apqs.
+</p><p>A <i>rose tree</i> is then some fixed representation of the class <span class="texhtml">𝒞</span> of apqs that are bisimilar to some given apq <span class="texhtml">𝒳</span>.
+If the root node of <span class="texhtml">𝒳</span> is of type (1) then <span class="texhtml">𝒞 = {𝒳</span>}, thus <span class="texhtml">𝒞</span> can be represented by this root node. 
+Otherwise, <span class="texhtml">𝒞</span> is a proper class – in this case the representation can be provided by Scott's trick to be the set of those elements of <span class="texhtml">𝒞</span> that have the lowest rank.
+</p><p>As a result of the above set-theoretic construction, the class <span class="texhtml">ℛ</span> of all rose trees is defined, depending on the sets <span class="texhtml mvar" style="font-style:italic;">V</span> (ground values), <span class="texhtml mvar" style="font-style:italic;">Σ</span> (arrow names) and <span class="texhtml mvar" style="font-style:italic;">L</span> (node labels) as the definitory constituents.
+Subsequently, the structure of apqs can be carried over to a labelled multidigraph structure over <span class="texhtml">ℛ</span>. That is, elements of <span class="texhtml">ℛ</span> can themselves be considered as "nodes" with induced type assignment, node labelling and arrows. The class <span class="texhtml">𝒜</span> of 
+arrows is a subclass of <span class="texhtml">(ℛ × ℛ) ∪ (ℛ × (<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathbb {N} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">N</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathbb {N} }</annotation>
+</semantics>
+</math></span><img alt="\mathbb {N} " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fdf9a96b565ea202d0f4322e9195613fb26a9bed" style="vertical-align: -0.338ex; width:1.678ex; height:2.176ex;"/></span> ∪ <i>Σ</i>) × ℛ)</span>, that is,  
+arrows are either source-target couples or source-label-target triples according to the type of the source.
+</p><p>For every element <span class="texhtml mvar" style="font-style:italic;">r</span> of <span class="texhtml">ℛ</span> there is an induced apq <span class="texhtml">𝒳 = (<i>X</i>, <i>A</i>, <i>r</i>, ...)</span> such that <span class="texhtml mvar" style="font-style:italic;">r</span> is the root node of <span class="texhtml">𝒳</span> and the respective sets <span class="texhtml mvar" style="font-style:italic;">X</span> and <span class="texhtml mvar" style="font-style:italic;">A</span> of nodes and arrows of <span class="texhtml">𝒳</span> are formed by those elements of <span class="texhtml">ℛ</span> and <span class="texhtml">𝒜</span> that are accessible via a path of arrows starting at <span class="texhtml mvar" style="font-style:italic;">r</span>. The induced apq <span class="texhtml">𝒳</span> is bisimilar to apqs used for the construction of <span class="texhtml mvar" style="font-style:italic;">r</span>.
+</p>
+<h3><span class="mw-headline" id="Pathname_maps">Pathname maps</span><span class="mw-editsection"></span></h3>
+<p>Rose trees that do not contain set-branching nodes (type 2a) can be represented by pathname maps.
+A <i>pathname</i> is just a finite sequence of arrow labels. 
+For an arrow path <span class="texhtml"><i>a</i><span style="position:relative; margin-right:-0.75em; right:0.75em; bottom:0.75em;;"><small>→</small></span> = [<i>a</i><sub>1</sub>, ..., <i>a</i><sub>n</sub>] </span> (a finite sequence of consecutive arrows), the pathname of <span class="texhtml mvar" style="font-style:italic;">p</span> is the corresponding sequence 
+<span class="texhtml"><i>σ</i>(<i>a</i><span style="position:relative; margin-right:-0.75em; right:0.75em; bottom:0.75em;;"><small>→</small></span>) = [<i>σ</i>(<i>a</i><sub>1</sub>), ..., <i>σ</i>(<i>a</i><sub>n</sub>)] </span>
+of arrow labels.
+Here it is assumed that each arrow is labelled (<span class="texhtml mvar" style="font-style:italic;">σ</span> denotes the labelling function). 
+In general, each arrow path needs to be first reduced by removing all its arrows sourced at pairing nodes (type 3).
+</p><p>A pathname <span class="texhtml mvar" style="font-style:italic;">p</span> is <i>resolvable</i> iff there exists a root-originating arrow path <span class="texhtml"><i>a</i><span style="position:relative; margin-right:-0.75em; right:0.75em; bottom:0.75em;;"><small>→</small></span></span> whose pathname is <span class="texhtml mvar" style="font-style:italic;">p</span>. Such <span class="texhtml"><i>a</i><span style="position:relative; margin-right:-0.75em; right:0.75em; bottom:0.75em;;"><small>→</small></span></span> is uniquely given up to a possible unlabelled last arrow (sourced at a pairing node).
+The <i>target node</i> of a non-empty resolvable path is the target node of the last arrow of the correspondent root-originating arrow path that does not end with an unlabelled arrow.
+The target of the empty path is the root node.
+</p><p>Given a rose tree <span class="texhtml mvar" style="font-style:italic;">r</span> that does not contain set-branching nodes, the <i>pathname map</i> of <span class="texhtml mvar" style="font-style:italic;">r</span> is a map <span class="texhtml mvar" style="font-style:italic;">t</span> that assigns each resolvable pathname <span class="texhtml mvar" style="font-style:italic;">p</span> its <i>value</i> <span class="texhtml"><i>t</i>(<i>p</i>)</span> according to the following general scheme:
+</p>
+
+<p>Recall that 
+<span class="texhtml"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathbb {N} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">N</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathbb {N} }</annotation>
+</semantics>
+</math></span><img alt="\mathbb {N} " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fdf9a96b565ea202d0f4322e9195613fb26a9bed" style="vertical-align: -0.338ex; width:1.678ex; height:2.176ex;"/></span> ∪ <i>Σ</i></span> is the set of arrow labels 
+(<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathbb {N} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">N</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathbb {N} }</annotation>
+</semantics>
+</math></span><img alt="\mathbb {N} " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fdf9a96b565ea202d0f4322e9195613fb26a9bed" style="vertical-align: -0.338ex; width:1.678ex; height:2.176ex;"/></span> is the set of natural numbers and <span class="texhtml mvar" style="font-style:italic;">Σ</span> is the set of arrow names) 
+<span class="texhtml mvar" style="font-style:italic;">L</span> is the set of node labels,
+and <span class="texhtml mvar" style="font-style:italic;">V</span> is the set of ground values.
+The additional symbols <span class="texhtml">⊥</span> and <span class="texhtml mvar" style="font-style:italic;">T</span> respectively mean an indicator of a resolvable pathname and the set of type tags, <span class="texhtml"><i>T</i> = {'1', '2b', '2c', '3b', '3c'</span>}.
+The <span class="texhtml mvar" style="font-style:italic;">t</span> map is defined by the following prescription (<span class="texhtml mvar" style="font-style:italic;">x</span> denotes the target of <span class="texhtml mvar" style="font-style:italic;">p</span>):
+</p>
+<dl><dd><table cellpadding="0" style="border:0;">
+<tbody><tr style="vertical-align:top;">
+<td><span class="texhtml"><i>t</i>(<i>p</i>) = </span>  
+</td>
+<td><span class="texhtml">(<i>x</i>, '1')</span>
+</td>
+<td>if <span class="texhtml mvar" style="font-style:italic;">x</span> is of type (1),
+</td></tr>
+<tr style="vertical-align:top;">
+<td>
+</td>
+<td><span class="texhtml">(⊥, '2b')</span> or <span class="texhtml">(⊥, '2c')</span>  
+</td>
+<td>if <span class="texhtml mvar" style="font-style:italic;">x</span> is of respective type (2b) or (2c),
+</td></tr>
+<tr style="vertical-align:top;">
+<td>
+</td>
+<td><span class="texhtml">(<i>ℓ</i>, '3b')</span> or <span class="texhtml">(<i>ℓ</i>, '3c')</span>
+</td>
+<td>if <span class="texhtml mvar" style="font-style:italic;">x</span> is of respective type (3b) or (3c) and <span class="texhtml"><i>ℓ</i> ∈ <i>L</i></span> is the label of <span class="texhtml mvar" style="font-style:italic;">x</span>.
+</td></tr></tbody></table></dd></dl>
+<p>It can be shown that different rose trees have different pathname maps. For "homogeneous" rose trees there is no need for type tagging, and their pathname map <span class="texhtml mvar" style="font-style:italic;">t</span> can be defined  as summarized below:
+</p>
+
+<p>In each case, there is a simple axiomatization in terms of pathnames:
+</p>
+<ol><li><span class="texhtml">dom(<i>t</i>)</span> is a non-empty prefix-closed subset of <span class="texhtml"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathbb {N} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">N</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathbb {N} }</annotation>
+</semantics>
+</math></span><img alt="\mathbb {N} " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fdf9a96b565ea202d0f4322e9195613fb26a9bed" style="vertical-align: -0.338ex; width:1.678ex; height:2.176ex;"/></span><sup>⁎</sup></span> or <span class="texhtml"><i>Σ</i><sup>⁎</sup></span>. In case of <span class="texhtml"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathbb {N} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">N</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathbb {N} }</annotation>
+</semantics>
+</math></span><img alt="\mathbb {N} " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fdf9a96b565ea202d0f4322e9195613fb26a9bed" style="vertical-align: -0.338ex; width:1.678ex; height:2.176ex;"/></span><sup>⁎</sup></span>, <span class="texhtml">dom(<i>t</i>)</span> also needs to be "left-sibling-closed" to form a <i>tree domain</i>, see Encoding by sequences.</li>
+<li>In case of a nested list or a nested dictionary value, if <span class="texhtml mvar" style="font-style:italic;">p</span> is a pathname that is non-maximal in <span class="texhtml">dom(<i>t</i>)</span>, then <span class="texhtml"><i>t</i>(<i>p</i>) = ⊥</span>.<sup class="reference" id="cite_ref-NonContainerRoot_14-0">[p 2]</sup></li></ol>
+<p>In particular, a rose tree in the most common "Haskell" sense is just a map from a non-empty prefix-closed and left-sibling-closed set of finite sequences of natural numbers to a set <span class="texhtml mvar" style="font-style:italic;">L</span>.
+Such a definition is mostly used outside the branch of functional programming, see Tree (automata theory).
+Typically, documents that use this definition do not mention the term "rose tree" at all.
+</p><p><i>Notes:</i><span id="notes-group-p"></span>
+</p>
+<link href="mw-data:TemplateStyles:r1011085734" rel="mw-deduplicated-inline-style"/>
+<h2><span class="mw-headline" id="Examples">Examples</span><span class="mw-editsection"></span></h2>
+<p>The diagrams below show two examples of rose trees together with the correspondent Haskell code. In both cases, the Data.Tree module<sup class="reference" id="cite_ref-HaskellDataTree_17-0">[11]</sup> is used as it is provided by the Haskell containers package.<sup class="reference" id="cite_ref-HaskellContainers_18-0">[12]</sup>
+The module introduces rose trees as pairing entities by the following definition:
+</p>
+
+<p>Both examples are contrived so as to demonstrate the concept of "sharing of substructures"<sup class="reference" id="cite_ref-Gibbons1991_19-0">[13]</sup> which is a distinguished feature of rose trees.
+In both cases, the labelling function is injective 
+(so that the labels <code>'a'</code>, <code>'b'</code>, <code>'c'</code> or <code>'d'</code> uniquely identify a subtree / node) which does not need to be satisfied in general.
+The natural numbers (0,1,2 or 3) along the arrows indicate the zero-based position in which a tree appears in the <code>subForest</code> sequence of a particular "super-tree".
+As a consequence of possible repetitions in <code>subForest</code>, there can be multiple arrows between nodes.
+In each of the examples, the rose tree in question is labelled by <code>'a'</code> and equals  the value of the <code>a</code> variable in the code. In both diagrams, the tree is pointed to by a source-less arrow.
+</p>
+
+
+
+<p>The first example presents a well-founded rose tree <code>a</code> obtained by an incremental construction. First <code>d</code> is constructed, then <code>c</code> then <code>b</code> and finally <code>a</code>. The rose tree can be represented by the pathname map shown on the left.
+</p><p>The second example presents a non-well-founded rose tree <code>a</code> built by a breadth-first constructor <code>unfoldTree</code>. The rose tree is a Moore machine, see notes above. Its pathname map 
+<span class="texhtml"><i>t</i> : {0,1}<sup>⁎</sup> → {'a','b','c'</span>}
+is defined by <span class="texhtml"><i>t</i>(<i>p</i>)</span> be respectively equal to <span class="texhtml">'a'</span> or <span class="texhtml">'b'</span> or <span class="texhtml">'c'</span> according to <span class="texhtml"><i>n</i> mod 3</span> where <span class="texhtml mvar" style="font-style:italic;">n</span> is the number of occurrences of <span class="texhtml">1</span> in <span class="texhtml mvar" style="font-style:italic;">p</span>.
+</p>
+<h2><span class="mw-headline" id="Relation_to_tree_data_structures">Relation to tree data structures</span><span class="mw-editsection"></span></h2>
+<p>The general definition provides a connection to tree data structures:
+</p>
+<dl><dd><i>Rose trees are tree structures modulo bisimilarity.</i></dd></dl>
+
+<p>The "tree structures" are those apqs (labelled multidigraphs from the general definition) in which each node is accessible by a <i>unique</i> arrow path.
+Every rose tree is bisimilar to such a tree structure (since every apq is bisimilar to its unfolding) and every such tree structure is bisimilar to <i>exactly one</i> rose tree which can therefore be regarded as the <i>value</i> of the tree structure.
+</p><p>The diagram on the right shows an example of such a structure-to-value mapping. In the upper part of the diagram, a node-labelled ordered tree <span class="texhtml mvar" style="font-style:italic;">T</span> is displayed, containing 23 nodes. In the lower part, a rose tree <span class="texhtml mvar" style="font-style:italic;">R</span> is shown that is the value of <span class="texhtml mvar" style="font-style:italic;">T</span>.
+(In both <span class="texhtml mvar" style="font-style:italic;">T</span> and <span class="texhtml mvar" style="font-style:italic;">R</span>, sibling arrows are implicitly ordered from left to right.)
+There is an induced subtree-to-subvalue mapping which is partially displayed by blue arrows.
+</p><p>Observe that the mapping is many-to-one: distinct tree data structures can have the same value. As a particular consequence, a rose tree in general is not a tree in terms of "subvalue" relationship between its subvalues, see #Terminological_controversy.
+</p>
+<h3><span class="mw-headline" id="Tree_data_type">Tree data type</span><span class="mw-editsection"></span></h3>
+<p>The value mapping described above can be used to clarify the difference between the terms "tree data structure" and "tree data type":
+</p>
+<dl><dd><i>A tree data type is a set of values of tree data structures</i>.<sup class="reference" id="cite_ref-RawDelimitation_20-0">[dt 1]</sup></dd></dl>
+<p>Note that there are 2 degrees of discrepancy between the terms. This becomes apparent when one compares a <i>single</i> tree data type with a <i>single</i> tree data structure. A single tree data type contains (infinitely) many values each of which is represented by (infinitely) many tree data structures.
+</p><p>For example, given a set <span class="texhtml"><i>L</i> = {'a','b','c','d'</span>} of labels, the set of rose trees in the Haskell sense (3b) with labels taken from <span class="texhtml mvar" style="font-style:italic;">L</span> is a single tree data type. All the above examples of rose trees belong to this data type.
+</p><p><i>Notes:</i>
+</p>
+<link href="mw-data:TemplateStyles:r1011085734" rel="mw-deduplicated-inline-style"/>
+<h2><span class="mw-headline" id="Terminological_controversy">Terminological controversy</span><span class="mw-editsection"></span></h2>
+<p>As it can be observed in the above text and diagrams, the term "rose tree" is controversial.
+There are two interrelated issues:
+</p>
+<ol>
+<li style="list-style-type:'(A) '">
+Obscure meaning of "node".
+</li><li style="list-style-type:'(B) '">
+Discrepancy between "tree" and "sharing of substructures".
+</li></ol>
+<p>Interestingly, the term "node" does not appear in the original paper<sup class="reference" id="cite_ref-Meertens1988_3-3">[3]</sup> except for a single occurrence of "nodes" in an informal paragraph on page 20.
+In later literature the word is used abundantly.
+This can already be observed in the quoted comments to the definitions:
+</p>
+<ul><li><i><q>A rose tree [...] is either a leaf [...] or a node [...]</q></i>.<sup class="reference" id="cite_ref-Bird2020_4-1">[4]</sup></li>
+<li><i><q>An element of Rose α consists of a labelled node [...]</q></i>.<sup class="reference" id="cite_ref-Bird1988_1-2">[1]</sup></li></ul>
+<p>In particular, the definition of rose trees in the most common Haskell sense suggests that (within the context of discourse) "node" and "tree" are synonyms. Does it mean that every rose tree is coincident with its root node? If so, is such a property considered specific to rose trees or does it also apply to other trees? Such questions are left unanswered.
+</p><p>The (B) problem becomes apparent when looking at the diagrams of the above examples. Both diagrams are faithful in the sense that each node is drawn <i>exactly once</i>. One can immediately see that the underlying graphs are not trees. Using a quotation from Tree (graph theory)
+</p>
+<dl><dd><i><q>The various kinds of data structures referred to as trees in computer science have underlying graphs that are trees in graph theory [...]</q></i></dd></dl>
+<p>one can conclude that rose trees in general are not trees in usual meaning known from computer science.
+</p>
+<h2><span class="mw-headline" id="Bayesian_rose_tree">Bayesian rose tree</span><span class="mw-editsection"></span></h2>
+<p>There is at least one adoption of the term "rose tree" in computer science in which "sharing of substructures" is precluded. The concept of a <i>Bayesian rose tree</i> is based on the following definition of rose trees:
+</p>
+<blockquote>
+<p><span class="texhtml mvar" style="font-style:italic;">T</span> is a rose tree if either <span class="texhtml"><i>T</i> = {x</span>} for some data point <span class="texhtml mvar" style="font-style:italic;">x</span> or <span class="texhtml"><i>T</i> = {<i>T</i><sub>1</sub>, ... ,<i>T</i><sub><i>n</i><sub><i>T</i></sub></sub></span>} where <span class="texhtml"><i>T</i><sub><i>i</i></sub></span>'s are rose trees over <u>disjoint sets</u> of data points.<sup class="reference" id="cite_ref-Blundell2010_22-0">[14]</sup>
+</p>
+</blockquote>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1011085734" rel="mw-deduplicated-inline-style"/>
+
+<!-- 
+NewPP limit report
+Parsed by mw2371
+Cached time: 20221220215715
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.437 seconds
+Real time usage: 0.743 seconds
+Preprocessor visited node count: 5461/1000000
+Post‐expand include size: 59621/2097152 bytes
+Template argument size: 7452/2097152 bytes
+Highest expansion depth: 10/100
+Expensive parser function count: 4/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 61832/5000000 bytes
+Lua time usage: 0.241/10.000 seconds
+Lua memory usage: 25864779/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  613.978      1 -total
+ 25.03%  153.656      4 Template:Reflist
+ 15.44%   94.816      2 Template:Lang
+ 12.26%   75.263     78 Template:Math
+ 11.74%   72.094      3 Template:Cite_book
+  7.10%   43.580      1 Template:CS-Trees
+  6.49%   39.830      1 Template:Navbox
+  4.97%   30.507      1 Template:For
+  3.39%   20.842      5 Template:Cite_journal
+  2.00%   12.296     82 Template:Main_other
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:8163824-0!canonical and timestamp 20221220215714 and revision id 1109192438.
+ -->
+</div></body>
+</html>

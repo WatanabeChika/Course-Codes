@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>longest_common_substring</title>
+</head>
+<body>
+<div class="mw-parser-output"><style data-mw-deduplicate="TemplateStyles:r1097025294">.mw-parser-output .side-box{margin:4px 0;box-sizing:border-box;border:1px solid #aaa;font-size:88%;line-height:1.25em;background-color:#f9f9f9}.mw-parser-output .side-box-abovebelow,.mw-parser-output .side-box-text{padding:0.25em 0.9em}.mw-parser-output .side-box-image{padding:2px 0 2px 0.9em;text-align:center}.mw-parser-output .side-box-imageright{padding:2px 0.9em 2px 0;text-align:center}@media(min-width:500px){.mw-parser-output .side-box-flex{display:flex;align-items:center}.mw-parser-output .side-box-text{flex:1}}@media(min-width:720px){.mw-parser-output .side-box{width:238px}.mw-parser-output .side-box-right{clear:right;float:right;margin-left:1em}.mw-parser-output .side-box-left{margin-right:1em}}</style>
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p>In computer science, the <b>longest common substring problem</b> is to find a longest string that is a substring of two or more strings. The problem may have multiple solutions.
+Applications include data deduplication and plagiarism detection.
+</p>
+
+<h2><span class="mw-headline" id="Examples">Examples</span><span class="mw-editsection"></span></h2>
+
+<p>The picture shows two strings where the problem has multiple solutions. Although the substring occurrences always overlap, no longer common substring can be obtained by 'uniting' them.
+</p><p>The strings "ABABC", "BABCA", and "ABCBA" have only one longest common substring, viz. "ABC" of length 3. Other common substrings are "A", "AB", "B", "BA", "BC" and "C".
+</p>
+<pre>  ABABC
+    |||
+   BABCA
+    |||
+    ABCBA
+</pre>
+<h2><span class="mw-headline" id="Problem_definition">Problem definition</span><span class="mw-editsection"></span></h2>
+<p>Given two strings, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>S</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S}</annotation>
+</semantics>
+</math></span><img alt="S" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4611d85173cd3b508e67077d4a1252c9c05abca2" style="vertical-align: -0.338ex; width:1.499ex; height:2.176ex;"/></span> of length <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle m}</annotation>
+</semantics>
+</math></span><img alt="m" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0a07d98bb302f3856cbabc47b2b9016692e3f7bc" style="vertical-align: -0.338ex; width:2.04ex; height:1.676ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T}</annotation>
+</semantics>
+</math></span><img alt="T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7200acd984a1d3a3d7dc455e262fbe54f7f6e0" style="vertical-align: -0.338ex; width:1.636ex; height:2.176ex;"/></span> of length <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span>, find a longest string which is substring of both <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>S</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S}</annotation>
+</semantics>
+</math></span><img alt="S" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4611d85173cd3b508e67077d4a1252c9c05abca2" style="vertical-align: -0.338ex; width:1.499ex; height:2.176ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T}</annotation>
+</semantics>
+</math></span><img alt="T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7200acd984a1d3a3d7dc455e262fbe54f7f6e0" style="vertical-align: -0.338ex; width:1.636ex; height:2.176ex;"/></span>.
+</p><p>A generalization is the <b>k-common substring problem</b>. Given the set of strings <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S=\{S_{1},...,S_{K}\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>S</mi>
+<mo>=</mo>
+<mo fence="false" stretchy="false">{</mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>,</mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>K</mi>
+</mrow>
+</msub>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S=\{S_{1},...,S_{K}\}}</annotation>
+</semantics>
+</math></span><img alt="S=\{S_{1},...,S_{K}\}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/df7ca22c3368b61cf896fa63887968085aa56367" style="vertical-align: -0.838ex; width:17.689ex; height:2.843ex;"/></span>, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |S_{i}|=n_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>=</mo>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |S_{i}|=n_{i}}</annotation>
+</semantics>
+</math></span><img alt="|S_{i}|=n_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0fd15b3920f0cb3e5048ccfcfbd102324ee56ba3" style="vertical-align: -0.838ex; width:8.811ex; height:2.843ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Sigma n_{i}=N}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Σ<!-- Σ --></mi>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mi>N</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Sigma n_{i}=N}</annotation>
+</semantics>
+</math></span><img alt="\Sigma n_{i}=N" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6fc9d72c6b7515221cf49ca93ca4533b5761d81b" style="vertical-align: -0.671ex; width:9.035ex; height:2.509ex;"/></span>. Find for each <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2\leq k\leq K}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>2</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>k</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>K</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2\leq k\leq K}</annotation>
+</semantics>
+</math></span><img alt="2\leq k\leq K" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a92895eb51703ebf0b363844c976907380be16f7" style="vertical-align: -0.505ex; width:10.637ex; height:2.343ex;"/></span>, a longest string which occurs as substring of at least <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k}</annotation>
+</semantics>
+</math></span><img alt="k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3c9a2c7b599b37105512c5d570edc034056dd40" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> strings.
+</p>
+<h2><span class="mw-headline" id="Algorithms">Algorithms</span><span class="mw-editsection"></span></h2>
+<p>One can find the lengths and starting positions of the longest common substrings of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>S</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S}</annotation>
+</semantics>
+</math></span><img alt="S" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4611d85173cd3b508e67077d4a1252c9c05abca2" style="vertical-align: -0.338ex; width:1.499ex; height:2.176ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T}</annotation>
+</semantics>
+</math></span><img alt="T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7200acd984a1d3a3d7dc455e262fbe54f7f6e0" style="vertical-align: -0.338ex; width:1.636ex; height:2.176ex;"/></span> in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta }</annotation>
+</semantics>
+</math></span><img alt="\Theta " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bc927b19f46d005b4720db7a0f96cd5b6f1a0d9b" style="vertical-align: -0.338ex; width:1.808ex; height:2.176ex;"/></span><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (n+m)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>+</mo>
+<mi>m</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (n+m)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle (n+m)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8a5ee853b828b9095219191739eb08378854583f" style="vertical-align: -0.838ex; width:8.085ex; height:2.843ex;"/></span> time with the help of a generalized suffix tree. A faster algorithm can be achieved in the word RAM model of computation if the size <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sigma }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>σ<!-- σ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sigma }</annotation>
+</semantics>
+</math></span><img alt="\sigma " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/59f59b7c3e6fdb1d0365a494b81fb9a696138c36" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> of the input alphabet is in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{o({\sqrt {\log(n+m)}})}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>o</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>+</mo>
+<mi>m</mi>
+<mo stretchy="false">)</mo>
+</msqrt>
+</mrow>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{o({\sqrt {\log(n+m)}})}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 2^{o({\sqrt {\log(n+m)}})}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b57ff31041173debdec2b6b6f29dbaed2862150e" style="vertical-align: -0.338ex; width:12.203ex; height:3.176ex;"/></span>. In particular, this algorithm runs in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O((n+m)\log \sigma /{\sqrt {\log(n+m)}})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>+</mo>
+<mi>m</mi>
+<mo stretchy="false">)</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>σ<!-- σ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>+</mo>
+<mi>m</mi>
+<mo stretchy="false">)</mo>
+</msqrt>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O((n+m)\log \sigma /{\sqrt {\log(n+m)}})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O((n+m)\log \sigma /{\sqrt {\log(n+m)}})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/98f90f368de2365b305f8b94323af8b86a7301ac" style="vertical-align: -1.838ex; width:31.286ex; height:4.843ex;"/></span> time using <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O((n+m)\log \sigma /\log(n+m))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>+</mo>
+<mi>m</mi>
+<mo stretchy="false">)</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>σ<!-- σ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>+</mo>
+<mi>m</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O((n+m)\log \sigma /\log(n+m))}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O((n+m)\log \sigma /\log(n+m))}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7aa4a4febfc0edc2815da4abeb4126cf07391fac" style="vertical-align: -0.838ex; width:29.349ex; height:2.843ex;"/></span> space.<sup class="reference" id="cite_ref-CKPR21_1-0">[1]</sup> Solving the problem by dynamic programming costs <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta (nm)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mi>m</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta (nm)}</annotation>
+</semantics>
+</math></span><img alt="\Theta (nm)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/898e6144a1df9ddd93c37bb85bda9382b04aab3c" style="vertical-align: -0.838ex; width:7.053ex; height:2.843ex;"/></span>. The solutions to the generalized problem take <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta (n_{1}+...+n_{K})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>+</mo>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>K</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta (n_{1}+...+n_{K})}</annotation>
+</semantics>
+</math></span><img alt="\Theta (n_{1}+...+n_{K})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/335cdac73a268e64aa7a7d3aad413b07af45bf44" style="vertical-align: -0.838ex; width:15.872ex; height:2.843ex;"/></span> space and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta (n_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta (n_{1}}</annotation>
+</semantics>
+</math></span><img alt="\Theta (n_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f513ce483521b607e50b32fbe1b83be9c177befc" style="vertical-align: -0.838ex; width:5.162ex; height:2.843ex;"/></span>·...·<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n_{K})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>K</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n_{K})}</annotation>
+</semantics>
+</math></span><img alt="n_{K})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9463b374c9dcba324cd33d8c81116fe951d5d89f" style="vertical-align: -0.838ex; width:3.992ex; height:2.843ex;"/></span> time with dynamic programming and take <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta ((n_{1}+...+n_{K})*K)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>+</mo>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>K</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>∗<!-- ∗ --></mo>
+<mi>K</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta ((n_{1}+...+n_{K})*K)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \Theta ((n_{1}+...+n_{K})*K)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/04191ebe917e9e0423ebf94ec1d9628ff0c5e8df" style="vertical-align: -0.838ex; width:21.942ex; height:2.843ex;"/></span> time with a generalized suffix tree.
+</p>
+<h3><span class="mw-headline" id="Suffix_tree">Suffix tree</span><span class="mw-editsection"></span></h3>
+
+<p>The longest common substrings of a set of strings can be found by building a generalized suffix tree for the strings, and then finding the deepest internal nodes which have leaf nodes from all the strings in the subtree below it. The figure on the right is the suffix tree for the strings "ABAB", "BABA" and "ABBA", padded with unique string terminators, to become "ABAB$0", "BABA$1" and "ABBA$2". The nodes representing "A", "B", "AB" and "BA" all have descendant leaves from all of the strings, numbered 0, 1 and 2.
+</p><p>Building the suffix tree takes <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta (N)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta (N)}</annotation>
+</semantics>
+</math></span><img alt="\Theta (N)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/22ceff8a9babd4020b848a9303747c5c1d6d09e5" style="vertical-align: -0.838ex; width:5.681ex; height:2.843ex;"/></span> time (if the size of the alphabet is constant). If the tree is traversed from the bottom up with a bit vector telling which strings are seen below each node, the k-common substring problem can be solved in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta (NK)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mi>N</mi>
+<mi>K</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta (NK)}</annotation>
+</semantics>
+</math></span><img alt="\Theta (NK)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1a1c364930f67a540bf8a0fbe22e26fb1396cc22" style="vertical-align: -0.838ex; width:7.747ex; height:2.843ex;"/></span> time. If the suffix tree is prepared for constant time lowest common ancestor retrieval, it can be solved in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta (N)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mi>N</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta (N)}</annotation>
+</semantics>
+</math></span><img alt="\Theta (N)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/22ceff8a9babd4020b848a9303747c5c1d6d09e5" style="vertical-align: -0.838ex; width:5.681ex; height:2.843ex;"/></span> time.<sup class="reference" id="cite_ref-Gus97_2-0">[2]</sup>
+</p>
+<h3><span class="mw-headline" id="Dynamic_programming">Dynamic programming</span><span class="mw-editsection"></span></h3>
+<p>The following pseudocode finds the set of longest common substrings between two strings with dynamic programming:
+</p>
+<pre><b>function</b> LCSubstr(S[1..r], T[1..n])
+    L := <b>array</b>(1..r, 1..n)
+    z := 0
+    ret := {}
+
+    <b>for</b> i := 1..r
+        <b>for</b> j := 1..n
+            <b>if</b> S[i] = T[j]
+                <b>if</b> i = 1 <b>or</b> j = 1
+                    L[i, j] := 1
+                <b>else</b>
+                    L[i, j] := L[i − 1, j − 1] + 1
+                <b>if</b> L[i, j] &gt; z
+                    z := L[i, j]
+                    ret := {S[i − z + 1..i]}
+                <b>else</b> <b>if</b> L[i, j] = z
+                    ret := ret ∪ {S[i − z + 1..i]}
+            <b>else</b>
+                L[i, j] := 0
+    <b>return</b> ret
+</pre>
+<p>This algorithm runs in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(nr)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mi>r</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(nr)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(nr)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6e4be7d00195041b16efc063d83a41f4262ce56f" style="vertical-align: -0.838ex; width:6.026ex; height:2.843ex;"/></span> time. The array <code>L</code> stores the longest common substring of the prefixes <code>S[1..i]</code> and <code>T[1..j]</code> which <i>end at position</i> <code>S[i]</code>, <code>T[j]</code>, resp. The variable <code>z</code> is used to hold the length of the longest common substring found so far. The set <code>ret</code> is used to hold the set of strings which are of length <code>z</code>. The set <code>ret</code> can be saved efficiently by just storing the index <code>i</code>, which is the last character of the longest common substring (of size z) instead of <code>S[i-z+1..i]</code>. Thus all the longest common substrings would be, for each i in <code>ret</code>, <code>S[(ret[i]-z)..(ret[i])]</code>.
+</p><p>The following tricks can be used to reduce the memory usage of an implementation:
+</p>
+<ul><li>Keep only the last and current row of the DP table to save memory (<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(\min(r,n))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mo form="prefix" movablelimits="true">min</mo>
+<mo stretchy="false">(</mo>
+<mi>r</mi>
+<mo>,</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(\min(r,n))}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(\min(r,n))}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a65d323bed8f4bdf9d4e2a97265c76ac7a25361e" style="vertical-align: -0.838ex; width:12.744ex; height:2.843ex;"/></span> instead of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(nr)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mi>r</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(nr)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(nr)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6e4be7d00195041b16efc063d83a41f4262ce56f" style="vertical-align: -0.838ex; width:6.026ex; height:2.843ex;"/></span>)</li>
+<li>Store only non-zero values in the rows. This can be done using hash-tables instead of arrays. This is useful for large alphabets.</li></ul>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Longest palindromic substring</li>
+<li><i>n</i>-gram, all the possible substrings of length <i>n</i> that are contained in a string</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1097025294" rel="mw-deduplicated-inline-style"/>
+<ul><li>Dictionary of Algorithms and Data Structures: longest common substring</li>
+<li>Perl/XS implementation of the dynamic programming algorithm</li>
+<li>Perl/XS implementation of the suffix tree algorithm</li>
+<li>Dynamic programming implementations in various languages on wikibooks</li>
+<li>working AS3 implementation of the dynamic programming algorithm</li>
+<li>Suffix Tree based C implementation of Longest common substring for two strings</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2380
+Cached time: 20221220211227
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.185 seconds
+Real time usage: 0.453 seconds
+Preprocessor visited node count: 628/1000000
+Post‐expand include size: 22227/2097152 bytes
+Template argument size: 1177/2097152 bytes
+Highest expansion depth: 13/100
+Expensive parser function count: 1/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 13081/5000000 bytes
+Lua time usage: 0.101/10.000 seconds
+Lua memory usage: 2784055/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  169.517      1 -total
+ 38.00%   64.416      1 Template:Cite_conference
+ 23.15%   39.240      1 Template:Strings
+ 22.17%   37.575      1 Template:Navbox
+ 20.07%   34.018      2 Template:Wikibooks
+ 18.99%   32.199      2 Template:Sister_project
+ 17.86%   30.281      2 Template:Side_box
+ 11.73%   19.885      1 Template:Distinguish
+  3.50%    5.926      1 Template:Cite_book
+  0.98%    1.657      9 Template:Trim
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:2167401-0!canonical and timestamp 20221220211226 and revision id 1091317052.
+ -->
+</div></body>
+</html>

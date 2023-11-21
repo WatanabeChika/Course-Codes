@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>exhaustive_search</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-More_citations_needed plainlinks metadata ambox ambox-content ambox-Refimprove" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<p>In computer science, <b>brute-force search</b> or <b>exhaustive search</b>, also known as <b>generate and test</b>, is a very general problem-solving technique and algorithmic paradigm that consists of systematically enumerating all possible candidates for the solution and checking whether each candidate satisfies the problem's statement.
+</p><p>A brute-force algorithm that finds the divisors of a natural number <i>n</i> would enumerate all integers from 1 to n, and check whether each of them divides <i>n</i> without remainder. A brute-force approach for the eight queens puzzle would examine all possible arrangements of 8 pieces on the 64-square chessboard and for each arrangement, check whether each (queen) piece can attack any other.<sup class="reference" id="cite_ref-1">[1]</sup>
+</p><p>While a brute-force search is simple to implement and will always find a solution if it exists, implementation costs are proportional to the number of candidate solutions – which in many practical problems tends to grow very quickly as the size of the problem increases (§Combinatorial explosion).<sup class="reference" id="cite_ref-2">[2]</sup> Therefore, brute-force search is typically used when the problem size is limited, or when there are problem-specific heuristics that can be used to reduce the set of candidate solutions to a manageable size. The method is also used when the simplicity of implementation is more important than speed.
+</p><p>This is the case, for example, in critical applications where any errors in the algorithm would have very serious consequences or when using a computer to prove a mathematical theorem. Brute-force search is also useful as a baseline method when benchmarking other algorithms or metaheuristics. Indeed, brute-force search can be viewed as the simplest metaheuristic. Brute force search should not be confused with backtracking, where large sets of solutions can be discarded without being explicitly enumerated (as in the textbook computer solution to the eight queens problem above). The brute-force method for finding an item in a table – namely, check all entries of the latter, sequentially – is called linear search.
+</p>
+
+<h2><span class="mw-headline" id="Implementing_the_brute-force_search">Implementing the brute-force search</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Basic_algorithm">Basic algorithm</span><span class="mw-editsection"></span></h3>
+<p>In order candidate for <i>P</i> after the current one <i>c</i>.
+</p>
+<ol><li><i>valid</i> (<i>P</i>, <i>c</i>): check whether candidate <i>c</i> is a solution for <i>P</i>.</li>
+<li><i>output</i> (<i>P</i>, <i>c</i>): use the solution <i>c</i> of <i>P</i> as appropriate to the application.</li></ol>
+<p>The <i>next</i> procedure must also tell when there are no more candidates for the instance <i>P</i>, after the current one <i>c</i>. A convenient way to do that is to return a "null candidate", some conventional data value Λ that is distinct from any real candidate. Likewise the <i>first</i> procedure should return Λ if there are no candidates at all for the instance <i>P</i>. The brute-force method is then expressed by the algorithm 
+</p>
+<pre><i>c</i> ← <i>first</i>(<i>P</i>)
+<b>while</b> <i>c</i> ≠ Λ <b>do</b>
+    <b>if</b> <i>valid</i>(<i>P</i>,<i>c</i>) <b>then</b>
+        <i>output</i>(<i>P</i>, <i>c</i>)
+    <i>c</i> ← <i>next</i>(<i>P</i>, <i>c</i>)
+<b>end while</b>
+</pre>
+<p>For example, when looking for the divisors of an integer <i>n</i>, the instance data <i>P</i> is the number <i>n</i>. The call <i>first</i>(<i>n</i>) should return the integer 1 if <i>n</i> ≥ 1, or Λ otherwise; the call <i>next</i>(<i>n</i>,<i>c</i>) should return <i>c</i> + 1 if <i>c</i> &lt; <i>n</i>, and Λ otherwise; and <i>valid</i>(<i>n</i>,<i>c</i>) should return <b>true</b> if and only if <i>c</i> is a divisor of <i>n</i>. (In fact, if we choose Λ to be <i>n</i> + 1, the tests <i>n</i> ≥ 1 and <i>c</i> &lt; <i>n</i> are unnecessary.)The brute-force search algorithm above will call <i>output</i> for every candidate that is a solution to the given instance <i>P</i>. The algorithm is easily modified to stop after finding the first solution, or a specified number of solutions; or after testing a specified number of candidates, or after spending a given amount of CPU time.
+</p>
+<h2><span class="mw-headline" id="Combinatorial_explosion">Combinatorial explosion</span><span class="mw-editsection"></span></h2>
+<p>The main disadvantage of the brute-force method is that, for many real-world problems, the number of natural candidates is prohibitively large. For instance, if we look for the divisors of a number as described above, the number of candidates tested will be the given number <i>n</i>. So if <i>n</i> has sixteen decimal digits, say, the search will require executing at least 10<sup>15</sup> computer instructions, which will take several days on a typical PC. If <i>n</i> is a random 64-bit natural number, which has about 19 decimal digits on the average, the search will take about 10 years. This steep growth in the number of candidates, as the size of the data increases, occurs in all sorts of problems. For instance, if we are seeking a particular rearrangement of 10 letters, then we have 10! = 3,628,800 candidates to consider, which a typical PC can generate and test in less than one second. However, adding one more letter – which is only a 10% increase in the data size – will multiply the number of candidates by 11, a 1000% increase. For 20 letters, the number of candidates is 20!, which is about 2.4×10<sup>18</sup> or 2.4 quintillion; and the search will take about 10 years. This unwelcome phenomenon is commonly called the combinatorial explosion, or the curse of dimensionality.
+</p><p>One example of a case where combinatorial complexity leads to solvability limit is in solving chess. Chess is not a solved game. In 2005, all chess game endings with six pieces or less were solved, showing the result of each position if played perfectly. It took ten more years to complete the tablebase with one more chess piece added, thus completing a 7-piece tablebase. Adding one more piece to a chess ending (thus making an 8-piece tablebase) is considered intractable due to the added combinatorial complexity.<sup class="reference" id="cite_ref-3">[3]</sup><sup class="reference" id="cite_ref-4">[4]</sup>
+</p>
+<h2><span class="mw-headline" id="Speeding_up_brute-force_searches">Speeding up brute-force searches</span><span class="mw-editsection"></span></h2>
+<p>One way to speed up a brute-force algorithm is to reduce the search space, that is, the set of candidate solutions, by using heuristics specific to the problem class. For example, in the eight queens problem the challenge is to place eight queens on a standard chessboard so that no queen attacks any other. Since each queen can be placed in any of the 64 squares, in principle there are 64<sup>8</sup> = 281,474,976,710,656 possibilities to consider. However, because the queens are all alike, and that no two queens can be placed on the same square, the candidates are all possible ways of choosing of a set of 8 squares from the set all 64 squares; which means 64 choose 8 = 64!/(56!*8!) = 4,426,165,368 candidate solutions – about 1/60,000 of the previous estimate. Further, no arrangement with two queens on the same row or the same column can be a solution. Therefore, we can further restrict the set of candidates to those arrangements.
+</p><p>As this example shows, a little bit of analysis will often lead to dramatic reductions in the number of candidate solutions, and may turn an intractable problem into a trivial one.
+</p><p>In some cases, the analysis may reduce the candidates to the set of all valid solutions; that is, it may yield an algorithm that directly enumerates all the desired solutions (or finds one solution, as appropriate), without wasting time with tests and the generation of invalid candidates. For example, for the problem "find all integers between 1 and 1,000,000 that are evenly divisible by 417" a naive brute-force solution would generate all integers in the range, testing each of them for divisibility. However, that problem can be solved much more efficiently by starting with 417 and repeatedly adding 417 until the number exceeds 1,000,000 – which takes only 2398 (= 1,000,000 ÷ 417) steps, and no tests.
+</p>
+<h2><span class="mw-headline" id="Reordering_the_search_space">Reordering the search space</span><span class="mw-editsection"></span></h2>
+<p>In applications that require only one solution, rather than all solutions, the expected running time of a brute force search will often depend on the order in which the candidates are tested. As a general rule, one should test the most promising candidates first. For example, when searching for a proper divisor of a random number <i>n</i>, it is better to enumerate the candidate divisors in increasing order, from 2 to <span class="nowrap"><i>n</i> − 1</span>, than the other way around – because the probability that <i>n</i> is divisible by <i>c</i> is 1/<i>c</i>. Moreover, the probability of a candidate being valid is often affected by the previous failed trials. For example, consider the problem of finding a <b>1</b> bit in a given 1000-bit string <i>P</i>. In this case, the candidate solutions are the indices 1 to 1000, and a candidate <i>c</i> is valid if <i>P</i>[<i>c</i>] = <b>1</b>. Now, suppose that the first bit of <i>P</i> is equally likely to be <b>0</b> or <b>1</b>, but each bit thereafter is equal to the previous one with 90% probability. If the candidates are enumerated in increasing order, 1 to 1000, the number <i>t</i> of candidates examined before success will be about 6, on the average. On the other hand, if the candidates are enumerated in the order 1,11,21,31...991,2,12,22,32 etc., the expected value of <i>t</i> will be only a little more than 2.More generally, the search space should be enumerated in such a way that the next candidate is most likely to be valid, <i>given that the previous trials were not</i>. So if the valid solutions are likely to be "clustered" in some sense, then each new candidate should be as far as possible from the previous ones, in that same sense. The converse holds, of course, if the solutions are likely to be spread out more uniformly than expected by chance.
+</p>
+<h2><span class="mw-headline" id="Alternatives_to_brute-force_search">Alternatives to brute-force search</span><span class="mw-editsection"></span></h2>
+<p>There are many other search methods, or metaheuristics, which are designed to take advantage of various kinds of partial knowledge one may have about the solution. Heuristics can also be used to make an early cutoff of parts of the search. One example of this is the minimax principle for searching game trees, that eliminates many subtrees at an early stage in the search. In certain fields, such as language parsing, techniques such as chart parsing can exploit constraints in the problem to reduce an exponential complexity problem into a polynomial complexity problem. In many cases, such as in Constraint Satisfaction Problems, one can dramatically reduce the search space by means of Constraint propagation, that is efficiently implemented in Constraint programming languages. The search space for problems can also be reduced by replacing the full problem with a simplified version. For example, in computer chess, rather than computing the full minimax tree of all possible moves for the remainder of the game, a more limited tree of minimax possibilities is computed, with the tree being pruned at a certain number of moves, and the remainder of the tree being approximated by a static evaluation function.
+</p>
+<h2><span class="mw-headline" id="In_cryptography">In cryptography</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>In cryptography, a <i>brute-force attack</i> involves systematically checking all possible keys until the correct key is found.<sup class="reference" id="cite_ref-5">[5]</sup> This strategy can in theory be used against any encrypted data<sup class="reference" id="cite_ref-6">[6]</sup> (except a one-time pad) by an attacker who is unable to take advantage of any weakness in an encryption system that would otherwise make his or her task easier.
+</p><p>The key length used in the encryption determines the practical feasibility of performing a brute force attack, with longer keys exponentially more difficult to crack than shorter ones. Brute force attacks can be made less effective by obfuscating the data to be encoded, something that makes it more difficult for an attacker to recognise when he has cracked the code. One of the measures of the strength of an encryption system is how long it would theoretically take an attacker to mount a successful brute force attack against it.
+</p>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>A brute-force algorithm to solve Sudoku puzzles.</li>
+<li>Brute-force attack</li>
+<li>Big O notation</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2271
+Cached time: 20221223235057
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.260 seconds
+Real time usage: 0.369 seconds
+Preprocessor visited node count: 687/1000000
+Post‐expand include size: 26291/2097152 bytes
+Template argument size: 678/2097152 bytes
+Highest expansion depth: 12/100
+Expensive parser function count: 3/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 20683/5000000 bytes
+Lua time usage: 0.165/10.000 seconds
+Lua memory usage: 5081738/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  332.474      1 -total
+ 33.79%  112.335      1 Template:Reflist
+ 23.79%   79.085      4 Template:Cite_web
+ 19.36%   64.381      1 Template:Short_description
+ 18.91%   62.856      1 Template:More_citations_needed
+ 17.29%   57.483      1 Template:Ambox
+ 16.51%   54.895      1 Template:Algorithmic_paradigms
+ 15.82%   52.583      1 Template:Navbox
+  9.51%   31.626      2 Template:Pagetype
+  6.76%   22.468      1 Template:About
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:103127-0!canonical and timestamp 20221223235057 and revision id 1123297599.
+ -->
+</div></body>
+</html>

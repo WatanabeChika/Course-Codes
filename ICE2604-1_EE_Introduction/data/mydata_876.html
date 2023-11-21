@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>spatial_access_method</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p>A <b>spatial database</b> is a general-purpose database (usually a relational database) that has been enhanced to include spatial data that represents objects defined in a geometric space, along with tools for querying and analyzing such data.  Most spatial databases allow the representation of simple geometric objects such as points, lines and polygons. Some spatial databases handle more complex structures such as 3D objects, topological coverages, linear networks, and triangulated irregular networks (TINs). While typical databases have developed to manage various numeric and character types of data, such databases require additional functionality to process spatial data types efficiently, and developers have often added <i>geometry</i> or <i>feature</i> data types. The Open Geospatial Consortium (OGC) developed the Simple Features specification (first released in 1997)<sup class="reference" id="cite_ref-1">[1]</sup> and sets standards for adding spatial functionality to database systems.<sup class="reference" id="cite_ref-2">[2]</sup> The <i>SQL/MM Spatial</i> ISO/IEC standard is a part the SQL/MM multimedia standard and extends the Simple Features standard with data types that support circular interpolations.<sup class="reference" id="cite_ref-Kresse2012_3-0">[3]</sup>
+</p>
+
+<h2><span class="mw-headline" id="Geodatabase">Geodatabase</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>A <b>geodatabase</b> (also <b>geographical database</b> and <b>geospatial database</b>) is a database of geographic data, such as countries, administrative divisions, cities, and related information. Such databases can be useful for websites that wish to identify the locations of their visitors for customization purposes.
+</p>
+<h2><span class="mw-headline" id="Characteristics">Characteristics</span><span class="mw-editsection"></span></h2>
+<p>Database systems use indexes to quickly look up values; however, this way of indexing data is not optimal for spatial queries. Instead, spatial databases use a spatial index to speed up database operations.
+</p><p>In addition to typical SQL queries such as SELECT statements, spatial databases can perform a wide variety of spatial operations. The following operations and many more are specified by the Open Geospatial Consortium standard:
+</p>
+<ul><li>Spatial Measurements: Computes line length, polygon area, the distance between geometries, etc.</li>
+<li>Spatial Functions: Modify existing features to create new ones, for example by providing a buffer around them, intersecting features, etc.</li>
+<li>Spatial Predicates: Allows true/false queries about spatial relationships between geometries.  Examples include "do two polygons overlap" or 'is there a residence located within a mile of the area we are planning to build the landfill?' (see DE-9IM)</li>
+<li>Geometry Constructors: Creates new geometries, usually by specifying the vertices (points or nodes) which define the shape.</li>
+<li>Observer Functions: Queries which return specific information about a feature such as the location of the center of a circle.</li></ul>
+<p>Some databases support only simplified or modified sets of these operations, especially in cases of NoSQL systems like MongoDB and CouchDB.
+</p>
+<h2><span class="mw-headline" id="Spatial_index">Spatial index</span><span class="mw-editsection"></span></h2>
+<p><b>Spatial indices</b> are used by spatial databases (databases which store information related to objects in space) to optimize spatial queries.  Conventional index types do not efficiently handle spatial queries such as how far two points differ, or whether points fall within a spatial area of interest. Common spatial index methods include:
+</p>
+<ul><li>Binary space partitioning (BSP-Tree): Subdividing space by hyperplanes.</li>
+<li>Bounding volume hierarchy (BVH)</li>
+<li>Geohash</li>
+<li>Grid (spatial index)</li>
+<li>HHCode</li>
+<li>Hilbert R-tree</li>
+<li>kd-tree</li>
+<li>m-tree – an m-tree index can be used for the efficient resolution of similarity queries on complex objects as compared using an arbitrary metric.</li>
+<li>Octree</li>
+<li>PH-tree</li>
+<li>Quadtree</li>
+<li>R-tree: Typically the preferred method for indexing spatial data.<sup class="reference" id="cite_ref-4">[4]</sup> Objects (shapes, lines and points) are grouped using the minimum bounding rectangle (MBR). Objects are added to an MBR within the index that will lead to the smallest increase in its size.</li>
+<li>R+ tree</li>
+<li>R* tree</li>
+<li>UB-tree</li>
+<li>X-tree</li>
+<li>Z-order (curve)</li></ul>
+<h2><span class="mw-headline" id="Spatial_query">Spatial query<span class="anchor" id="Query"></span></span><span class="mw-editsection"></span></h2>
+<p>A <b>spatial query</b> is a special type of database query supported by spatial databases, including geodatabases. The queries differ from non-spatial SQL queries in several important ways. Two of the most important are that they allow for the use of geometry data types such as points, lines and polygons and that these queries consider the spatial relationship between these geometries.
+</p><p>The function names for queries differ across geodatabases. The following list contains commonly used functions built into PostGIS, a free geodatabase which is a PostgreSQL extension (the term 'geometry' refers to a point, line, box or other two or three dimensional shape):
+</p><p>Function prototype: <i>functionName (parameter(s)) : return type </i>
+</p>
+<ul><li>Distance(geometry, geometry) : number</li>
+<li>Equals(geometry, geometry) : boolean</li>
+<li>Disjoint(geometry, geometry) : boolean</li>
+<li>Intersects(geometry, geometry) : boolean</li>
+<li>Touches(geometry, geometry) : boolean</li>
+<li>Crosses(geometry, geometry) : boolean</li>
+<li>Overlaps(geometry, geometry) : boolean</li>
+<li>Contains(geometry, geometry) : boolean</li>
+<li>Length(geometry) : number</li>
+<li>Area(geometry) : number</li>
+<li>Centroid(geometry) : geometry</li></ul>
+<h2><span class="mw-headline" id="Spatial_database_management_systems">Spatial database management systems</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<h3><span class="mw-headline" id="List">List</span><span class="mw-editsection"></span></h3>
+<ul><li>AllegroGraph – a graph database which provides a mechanism for efficient storage and retrieval of two-dimensional geospatial coordinates for Resource Description Framework data.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (July 2016)">citation needed</span></i>]</sup> It includes an extension syntax for SPARQL queries.</li>
+<li>ArangoDB - a multi-model database which provides geoindexing capability.</li>
+<li>Apache Drill - A MPP SQL query engine for querying large datasets.  Drill supports spatial data types and functions <sup class="reference" id="cite_ref-5">[5]</sup> similar to PostgreSQL.</li>
+<li>Caliper extends the Raima Data Manager with spatial datatypes, functions, and utilities.</li>
+<li>CouchDB a document-based database system that can be spatially enabled by a plugin called Geocouch</li>
+<li>Elasticsearch is a document-based database system that supports two types of geo data: geo_point fields which support lat/lon pairs, and geo_shape fields, which support points, lines, circles, polygons, multi-polygons, etc.<sup class="reference" id="cite_ref-6">[6]</sup></li>
+<li>GeoMesa is a cloud-based spatio-temporal database built on top of Apache Accumulo and Apache Hadoop (also supports Apache HBase, Google Bigtable, Apache Cassandra, and Apache Kafka). GeoMesa supports full OGC Simple Features and a GeoServer plugin.</li>
+<li>H2 supports geometry types<sup class="reference" id="cite_ref-7">[7]</sup> and spatial indices<sup class="reference" id="cite_ref-8">[8]</sup> as of version 1.3.173 (2013-07-28). An extension called H2GIS available on Maven Central gives full OGC Simple Features support.</li>
+<li>Any edition of IBM Db2 can be spatially-enabled to implement the OpenGIS spatial functionality with SQL spatial types and functions.</li>
+<li>IBM Informix Geodetic and Spatial datablade extensions auto-install on use and expand Informix's datatypes to include multiple standard coordinate systems and support for RTree indexes. Geodetic and Spatial data can also be incorporated with Informix's Timeseries data support for tracking objects in motion over time.</li>
+<li>Linter SQL Server supports spatial types and spatial functions according to the OpenGIS specifications.</li>
+<li>Microsoft SQL Server has support for spatial types since version 2008</li>
+<li>MonetDB/GIS extension for MonetDB adds OGS Simple Features to the relational column-store database.<sup class="reference" id="cite_ref-gis_9-0">[9]</sup></li>
+<li>MySQL DBMS implements the datatype <i>geometry</i>, plus some spatial functions implemented according to the OpenGIS specifications.<sup class="reference" id="cite_ref-10">[10]</sup> However, in MySQL version 5.5 and earlier, functions that test spatial relationships are limited to working with minimum bounding rectangles rather than the actual geometries. MySQL versions earlier than 5.0.16 only supported spatial data in MyISAM tables. As of MySQL 5.0.16, InnoDB, NDB, BDB, and ARCHIVE also support spatial features.</li>
+<li>Neo4j – a graph database that can build 1D and 2D indexes as B-tree, Quadtree and Hilbert curve directly in the graph</li>
+<li>OpenLink Virtuoso has supported SQL/MM since version 6.01.3126,<sup class="reference" id="cite_ref-11">[11]</sup> with significant enhancements including GeoSPARQL in Open Source Edition 7.2.6, and in Enterprise Edition 8.2.0<sup class="reference" id="cite_ref-12">[12]</sup></li>
+<li>Oracle Spatial</li>
+<li>PostgreSQL DBMS (database management system) uses the extension PostGIS to implement OGC-compliant <sup class="reference" id="cite_ref-13">[13]</sup> spatial functionality, including standardized datatype <i>geometry</i> and corresponding functions.</li>
+<li>Redis with the Geo API.<sup class="reference" id="cite_ref-14">[14]</sup></li>
+<li>RethinkDB supports geospatial indexes in 2D.</li>
+<li>SAP HANA supports geospatial with SPS08.<sup class="reference" id="cite_ref-15">[15]</sup></li>
+<li>Smallworld VMDS, the native GE Smallworld GIS database</li>
+<li>Spatial Query Server from Boeing spatially enables Sybase ASE.</li>
+<li>SpatiaLite extends Sqlite with spatial datatypes, functions, and utilities.</li>
+<li>Tarantool supports geospatial queries with RTREE index.<sup class="reference" id="cite_ref-16">[16]</sup></li>
+<li>Teradata Geospatial includes 2D spatial functionality (OGC-compliant) in its data warehouse system.</li>
+<li>Vertica Place, the geo-spatial extension for HP Vertica, adds OGC-compliant spatial features to the relational column-store database.<sup class="reference" id="cite_ref-verticaplace_17-0">[17]</sup></li></ul>
+<h3><span class="mw-headline" id="Table_of_free_systems_especially_for_spatial_data_processing">Table of free systems especially for spatial data processing</span><span class="mw-editsection"></span></h3>
+<table class="wikitable sortable">
+<tbody><tr>
+<th>DBS</th>
+<th>License</th>
+<th>Distributed</th>
+<th>Spatial objects</th>
+<th>Spatial functions</th>
+<th>PostgreSQL interface</th>
+<th>UMN MapServer interface</th>
+<th>Documentation</th>
+<th>Modifiable</th>
+<th>HDFS
+</th></tr>
+<tr>
+<td>Apache Drill
+</td>
+<td>Apache License 2.0
+</td>
+<td>yes
+</td>
+<td>yes
+</td>
+<td>yes - Drill Geospatial Functions Documentation
+</td>
+<td>yes
+</td>
+<td>no
+</td>
+<td>Official Documentation
+</td>
+<td>ANSI SQL
+</td>
+<td>yes
+</td></tr>
+<tr>
+<td>ArangoDB
+</td>
+<td>Apache License 2.0
+</td>
+<td>yes
+</td>
+<td>yes
+</td>
+<td>yes - capabilities overview query language functions
+</td>
+<td>no
+</td>
+<td>no
+</td>
+<td>official documentation
+</td>
+<td>AQL
+</td>
+<td>no
+</td></tr>
+<tr>
+<td style="text-align:left">GeoMesa
+</td>
+<td>Apache License 2.0
+</td>
+<td>yes
+</td>
+<td>yes (Simple Features)
+</td>
+<td>yes (JTS)
+</td>
+<td>no (manufacturable with GeoTools)
+</td>
+<td>no
+</td>
+<td>parts of the functions, a few examples
+</td>
+<td>with Simple Feature Access in Java Virtual Machine and Apache Spark are all kinds of tasks solvable
+</td>
+<td>yes
+</td></tr>
+<tr>
+<td style="text-align:left">H2 (H2GIS)
+</td>
+<td>LGPL 3 (since v1.3), GPL 3 before
+</td>
+<td>no
+</td>
+<td>yes (custom, no raster)
+</td>
+<td>Simple Feature Access and custom functions for H2Network
+</td>
+<td>yes
+</td>
+<td>no
+</td>
+<td>yes (homepage)
+</td>
+<td>SQL
+</td>
+<td>no
+</td></tr>
+<tr>
+<td style="text-align:left">Ingres
+</td>
+<td>GPL or proprietary
+</td>
+<td>yes (if extension is installed)
+</td>
+<td>yes (custom, no raster)
+</td>
+<td>Geometry Engine, Open Source<sup class="reference" id="cite_ref-18">[18]</sup>
+</td>
+<td>no
+</td>
+<td>with MapScript
+</td>
+<td>just briefly
+</td>
+<td>with C and OME
+</td>
+<td>no
+</td></tr>
+<tr>
+<td style="text-align:left">Neo4J-spatial<sup class="reference" id="cite_ref-19">[19]</sup>
+</td>
+<td>GNU affero general public license
+</td>
+<td>no
+</td>
+<td>yes (Simple Features)
+</td>
+<td>yes (contain, cover, covered by, cross, disjoint, intersect, intersect window, overlap, touch, within and within distance)
+</td>
+<td>no
+</td>
+<td>no
+</td>
+<td>just briefly
+</td>
+<td>fork of JTS
+</td>
+<td>no
+</td></tr>
+<tr>
+<td style="text-align:left">PostgreSQL with PostGIS
+</td>
+<td>GNU General Public License
+</td>
+<td>no
+</td>
+<td>yes (Simple Features and raster)
+</td>
+<td>yes (Simple Feature Access and raster functions)
+</td>
+<td>yes
+</td>
+<td>yes
+</td>
+<td>detailed
+</td>
+<td>SQL, in connection with R
+</td>
+<td>no
+</td></tr>
+<tr>
+<td style="text-align:left">Postgres-XL with PostGIS
+</td>
+<td>Mozilla public license and GNU general public license
+</td>
+<td>yes
+</td>
+<td>yes (Simple Features and raster)
+</td>
+<td>yes (Simple Feature Access and raster functions)
+</td>
+<td>yes
+</td>
+<td>yes
+</td>
+<td>PostGIS: yes, Postgres-XL: briefly
+</td>
+<td>SQL, in connection with R or Tcl or Python
+</td>
+<td>no
+</td></tr>
+<tr>
+<td style="text-align:left">Rasdaman
+</td>
+<td>server GPL, client LGPL, enterprise proprietary
+</td>
+<td>yes
+</td>
+<td>just raster
+</td>
+<td>raster manipulation with rasql
+</td>
+<td>yes
+</td>
+<td>with Web Coverage Service or Web Processing Service
+</td>
+<td>detailed wiki
+</td>
+<td>own defined function in enterprise edition
+</td>
+<td>no
+</td></tr>
+<tr>
+<td>RethinkDB
+</td>
+<td>AGPL
+</td>
+<td>yes
+</td>
+<td>yes
+</td>
+<td>
+<ul><li>distance</li>
+<li>getIntersecting</li>
+<li>getNearest</li>
+<li>includes</li>
+<li>intersects</li></ul>
+</td>
+<td>no
+</td>
+<td>no
+</td>
+<td>official documentation<sup class="reference" id="cite_ref-20">[20]</sup>
+</td>
+<td>forking
+</td>
+<td>no
+</td></tr></tbody></table>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Geographic information system (GIS)</li>
+<li>GeoSPARQL</li>
+<li>Glacio-geological databases</li>
+<li>Location intelligence</li>
+<li>Multimedia database</li>
+<li>Nearest neighbor search</li>
+<li>Object-based spatial database</li>
+<li>Simple Features</li>
+<li>Spatial analysis</li>
+<li>Spatial ETL</li>
+<li>Spatiotemporal database</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="Further_reading">Further reading</span><span class="mw-editsection"></span></h2>
+<ul><li>Spatial Databases: A Tour, Shashi Shekhar and Sanjay Chawla, Prentice Hall, 2003 (<link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/>ISBN 0-13-017480-7)</li>
+<li>Spatial Databases – With Application to GIS Philippe Rigaux, Michel Scholl and Agnes Voisard. Morgan Kaufmann Publishers. 2002 (<link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/>ISBN 1-55860-588-6)</li>
+<li>Evaluation of Data Management Systems for Geospatial Big Data Pouria Amirian, Anahid Basiri and Adam Winstanley. Springer. 2014 (<link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/>ISBN 9783319091563)</li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>An introduction to PostgreSQL PostGIS</li>
+<li>PostgreSQL PostGIS as components in a Service Oriented Architecture SOA</li>
+<li>A Trigger Based Security Alarming Scheme for Moving Objects on Road Networks Sajimon Abraham, P. Sojan Lal, Published by Springer Berlin / Heidelberg-2008.</li>
+<li>geodatabase ArcGIS Resource Center description of a geodatabase</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2310
+Cached time: 20221223232130
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.273 seconds
+Real time usage: 0.381 seconds
+Preprocessor visited node count: 1840/1000000
+Post‐expand include size: 30067/2097152 bytes
+Template argument size: 1864/2097152 bytes
+Highest expansion depth: 14/100
+Expensive parser function count: 5/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 54783/5000000 bytes
+Lua time usage: 0.156/10.000 seconds
+Lua memory usage: 7305769/52428800 bytes
+Number of Wikibase entities loaded: 1/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  332.565      1 -total
+ 37.57%  124.931      1 Template:Reflist
+ 28.84%   95.905     14 Template:Cite_web
+ 15.71%   52.246      1 Template:Authority_control
+ 13.95%   46.391      1 Template:Short_description
+ 12.19%   40.525      1 Template:Citation_needed
+ 10.76%   35.772      1 Template:Fix
+  9.32%   30.980      3 Template:ISBN
+  7.69%   25.585      2 Template:Pagetype
+  5.10%   16.948      3 Template:Catalog_lookup_link
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:4533551-0!canonical and timestamp 20221223232129 and revision id 1101910214.
+ -->
+</div></body>
+</html>

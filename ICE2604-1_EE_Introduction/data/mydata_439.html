@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>grid_file</title>
+</head>
+<body>
+<div class="mw-parser-output"><p>In computer science, a <b>grid file</b> or <b>bucket grid</b> is a point access method which splits a space into a non-periodic grid where one or more cells of the grid refer to a small set of points. Grid files (a symmetric data structure) provide an efficient method of storing these indexes on disk to perform complex data lookups.
+</p><p>It provides a grid of <i>n</i>-dimensions where <i>n</i> represents how many keys can be used to reference a single point.
+</p><p>Grid files do not contain any data themselves but instead contain references to the correct bucket.
+</p>
+
+<h2><span class="mw-headline" id="Uses">Uses</span><span class="mw-editsection"></span></h2>
+<p>A <b>grid file</b> is usually used in cases where a single value can be referenced by multiple keys.
+</p><p>A grid file began being used because "traditional file structures that provide multikey access to records, for example, inverted files, are extensions of file structures originally designed for single-key access. They manifest various deficiencies in particular for multikey access to highly dynamic files."<sup class="reference" id="cite_ref-tgf_1-0">[1]</sup>
+</p><p>In a traditional single dimensional data structure (e.g. hash), a search on a single criterion is usually very simple but searching for a second criterion can be much more complex.
+</p><p>Grid files represent a special kind of hashing, where the traditional hash is replaced by a grid directory.
+</p>
+<h2><span class="mw-headline" id="Examples">Examples</span><span class="mw-editsection"></span></h2>
+<h3><span id="Census_Database.5B2.5D.5B3.5D"></span><span class="mw-headline" id="Census_Database[2][3]">Census Database<sup class="reference" id="cite_ref-2">[2]</sup><sup class="reference" id="cite_ref-3">[3]</sup></span><span class="mw-editsection"></span></h3>
+<p>Consider a database containing data from a census. A single record represents a single household, and all records are grouped into buckets. All records in a bucket can be indexed by either their city (which is the same for all records in the bucket), and the streets in that city whose names begin with the same letter.
+</p><p>A grid file can be used to provide an efficient index for this structure, where records come in groupings of 26, each of them relating to street names in a city starting with one of the letters of the alphabet. This structure can be thought of as an array, table, or grid with two dimensions which we will call the x and y axes.
+</p><p>One may consider the x-axis to be the city and the y-axis to be each of the letters in the alphabet, or alternatively, the first letter of each street.
+</p><p>Each record in this structure is known as a cell. Each cell will contain a pointer to the appropriate bucket in the database where the actual data is stored. An extra cell, or record header, may be required to store the name of the city. Other cells grouped with it will only need to contain the pointer to their respective bucket, since the first cell corresponds to street names beginning with "A", the second to "B", and so on.
+</p><p>The database can be further extended to contain a continent field to expand the census to other continents. This would cause records in the same bucket to correspond to households on a street beginning with the same letter, in the same city, in the same continent.
+</p><p>The cells in the grid file would then consist of a city header, and six (one for each continent, not including Antarctica) groupings of 26 cells relating to the streets with the same starting letter, in the same city, on the same continent and could now be thought of as a three-dimensional array.
+</p>
+<h2><span class="mw-headline" id="Advantages">Advantages</span><span class="mw-editsection"></span></h2>
+<p>Since a single entry in the grid file contains pointers to all records indexed by the specified keys:<sup class="reference" id="cite_ref-adv_4-0">[4]</sup>
+</p>
+<ul><li>No special computations are required</li>
+<li>Only the right records are retrieved</li>
+<li>Can also be used for single search key queries</li>
+<li>Easy to extend to queries on <i>n</i> search keys</li>
+<li>Significant improvement in processing time for multiple-key queries</li>
+<li>Has a two-disk-access upper bound for accessing data.<sup class="reference" id="cite_ref-tgf_1-1">[1]</sup></li></ul>
+<h2><span class="mw-headline" id="Disadvantages">Disadvantages</span><span class="mw-editsection"></span></h2>
+<p>However, because of the nature of the grid file, which gives it its advantages, there are also some disadvantages:<sup class="reference" id="cite_ref-adv_4-1">[4]</sup>
+</p>
+<ul><li>Imposes space overhead</li>
+<li>Performance overhead on insertion and deletion</li></ul>
+<h2><span class="mw-headline" id="Related_Data_Structures">Related Data Structures</span><span class="mw-editsection"></span></h2>
+<ul><li>multilayer grid file</li>
+<li>twin grid files</li>
+<li>BANG file</li></ul>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Lattice graph</li>
+<li>Grid (spatial index)</li>
+<li>Index (database), Quadtree, Kd-tree, UB-tree, R-tree, range tree as alternatives.</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<!-- 
+NewPP limit report
+Parsed by mw1369
+Cached time: 20221214145242
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.103 seconds
+Real time usage: 0.131 seconds
+Preprocessor visited node count: 591/1000000
+Post‐expand include size: 2875/2097152 bytes
+Template argument size: 327/2097152 bytes
+Highest expansion depth: 16/100
+Expensive parser function count: 0/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 9273/5000000 bytes
+Lua time usage: 0.033/10.000 seconds
+Lua memory usage: 2441482/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  113.312      1 -total
+100.00%  113.312      1 Template:Reflist
+ 46.72%   52.942      2 Template:ISBN
+ 38.36%   43.472      1 Template:Cite_web
+ 36.32%   41.153      2 Template:Catalog_lookup_link
+  3.25%    3.680      6 Template:Yesno-no
+  2.10%    2.380      8 Template:Yesno
+  2.04%    2.312      3 Template:Main_other
+  1.34%    1.518      2 Template:Yesno-yes
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:6505771-0!canonical and timestamp 20221214145242 and revision id 1026932934.
+ -->
+</div></body>
+</html>

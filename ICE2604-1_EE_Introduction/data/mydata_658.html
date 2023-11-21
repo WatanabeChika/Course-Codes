@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>nondeterministic_finite_tree_automaton</title>
+</head>
+<body>
+<div class="mw-parser-output"><style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p>A <b>tree automaton</b> is a type of state machine. Tree automata deal with tree structures, rather than the strings of more conventional state machines.
+</p><p>The following article deals with branching tree automata, which correspond to regular languages of trees.
+</p><p>As with classical automata, finite tree automata (FTA) can be either a deterministic automaton or not. According to how the automaton processes the input tree, finite tree automata can be of two types: (a) bottom up, (b) top down. This is an important issue, as although non-deterministic (ND) top-down and ND bottom-up tree automata are equivalent in expressive power, deterministic top-down automata are strictly less powerful than their deterministic bottom-up counterparts, because tree properties specified by deterministic top-down tree automata can only depend on path properties. (Deterministic bottom-up tree automata are as powerful as ND tree automata.)
+</p>
+
+<h2><span class="mw-headline" id="Definitions">Definitions</span><span class="mw-editsection"></span></h2>
+<p>A <b>bottom-up finite tree automaton</b> over <i>F</i> is defined as a tuple
+(<i>Q</i>, <i>F</i>, <i>Q</i><sub><i>f</i></sub>, Δ),
+where <i>Q</i> is a set of states, <i>F</i> is a ranked alphabet (i.e., an alphabet whose symbols have an associated arity), <i>Q</i><sub><i>f</i></sub> ⊆ <i>Q</i> is a set of final states, and Δ is a set of transition rules of the form <i>f</i>(<i>q</i><sub>1</sub>(<i>x</i><sub>1</sub>),...,<i>q</i><sub><i>n</i></sub>(<i>x</i><sub><i>n</i></sub>)) → <i>q</i>(<i>f</i>(<i>x</i><sub>1</sub>,...,<i>x</i><sub><i>n</i></sub>)), for an <i>n</i>-ary <i>f</i> ∈ <i>F</i>, <i>q</i>, <i>q</i><sub><i>i</i></sub> ∈ <i>Q</i>, and <i>x</i><sub><i>i</i></sub> variables denoting subtrees. That is, members of Δ are rewrite rules from nodes whose childs' roots are states, to nodes whose roots are states. Thus the state of a node is deduced from the states of its children.
+</p><p>For <i>n</i>=0, that is, for a constant symbol <i>f</i>, the above transition rule definition reads <i>f</i>() → <i>q</i>(<i>f</i>()); often the empty parentheses are omitted for convenience: <i>f</i> → <i>q</i>(<i>f</i>).
+Since these transition rules for constant symbols (leaves) do not require a state, no explicitly defined initial states are needed.
+A bottom-up tree automaton is run on a ground term over <i>F</i>, starting at all its leaves simultaneously and moving upwards, associating a run state from <i>Q</i> with each subterm.
+The term is accepted if its root is associated to an accepting state from <i>Q</i><sub><i>f</i></sub>.<sup class="reference" id="cite_ref-FOOTNOTEComon_et_al.2008sect._1.1,_p._20_1-0">[1]</sup>
+</p><p>A <b>top-down finite tree automaton</b> over <i>F</i> is defined as a tuple
+(<i>Q</i>, <i>F</i>, <i>Q</i><sub><i>i</i></sub>, Δ),
+with two differences with bottom-up tree automata. First, <i>Q</i><sub><i>i</i></sub> ⊆ <i>Q</i>, the set of its initial states, replaces <i>Q</i><sub><i>f</i></sub>; second, its transition rules are oriented conversely:
+<i>q</i>(<i>f</i>(<i>x</i><sub>1</sub>,...,<i>x</i><sub><i>n</i></sub>))  → <i>f</i>(<i>q</i><sub>1</sub>(<i>x</i><sub>1</sub>),...,<i>q</i><sub><i>n</i></sub>(<i>x</i><sub><i>n</i></sub>)), for an <i>n</i>-ary <i>f</i> ∈ <i>F</i>, <i>q</i>, <i>q</i><sub><i>i</i></sub> ∈ <i>Q</i>, and <i>x</i><sub><i>i</i></sub> variables denoting subtrees.
+That is, members of Δ are here rewrite rules from nodes whose roots are states to nodes whose children's roots are states.
+A top-down automaton starts in some of its initial states at the root and moves downward along branches of the tree, associating along a run a state with each subterm inductively.
+A tree is accepted if every branch can be gone through this way.<sup class="reference" id="cite_ref-FOOTNOTEComon_et_al.2008sect._1.6,_p._38_2-0">[2]</sup>
+</p><p>A tree automaton is called <b>deterministic</b> (abbreviated <b>DFTA</b>) if no two rules from Δ have the same left hand side; otherwise it is called <b>nondeterministic</b> (<b>NFTA</b>).<sup class="reference" id="cite_ref-FOOTNOTEComon_et_al.2008sect._1.1,_p._23_3-0">[3]</sup> Non-deterministic top-down tree automata have the same expressive power as non-deterministic bottom-up ones;<sup class="reference" id="cite_ref-FOOTNOTEComon_et_al.2008sect._1.6,_theorem_1.6.1,_p._38_4-0">[4]</sup> the transition rules are simply reversed, and the final states become the initial states.
+</p><p>In contrast, <b>deterministic</b> top-down tree automata<sup class="reference" id="cite_ref-5">[5]</sup> are less powerful than their bottom-up counterparts, because in a deterministic tree automaton no two transition rules have the same left-hand side. For tree automata, transition rules are rewrite rules; and for top-down ones, the left-hand side will be parent nodes. Consequently, a deterministic top-down tree automaton will only be able to test for tree properties that are true in all branches, because the choice of the state to write into each child branch is determined at the parent node, without knowing the child branches contents.
+</p><p>Infinite-tree automata extend top-down automata to infinite trees, and can be used to prove decidability of  S2S, the  monadic second-order theory with two successors.  Finite tree automata (nondeterministic if top-down) suffice for WS2S.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (November 2022)">citation needed</span></i>]</sup>
+</p>
+<h2><span class="mw-headline" id="Examples">Examples</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Bottom-up_automaton_accepting_boolean_lists">Bottom-up automaton accepting boolean lists</span><span class="mw-editsection"></span></h3>
+<p>Employing coloring to distinguish members of <i>F</i> and <i>Q</i>, and using the ranked alphabet <i>F</i>={ <span style="color:#800000"><i>false</i></span>,<span style="color:#800000"><i>true</i></span>,<span style="color:#800000"><i>nil</i></span>,<span style="color:#800000"><i>cons</i></span>(.,.) }, with <span style="color:#800000"><i>cons</i></span> having arity 2 and all other symbols having arity 0, a bottom-up tree automaton accepting the set of all finite lists of boolean values can be defined as (<i>Q</i>, <i>F</i>, <i>Q</i><sub><i>f</i></sub>, Δ) with <span class="nowrap"><i>Q</i>={ <span style="color:#008000"><i>Bool</i></span>,<span style="color:#008000"><i>BList</i></span> }</span>, <i>Q</i><sub><i>f</i></sub>={ <span style="color:#008000"><i>BList</i></span> }, and Δ consisting of the rules
+</p>
+<table>
+<tbody><tr>
+<td><span style="color:#800000"><i>false</i></span></td>
+<td>→</td>
+<td><span style="color:#008000"><i>Bool</i></span>(<span style="color:#800000"><i>false</i></span>)</td>
+<td>(1),
+</td></tr>
+<tr>
+<td><span style="color:#800000"><i>true</i></span></td>
+<td>→</td>
+<td><span style="color:#008000"><i>Bool</i></span>(<span style="color:#800000"><i>true</i></span>)</td>
+<td>(2),
+</td></tr>
+<tr>
+<td><span style="color:#800000"><i>nil</i></span></td>
+<td>→</td>
+<td><span style="color:#008000"><i>BList</i></span>(<span style="color:#800000"><i>nil</i></span>)</td>
+<td>(3), and
+</td></tr>
+<tr>
+<td><span style="color:#800000"><i>cons</i></span>(<span style="color:#008000"><i>Bool</i></span>(x<sub>1</sub>),<span style="color:#008000"><i>BList</i></span>(x<sub>2</sub>))</td>
+<td>→</td>
+<td><span style="color:#008000"><i>BList</i></span>(<span style="color:#800000"><i>cons</i></span>(x<sub>1</sub>,x<sub>2</sub>))      </td>
+<td>(4).
+</td></tr></tbody></table>
+<p>In this example, the rules can be understood intuitively as assigning to each term its type in a bottom-up manner; e.g. rule (4) can be read as "A term <span style="color:#800000"><i>cons</i></span>(<i>x</i><sub>1</sub>,<i>x</i><sub>2</sub>) has type <span style="color:#008000"><i>BList</i></span>, provided <i>x</i><sub>1</sub> and <i>x</i><sub>2</sub> has type <span style="color:#008000"><i>Bool</i></span> and <span style="color:#008000"><i>BList</i></span>, respectively".
+An accepting example run is
+</p>
+<table>
+<tbody><tr>
+<td>
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>cons</i></span>(
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>false</i></span>,
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>cons</i></span>(
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>true</i></span>,
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>nil</i></span>
+</td>
+<td>))
+</td></tr>
+<tr>
+<td>⇒
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>cons</i></span>(
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>false</i></span>,
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>cons</i></span>(
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>true</i></span>,
+</td>
+<td align="RIGHT"><span style="color:#008000"><i>BList</i></span>(<span style="color:#800000"><i>nil</i></span>)
+</td>
+<td>))
+</td>
+<td>by (3)
+</td></tr>
+<tr>
+<td>⇒
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>cons</i></span>(
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>false</i></span>,
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>cons</i></span>(
+</td>
+<td align="RIGHT"><span style="color:#008000"><i>Bool</i></span>(<span style="color:#800000"><i>true</i></span>),
+</td>
+<td align="RIGHT"><span style="color:#008000"><i>BList</i></span>(<span style="color:#800000"><i>nil</i></span>)
+</td>
+<td>))
+</td>
+<td>by (2)
+</td></tr>
+<tr>
+<td>⇒
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>cons</i></span>(
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>false</i></span>,
+</td>
+<td align="RIGHT"><span style="color:#008000"><i>BList</i></span>(<span style="color:#800000"><i>cons</i></span>(
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>true</i></span>,
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>nil</i></span>
+</td>
+<td>)))
+</td>
+<td>by (4)
+</td></tr>
+<tr>
+<td>⇒
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>cons</i></span>(
+</td>
+<td align="RIGHT"><span style="color:#008000"><i>Bool</i></span>(<span style="color:#800000"><i>false</i></span>),
+</td>
+<td align="RIGHT"><span style="color:#008000"><i>BList</i></span>(<span style="color:#800000"><i>cons</i></span>(
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>true</i></span>,
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>nil</i></span>
+</td>
+<td>)))
+</td>
+<td>by (1)
+</td></tr>
+<tr>
+<td>⇒
+</td>
+<td align="RIGHT"><span style="color:#008000"><i>BList</i></span>(<span style="color:#800000"><i>cons</i></span>(
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>false</i></span>,
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>cons</i></span>(
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>true</i></span>,
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>nil</i></span>
+</td>
+<td>)))      
+</td>
+<td>by (4), accepted.
+</td></tr></tbody></table>
+<p>Cf. the derivation of the same term from a regular tree grammar corresponding to the automaton, shown at Regular tree grammar#Examples.
+</p><p>A rejecting example run is
+</p>
+<table>
+<tbody><tr>
+<td>
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>cons</i></span>(
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>false</i></span>,
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>true</i></span>
+</td>
+<td>)
+</td></tr>
+<tr>
+<td>⇒
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>cons</i></span>(
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>false</i></span>,
+</td>
+<td align="RIGHT"><span style="color:#008000"><i>Bool</i></span>(<span style="color:#800000"><i>true</i></span>)
+</td>
+<td>)
+</td>
+<td>by (1)
+</td></tr>
+<tr>
+<td>⇒
+</td>
+<td align="RIGHT"><span style="color:#800000"><i>cons</i></span>(
+</td>
+<td align="RIGHT"><span style="color:#008000"><i>Bool</i></span>(<span style="color:#800000"><i>false</i></span>),
+</td>
+<td align="RIGHT"><span style="color:#008000"><i>Bool</i></span>(<span style="color:#800000"><i>true</i></span>)
+</td>
+<td>)      
+</td>
+<td>by (2), no further rule applicable.
+</td></tr></tbody></table>
+<p>Intuitively, this corresponds to the term <span style="color:#800000"><i>cons</i></span>(<span style="color:#800000"><i>false</i></span>,<span style="color:#800000"><i>true</i></span>) not being well-typed.
+</p>
+<h3><span class="mw-headline" id="Top-down_automaton_accepting_multiples_of_3_in_binary_notation">Top-down automaton accepting multiples of 3 in binary notation</span><span class="mw-editsection"></span></h3>
+<table class="wikitable" style="float:right;">
+<tbody><tr>
+<th>
+</th>
+<th align="center"><b>(A)</b>
+</th>
+<th align="center"><b>(B)</b>
+</th>
+<th align="center"><b>(C)</b>
+</th>
+<th align="center"><b>(D)</b>
+</th></tr>
+<tr>
+<th>
+</th>
+<th align="center"><b>String</b><br/><b>grammar</b><br/><b>rules</b>
+</th>
+<th align="center"><b>String</b><br/><b>automaton</b><br/><b>transitions</b>
+</th>
+<th align="center"><b>Tree</b><br/><b>automaton</b><br/><b>transitions</b>
+</th>
+<th align="center"><b>Tree</b><br/><b>grammar</b><br/><b>rules</b>
+</th></tr>
+<tr>
+<td>
+<table>
+<tbody><tr>
+<th>0
+</th></tr>
+<tr>
+<th>1
+</th></tr>
+<tr>
+<th>2
+</th></tr>
+<tr>
+<th>3
+</th></tr>
+<tr>
+<th>4
+</th></tr>
+<tr>
+<th>5
+</th></tr>
+<tr>
+<th>6
+</th></tr></tbody></table>
+</td>
+<td>
+<table>
+<tbody><tr>
+<td><span style="color:#008000"><i>S</i><sub>0</sub></span></td>
+<td>→</td>
+<td>ε
+</td></tr>
+<tr>
+<td><span style="color:#008000"><i>S</i><sub>0</sub></span></td>
+<td>→</td>
+<td><span style="color:#800000">0</span> <span style="color:#008000"><i>S</i><sub>0</sub></span>
+</td></tr>
+<tr>
+<td><span style="color:#008000"><i>S</i><sub>0</sub></span></td>
+<td>→</td>
+<td><span style="color:#800000">1</span> <span style="color:#008000"><i>S</i><sub>1</sub></span>
+</td></tr>
+<tr>
+<td><span style="color:#008000"><i>S</i><sub>1</sub></span></td>
+<td>→</td>
+<td><span style="color:#800000">0</span> <span style="color:#008000"><i>S</i><sub>2</sub></span>
+</td></tr>
+<tr>
+<td><span style="color:#008000"><i>S</i><sub>1</sub></span></td>
+<td>→</td>
+<td><span style="color:#800000">1</span> <span style="color:#008000"><i>S</i><sub>0</sub></span>
+</td></tr>
+<tr>
+<td><span style="color:#008000"><i>S</i><sub>2</sub></span></td>
+<td>→</td>
+<td><span style="color:#800000">0</span> <span style="color:#008000"><i>S</i><sub>1</sub></span>
+</td></tr>
+<tr>
+<td><span style="color:#008000"><i>S</i><sub>2</sub></span></td>
+<td>→</td>
+<td><span style="color:#800000">1</span> <span style="color:#008000"><i>S</i><sub>2</sub></span>
+</td></tr></tbody></table>
+</td>
+<td>
+<table>
+<tbody><tr>
+<td> 
+</td></tr>
+<tr>
+<td>δ(<span style="color:#008000"><i>S</i><sub>0</sub></span>,<span style="color:#800000">0</span>)</td>
+<td>= <span style="color:#008000"><i>S</i><sub>0</sub></span>
+</td></tr>
+<tr>
+<td>δ(<span style="color:#008000"><i>S</i><sub>0</sub></span>,<span style="color:#800000">1</span>)</td>
+<td>= <span style="color:#008000"><i>S</i><sub>1</sub></span>
+</td></tr>
+<tr>
+<td>δ(<span style="color:#008000"><i>S</i><sub>1</sub></span>,<span style="color:#800000">0</span>)</td>
+<td>= <span style="color:#008000"><i>S</i><sub>2</sub></span>
+</td></tr>
+<tr>
+<td>δ(<span style="color:#008000"><i>S</i><sub>1</sub></span>,<span style="color:#800000">1</span>)</td>
+<td>= <span style="color:#008000"><i>S</i><sub>0</sub></span>
+</td></tr>
+<tr>
+<td>δ(<span style="color:#008000"><i>S</i><sub>2</sub></span>,<span style="color:#800000">0</span>)</td>
+<td>= <span style="color:#008000"><i>S</i><sub>1</sub></span>
+</td></tr>
+<tr>
+<td>δ(<span style="color:#008000"><i>S</i><sub>2</sub></span>,<span style="color:#800000">1</span>)</td>
+<td>= <span style="color:#008000"><i>S</i><sub>2</sub></span>
+</td></tr></tbody></table>
+</td>
+<td>
+<table>
+<tbody><tr>
+<td><span style="color:#008000"><i>S</i><sub>0</sub></span>(<span style="color:#800000"><i>nil</i></span>)</td>
+<td>→</td>
+<td><span style="color:#800000"><i>nil</i></span>
+</td></tr>
+<tr>
+<td><span style="color:#008000"><i>S</i><sub>0</sub></span>(<span style="color:#800000">0</span>(x))</td>
+<td>→</td>
+<td><span style="color:#800000">0</span>(<span style="color:#008000"><i>S</i><sub>0</sub></span>(x))
+</td></tr>
+<tr>
+<td><span style="color:#008000"><i>S</i><sub>0</sub></span>(<span style="color:#800000">1</span>(x))</td>
+<td>→</td>
+<td><span style="color:#800000">1</span>(<span style="color:#008000"><i>S</i><sub>1</sub></span>(x))
+</td></tr>
+<tr>
+<td><span style="color:#008000"><i>S</i><sub>1</sub></span>(<span style="color:#800000">0</span>(x))</td>
+<td>→</td>
+<td><span style="color:#800000">0</span>(<span style="color:#008000"><i>S</i><sub>2</sub></span>(x))
+</td></tr>
+<tr>
+<td><span style="color:#008000"><i>S</i><sub>1</sub></span>(<span style="color:#800000">1</span>(x))</td>
+<td>→</td>
+<td><span style="color:#800000">1</span>(<span style="color:#008000"><i>S</i><sub>0</sub></span>(x))
+</td></tr>
+<tr>
+<td><span style="color:#008000"><i>S</i><sub>2</sub></span>(<span style="color:#800000">0</span>(x))</td>
+<td>→</td>
+<td><span style="color:#800000">0</span>(<span style="color:#008000"><i>S</i><sub>1</sub></span>(x))
+</td></tr>
+<tr>
+<td><span style="color:#008000"><i>S</i><sub>2</sub></span>(<span style="color:#800000">1</span>(x))</td>
+<td>→</td>
+<td><span style="color:#800000">1</span>(<span style="color:#008000"><i>S</i><sub>2</sub></span>(x))
+</td></tr></tbody></table>
+</td>
+<td>
+<table>
+<tbody><tr>
+<td><span style="color:#008000"><i>S</i><sub>0</sub></span></td>
+<td>→</td>
+<td><span style="color:#800000"><i>nil</i></span>
+</td></tr>
+<tr>
+<td><span style="color:#008000"><i>S</i><sub>0</sub></span></td>
+<td>→</td>
+<td><span style="color:#800000">0</span>(<span style="color:#008000"><i>S</i><sub>0</sub></span>)
+</td></tr>
+<tr>
+<td><span style="color:#008000"><i>S</i><sub>0</sub></span></td>
+<td>→</td>
+<td><span style="color:#800000">1</span>(<span style="color:#008000"><i>S</i><sub>1</sub></span>)
+</td></tr>
+<tr>
+<td><span style="color:#008000"><i>S</i><sub>1</sub></span></td>
+<td>→</td>
+<td><span style="color:#800000">0</span>(<span style="color:#008000"><i>S</i><sub>2</sub></span>)
+</td></tr>
+<tr>
+<td><span style="color:#008000"><i>S</i><sub>1</sub></span></td>
+<td>→</td>
+<td><span style="color:#800000">1</span>(<span style="color:#008000"><i>S</i><sub>0</sub></span>)
+</td></tr>
+<tr>
+<td><span style="color:#008000"><i>S</i><sub>2</sub></span></td>
+<td>→</td>
+<td><span style="color:#800000">0</span>(<span style="color:#008000"><i>S</i><sub>1</sub></span>)
+</td></tr>
+<tr>
+<td><span style="color:#008000"><i>S</i><sub>2</sub></span></td>
+<td>→</td>
+<td><span style="color:#800000">1</span>(<span style="color:#008000"><i>S</i><sub>2</sub></span>)
+</td></tr></tbody></table>
+</td></tr></tbody></table>
+<table style="float:right;">
+<tbody><tr>
+<td>
+</td></tr></tbody></table>
+<p>Using the same colorization as above, this example shows how tree automata generalize ordinary string automata.
+The finite deterministic string automaton shown in the picture accepts all strings of binary digits that denote a multiple of 3.
+Using the notions from Deterministic finite automaton#Formal definition, it is defined by:
+</p>
+<ul><li>the set <i>Q</i> of states being { <span style="color:#008000"><i>S</i><sub>0</sub></span>, <span style="color:#008000"><i>S</i><sub>1</sub></span>, <span style="color:#008000"><i>S</i><sub>2</sub></span> },</li>
+<li>the input alphabet being { <span style="color:#800000">0</span>, <span style="color:#800000">1</span> },</li>
+<li>the initial state being <span style="color:#008000"><i>S</i><sub>0</sub></span>,</li>
+<li>the set of final states being { <span style="color:#008000"><i>S</i><sub>0</sub></span> }, and</li>
+<li>the transitions being as shown in column (B) of the table.</li></ul>
+<p>In the tree automaton setting, the input alphabet is changed such that the symbols <span style="color:#800000">0</span> and <span style="color:#800000">1</span> are both unary, and a nullary symbol, say <span style="color:#800000"><i>nil</i></span> is used for tree leaves.
+For example, the binary string "<span style="color:#800000">110</span>" in the string automaton setting corresponds to the term "<span style="color:#800000">1</span>(<span style="color:#800000">1</span>(<span style="color:#800000">0</span>(<span style="color:#800000"><i>nil</i></span>)))" in the tree automaton setting; this way, strings can be generalized to trees, or terms.
+The top-down finite tree automaton accepting the set of all terms corresponding to multiples of 3 in binary string notation is then defined by:
+</p>
+<ul><li>the set <i>Q</i> of states being still { <span style="color:#008000"><i>S</i><sub>0</sub></span>, <span style="color:#008000"><i>S</i><sub>1</sub></span>, <span style="color:#008000"><i>S</i><sub>2</sub></span> },</li>
+<li>the ranked input alphabet being { <span style="color:#800000">0</span>, <span style="color:#800000">1</span>, <span style="color:#800000"><i>nil</i></span> }, with <i>Arity</i>(<span style="color:#800000">0</span>)=<i>Arity</i>(<span style="color:#800000">1</span>)=1 and <i>Arity</i>(<span style="color:#800000"><i>nil</i></span>)=0, as explained,</li>
+<li>the set of initial states being { <span style="color:#008000"><i>S</i><sub>0</sub></span> }, and</li>
+<li>the transitions being as shown in column (C) of the table.</li></ul>
+<p>For example, the tree "<span style="color:#800000">1</span>(<span style="color:#800000">1</span>(<span style="color:#800000">0</span>(<span style="color:#800000"><i>nil</i></span>)))" is accepted by the following tree automaton run:
+</p>
+<table>
+<tbody><tr>
+<td></td>
+<td><span style="color:#008000"><i>S</i><sub>0</sub></span>(</td>
+<td><span style="color:#800000">1</span>(</td>
+<td></td>
+<td><span style="color:#800000">1</span>(</td>
+<td></td>
+<td><span style="color:#800000">0</span>(</td>
+<td></td>
+<td><span style="color:#800000"><i>nil</i></span></td>
+<td>))))
+</td></tr>
+<tr>
+<td>⇒</td>
+<td></td>
+<td><span style="color:#800000">1</span>(</td>
+<td><span style="color:#008000"><i>S</i><sub>1</sub></span>(</td>
+<td><span style="color:#800000">1</span>(</td>
+<td></td>
+<td><span style="color:#800000">0</span>(</td>
+<td></td>
+<td><span style="color:#800000"><i>nil</i></span></td>
+<td>))))</td>
+<td>by 2
+</td></tr>
+<tr>
+<td>⇒</td>
+<td></td>
+<td><span style="color:#800000">1</span>(</td>
+<td></td>
+<td><span style="color:#800000">1</span>(</td>
+<td><span style="color:#008000"><i>S</i><sub>0</sub></span>(</td>
+<td><span style="color:#800000">0</span>(</td>
+<td></td>
+<td><span style="color:#800000"><i>nil</i></span></td>
+<td>))))</td>
+<td>by 4
+</td></tr>
+<tr>
+<td>⇒</td>
+<td></td>
+<td><span style="color:#800000">1</span>(</td>
+<td></td>
+<td><span style="color:#800000">1</span>(</td>
+<td></td>
+<td><span style="color:#800000">0</span>(</td>
+<td><span style="color:#008000"><i>S</i><sub>0</sub></span>(</td>
+<td><span style="color:#800000"><i>nil</i></span></td>
+<td>))))</td>
+<td>by 1
+</td></tr>
+<tr>
+<td>⇒</td>
+<td></td>
+<td><span style="color:#800000">1</span>(</td>
+<td></td>
+<td><span style="color:#800000">1</span>(</td>
+<td></td>
+<td><span style="color:#800000">0</span>(</td>
+<td></td>
+<td><span style="color:#800000"><i>nil</i></span></td>
+<td>)))      </td>
+<td>by 0
+</td></tr></tbody></table>
+<p>In contrast, the term "<span style="color:#800000">1</span>(<span style="color:#800000">0</span>(<span style="color:#800000"><i>nil</i></span>))" leads to following non-accepting automaton run:
+</p>
+<table>
+<tbody><tr>
+<td>⇒  <span style="color:#008000"><i>S</i><sub>0</sub></span>(</td>
+<td><span style="color:#800000">1</span>(</td>
+<td></td>
+<td><span style="color:#800000">0</span>(</td>
+<td></td>
+<td><span style="color:#800000"><i>nil</i></span></td>
+<td>)))
+</td></tr>
+<tr>
+<td>⇒</td>
+<td><span style="color:#800000">1</span>(</td>
+<td><span style="color:#008000"><i>S</i><sub>1</sub></span>(</td>
+<td><span style="color:#800000">0</span>(</td>
+<td></td>
+<td><span style="color:#800000"><i>nil</i></span></td>
+<td>))))</td>
+<td>by 2
+</td></tr>
+<tr>
+<td>⇒</td>
+<td><span style="color:#800000">1</span>(</td>
+<td></td>
+<td><span style="color:#800000">0</span>(</td>
+<td><span style="color:#008000"><i>S</i><sub>2</sub></span>(</td>
+<td><span style="color:#800000"><i>nil</i></span></td>
+<td>))))      </td>
+<td>by 3, no further rule applicable
+</td></tr></tbody></table>
+<p>Since there are no other initial states than <span style="color:#008000"><i>S</i><sub>0</sub></span> to start an automaton run with, the term "<span style="color:#800000">1</span>(<span style="color:#800000">0</span>(<span style="color:#800000"><i>nil</i></span>))" is not accepted by the tree automaton.
+</p><p>For comparison purposes, the table gives in column (A) and (D) a (right) regular (string) grammar, and a regular tree grammar, respectively, each accepting the same language as its automaton counterpart.
+</p>
+<h2><span class="mw-headline" id="Properties">Properties</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Recognizability">Recognizability</span><span class="mw-editsection"></span></h3>
+<p>For a bottom-up automaton, a ground term <i>t</i> (that is, a tree) is accepted if there exists a reduction that starts from <i>t</i> and ends with <i>q</i>(<i>t</i>), where <i>q</i> is a final state. For a top-down automaton, a ground term <i>t</i> is accepted if there exists a reduction that starts from <i>q</i>(<i>t</i>) and ends with <i>t</i>, where <i>q</i> is an initial state.
+</p><p>The tree language <i>L</i>(<i>A</i>) <b>accepted</b>, or <b>recognized</b>, by a tree automaton <i>A</i> is the set of all ground terms accepted by <i>A</i>. A set of ground terms is <b>recognizable</b> if there exists a tree automaton that accepts it.
+</p><p>A linear (that is, arity-preserving) tree homomorphism preserves recognizability.<sup class="reference" id="cite_ref-6">[6]</sup>
+</p>
+<h3><span class="mw-headline" id="Completeness_and_reduction">Completeness and reduction</span><span class="mw-editsection"></span></h3>
+<p>A non-deterministic finite tree automaton is <b>complete</b> if there is at least one transition rule available for every possible symbol-states combination.
+A state <i>q</i> is <b>accessible</b> if there exists a ground term <i>t</i> such that there exists a reduction from <i>t</i> to <i>q</i>(<i>t</i>).
+An NFTA is <b>reduced</b> if all its states are accessible.<sup class="reference" id="cite_ref-FOOTNOTEComon_et_al.2008sect._1.1,_p._23-24_7-0">[7]</sup>
+</p>
+<h3><span class="mw-headline" id="Pumping_lemma">Pumping lemma</span><span class="mw-editsection"></span></h3>
+<p>Every sufficiently large<sup class="reference" id="cite_ref-8">[8]</sup> ground term <i>t</i> in a recognizable tree language <i>L</i> can be vertically tripartited<sup class="reference" id="cite_ref-9">[9]</sup> such that arbitrary repetition ("pumping") of the middle part keeps the resulting term in <i>L</i>.<sup class="reference" id="cite_ref-10">[10]</sup><sup class="reference" id="cite_ref-FOOTNOTEComon_et_al.2008sect._1.2,_p._29_11-0">[11]</sup>
+</p><p>For the language of all finite lists of boolean values from the above example, all terms beyond the height limit <i>k</i>=2 can be pumped, since they need to contain an occurrence of <span style="color:#800000"><i>cons</i></span>. For example,
+</p>
+<table>
+<tbody><tr>
+<td><span style="color:#800000"><i>cons</i></span>(<span style="color:#800000"><i>false</i></span>,
+</td>
+<td><span style="color:#800000"><i>cons</i></span>(<span style="color:#800000"><i>true</i></span>,<span style="color:#800000"><i>nil</i></span>)
+</td>
+<td>)
+</td>
+<td>,
+</td></tr>
+<tr>
+<td><span style="color:#800000"><i>cons</i></span>(<span style="color:#800000"><i>false</i></span>,<span style="color:#800000"><i>cons</i></span>(<span style="color:#800000"><i>false</i></span>,
+</td>
+<td><span style="color:#800000"><i>cons</i></span>(<span style="color:#800000"><i>true</i></span>,<span style="color:#800000"><i>nil</i></span>)
+</td>
+<td>))
+</td>
+<td>,
+</td></tr>
+<tr>
+<td><span style="color:#800000"><i>cons</i></span>(<span style="color:#800000"><i>false</i></span>,<span style="color:#800000"><i>cons</i></span>(<span style="color:#800000"><i>false</i></span>,<span style="color:#800000"><i>cons</i></span>(<span style="color:#800000"><i>false</i></span>,
+</td>
+<td><span style="color:#800000"><i>cons</i></span>(<span style="color:#800000"><i>true</i></span>,<span style="color:#800000"><i>nil</i></span>)
+</td>
+<td>)))
+</td>
+<td>, ...
+</td></tr></tbody></table>
+<p>all belong to that language.
+</p>
+<h3><span class="mw-headline" id="Closure">Closure</span><span class="mw-editsection"></span></h3>
+<p>The class of recognizable tree languages is closed under union, under complementation, and under intersection.<sup class="reference" id="cite_ref-FOOTNOTEComon_et_al.2008sect._1.3,_theorem_1.3.1,_p._30_12-0">[12]</sup>
+</p>
+<h3><span id="Myhill.E2.80.93Nerode_theorem"></span><span class="mw-headline" id="Myhill–Nerode_theorem">Myhill–Nerode theorem</span><span class="mw-editsection"></span></h3>
+<p>A congruence on the set of all trees over a ranked alphabet <i>F</i> is an equivalence relation such that <i>u</i><sub>1</sub> ≡ <i>v</i><sub>1</sub> and ... and <i>u</i><sub><i>n</i></sub> ≡ <i>v</i><sub><i>n</i></sub> implies <i>f</i>(<i>u</i><sub>1</sub>,...,<i>u</i><sub><i>n</i></sub>) ≡ <i>f</i>(<i>v</i><sub>1</sub>,...,<i>v</i><sub><i>n</i></sub>), for every <i>f</i> ∈ <i>F</i>.
+It is of finite index if its number of equivalence-classes is finite.
+</p><p>For a given tree-language <i>L</i>, a congruence can be defined by <i>u</i> ≡<sub><i>L</i></sub> <i>v</i> if  <i>C</i>[<i>u</i>] ∈ <i>L</i> ⇔ <i>C</i>[<i>v</i>] ∈ <i>L</i> for each context <i>C</i>.
+</p><p>The Myhill–Nerode theorem for tree automata states that the following three statements are equivalent:<sup class="reference" id="cite_ref-FOOTNOTEComon_et_al.2008sect._1.5,_p_.36_13-0">[13]</sup>
+</p>
+<ol><li><i>L</i> is a recognizable tree language</li>
+<li><i>L</i> is the union of some equivalence classes of a congruence of finite index</li>
+<li>the relation ≡<sub><i>L</i></sub> is a congruence of finite index</li></ol>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Courcelle's theorem - an application of tree automata to prove an algorithmic meta-theorem about graphs</li>
+<li>Tree transducers - extend tree automata in the same way that word transducers extend word automata.</li>
+<li>Alternating tree automata</li>
+<li>Infinite-tree automata</li></ul>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<ul><li><style data-mw-deduplicate="TemplateStyles:r1067248974">.mw-parser-output cite.citation{font-style:inherit;word-wrap:break-word}.mw-parser-output .citation q{quotes:"\"""\"""'""'"}.mw-parser-output .citation:target{background-color:rgba(0,127,255,0.133)}.mw-parser-output .id-lock-free a,.mw-parser-output .citation .cs1-lock-free a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/6/65/Lock-green.svg")right 0.1em center/9px no-repeat}.mw-parser-output .id-lock-limited a,.mw-parser-output .id-lock-registration a,.mw-parser-output .citation .cs1-lock-limited a,.mw-parser-output .citation .cs1-lock-registration a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/d/d6/Lock-gray-alt-2.svg")right 0.1em center/9px no-repeat}.mw-parser-output .id-lock-subscription a,.mw-parser-output .citation .cs1-lock-subscription a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/a/aa/Lock-red-alt-2.svg")right 0.1em center/9px no-repeat}.mw-parser-output .cs1-ws-icon a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/4/4c/Wikisource-logo.svg")right 0.1em center/12px no-repeat}.mw-parser-output .cs1-code{color:inherit;background:inherit;border:none;padding:inherit}.mw-parser-output .cs1-hidden-error{display:none;color:#d33}.mw-parser-output .cs1-visible-error{color:#d33}.mw-parser-output .cs1-maint{display:none;color:#3a3;margin-left:0.3em}.mw-parser-output .cs1-format{font-size:95%}.mw-parser-output .cs1-kern-left{padding-left:0.2em}.mw-parser-output .cs1-kern-right{padding-right:0.2em}.mw-parser-output .citation .mw-selflink{font-weight:inherit}</style><cite class="citation book cs1" id="CITEREFComon_et_al.2008">Comon, Hubert; Dauchet, Max; Gilleron, Rémi; Jacquemard, Florent; Lugiez, Denis; Löding, Christof; Tison, Sophie; Tommasi, Marc (November 2008). <i>Tree Automata Techniques and Applications</i><span class="reference-accessdate">. Retrieved <span class="nowrap">11 February</span> 2014</span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Tree+Automata+Techniques+and+Applications&amp;rft.date=2008-11&amp;rft.aulast=Comon&amp;rft.aufirst=Hubert&amp;rft.au=Dauchet%2C+Max&amp;rft.au=Gilleron%2C+R%C3%A9mi&amp;rft.au=Jacquemard%2C+Florent&amp;rft.au=Lugiez%2C+Denis&amp;rft.au=L%C3%B6ding%2C+Christof&amp;rft.au=Tison%2C+Sophie&amp;rft.au=Tommasi%2C+Marc&amp;rft_id=https%3A%2F%2Fhal.inria.fr%2Fhal-03367725%2Fdocument&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ATree+automaton"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFHosoya2010">Hosoya, Haruo (4 November 2010). <i>Foundations of XML Processing: The Tree-Automata Approach</i>. Cambridge University Press. ISBN <bdi>978-1-139-49236-2</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Foundations+of+XML+Processing%3A+The+Tree-Automata+Approach&amp;rft.pub=Cambridge+University+Press&amp;rft.date=2010-11-04&amp;rft.isbn=978-1-139-49236-2&amp;rft.aulast=Hosoya&amp;rft.aufirst=Haruo&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ATree+automaton"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation arxiv cs1" id="CITEREFGécsegSteinby1984">Gécseg, Ferenc; Steinby, Magnus (1984). "Tree Automata". arXiv:<span class="cs1-lock-free" title="Freely accessible">1509.06233</span> [cs.FL].</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=preprint&amp;rft.jtitle=arXiv&amp;rft.atitle=Tree+Automata&amp;rft.date=1984&amp;rft_id=info%3Aarxiv%2F1509.06233&amp;rft.aulast=G%C3%A9cseg&amp;rft.aufirst=Ferenc&amp;rft.au=Steinby%2C+Magnus&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ATree+automaton"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation arxiv cs1" id="CITEREFEngelfriet1975">Engelfriet, Joost (1975). "Tree Automata and Tree Grammars". arXiv:<span class="cs1-lock-free" title="Freely accessible">1510.02036</span> [cs.FL].</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=preprint&amp;rft.jtitle=arXiv&amp;rft.atitle=Tree+Automata+and+Tree+Grammars&amp;rft.date=1975&amp;rft_id=info%3Aarxiv%2F1510.02036&amp;rft.aulast=Engelfriet&amp;rft.aufirst=Joost&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ATree+automaton"></span></li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Implementations">Implementations</span><span class="mw-editsection"></span></h3>
+<ul><li>Grappa - ranked and unranked tree automata libraries (OCaml)</li>
+<li>Timbuk - tools for reachability analysis and tree automata calculations (OCaml)</li>
+<li>LETHAL - library for working with finite tree and hedge automata (Java)</li>
+<li>Machine-checked tree automata library (Isabelle [OCaml, SML, Haskell])</li>
+<li>VATA - a library for efficient manipulation of non-deterministic tree automata (C++)</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2277
+Cached time: 20221221044109
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.354 seconds
+Real time usage: 0.455 seconds
+Preprocessor visited node count: 3838/1000000
+Post‐expand include size: 41648/2097152 bytes
+Template argument size: 10100/2097152 bytes
+Highest expansion depth: 12/100
+Expensive parser function count: 2/500
+Unstrip recursion depth: 0/20
+Unstrip post‐expand size: 18276/5000000 bytes
+Lua time usage: 0.176/10.000 seconds
+Lua memory usage: 4929000/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  367.894      1 -total
+ 22.27%   81.922      2 Template:Cite_book
+ 20.24%   74.474      1 Template:Formal_languages_and_grammars
+ 19.56%   71.962      1 Template:Navbox_with_columns
+ 15.91%   58.522      8 Template:Sfn
+ 12.72%   46.783      1 Template:Cn
+ 10.53%   38.744      1 Template:For
+ 10.48%   38.559      1 Template:Fix
+  7.46%   27.429      1 Template:Reflist
+  6.61%   24.336      2 Template:Category_handler
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:98748-0!canonical and timestamp 20221221044109 and revision id 1127157929.
+ -->
+</div></body>
+</html>

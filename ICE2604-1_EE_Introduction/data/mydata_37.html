@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>American_flag_sort</title>
+</head>
+<body>
+<div class="mw-parser-output"><style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-More_citations_needed plainlinks metadata ambox ambox-content ambox-Refimprove" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<p>An <b>American flag sort</b> is an efficient, in-place variant of radix sort that distributes items into buckets.  Non-comparative sorting algorithms such as radix sort and American flag sort are typically used to sort large objects such as strings, for which comparison is not a unit-time operation.<sup class="reference" id="cite_ref-mcilroy_1-0">[1]</sup>
+American flag sort iterates through the bits of the objects, considering several bits of each object at a time.  For each set of bits, American flag sort makes two passes through the array of objects: first to count the number of objects that will fall in each bin, and second to place each object in its bucket.  This works especially well when sorting a byte at a time, using 256 buckets. With some optimizations, it is twice as fast as quicksort for large sets of strings.<sup class="reference" id="cite_ref-mcilroy_1-1">[1]</sup>
+</p><p>The name American flag sort comes by analogy with the Dutch national flag problem in the last step: efficiently partition the array into many "stripes".
+</p>
+
+<h2><span class="mw-headline" id="Algorithm">Algorithm</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1097763485" rel="mw-deduplicated-inline-style"/><table class="box-Confusing plainlinks metadata ambox ambox-style ambox-confusing" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<p>Sorting algorithms in general sort a list of objects according to some ordering scheme. In contrast to comparison-based sorting algorithms, such as quicksort, American flag sort can only sort integers (or objects that can be interpreted as integers). In-place sorting algorithms, including American flag sort, run without allocating a significant amount of memory beyond that used by the original array. This is a significant advantage, both in memory savings and in time saved copying the array.
+</p><p>American flag sort works by successively dividing a list of objects into buckets based on the first digit of their base-N representation (the base used is referred to as the <i>radix</i>). When <i>N</i> is 3, each object can be swapped into the correct bucket by using the Dutch national flag algorithm. When <i>N</i> is larger, however, objects cannot be immediately swapped into place, because it is unknown where each bucket should begin and end. American flag sort gets around this problem by making two passes through the array. The first pass counts the number of objects that belong in each of the <i>N</i> buckets. The beginning of each bucket is then computed as the sum of sizes of the preceding buckets. The second pass puts each object into the correct bucket.
+</p><p>American flag sort is most efficient with a radix that is a power of 2, because bit-shifting operations can be used instead of expensive exponentiations to compute the value of each digit. When sorting strings using 8- or 7-bit encodings such as ASCII, it is typical to use a radix of 256 or 128, which amounts to sorting character-by-character.<sup class="reference" id="cite_ref-mcilroy_1-2">[1]</sup>
+</p>
+<h3><span class="mw-headline" id="Performance_considerations">Performance considerations</span><span class="mw-editsection"></span></h3>
+<p>It is worth noting that for pure English alphabet text, the counts histogram is always sparse. Depending on the hardware, it may be worth clearing the counts in correspondence with completing a bucket (as in the original paper.) Or it may be worth maintaining a max and min active bucket, or a more complex data structure suitable for sparse arrays. It is also important to use a more basic sorting method for very small data sets, except in pathological cases where keys may share very long prefixes.
+</p><p>Most critically, this algorithm follows a random permutation, and is thus particularly cache-unfriendly for large datasets.<sup class="reference" id="cite_ref-2">[2]</sup> It is a suitable algorithm in conjunction with a <i>k</i>-way merge algorithm.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (October 2020)">citation needed</span></i>]</sup> (The original paper was written before cached memory was in common use.)
+</p>
+<h3><span class="mw-headline" id="Pseudocode">Pseudocode</span><span class="mw-editsection"></span></h3>
+<pre>american_flag_sort(Array, Radix)
+    for each digit D:
+        # first pass: compute counts
+        Counts &lt;- zeros(Radix)
+        for object X in Array:
+            Counts[digit D of object X in base Radix] += 1
+        # compute bucket offsets
+        Offsets &lt;- [ sum(Counts[0..i]) for i in 1..Radix]
+        # swap objects into place
+        for object X in Array:
+            swap X to the bucket starting at Offsets[digit D of X in base Radix]
+        for each Bucket:
+            american_flag_sort(Bucket, Radix)
+</pre>
+<h3><span class="mw-headline" id="Sample_implementation_in_Python">Sample implementation in Python</span><span class="mw-editsection"></span></h3>
+<p>This example written in the Python programming language will perform American flag sort for any radix of 2 or greater. Simplicity of exposition is chosen over clever programming, and so the log function is used instead of bit shifting techniques.
+</p>
+
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Bucket sort</li>
+<li>Multi-key quicksort</li>
+<li>Radixsort</li>
+<li>Dutch national flag problem</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h3><span class="mw-headline" id="General">General</span><span class="mw-editsection"></span></h3>
+<ul><li><img alt="Public Domain" class="noviewer" data-file-height="196" data-file-width="196" decoding="async" height="12" src="//upload.wikimedia.org/wikipedia/en/thumb/6/62/PD-icon.svg/12px-PD-icon.svg.png" srcset="//upload.wikimedia.org/wikipedia/en/thumb/6/62/PD-icon.svg/18px-PD-icon.svg.png 1.5x, //upload.wikimedia.org/wikipedia/en/thumb/6/62/PD-icon.svg/24px-PD-icon.svg.png 2x" width="12"/> This article incorporates public domain material from <link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs1" id="CITEREFPaul_E._Black">Paul E. Black. "American flag sort". <i>Dictionary of Algorithms and Data Structures</i>. NIST.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Dictionary+of+Algorithms+and+Data+Structures&amp;rft.atitle=American+flag+sort&amp;rft.au=Paul+E.+Black&amp;rft_id=https%3A%2F%2Fxlinux.nist.gov%2Fdads%2FHTML%2FamericanFlagSort.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AAmerican+flag+sort"></span></li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2316
+Cached time: 20221221051758
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.231 seconds
+Real time usage: 0.312 seconds
+Preprocessor visited node count: 777/1000000
+Post‐expand include size: 40326/2097152 bytes
+Template argument size: 1760/2097152 bytes
+Highest expansion depth: 17/100
+Expensive parser function count: 5/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 25783/5000000 bytes
+Lua time usage: 0.150/10.000 seconds
+Lua memory usage: 4599472/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  266.121      1 -total
+ 30.15%   80.228      1 Template:Reflist
+ 27.57%   73.359      1 Template:Refimprove
+ 24.46%   65.094      1 Template:Cite_journal
+ 23.23%   61.826      2 Template:Ambox
+ 21.67%   57.662      1 Template:Sorting
+ 20.96%   55.776      1 Template:Navbox
+  8.88%   23.630      1 Template:Cn
+  8.70%   23.157      1 Template:DADS
+  6.82%   18.139      3 Template:If_empty
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:9080565-0!canonical and timestamp 20221221051758 and revision id 997792704.
+ -->
+</div></body>
+</html>

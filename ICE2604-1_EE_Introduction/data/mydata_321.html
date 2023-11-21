@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>dynamization_transformation</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p>In computer science, <b>dynamization</b> is the process of transforming a static data structure into a dynamic one. Although static data structures may provide very good functionality and fast queries, their utility is limited because of their inability to grow/shrink quickly, thus making them inapplicable for the solution of dynamic problems, where the amount of the input data changes. Dynamization techniques provide uniform ways of creating dynamic data structures.
+</p>
+<h2><span class="mw-headline" id="Decomposable_search_problems">Decomposable search problems</span><span class="mw-editsection"></span></h2>
+<p>We define problem <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P}</annotation>
+</semantics>
+</math></span><img alt="P" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b4dc73bf40314945ff376bd363916a738548d40a" style="vertical-align: -0.338ex; width:1.745ex; height:2.176ex;"/></span> of searching for the predicate <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span> match in the set <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>S</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S}</annotation>
+</semantics>
+</math></span><img alt="S" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4611d85173cd3b508e67077d4a1252c9c05abca2" style="vertical-align: -0.338ex; width:1.499ex; height:2.176ex;"/></span> as <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P(M,S)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+<mo stretchy="false">(</mo>
+<mi>M</mi>
+<mo>,</mo>
+<mi>S</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P(M,S)}</annotation>
+</semantics>
+</math></span><img alt="P(M,S)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9b65f1724019aa298bde6a60d2ebf672575b0419" style="vertical-align: -0.838ex; width:8.53ex; height:2.843ex;"/></span>. Problem <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P}</annotation>
+</semantics>
+</math></span><img alt="P" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b4dc73bf40314945ff376bd363916a738548d40a" style="vertical-align: -0.338ex; width:1.745ex; height:2.176ex;"/></span> is <i>decomposable</i> if the set <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>S</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S}</annotation>
+</semantics>
+</math></span><img alt="S" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4611d85173cd3b508e67077d4a1252c9c05abca2" style="vertical-align: -0.338ex; width:1.499ex; height:2.176ex;"/></span> can be decomposed into subsets <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S_{i}}</annotation>
+</semantics>
+</math></span><img alt="S_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/de6e810a93f67802ecb603ee0e3324005c6e583e" style="vertical-align: -0.671ex; width:2.225ex; height:2.509ex;"/></span> and there exists an operation <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle +}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>+</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle +}</annotation>
+</semantics>
+</math></span><img alt="+" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fe6ef363cd19902d1a7a71fb1c8b21e8ede52406" style="vertical-align: -0.505ex; width:1.808ex; height:2.176ex;"/></span> of result unification such that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P(M,S)=P(M,S_{0})+P(M,S_{1})+\dots +P(M,S_{n})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+<mo stretchy="false">(</mo>
+<mi>M</mi>
+<mo>,</mo>
+<mi>S</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>P</mi>
+<mo stretchy="false">(</mo>
+<mi>M</mi>
+<mo>,</mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>P</mi>
+<mo stretchy="false">(</mo>
+<mi>M</mi>
+<mo>,</mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mo>⋯<!-- ⋯ --></mo>
+<mo>+</mo>
+<mi>P</mi>
+<mo stretchy="false">(</mo>
+<mi>M</mi>
+<mo>,</mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P(M,S)=P(M,S_{0})+P(M,S_{1})+\dots +P(M,S_{n})}</annotation>
+</semantics>
+</math></span><img alt="P(M,S) = P(M,S_0) + P(M,S_1) + \dots + P(M,S_n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cd32abfe6ee49f9054685d4132e1a277de80da81" style="vertical-align: -0.838ex; width:51.567ex; height:2.843ex;"/></span>.
+</p>
+<h2><span class="mw-headline" id="Decomposition">Decomposition</span><span class="mw-editsection"></span></h2>
+<p>Decomposition is a term used in computer science to break static data structures into smaller units of unequal size. The basic principle is the idea that any decimal number can be translated into a representation in any other base. For more details about the topic see Decomposition (computer science). For simplicity, binary system will be used in this article but any other base (as well as other possibilities such as Fibonacci numbers) can also be utilized.
+</p><p>If using the binary system, a set of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span> elements is broken down into subsets of sizes with 
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{i}*n_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msup>
+<mo>∗<!-- ∗ --></mo>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{i}*n_{i}}</annotation>
+</semantics>
+</math></span><img alt="2^{i}*n_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a1a432b23f5592d6da4e8846d3d673a180d8f505" style="vertical-align: -0.671ex; width:6.351ex; height:3.009ex;"/></span></dd></dl>
+<p>elements where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n_{i}}</annotation>
+</semantics>
+</math></span><img alt="n_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/57f87f905ba5a4d8c691ccaecd65fc47bd007ba4" style="vertical-align: -0.671ex; width:2.194ex; height:2.009ex;"/></span> is the  <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span>-th bit of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span> in binary. This means that if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span> has <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span>-th bit equal to 0, the corresponding set does not contain any elements. Each of the subset has the same property as the original static data structure. Operations performed on the new dynamic data structure may involve traversing <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \log _{2}\left(n\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow>
+<mo>(</mo>
+<mi>n</mi>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \log _{2}\left(n\right)}</annotation>
+</semantics>
+</math></span><img alt="\log_{2}\left(n\right)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b630e149fe3ca5c72c8633a2615e265afefeec56" style="vertical-align: -0.838ex; width:7.23ex; height:2.843ex;"/></span> sets formed by decomposition. As a result, this will add <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(\log \left(n\right))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow>
+<mo>(</mo>
+<mi>n</mi>
+<mo>)</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(\log \left(n\right))}</annotation>
+</semantics>
+</math></span><img alt="O(\log\left(n\right))" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/91bf669fcfde70433ff10e25e3a732126dc24497" style="vertical-align: -0.838ex; width:9.758ex; height:2.843ex;"/></span>  factor as opposed to the static data structure operations but will allow insert/delete operation to be added. 
+</p><p>Kurt Mehlhorn proved several equations for time complexity of operations on the data structures dynamized according to this idea. Some of these equalities are listed. 
+</p><p>If 
+</p>
+<ul><li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P_{S}\left(n\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>P</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>S</mi>
+</mrow>
+</msub>
+<mrow>
+<mo>(</mo>
+<mi>n</mi>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P_{S}\left(n\right)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle P_{S}\left(n\right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d72d5008d4c863d27cb4942718028bdb7cc2e998" style="vertical-align: -0.838ex; width:6.376ex; height:2.843ex;"/></span> is the time to build the static data structure</li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Q_{S}\left(n\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>Q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>S</mi>
+</mrow>
+</msub>
+<mrow>
+<mo>(</mo>
+<mi>n</mi>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Q_{S}\left(n\right)}</annotation>
+</semantics>
+</math></span><img alt="Q_S\left(n\right)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cef7ca24d2797192ff4fd544ca15bffa7f8d991c" style="vertical-align: -0.838ex; width:6.722ex; height:2.843ex;"/></span> is the time to query the static data structure</li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Q_{D}\left(n\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>Q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>D</mi>
+</mrow>
+</msub>
+<mrow>
+<mo>(</mo>
+<mi>n</mi>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Q_{D}\left(n\right)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle Q_{D}\left(n\right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/03bee8c0496de8c835b609fb77ebd64d3fc20c5b" style="vertical-align: -0.838ex; width:7.022ex; height:2.843ex;"/></span> is the time to query the dynamic data structure formed by decomposition</li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\overline {I}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>I</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\overline {I}}}</annotation>
+</semantics>
+</math></span><img alt="\overline {I}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/43b8e66ae8bc148a0ef25e32292c223ee9ae24d5" style="vertical-align: -0.338ex; width:1.383ex; height:3.009ex;"/></span> is the amortized insertion time</li></ul>
+<p>then
+</p>
+<ul><li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Q_{D}\left(n\right)=O\left(Q_{S}\left(n\right)\cdot \log \left(n\right)\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>Q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>D</mi>
+</mrow>
+</msub>
+<mrow>
+<mo>(</mo>
+<mi>n</mi>
+<mo>)</mo>
+</mrow>
+<mo>=</mo>
+<mi>O</mi>
+<mrow>
+<mo>(</mo>
+<mrow>
+<msub>
+<mi>Q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>S</mi>
+</mrow>
+</msub>
+<mrow>
+<mo>(</mo>
+<mi>n</mi>
+<mo>)</mo>
+</mrow>
+<mo>⋅<!-- ⋅ --></mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow>
+<mo>(</mo>
+<mi>n</mi>
+<mo>)</mo>
+</mrow>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Q_{D}\left(n\right)=O\left(Q_{S}\left(n\right)\cdot \log \left(n\right)\right)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle Q_{D}\left(n\right)=O\left(Q_{S}\left(n\right)\cdot \log \left(n\right)\right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0def4b91ad45da0a78ef8b95cabaa10a6837699f" style="vertical-align: -0.838ex; width:28.667ex; height:2.843ex;"/></span></li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\overline {I}}=O\left(\left(P_{S}\left(n\right)/n\right)\cdot \log \left(n\right)\right).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>I</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>=</mo>
+<mi>O</mi>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mrow>
+<mo>(</mo>
+<mrow>
+<msub>
+<mi>P</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>S</mi>
+</mrow>
+</msub>
+<mrow>
+<mo>(</mo>
+<mi>n</mi>
+<mo>)</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>n</mi>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mo>⋅<!-- ⋅ --></mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow>
+<mo>(</mo>
+<mi>n</mi>
+<mo>)</mo>
+</mrow>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\overline {I}}=O\left(\left(P_{S}\left(n\right)/n\right)\cdot \log \left(n\right)\right).}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\overline {I}}=O\left(\left(P_{S}\left(n\right)/n\right)\cdot \log \left(n\right)\right).}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/95c194b72cc954ac4892b9e097fb623ae3f0facd" style="vertical-align: -0.838ex; width:28.47ex; height:3.509ex;"/></span></li></ul>
+<p>If <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Q_{S}\left(n\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>Q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>S</mi>
+</mrow>
+</msub>
+<mrow>
+<mo>(</mo>
+<mi>n</mi>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Q_{S}\left(n\right)}</annotation>
+</semantics>
+</math></span><img alt="Q_S\left(n\right)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cef7ca24d2797192ff4fd544ca15bffa7f8d991c" style="vertical-align: -0.838ex; width:6.722ex; height:2.843ex;"/></span> is at least polynomial, then <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Q_{D}\left(n\right)=O\left(Q_{S}\left(n\right)\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>Q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>D</mi>
+</mrow>
+</msub>
+<mrow>
+<mo>(</mo>
+<mi>n</mi>
+<mo>)</mo>
+</mrow>
+<mo>=</mo>
+<mi>O</mi>
+<mrow>
+<mo>(</mo>
+<mrow>
+<msub>
+<mi>Q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>S</mi>
+</mrow>
+</msub>
+<mrow>
+<mo>(</mo>
+<mi>n</mi>
+<mo>)</mo>
+</mrow>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Q_{D}\left(n\right)=O\left(Q_{S}\left(n\right)\right)}</annotation>
+</semantics>
+</math></span><img alt="Q_D\left(n\right)=O\left(Q_S\left(n\right)\right)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a19c6647c81060630d9298a35509766cdab8f82b" style="vertical-align: -0.838ex; width:20.812ex; height:2.843ex;"/></span>.
+</p>
+<h2><span class="mw-headline" id="Further_reading">Further reading</span><span class="mw-editsection"></span></h2>
+<ul><li>Kurt Mehlhorn, Data structures and algorithms 3, . An EATCS Series, vol. 3, Springer, 1984.</li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw1419
+Cached time: 20221224073516
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: []
+CPU time usage: 0.061 seconds
+Real time usage: 0.132 seconds
+Preprocessor visited node count: 287/1000000
+Post‐expand include size: 1031/2097152 bytes
+Template argument size: 662/2097152 bytes
+Highest expansion depth: 8/100
+Expensive parser function count: 0/500
+Unstrip recursion depth: 0/20
+Unstrip post‐expand size: 936/5000000 bytes
+Lua time usage: 0.015/10.000 seconds
+Lua memory usage: 1034814/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%   50.127      1 Template:Short_description
+100.00%   50.127      1 -total
+ 55.76%   27.949      2 Template:Pagetype
+ 21.53%   10.790      2 Template:Main_other
+ 18.75%    9.400      1 Template:SDcat
+  3.63%    1.820      1 Template:Short_description/lowercasecheck
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:3641207-0!canonical and timestamp 20221224073516 and revision id 1102889008.
+ -->
+</div></body>
+</html>

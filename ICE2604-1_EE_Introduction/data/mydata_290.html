@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dijkstra's_algorithm</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p class="mw-empty-elt">
+</p>
+<style data-mw-deduplicate="TemplateStyles:r1066479718">.mw-parser-output .infobox-subbox{padding:0;border:none;margin:-3px;width:auto;min-width:100%;font-size:100%;clear:none;float:none;background-color:transparent}.mw-parser-output .infobox-3cols-child{margin:auto}.mw-parser-output .infobox .navbar{font-size:100%}body.skin-minerva .mw-parser-output .infobox-header,body.skin-minerva .mw-parser-output .infobox-subheader,body.skin-minerva .mw-parser-output .infobox-above,body.skin-minerva .mw-parser-output .infobox-title,body.skin-minerva .mw-parser-output .infobox-image,body.skin-minerva .mw-parser-output .infobox-full-data,body.skin-minerva .mw-parser-output .infobox-below{text-align:center}</style><table class="infobox"><caption class="infobox-title">Dijkstra's algorithm</caption><tbody><tr><td class="infobox-image" colspan="2"><img alt="Dijkstra Animation.gif" data-file-height="222" data-file-width="283" decoding="async" height="173" src="//upload.wikimedia.org/wikipedia/commons/thumb/5/57/Dijkstra_Animation.gif/220px-Dijkstra_Animation.gif" srcset="//upload.wikimedia.org/wikipedia/commons/5/57/Dijkstra_Animation.gif 1.5x" width="220"/></td></tr><tr><th class="infobox-label" scope="row">Class</th><td class="infobox-data">Search algorithm<br/>Greedy algorithm<br/>Dynamic programming<sup class="reference" id="cite_ref-1">[1]</sup></td></tr><tr><th class="infobox-label" scope="row">Data structure</th><td class="infobox-data">Graph<br/>Usually used with Priority queue/Heap for optimization<sup class="reference" id="cite_ref-Intro_2-0">[2]</sup><sup class="reference" id="cite_ref-FibonacciH_3-0">[3]</sup></td></tr><tr><th class="infobox-label" scope="row">Worst-case performance</th><td class="infobox-data"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta (|E|+|V|\log |V|)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta (|E|+|V|\log |V|)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \Theta (|E|+|V|\log |V|)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e22162be85d06b346f3b7f7aad9746da0c1019c9" style="vertical-align: -0.838ex; width:19.435ex; height:2.843ex;"/></span><sup class="reference" id="cite_ref-FibonacciH_3-1">[3]</sup></td></tr></tbody></table>
+<style data-mw-deduplicate="TemplateStyles:r1045330069">.mw-parser-output .sidebar{width:22em;float:right;clear:right;margin:0.5em 0 1em 1em;background:#f8f9fa;border:1px solid #aaa;padding:0.2em;text-align:center;line-height:1.4em;font-size:88%;border-collapse:collapse;display:table}body.skin-minerva .mw-parser-output .sidebar{display:table!important;float:right!important;margin:0.5em 0 1em 1em!important}.mw-parser-output .sidebar-subgroup{width:100%;margin:0;border-spacing:0}.mw-parser-output .sidebar-left{float:left;clear:left;margin:0.5em 1em 1em 0}.mw-parser-output .sidebar-none{float:none;clear:both;margin:0.5em 1em 1em 0}.mw-parser-output .sidebar-outer-title{padding:0 0.4em 0.2em;font-size:125%;line-height:1.2em;font-weight:bold}.mw-parser-output .sidebar-top-image{padding:0.4em}.mw-parser-output .sidebar-top-caption,.mw-parser-output .sidebar-pretitle-with-top-image,.mw-parser-output .sidebar-caption{padding:0.2em 0.4em 0;line-height:1.2em}.mw-parser-output .sidebar-pretitle{padding:0.4em 0.4em 0;line-height:1.2em}.mw-parser-output .sidebar-title,.mw-parser-output .sidebar-title-with-pretitle{padding:0.2em 0.8em;font-size:145%;line-height:1.2em}.mw-parser-output .sidebar-title-with-pretitle{padding:0.1em 0.4em}.mw-parser-output .sidebar-image{padding:0.2em 0.4em 0.4em}.mw-parser-output .sidebar-heading{padding:0.1em 0.4em}.mw-parser-output .sidebar-content{padding:0 0.5em 0.4em}.mw-parser-output .sidebar-content-with-subgroup{padding:0.1em 0.4em 0.2em}.mw-parser-output .sidebar-above,.mw-parser-output .sidebar-below{padding:0.3em 0.8em;font-weight:bold}.mw-parser-output .sidebar-collapse .sidebar-above,.mw-parser-output .sidebar-collapse .sidebar-below{border-top:1px solid #aaa;border-bottom:1px solid #aaa}.mw-parser-output .sidebar-navbar{text-align:right;font-size:115%;padding:0 0.4em 0.4em}.mw-parser-output .sidebar-list-title{padding:0 0.4em;text-align:left;font-weight:bold;line-height:1.6em;font-size:105%}.mw-parser-output .sidebar-list-title-c{padding:0 0.4em;text-align:center;margin:0 3.3em}@media(max-width:720px){body.mediawiki .mw-parser-output .sidebar{width:100%!important;clear:both;float:none!important;margin-left:0!important;margin-right:0!important}}</style><table class="sidebar nomobile nowraplinks hlist"><tbody><tr><th class="sidebar-title">Graph and tree<br/>search algorithms</th></tr><tr><td class="sidebar-content">
+<ul><li>α–β pruning</li>
+<li>Backtracking</li>
+<li>Beam search</li>
+<li>Best-first search</li>
+<li>Branch &amp; bound</li>
+<li>Breadth-First Search (<b>BFS</b>)</li>
+<li>British Museum</li>
+<li>Depth-First Search (<b>DFS</b>)</li>
+<li>Hill climbing</li>
+<li>Iterative Deepening DFS (IDDFS)</li>
+<li>Lexicographic BFS</li></ul></td>
+</tr><tr><th class="sidebar-heading">
+Shortest path</th></tr><tr><td class="sidebar-content">
+<ul><li><b>A*</b></li>
+<li>B*</li>
+<li>Bellman–Ford</li>
+<li>Bidirectional search</li>
+<li>D*</li>
+<li><b>Dijkstra's</b></li>
+<li>Floyd–Warshall</li>
+<li>Fringe search</li>
+<li>Iterative Deepening (IDA*)</li>
+<li>Johnson's</li>
+<li>Jump point search</li>
+<li>Kruskal's</li>
+<li>Lifelong Planning A* (LPA*)</li>
+<li>Pathfinding</li>
+<li>SMA*</li></ul></td>
+</tr><tr><th class="sidebar-heading">
+Lists</th></tr><tr><td class="sidebar-content">
+<ul><li><i>Graph algorithms</i></li>
+<li><i>Search algorithms</i></li>
+<li><i>List of graph algorithms</i></li></ul></td>
+</tr><tr><th class="sidebar-heading">
+Related topics</th></tr><tr><td class="sidebar-content">
+<ul><li>Dynamic programming</li>
+<li>Graph coloring</li>
+<li>Graph traversal</li>
+<li>Minimum spanning tree</li>
+<li>Search games</li>
+<li>Threaded binary tree</li>
+<li>Tree traversal</li></ul></td>
+</tr><tr><td class="sidebar-navbar"><style data-mw-deduplicate="TemplateStyles:r1063604349">.mw-parser-output .navbar{display:inline;font-size:88%;font-weight:normal}.mw-parser-output .navbar-collapse{float:left;text-align:left}.mw-parser-output .navbar-boxtext{word-spacing:0}.mw-parser-output .navbar ul{display:inline-block;white-space:nowrap;line-height:inherit}.mw-parser-output .navbar-brackets::before{margin-right:-0.125em;content:"[ "}.mw-parser-output .navbar-brackets::after{margin-left:-0.125em;content:" ]"}.mw-parser-output .navbar li{word-spacing:-0.125em}.mw-parser-output .navbar a>span,.mw-parser-output .navbar a>abbr{text-decoration:inherit}.mw-parser-output .navbar-mini abbr{font-variant:small-caps;border-bottom:none;text-decoration:none;cursor:inherit}.mw-parser-output .navbar-ct-full{font-size:114%;margin:0 7em}.mw-parser-output .navbar-ct-mini{font-size:114%;margin:0 4em}</style></td></tr></tbody></table>
+<p><b>Dijkstra's algorithm</b> (<span class="rt-commentedText nowrap"><span class="IPA nopopups noexcerpt" lang="en-fonipa">/<span style="border-bottom:1px dotted"><span title="/ˈ/: primary stress follows">ˈ</span><span title="'d' in 'dye'">d</span><span title="/aɪ/: 'i' in 'tide'">aɪ</span><span title="'k' in 'kind'">k</span><span title="'s' in 'sigh'">s</span><span title="'t' in 'tie'">t</span><span title="'r' in 'rye'">r</span><span title="/ə/: 'a' in 'about'">ə</span><span title="'z' in 'zoom'">z</span></span>/</span></span> <i title="English pronunciation respelling"><span style="font-size:90%">DYKE</span>-strəz</i>) is an algorithm for finding the shortest paths between nodes in a graph, which may represent, for example, road networks.  It was conceived by computer scientist Edsger W. Dijkstra in 1956 and published three years later.<sup class="reference" id="cite_ref-4">[4]</sup><sup class="reference" id="cite_ref-Dijkstra_Interview_5-0">[5]</sup><sup class="reference" id="cite_ref-Dijkstra1959_6-0">[6]</sup>
+</p><p>The algorithm exists in many variants. Dijkstra's original algorithm found the shortest path between two given nodes,<sup class="reference" id="cite_ref-Dijkstra1959_6-1">[6]</sup> but a more common variant fixes a single node as the "source" node and finds shortest paths from the source to all other nodes in the graph, producing a shortest-path tree.
+</p><p>For a given source node in the graph, the algorithm finds the shortest path between that node and every other.<sup class="reference" id="cite_ref-mehlhorn_7-0">[7]</sup><sup class="reference nowrap"><span title="Page / location: 196–206">: 196–206 </span></sup> It can also be used for finding the shortest paths from a single node to a single destination node by stopping the algorithm once the shortest path to the destination node has been determined. For example, if the nodes of the graph represent cities and edge path costs represent driving distances between pairs of cities connected by a direct road (for simplicity, ignore red lights, stop signs, toll roads and other obstructions), Dijkstra's algorithm can be used to find the shortest route between one city and all other cities. A widely used application of shortest path algorithms is network routing protocols, most notably IS-IS (Intermediate System to Intermediate System) and OSPF (Open Shortest Path First). It is also employed as a subroutine in other algorithms such as Johnson's.
+</p><p>The Dijkstra algorithm uses labels that are positive integers or real numbers, which are totally ordered.  It can be generalized to use any labels that are partially ordered, provided the subsequent labels (a subsequent label is produced when traversing an edge) are monotonically non-decreasing.  This generalization is called the generic Dijkstra shortest-path algorithm.<sup class="reference" id="cite_ref-Generic_Dijkstra_8-0">[8]</sup><sup class="reference" id="cite_ref-Generic_Dijkstra_correctness_9-0">[9]</sup>
+</p><p>Dijkstra's algorithm uses a data structure for storing and querying partial solutions sorted by distance from the start. While the original algorithm uses a min-priority queue and runs in time <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta ((|V|+|E|)\log |V|)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta ((|V|+|E|)\log |V|)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \Theta ((|V|+|E|)\log |V|)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/624a1b853e0887e908644cf58bdcd77a8cedd76b" style="vertical-align: -0.838ex; width:21.244ex; height:2.843ex;"/></span>(where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |V|}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |V|}</annotation>
+</semantics>
+</math></span><img alt="|V|" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9ddcffc28643ac01a14dd0fb32c3157859e365a7" style="vertical-align: -0.838ex; width:3.081ex; height:2.843ex;"/></span> is the number of nodes and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |E|}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |E|}</annotation>
+</semantics>
+</math></span><img alt="|E|" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d8c2b9637808cf805d411190b4ae017dbd4ef8d8" style="vertical-align: -0.838ex; width:3.069ex; height:2.843ex;"/></span> is the number of edges), it can also be implemented in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta (|V|^{2})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta (|V|^{2})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \Theta (|V|^{2})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5dbb38dcf2365c1dbf786871f4014dd1a2762df7" style="vertical-align: -0.838ex; width:7.753ex; height:3.343ex;"/></span> using an array. The idea of this algorithm is also given in Leyzorek et al. 1957. Fredman &amp; Tarjan 1984 propose using a Fibonacci heap min-priority queue to optimize the running time complexity to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta (|E|+|V|\log |V|)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta (|E|+|V|\log |V|)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \Theta (|E|+|V|\log |V|)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e22162be85d06b346f3b7f7aad9746da0c1019c9" style="vertical-align: -0.838ex; width:19.435ex; height:2.843ex;"/></span>. This is asymptotically the fastest known single-source shortest-path algorithm for arbitrary directed graphs with unbounded non-negative weights. However, specialized cases (such as bounded/integer weights, directed acyclic graphs etc.) can indeed be improved further as detailed in Specialized variants. Additionally, if preprocessing is allowed algorithms such as contraction hierarchies can be up to seven orders of magnitude faster.
+</p><p>In some fields, artificial intelligence in particular, Dijkstra's algorithm or a variant of it is known as uniform cost search and formulated as an instance of the more general idea of best-first search.<sup class="reference" id="cite_ref-felner_10-0">[10]</sup>
+</p>
+
+<h2><span class="mw-headline" id="History">History</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r996844942">.mw-parser-output .templatequote{overflow:hidden;margin:1em 0;padding:0 40px}.mw-parser-output .templatequote .templatequotecite{line-height:1.5em;text-align:left;padding-left:1.6em;margin-top:0}</style><blockquote class="templatequote"><p>What is the shortest way to travel from Rotterdam to Groningen, in general: from given city to given city. It is the algorithm for the shortest path, which I designed in about twenty minutes. One morning I was shopping in Amsterdam with my young fiancée, and tired, we sat down on the café terrace to drink a cup of coffee and I was just thinking about whether I could do this, and I then designed the algorithm for the shortest path. As I said, it was a twenty-minute invention. In fact, it was published in '59, three years later. The publication is still readable, it is, in fact, quite nice. One of the reasons that it is so nice was that I designed it without pencil and paper. I learned later that one of the advantages of designing without pencil and paper is that you are almost forced to avoid all avoidable complexities. Eventually, that algorithm became to my great amazement, one of the cornerstones of my fame.</p></blockquote>
+<p>Dijkstra thought about the shortest path problem when working at the Mathematical Center in Amsterdam in 1956 as a programmer to demonstrate the capabilities of a new computer called ARMAC.<sup class="reference" id="cite_ref-11">[11]</sup> His objective was to choose both a problem and a solution (that would be produced by computer) that non-computing people could understand. He designed the shortest path algorithm and later implemented it for ARMAC for a slightly simplified transportation map of 64 cities in the Netherlands (64, so that 6 bits would be sufficient to encode the city number).<sup class="reference" id="cite_ref-Dijkstra_Interview_5-2">[5]</sup> A year later, he came across another problem from hardware engineers working on the institute's next computer: minimize the amount of wire needed to connect the pins on the back panel of the machine. As a solution, he re-discovered the algorithm known as Prim's minimal spanning tree algorithm (known earlier to Jarník, and also rediscovered by Prim).<sup class="reference" id="cite_ref-EWD841a_12-0">[12]</sup><sup class="reference" id="cite_ref-13">[13]</sup> Dijkstra published the algorithm in 1959, two years after Prim and 29 years after Jarník.<sup class="reference" id="cite_ref-14">[14]</sup><sup class="reference" id="cite_ref-15">[15]</sup>
+</p>
+<h2><span class="mw-headline" id="Algorithm">Algorithm</span><span class="mw-editsection"></span></h2>
+
+<p>Let the node at which we are starting be called the <b>initial node</b>. Let the <b>distance of node <i>Y</i></b> be the distance from the <b>initial node</b> to <i>Y</i>. Dijkstra's algorithm will initially start with infinite distances and will try to improve them step by step.
+</p>
+<ol><li>Mark all nodes unvisited. Create a set of all the unvisited nodes called the <i>unvisited set</i>.</li>
+<li>Assign to every node a <i>tentative distance</i> value: set it to zero for our initial node and to infinity for all other nodes. During the run of the algorithm, the tentative distance of a node <i>v</i> is the length of the shortest path discovered so far between the node <i>v</i> and the <i>starting</i> node. Since initially no path is known to any other vertex than the source itself (which is a path of length zero), all other tentative distances are initially set to infinity. Set the initial node as current.<sup class="reference" id="cite_ref-16">[16]</sup></li>
+<li>For the current node, consider all of its unvisited neighbors and calculate their tentative distances through the current node. Compare the newly calculated tentative distance to the one currently assigned to the neighbor and assign it the smaller one. For example, if the current node <i>A</i> is marked with a  distance of 6, and the edge connecting it with a neighbor <i>B</i> has length 2, then the distance to <i>B</i> through <i>A</i> will be 6 + 2 = 8. If B was previously marked with a distance greater than 8 then change it to 8. Otherwise, the current value will be kept.</li>
+<li>When we are done considering all of the unvisited neighbors of the current node, mark the current node as visited and remove it from the unvisited set. A visited node will never be checked again (this is valid and optimal in connection with the behavior in step 6.: that the next nodes to visit will always be in the order of 'smallest distance from <i>initial node</i> first' so any visits after would have a greater distance).</li>
+<li>If the destination node has been marked visited (when planning a route between two specific nodes) or if the smallest tentative distance among the nodes in the unvisited set is infinity (when planning a complete traversal; occurs when there is no connection between the initial node and remaining unvisited nodes), then stop. The algorithm has finished.</li>
+<li>Otherwise, select the unvisited node that is marked with the smallest tentative distance, set it as the new <i>current node</i>, and go back to step 3.</li></ol>
+<p>When planning a route, it is actually not necessary to wait until the destination node is "visited" as above: the algorithm can stop once the destination node has the smallest tentative distance among all "unvisited" nodes (and thus could be selected as the next "current").
+</p>
+<h2><span class="mw-headline" id="Description">Description</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>Suppose you would like to find the <i>shortest path</i> between two intersections on a city map: a <i>starting point</i> and a <i>destination</i>. Dijkstra's algorithm initially marks the distance (from the starting point) to every other intersection on the map with <i>infinity</i>. This is done not to imply that there is an infinite distance, but to note that those intersections have not been visited yet. Some variants of this method leave the intersections' distances <i>unlabeled</i>. Now select the <i>current intersection</i> at each iteration.  For the first iteration, the current intersection will be the starting point, and the distance to it (the intersection's label) will be <i>zero</i>. For subsequent iterations (after the first), the current intersection will be a <i>closest unvisited intersection</i> to the starting point (this will be easy to find).
+</p><p>From the current intersection, <i>update</i> the distance to every unvisited intersection that is directly connected to it. This is done by determining the <i>sum</i> of the distance between an unvisited intersection and the value of the current intersection and then relabeling the unvisited intersection with this value (the sum) if it is less than the unvisited intersection's current value. In effect, the intersection is relabeled if the path to it through the current intersection is shorter than the previously known paths.  To facilitate shortest path identification, in pencil, mark the road with an arrow pointing to the relabeled intersection if you label/relabel it, and erase all others pointing to it.  After you have updated the distances to each neighboring intersection, mark the current intersection as <i>visited</i> and select an unvisited intersection with minimal distance (from the starting point) – or the lowest label—as the current intersection. Intersections marked as visited are labeled with the shortest path from the starting point to it and will not be revisited or returned to.
+</p><p>Continue this process of updating the neighboring intersections with the shortest distances, marking the current intersection as visited, and moving onto a closest unvisited intersection until you have marked the destination as visited. Once you have marked the destination as visited (as is the case with any visited intersection), you have determined the shortest path to it from the starting point and can <i>trace your way back following the arrows in reverse</i>. In the algorithm's implementations, this is usually done (after the algorithm has reached the destination node) by following the nodes' parents from the destination node up to the starting node; that's why we also keep track of each node's parent.
+</p><p>This algorithm makes no attempt of direct "exploration" towards the destination as one might expect. Rather, the sole consideration in determining the next "current" intersection is its distance from the starting point. This algorithm therefore expands outward from the starting point, interactively considering every node that is closer in terms of shortest path distance until it reaches the destination. When understood in this way, it is clear how the algorithm necessarily finds the shortest path. However, it may also reveal one of the algorithm's weaknesses: its relative slowness in some topologies.
+</p>
+<h2><span class="mw-headline" id="Pseudocode">Pseudocode</span><span class="mw-editsection"></span></h2>
+<p>In the following pseudocode algorithm, <style data-mw-deduplicate="TemplateStyles:r886049734">.mw-parser-output .monospaced{font-family:monospace,monospace}</style><span class="monospaced">dist</span> is an array that contains the current distances from the <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>source</var></span> to other vertices, i.e. <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">dist[<var>u</var>]</span> is the current distance from the source to the vertex <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>u</var></span>. The <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">prev</span> array contains pointers to previous-hop nodes on the shortest path from source to the given vertex (equivalently, it is the <i>next-hop</i> on the path <i>from</i> the given vertex <i>to</i> the source). The code <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">u ← vertex in <i>Q</i> with min dist[u]</span>, searches for the vertex <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>u</var></span> in the vertex set <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>Q</var></span> that has the least <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">dist[<var>u</var>]</span> value. <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">Graph.Edges(<var>u</var>, <var>v</var>)</span> returns the length of the edge joining (i.e. the distance between) the two neighbor-nodes <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>u</var></span> and <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>v</var></span>. The variable <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>alt</var></span> on line 14 is the length of the path from the root node to the neighbor node <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>v</var></span> if it were to go through <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>u</var></span>. If this path is shorter than the current shortest path recorded for <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>v</var></span>, that current path is replaced with this <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>alt</var></span> path.<sup class="reference" id="cite_ref-mehlhorn_7-1">[7]</sup>
+</p>
+
+<pre> 1  <b>function</b> Dijkstra(<i>Graph</i>, <i>source</i>):
+ 2      
+ 3      <b>for each</b> vertex <i>v</i> in <i>Graph.Vertices</i>:
+ 4          dist[<i>v</i>] ← INFINITY
+ 5          prev[<i>v</i>] ← UNDEFINED
+ 6          add <i>v</i> to <i>Q</i>
+ 7      dist[<i>source</i>] ← 0
+ 8      
+ 9      <b>while</b> <i>Q</i> is not empty:
+10          <i>u</i> ← vertex in <i>Q</i> with min dist[u]
+11          remove u from <i>Q</i>
+12          
+13          <b>for each</b> neighbor <i>v</i> of <i>u</i> still in <i>Q</i>:
+14              <i>alt</i> ← dist[<i>u</i>] + Graph.Edges(<i>u</i>, <i>v</i>)
+15              <b>if</b> <i>alt</i> &lt; dist[<i>v</i>]:
+16                  dist[<i>v</i>] ← <i>alt</i>
+17                  prev[<i>v</i>] ← <i>u</i>
+18
+19      <b>return</b> dist[], prev[]
+</pre>
+<p>If we are only interested in a shortest path between vertices <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>source</var></span> and <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>target</var></span>, we can terminate the search after line 10 if <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>u</var> = <var>target</var></span>.
+Now we can read the shortest path from <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>source</var></span> to <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>target</var></span> by reverse iteration:
+</p>
+<pre>1  <i>S</i> ← empty sequence
+2  <i>u</i> ← <i>target</i>
+3  <b>if</b> prev[<i>u</i>] is defined <b>or</b> <i>u</i> = <i>source</i>:          <i>// Do something only if the vertex is reachable</i>
+4      <b>while</b> <i>u</i> is defined:                       <i>// Construct the shortest path with a stack S</i>
+5          insert <i>u</i> at the beginning of <i>S</i>        <i>// Push the vertex onto the stack</i>
+6          <i>u</i> ← prev[<i>u</i>]                           <i>// Traverse from target to source</i>
+</pre>
+<p>Now sequence <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>S</var></span> is the list of vertices constituting one of the shortest paths from <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>source</var></span> to <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>target</var></span>, or the empty sequence if no path exists.
+</p><p>A more general problem would be to find all the shortest paths between <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>source</var></span> and <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>target</var></span> (there might be several different ones of the same length). Then instead of storing only a single node in each entry of <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">prev[]</span> we would store all nodes satisfying the relaxation condition. For example, if both <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>r</var></span> and <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>source</var></span> connect to <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>target</var></span> and both of them lie on different shortest paths through <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>target</var></span> (because the edge cost is the same in both cases), then we would add both <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>r</var></span> and <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><var>source</var></span> to <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">prev[<var>target</var>]</span>. When the algorithm completes, <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">prev[]</span> data structure will actually describe a graph that is a subset of the original graph with some edges removed. Its key property will be that if the algorithm was run with some starting node, then every path from that node to any other node in the new graph will be the shortest path between those nodes in the original graph, and all paths of that length from the original graph will be present in the new graph. Then to actually find all these shortest paths between two given nodes we would use a path finding algorithm on the new graph, such as depth-first search.
+</p>
+<h3><span class="mw-headline" id="Using_a_priority_queue">Using a priority queue</span><span class="mw-editsection"></span></h3>
+<p>A min-priority queue is an abstract data type that provides 3 basic operations: <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">add_with_priority()</span>, <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">decrease_priority()</span> and <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">extract_min()</span>. As mentioned earlier, using such a data structure can lead to faster computing times than using a basic queue. Notably, Fibonacci heap<sup class="reference" id="cite_ref-FOOTNOTEFredmanTarjan1984_17-0">[17]</sup> or Brodal queue offer optimal implementations for those 3 operations. As the algorithm is slightly different, we<sup class="noprint Inline-Template" style="white-space:nowrap;">[<i><span title="The material near this tag possibly uses too-vague attribution or weasel words. (December 2022)">who?</span></i>]</sup> mention it here, in pseudocode as well:<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (December 2022)">citation needed</span></i>]</sup>
+</p>
+<pre>1  <b>function</b> Dijkstra(<i>Graph</i>, <i>source</i>):
+2      dist[<i>source</i>] ← 0                           <i>// Initialization</i>
+3
+4      create vertex priority queue Q
+5
+6      <b>for each</b> vertex <i>v</i> in <i>Graph.Vertices</i>:
+7          <b>if</b> <i>v</i> ≠ <i>source</i>
+8              dist[<i>v</i>] ← INFINITY                 <i>// Unknown distance from source to v</i>
+9              prev[<i>v</i>] ← UNDEFINED                <i>// Predecessor of v</i>
+10
+11         <i>Q</i>.add_with_priority(<i>v</i>, dist[<i>v</i>])
+12
+13
+14     <b>while</b> <i>Q</i> is not empty:                      <i>// The main loop</i>
+15         <i>u</i> ← <i>Q</i>.extract_min()                    <i>// Remove and return best vertex</i>
+16         <b>for each</b> neighbor <i>v</i> of <i>u</i>:              <i>// Go through all v neighbors of u</i>
+17             <i>alt</i> ← dist[<i>u</i>] + Graph.Edges(<i>u</i>, <i>v</i>)
+18             <b>if</b> <i>alt</i> &lt; dist[<i>v</i>]:
+19                 dist[<i>v</i>] ← <i>alt</i>
+20                 prev[<i>v</i>] ← <i>u</i>
+21                 <i>Q</i>.decrease_priority(<i>v</i>, <i>alt</i>)
+22
+23     <b>return</b> dist, prev
+</pre>
+<p>Instead of filling the priority queue with all nodes in the initialization phase, it is also possible to initialize it to contain only <i>source</i>; then, inside the <code><b>if</b> <i>alt</i> &lt; dist[<i>v</i>]</code> block, the <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">decrease_priority()</span> becomes an <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">add_with_priority()</span> operation if the node is not already in the queue.<sup class="reference" id="cite_ref-mehlhorn_7-2">[7]</sup><sup class="reference nowrap"><span title="Page / location: 198">: 198 </span></sup>
+</p><p>Yet another alternative is to add nodes unconditionally to the priority queue and to instead check after extraction that no shorter connection was found yet. This can be done by additionally extracting the associated priority <code><i>p</i></code> from the queue and only processing further <code><b>if</b> <i>p</i> == dist[<i>u</i>]</code> inside the <code><b>while</b> <i>Q</i> is not empty</code> loop. <sup class="reference" id="cite_ref-Note_18-0">[18]</sup>
+</p><p>These alternatives can use entirely array-based priority queues without decrease-key functionality, which have been found to achieve even faster computing times in practice. However, the difference in performance was found to be narrower for denser graphs.<sup class="reference" id="cite_ref-chen_07_19-0">[19]</sup>
+</p>
+<h2><span class="mw-headline" id="Proof_of_correctness">Proof of correctness</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-Unreferenced plainlinks metadata ambox ambox-content ambox-Unreferenced" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<p><i>Proof of Dijkstra's algorithm is constructed by induction on the number of visited nodes.</i>
+</p><p><i>Invariant hypothesis</i>: For each visited node <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">v</span>, <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">dist[v]</span> is the shortest distance from <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">source</span> to <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">v</span>, and for each unvisited node <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">u</span>, <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">dist[u]</span> is the shortest distance from <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">source</span> to <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">u</span> when traveling via visited nodes only, or infinity if no such path exists. (Note: we do not assume <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">dist[u]</span> is the actual shortest distance for unvisited nodes, while <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">dist[v]</span> is the actual shortest distance)
+</p><p>The base case is when there is just one visited node, namely the initial node <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">source</span>, in which case the hypothesis is trivial.
+</p><p>Next, assume the hypothesis for <i>k-1</i> visited nodes. Next, we choose <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">u</span> to be the next visited node according to the algorithm. We claim that <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">dist[u]</span> is the shortest distance from <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">source</span> to <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">u</span>.
+</p><p>To prove that claim, we will proceed with a proof by contradiction. If there were a shorter path, then there can be two cases, either the shortest path contains another unvisited node or not.
+</p><p>In the first case, let <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">w</span> be the first unvisited node on the shortest path. By the induction hypothesis, the shortest path from <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">source</span> to <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">u</span> and <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">w</span> through visited node only has cost <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">dist[u]</span> and <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">dist[w]</span> respectively. That means the cost of going from <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">source</span> to <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">u</span> through <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">w</span> has the cost of at least <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">dist[w]</span> + the minimal cost of going from <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">w</span> to <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">u</span>. As the edge costs are positive, the minimal cost of going from <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">w</span> to <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">u</span> is a positive number.
+</p><p>Also <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">dist[u]</span> &lt; <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">dist[w]</span> because the algorithm picked <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">u</span> instead of <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">w</span>. 
+</p><p>Now we arrived at a contradiction that <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">dist[u]</span> &lt; <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">dist[w]</span> yet <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">dist[w]</span> + a positive number &lt; <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">dist[u]</span>.
+</p><p>In the second case, let <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">w</span> be the last but one node on the shortest path. That means <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">dist[w] + Graph.Edges[w,u] &lt; dist[u]</span>. That is a contradiction because by the time <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">w</span> is visited, it should have set <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">dist[u]</span> to at most <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">dist[w] + Graph.Edges[w,u]</span>. 
+</p><p>For all other visited nodes <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">v</span>, the induction hypothesis told us <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">dist[v]</span> is the shortest distance from <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">source</span> already, and the algorithm step is not changing that.
+</p><p>After processing <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">u</span> it will still be true that for each unvisited node <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">w</span>, <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">dist[w]</span> will be the shortest distance from <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">source</span> to <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">w</span> using visited nodes only, because if there were a shorter path that doesn't go by <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">u</span> we would have found it previously, and if there were a shorter path using <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">u</span> we would have updated it when processing <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">u</span>.
+</p><p>After all nodes are visited, the shortest path from <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">source</span> to any node <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">v</span> consists only of visited nodes, therefore <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">dist[v]</span> is the shortest distance.
+</p>
+<h2><span class="mw-headline" id="Running_time">Running time</span><span class="mw-editsection"></span></h2>
+<p>Bounds of the running time of Dijkstra's algorithm on a graph with edges <span class="texhtml mvar" style="font-style:italic;">E</span> and vertices <span class="texhtml mvar" style="font-style:italic;">V</span> can be expressed as a function of the number of edges, denoted <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |E|}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |E|}</annotation>
+</semantics>
+</math></span><img alt="|E|" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d8c2b9637808cf805d411190b4ae017dbd4ef8d8" style="vertical-align: -0.838ex; width:3.069ex; height:2.843ex;"/></span>, and the number of vertices, denoted <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |V|}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |V|}</annotation>
+</semantics>
+</math></span><img alt="|V|" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9ddcffc28643ac01a14dd0fb32c3157859e365a7" style="vertical-align: -0.838ex; width:3.081ex; height:2.843ex;"/></span>, using big-O notation. The complexity bound depends mainly on the data structure used to represent the set <span class="texhtml mvar" style="font-style:italic;">Q</span>. In the following, upper bounds can be simplified because <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |E|}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |E|}</annotation>
+</semantics>
+</math></span><img alt="|E|" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d8c2b9637808cf805d411190b4ae017dbd4ef8d8" style="vertical-align: -0.838ex; width:3.069ex; height:2.843ex;"/></span> is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(|V|^{2})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(|V|^{2})}</annotation>
+</semantics>
+</math></span><img alt="O(|V|^{2})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e1e99764e23be92b694aef042c6460ff921357e3" style="vertical-align: -0.838ex; width:7.718ex; height:3.343ex;"/></span> for any graph, but that simplification disregards the fact that in some problems, other upper bounds on <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |E|}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |E|}</annotation>
+</semantics>
+</math></span><img alt="|E|" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d8c2b9637808cf805d411190b4ae017dbd4ef8d8" style="vertical-align: -0.838ex; width:3.069ex; height:2.843ex;"/></span> may hold.
+</p><p>For any data structure for the vertex set <span class="texhtml mvar" style="font-style:italic;">Q</span>, the running time is in<sup class="reference" id="cite_ref-Intro_2-1">[2]</sup>
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta (|E|\cdot T_{\mathrm {dk} }+|V|\cdot T_{\mathrm {em} }),}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">d</mi>
+<mi mathvariant="normal">k</mi>
+</mrow>
+</mrow>
+</msub>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">e</mi>
+<mi mathvariant="normal">m</mi>
+</mrow>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta (|E|\cdot T_{\mathrm {dk} }+|V|\cdot T_{\mathrm {em} }),}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \Theta (|E|\cdot T_{\mathrm {dk} }+|V|\cdot T_{\mathrm {em} }),}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b49340c1fc766f10e8b48815b1088cc65898efce" style="vertical-align: -0.838ex; width:23.674ex; height:2.843ex;"/></span></dd></dl>
+<p>where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{\mathrm {dk} }}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">d</mi>
+<mi mathvariant="normal">k</mi>
+</mrow>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T_{\mathrm {dk} }}</annotation>
+</semantics>
+</math></span><img alt="T_{\mathrm {dk} }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9d472cd5eeba8435ca78f0662c29f549a6e68758" style="vertical-align: -0.671ex; width:3.372ex; height:2.509ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{\mathrm {em} }}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">e</mi>
+<mi mathvariant="normal">m</mi>
+</mrow>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T_{\mathrm {em} }}</annotation>
+</semantics>
+</math></span><img alt="T_{\mathrm {em} }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/10b20e61c32746a67f380a74d01eb9d672371600" style="vertical-align: -0.671ex; width:3.689ex; height:2.509ex;"/></span> are the complexities of the <i>decrease-key</i> and <i>extract-minimum</i> operations in <span class="texhtml mvar" style="font-style:italic;">Q</span>, respectively.
+</p><p>The simplest version of Dijkstra's algorithm stores the vertex set <span class="texhtml mvar" style="font-style:italic;">Q</span> as an linked list or array, and edges as an adjacency list or matrix. In this case, extract-minimum is simply a linear search through all vertices in <span class="texhtml mvar" style="font-style:italic;">Q</span>, so the running time is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta (|E|+|V|^{2})=\Theta (|V|^{2})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta (|E|+|V|^{2})=\Theta (|V|^{2})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \Theta (|E|+|V|^{2})=\Theta (|V|^{2})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9cff9c1ad91cc6d7b764f808f068d2233520a233" style="vertical-align: -0.838ex; width:24.513ex; height:3.343ex;"/></span>.
+</p><p>For sparse graphs, that is, graphs with far fewer than <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |V|^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |V|^{2}}</annotation>
+</semantics>
+</math></span><img alt="|V|^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3e2a7aad37527c097101c39b0b7724fe4e1cafb1" style="vertical-align: -0.838ex; width:4.135ex; height:3.343ex;"/></span> edges, Dijkstra's algorithm can be implemented more efficiently by storing the graph in the form of adjacency lists and using a self-balancing binary search tree, binary heap, pairing heap, or Fibonacci heap as a priority queue to implement extracting minimum efficiently. To perform decrease-key steps in a binary heap efficiently, it is necessary to use an auxiliary data structure that maps each vertex to its position in the heap, and to keep this structure up to date as the priority queue <span class="texhtml mvar" style="font-style:italic;">Q</span> changes. With a self-balancing binary search tree or binary heap, the algorithm requires
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta ((|E|+|V|)\log |V|)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta ((|E|+|V|)\log |V|)}</annotation>
+</semantics>
+</math></span><img alt="\Theta ((|E|+|V|)\log |V|)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bb876ca772aebc634b2c4087fa81b2d7c683e71c" style="vertical-align: -0.838ex; width:21.244ex; height:2.843ex;"/></span></dd></dl>
+<p>time in the worst case (where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \log }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>log</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \log }</annotation>
+</semantics>
+</math></span><img alt="\log " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/79e4debd0ab1c6ce342d0172a7643733305c37bc" style="vertical-align: -0.671ex; width:2.972ex; height:2.509ex;"/></span> denotes the binary logarithm <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \log _{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \log _{2}}</annotation>
+</semantics>
+</math></span><img alt="\log _{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c381607e0a0db64e23e9c8483369aec660f7fd8d" style="vertical-align: -0.838ex; width:4.026ex; height:2.676ex;"/></span>); for connected graphs this time bound can be simplified to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta (|E|\log |V|)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta (|E|\log |V|)}</annotation>
+</semantics>
+</math></span><img alt="\Theta (|E|\log |V|)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/df01952aa6a18b33a028713dedfc2f89d84a3c81" style="vertical-align: -0.838ex; width:13.514ex; height:2.843ex;"/></span>.  The Fibonacci heap improves this to
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta (|E|+|V|\log |V|).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta (|E|+|V|\log |V|).}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \Theta (|E|+|V|\log |V|).}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a5f0d0d6da9c8dbd146dae568b1ce2dbf0d65d9a" style="vertical-align: -0.838ex; width:20.082ex; height:2.843ex;"/></span></dd></dl>
+<p>When using binary heaps, the average case time complexity is lower than the worst-case: assuming edge costs are drawn independently from a common probability distribution, the expected number of <i>decrease-key</i> operations is bounded by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta (|V|\log(|E|/|V|))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta (|V|\log(|E|/|V|))}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \Theta (|V|\log(|E|/|V|))}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/23857a2943abcd1478c6435680423251fbc1625f" style="vertical-align: -0.838ex; width:19.179ex; height:2.843ex;"/></span>, giving a total running time of<sup class="reference" id="cite_ref-mehlhorn_7-3">[7]</sup><sup class="reference nowrap"><span title="Page / location: 199–200">: 199–200 </span></sup>
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O\left(|E|+|V|\log {\frac {|E|}{|V|}}\log |V|\right).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mrow>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mrow>
+</mfrac>
+</mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O\left(|E|+|V|\log {\frac {|E|}{|V|}}\log |V|\right).}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O\left(|E|+|V|\log {\frac {|E|}{|V|}}\log |V|\right).}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/518426fe2ac5cff791eee3d85aa084963096e404" style="vertical-align: -2.671ex; width:30.096ex; height:6.509ex;"/></span></dd></dl>
+<h3><span class="mw-headline" id="Practical_optimizations_and_infinite_graphs">Practical optimizations and infinite graphs</span><span class="mw-editsection"></span></h3>
+<p>In common presentations of Dijkstra's algorithm, initially all nodes are entered into the priority queue. This is, however, not necessary: the algorithm can start with a priority queue that contains only one item, and insert new items as they are discovered (instead of doing a decrease-key, check whether the key is in the queue; if it is, decrease its key, otherwise insert it).<sup class="reference" id="cite_ref-mehlhorn_7-4">[7]</sup><sup class="reference nowrap"><span title="Page / location: 198">: 198 </span></sup> This variant has the same worst-case bounds as the common variant, but maintains a smaller priority queue in practice, speeding up the queue operations.<sup class="reference" id="cite_ref-felner_10-1">[10]</sup>
+</p><p>Moreover, not inserting all nodes in a graph makes it possible to extend the algorithm to find the shortest path from a single source to the closest of a set of target nodes on infinite graphs or those too large to represent in memory. The resulting algorithm is called <i>uniform-cost search</i> (UCS) in the artificial intelligence literature<sup class="reference" id="cite_ref-felner_10-2">[10]</sup><sup class="reference" id="cite_ref-aima_20-0">[20]</sup><sup class="reference" id="cite_ref-21">[21]</sup> and can be expressed in pseudocode as
+</p>
+<pre><b>procedure</b> uniform_cost_search(start) <b>is</b>
+    node ← start
+    frontier ← priority queue containing node only
+    expanded ← empty set
+    <b>do</b>
+        <b>if</b> frontier is empty <b>then</b>
+            <b>return</b> failure
+        node ← frontier.pop()
+        <b>if</b> node is a goal state <b>then</b>
+            <b>return</b> solution(node)
+        expanded.add(node)
+        <b>for each</b> of node's neighbors <i>n</i> <b>do</b>
+            <b>if</b> <i>n</i> is not in expanded and not in frontier <b>then</b>
+                frontier.add(<i>n</i>)
+            <b>else if</b> <i>n</i> is in frontier with higher cost
+                replace existing node with <i>n</i>
+</pre>
+<p>The complexity of this algorithm can be expressed in an alternative way for very large graphs: when <span class="texhtml"><i>C</i><sup>*</sup></span> is the length of the shortest path from the start node to any node satisfying the "goal" predicate, each edge has cost at least <span class="texhtml mvar" style="font-style:italic;">ε</span>, and the number of neighbors per node is bounded by <span class="texhtml mvar" style="font-style:italic;">b</span>, then the algorithm's worst-case time and space complexity are both in <span class="texhtml"><i>O</i>(<i>b</i><sup>1+⌊<i>C</i><sup>*</sup> <style data-mw-deduplicate="TemplateStyles:r1020198016">.mw-parser-output .frac{white-space:nowrap}.mw-parser-output .frac .num,.mw-parser-output .frac .den{font-size:80%;line-height:0;vertical-align:super}.mw-parser-output .frac .den{vertical-align:sub}.mw-parser-output .sr-only{border:0;clip:rect(0,0,0,0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px}</style><span class="frac" role="math">⁄</span> <i>ε</i>⌋</sup>)</span>.<sup class="reference" id="cite_ref-aima_20-1">[20]</sup>
+</p><p>Further optimizations of Dijkstra's algorithm for the single-target case include bidirectional variants, goal-directed variants such as the A* algorithm (see § Related problems and algorithms), graph pruning to determine which nodes are likely to form the middle segment of shortest paths (reach-based routing), and hierarchical decompositions of the input graph that reduce <span class="texhtml"><i>s</i>–<i>t</i></span> routing to connecting <span class="texhtml mvar" style="font-style:italic;">s</span> and <span class="texhtml mvar" style="font-style:italic;">t</span> to their respective "transit nodes" followed by shortest-path computation between these transit nodes using a "highway".<sup class="reference" id="cite_ref-speedup_22-0">[22]</sup>
+Combinations of such techniques may be needed for optimal practical performance on specific problems.<sup class="reference" id="cite_ref-23">[23]</sup>
+</p>
+<h3><span class="mw-headline" id="Specialized_variants">Specialized variants</span><span class="mw-editsection"></span></h3>
+<p>When arc weights are small integers (bounded by a parameter <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle C}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>C</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle C}</annotation>
+</semantics>
+</math></span><img alt="C" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4fc55753007cd3c18576f7933f6f089196732029" style="vertical-align: -0.338ex; width:1.766ex; height:2.176ex;"/></span>), specialized queues which take advantage of this fact can be used to speed up Dijkstra's algorithm. The first algorithm of this type was <b>Dial's algorithm</b> (Dial 1969) for graphs with positive integer edge weights, which uses a bucket queue to obtain a running time <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(|E|+|V|C)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>C</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(|E|+|V|C)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(|E|+|V|C)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8c106890bef1d3c3a6918c4cceb79f2b14aec738" style="vertical-align: -0.838ex; width:14.34ex; height:2.843ex;"/></span>. The use of a Van Emde Boas tree as the priority queue brings the complexity to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(|E|\log \log C)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>C</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(|E|\log \log C)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(|E|\log \log C)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/91b4708c3877aef4a340d057ade49b65c47b870b" style="vertical-align: -0.838ex; width:15.523ex; height:2.843ex;"/></span> (Ahuja et al. 1990). Another interesting variant based on a combination of a new radix heap and the well-known Fibonacci heap runs in time <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(|E|+|V|{\sqrt {\log C}})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>C</mi>
+</msqrt>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(|E|+|V|{\sqrt {\log C}})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(|E|+|V|{\sqrt {\log C}})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ee2a9dfd3f6ca5471b9ecf0f2255bc49f9da6a94" style="vertical-align: -1.171ex; width:20.022ex; height:3.509ex;"/></span> (Ahuja et al. 1990). Finally, the best algorithms in this special case are as follows. The algorithm given by (Thorup 2000) runs in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(|E|\log \log |V|)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(|E|\log \log |V|)}</annotation>
+</semantics>
+</math></span><img alt="O(|E|\log \log |V|)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6ad6d486e8b9d44ea253d43ce5d219652073eb8e" style="vertical-align: -0.838ex; width:16.838ex; height:2.843ex;"/></span> time and the algorithm given by (Raman 1997) runs in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(|E|+|V|\min\{(\log |V|)^{1/3+\varepsilon },(\log C)^{1/4+\varepsilon }\})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo form="prefix" movablelimits="true">min</mo>
+<mo fence="false" stretchy="false">{</mo>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>3</mn>
+<mo>+</mo>
+<mi>ε<!-- ε --></mi>
+</mrow>
+</msup>
+<mo>,</mo>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>C</mi>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>4</mn>
+<mo>+</mo>
+<mi>ε<!-- ε --></mi>
+</mrow>
+</msup>
+<mo fence="false" stretchy="false">}</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(|E|+|V|\min\{(\log |V|)^{1/3+\varepsilon },(\log C)^{1/4+\varepsilon }\})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(|E|+|V|\min\{(\log |V|)^{1/3+\varepsilon },(\log C)^{1/4+\varepsilon }\})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7ee874b438d755a44a6327b14b6f8ab107ad7426" style="vertical-align: -0.838ex; width:44.864ex; height:3.343ex;"/></span> time.
+</p>
+<h2><span class="mw-headline" id="Related_problems_and_algorithms">Related problems and algorithms</span><span class="mw-editsection"></span></h2>
+<p>The functionality of Dijkstra's original algorithm can be extended with a variety of modifications. For example, sometimes it is desirable to present solutions which are less than mathematically optimal. To obtain a ranked list of less-than-optimal solutions, the optimal solution is first calculated. A single edge appearing in the optimal solution is removed from the graph, and the optimum solution to this new graph is calculated. Each edge of the original solution is suppressed in turn and a new shortest-path calculated. The secondary solutions are then ranked and presented after the first optimal solution.
+</p><p>Dijkstra's algorithm is usually the working principle behind link-state routing protocols, OSPF and IS-IS being the most common ones.
+</p><p>Unlike Dijkstra's algorithm, the Bellman–Ford algorithm can be used on graphs with negative edge weights, as long as the graph contains no negative cycle reachable from the source vertex <i>s</i>. The presence of such cycles means there is no shortest path, since the total weight becomes lower each time the cycle is traversed. (This statement assumes that a "path" is allowed to repeat vertices. In graph theory that is normally not allowed.  In theoretical computer science it often is allowed.) It is possible to adapt Dijkstra's algorithm to handle negative weight edges by combining it with the Bellman-Ford algorithm (to remove negative edges and detect negative cycles); such an algorithm is called Johnson's algorithm.
+</p><p>The A* algorithm is a generalization of Dijkstra's algorithm that cuts down on the size of the subgraph that must be explored, if additional information is available that provides a lower bound on the "distance" to the target. This approach can be viewed from the perspective of linear programming: there is a natural linear program for computing shortest paths, and solutions to its dual linear program are feasible if and only if they form a consistent heuristic (speaking roughly, since the sign conventions differ from place to place in the literature). This feasible dual / consistent heuristic defines a non-negative reduced cost and A* is essentially running Dijkstra's algorithm with these reduced costs. If the dual satisfies the weaker condition of admissibility, then A* is instead more akin to the Bellman–Ford algorithm.
+</p><p>The process that underlies Dijkstra's algorithm is similar to the greedy process used in Prim's algorithm.  Prim's purpose is to find a minimum spanning tree that connects all nodes in the graph; Dijkstra is concerned with only two nodes. Prim's does not evaluate the total weight of the path from the starting node, only the individual edges.
+</p><p>Breadth-first search can be viewed as a special-case of Dijkstra's algorithm on unweighted graphs, where the priority queue degenerates into a FIFO queue.
+</p><p>The fast marching method can be viewed as a continuous version of Dijkstra's algorithm which computes the geodesic distance on a triangle mesh.
+</p>
+<h3><span class="mw-headline" id="Dynamic_programming_perspective">Dynamic programming perspective</span><span class="mw-editsection"></span></h3>
+<p>From a dynamic programming point of view, Dijkstra's algorithm is a successive approximation scheme that solves the dynamic programming functional equation for the shortest path problem by the <b>Reaching</b> method.<sup class="reference" id="cite_ref-sniedovich_06_24-0">[24]</sup><sup class="reference" id="cite_ref-denardo_03_25-0">[25]</sup><sup class="reference" id="cite_ref-sniedovich_10_26-0">[26]</sup>
+</p><p>In fact, Dijkstra's explanation of the logic behind the algorithm,<sup class="reference" id="cite_ref-27">[27]</sup> namely
+</p>
+<link href="mw-data:TemplateStyles:r996844942" rel="mw-deduplicated-inline-style"/><blockquote class="templatequote">
+<p><b>Problem 2.</b> Find the path of minimum total length between two given nodes <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P}</annotation>
+</semantics>
+</math></span><img alt="P" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b4dc73bf40314945ff376bd363916a738548d40a" style="vertical-align: -0.338ex; width:1.745ex; height:2.176ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>Q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Q}</annotation>
+</semantics>
+</math></span><img alt="Q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8752c7023b4b3286800fe3238271bbca681219ed" style="vertical-align: -0.671ex; width:1.838ex; height:2.509ex;"/></span>.
+</p><p>We use the fact that, if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>R</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R}</annotation>
+</semantics>
+</math></span><img alt="R" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4b0bfb3769bf24d80e15374dc37b0441e2616e33" style="vertical-align: -0.338ex; width:1.764ex; height:2.176ex;"/></span> is a node on the minimal path from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P}</annotation>
+</semantics>
+</math></span><img alt="P" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b4dc73bf40314945ff376bd363916a738548d40a" style="vertical-align: -0.338ex; width:1.745ex; height:2.176ex;"/></span> to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>Q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Q}</annotation>
+</semantics>
+</math></span><img alt="Q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8752c7023b4b3286800fe3238271bbca681219ed" style="vertical-align: -0.671ex; width:1.838ex; height:2.509ex;"/></span>, knowledge of the latter implies the knowledge of the minimal path from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P}</annotation>
+</semantics>
+</math></span><img alt="P" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b4dc73bf40314945ff376bd363916a738548d40a" style="vertical-align: -0.338ex; width:1.745ex; height:2.176ex;"/></span> to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>R</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R}</annotation>
+</semantics>
+</math></span><img alt="R" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4b0bfb3769bf24d80e15374dc37b0441e2616e33" style="vertical-align: -0.338ex; width:1.764ex; height:2.176ex;"/></span>.
+</p>
+</blockquote>
+<p>is a paraphrasing of Bellman's famous Principle of Optimality in the context of the shortest path problem.
+</p>
+<h2><span class="mw-headline" id="Applications">Applications</span><span class="mw-editsection"></span></h2>
+<p>Least-cost paths are calculated for instance to establish tracks of electricity lines or oil pipelines. The algorithm has also been used to calculate optimal long-distance footpaths in Ethiopia and contrast them with the situation on the ground.<sup class="reference" id="cite_ref-28">[28]</sup>
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>A* search algorithm</li>
+<li>Bellman–Ford algorithm</li>
+<li>Euclidean shortest path</li>
+<li>Floyd–Warshall algorithm</li>
+<li>Johnson's algorithm</li>
+<li>Longest path problem</li>
+<li>Parallel all-pairs shortest path algorithm</li></ul>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFCormenLeisersonRivestStein2001">Cormen, Thomas H.; Leiserson, Charles E.; Rivest, Ronald L.; Stein, Clifford (2001). "Section 24.3: Dijkstra's algorithm". <i>Introduction to Algorithms</i> (Second ed.). MIT Press and McGraw–Hill. pp. 595–601. ISBN <bdi>0-262-03293-7</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Section+24.3%3A+Dijkstra%27s+algorithm&amp;rft.btitle=Introduction+to+Algorithms&amp;rft.pages=595-601&amp;rft.edition=Second&amp;rft.pub=MIT+Press+and+McGraw%E2%80%93Hill&amp;rft.date=2001&amp;rft.isbn=0-262-03293-7&amp;rft.aulast=Cormen&amp;rft.aufirst=Thomas+H.&amp;rft.au=Leiserson%2C+Charles+E.&amp;rft.au=Rivest%2C+Ronald+L.&amp;rft.au=Stein%2C+Clifford&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ADijkstra%27s+algorithm"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFDial1969">Dial, Robert B. (1969). <span class="cs1-lock-subscription" title="Paid subscription required">"Algorithm 360: Shortest-path forest with topological ordering [H]"</span>. <i>Communications of the ACM</i>. <b>12</b> (11): 632–633. doi:10.1145/363269.363610. S2CID 6754003.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Communications+of+the+ACM&amp;rft.atitle=Algorithm+360%3A+Shortest-path+forest+with+topological+ordering+%5BH%5D&amp;rft.volume=12&amp;rft.issue=11&amp;rft.pages=632-633&amp;rft.date=1969&amp;rft_id=info%3Adoi%2F10.1145%2F363269.363610&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A6754003%23id-name%3DS2CID&amp;rft.aulast=Dial&amp;rft.aufirst=Robert+B.&amp;rft_id=https%3A%2F%2Fdl.acm.org%2Fdoi%2F10.1145%2F363269.363610&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ADijkstra%27s+algorithm"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation conference cs1" id="CITEREFFredmanTarjan1984">Fredman, Michael Lawrence; Tarjan, Robert E. (1984). <i>Fibonacci heaps and their uses in improved network optimization algorithms</i>. 25th Annual Symposium on Foundations of Computer Science. IEEE. pp. 338–346. doi:10.1109/SFCS.1984.715934.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=conference&amp;rft.btitle=Fibonacci+heaps+and+their+uses+in+improved+network+optimization+algorithms&amp;rft.pages=338-346&amp;rft.pub=IEEE&amp;rft.date=1984&amp;rft_id=info%3Adoi%2F10.1109%2FSFCS.1984.715934&amp;rft.aulast=Fredman&amp;rft.aufirst=Michael+Lawrence&amp;rft.au=Tarjan%2C+Robert+E.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ADijkstra%27s+algorithm"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFFredmanTarjan1987">Fredman, Michael Lawrence; Tarjan, Robert E. (1987). "Fibonacci heaps and their uses in improved network optimization algorithms". <i>Journal of the Association for Computing Machinery</i>. <b>34</b> (3): 596–615. doi:10.1145/28869.28874. S2CID 7904683.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Journal+of+the+Association+for+Computing+Machinery&amp;rft.atitle=Fibonacci+heaps+and+their+uses+in+improved+network+optimization+algorithms&amp;rft.volume=34&amp;rft.issue=3&amp;rft.pages=596-615&amp;rft.date=1987&amp;rft_id=info%3Adoi%2F10.1145%2F28869.28874&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A7904683%23id-name%3DS2CID&amp;rft.aulast=Fredman&amp;rft.aufirst=Michael+Lawrence&amp;rft.au=Tarjan%2C+Robert+E.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ADijkstra%27s+algorithm"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFZhanNoon1998">Zhan, F. Benjamin; Noon, Charles E. (February 1998). "Shortest Path Algorithms: An Evaluation Using Real Road Networks". <i>Transportation Science</i>. <b>32</b> (1): 65–73. doi:10.1287/trsc.32.1.65. S2CID 14986297.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Transportation+Science&amp;rft.atitle=Shortest+Path+Algorithms%3A+An+Evaluation+Using+Real+Road+Networks&amp;rft.volume=32&amp;rft.issue=1&amp;rft.pages=65-73&amp;rft.date=1998-02&amp;rft_id=info%3Adoi%2F10.1287%2Ftrsc.32.1.65&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A14986297%23id-name%3DS2CID&amp;rft.aulast=Zhan&amp;rft.aufirst=F.+Benjamin&amp;rft.au=Noon%2C+Charles+E.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ADijkstra%27s+algorithm"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFLeyzorekGrayJohnsonLadew1957">Leyzorek, M.; Gray, R. S.; Johnson, A. A.; Ladew, W. C.; Meaker, Jr., S. R.; Petry, R. M.; Seitz, R. N. (1957). <i>Investigation of Model Techniques – First Annual Report – 6 June 1956 – 1 July 1957 – A Study of Model Techniques for Communication Systems</i>. Cleveland, Ohio: Case Institute of Technology.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Investigation+of+Model+Techniques+%E2%80%93+First+Annual+Report+%E2%80%93+6+June+1956+%E2%80%93+1+July+1957+%E2%80%93+A+Study+of+Model+Techniques+for+Communication+Systems&amp;rft.place=Cleveland%2C+Ohio&amp;rft.pub=Case+Institute+of+Technology&amp;rft.date=1957&amp;rft.aulast=Leyzorek&amp;rft.aufirst=M.&amp;rft.au=Gray%2C+R.+S.&amp;rft.au=Johnson%2C+A.+A.&amp;rft.au=Ladew%2C+W.+C.&amp;rft.au=Meaker%2C+Jr.%2C+S.+R.&amp;rft.au=Petry%2C+R.+M.&amp;rft.au=Seitz%2C+R.+N.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ADijkstra%27s+algorithm"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFKnuth1977">Knuth, D.E. (1977). "A Generalization of Dijkstra's Algorithm". <i>Information Processing Letters</i>. <b>6</b> (1): 1–5. doi:10.1016/0020-0190(77)90002-3.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Information+Processing+Letters&amp;rft.atitle=A+Generalization+of+Dijkstra%27s+Algorithm&amp;rft.volume=6&amp;rft.issue=1&amp;rft.pages=1-5&amp;rft.date=1977&amp;rft_id=info%3Adoi%2F10.1016%2F0020-0190%2877%2990002-3&amp;rft.aulast=Knuth&amp;rft.aufirst=D.E.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ADijkstra%27s+algorithm"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFAhujaMehlhornOrlinTarjan1990">Ahuja, Ravindra K.; Mehlhorn, Kurt; Orlin, James B.; Tarjan, Robert E. (April 1990). "Faster Algorithms for the Shortest Path Problem" <span class="cs1-format">(PDF)</span>. <i>Journal of the ACM</i>. <b>37</b> (2): 213–223. doi:10.1145/77600.77615. hdl:<span class="cs1-lock-free" title="Freely accessible">1721.1/47994</span>. S2CID 5499589.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Journal+of+the+ACM&amp;rft.atitle=Faster+Algorithms+for+the+Shortest+Path+Problem&amp;rft.volume=37&amp;rft.issue=2&amp;rft.pages=213-223&amp;rft.date=1990-04&amp;rft_id=info%3Ahdl%2F1721.1%2F47994&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A5499589%23id-name%3DS2CID&amp;rft_id=info%3Adoi%2F10.1145%2F77600.77615&amp;rft.aulast=Ahuja&amp;rft.aufirst=Ravindra+K.&amp;rft.au=Mehlhorn%2C+Kurt&amp;rft.au=Orlin%2C+James+B.&amp;rft.au=Tarjan%2C+Robert+E.&amp;rft_id=https%3A%2F%2Fdspace.mit.edu%2Fbitstream%2F1721.1%2F47994%2F1%2Ffasteralgorithms00sloa.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ADijkstra%27s+algorithm"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFRaman1997">Raman, Rajeev (1997). "Recent results on the single-source shortest paths problem". <i>SIGACT News</i>. <b>28</b> (2): 81–87. doi:10.1145/261342.261352. S2CID 18031586.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=SIGACT+News&amp;rft.atitle=Recent+results+on+the+single-source+shortest+paths+problem&amp;rft.volume=28&amp;rft.issue=2&amp;rft.pages=81-87&amp;rft.date=1997&amp;rft_id=info%3Adoi%2F10.1145%2F261342.261352&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A18031586%23id-name%3DS2CID&amp;rft.aulast=Raman&amp;rft.aufirst=Rajeev&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ADijkstra%27s+algorithm"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFThorup2000">Thorup, Mikkel (2000). "On RAM priority Queues". <i>SIAM Journal on Computing</i>. <b>30</b> (1): 86–109. doi:10.1137/S0097539795288246. S2CID 5221089.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=SIAM+Journal+on+Computing&amp;rft.atitle=On+RAM+priority+Queues&amp;rft.volume=30&amp;rft.issue=1&amp;rft.pages=86-109&amp;rft.date=2000&amp;rft_id=info%3Adoi%2F10.1137%2FS0097539795288246&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A5221089%23id-name%3DS2CID&amp;rft.aulast=Thorup&amp;rft.aufirst=Mikkel&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ADijkstra%27s+algorithm"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFThorup1999">Thorup, Mikkel (1999). "Undirected single-source shortest paths with positive integer weights in linear time". <i>Journal of the ACM</i>. <b>46</b> (3): 362–394. doi:10.1145/316542.316548. S2CID 207654795.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Journal+of+the+ACM&amp;rft.atitle=Undirected+single-source+shortest+paths+with+positive+integer+weights+in+linear+time&amp;rft.volume=46&amp;rft.issue=3&amp;rft.pages=362-394&amp;rft.date=1999&amp;rft_id=info%3Adoi%2F10.1145%2F316542.316548&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A207654795%23id-name%3DS2CID&amp;rft.aulast=Thorup&amp;rft.aufirst=Mikkel&amp;rft_id=http%3A%2F%2Fwww.diku.dk%2F~mthorup%2FPAPERS%2Fsssp.ps.gz&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ADijkstra%27s+algorithm"></span></li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097025294">.mw-parser-output .side-box{margin:4px 0;box-sizing:border-box;border:1px solid #aaa;font-size:88%;line-height:1.25em;background-color:#f9f9f9}.mw-parser-output .side-box-abovebelow,.mw-parser-output .side-box-text{padding:0.25em 0.9em}.mw-parser-output .side-box-image{padding:2px 0 2px 0.9em;text-align:center}.mw-parser-output .side-box-imageright{padding:2px 0.9em 2px 0;text-align:center}@media(min-width:500px){.mw-parser-output .side-box-flex{display:flex;align-items:center}.mw-parser-output .side-box-text{flex:1}}@media(min-width:720px){.mw-parser-output .side-box{width:238px}.mw-parser-output .side-box-right{clear:right;float:right;margin-left:1em}.mw-parser-output .side-box-left{margin-right:1em}}</style>
+<ul><li>Oral history interview with Edsger W. Dijkstra, Charles Babbage Institute, University of Minnesota, Minneapolis</li>
+<li>Implementation of Dijkstra's algorithm using TDD, Robert Cecil Martin, The Clean Code Blog</li></ul>
+
+
+<!-- 
+NewPP limit report
+Parsed by mw2367
+Cached time: 20221223230715
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.744 seconds
+Real time usage: 1.222 seconds
+Preprocessor visited node count: 8513/1000000
+Post‐expand include size: 192890/2097152 bytes
+Template argument size: 10877/2097152 bytes
+Highest expansion depth: 16/100
+Expensive parser function count: 5/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 123824/5000000 bytes
+Lua time usage: 0.385/10.000 seconds
+Lua memory usage: 12411173/52428800 bytes
+Number of Wikibase entities loaded: 1/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  772.271      1 -total
+ 23.31%  180.039      1 Template:Reflist
+ 17.13%  132.303     17 Template:Cite_journal
+  7.11%   54.922      1 Template:Short_description
+  6.13%   47.328      9 Template:Navbox
+  5.82%   44.935      5 Template:Harvnb
+  5.57%   42.980      1 Template:Commons_category
+  5.33%   41.150      1 Template:Sister_project
+  5.12%   39.576      1 Template:Side_box
+  5.11%   39.478      1 Template:Graph_search_algorithm
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:45809-0!canonical and timestamp 20221223230714 and revision id 1127202995.
+ -->
+</div></body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>sparsity</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<table align="right" class="wikitable" style="margin: 3px 0 5px 14px;" width="240px">
+<tbody><tr>
+<td>
+
+</td></tr>
+<tr>
+<td>
+</td></tr></tbody></table>
+
+<p>In numerical analysis and scientific computing, a <b>sparse matrix</b> or <b>sparse array</b> is a matrix in which most of the elements are zero.<sup class="reference" id="cite_ref-Yan_Wu_Liu_Gao_2017_p._1-0">[1]</sup> There is no strict definition regarding the proportion of zero-value elements for a matrix to qualify as <b>sparse</b> but a common criterion is that the number of non-zero elements is roughly equal to the number of rows or columns. By contrast, if most of the elements are non-zero, the matrix is considered <b>dense</b>.<sup class="reference" id="cite_ref-Yan_Wu_Liu_Gao_2017_p._1-1">[1]</sup> The number of zero-valued elements divided by the total number of elements (e.g., <i>m</i> × <i>n</i> for an <i>m</i> × <i>n</i> matrix) is sometimes referred to as the <b>sparsity</b> of the matrix.
+</p><p>Conceptually, sparsity corresponds to systems with few pairwise interactions. For example, consider a line of balls connected by springs from one to the next: this is a sparse system as only adjacent balls are coupled. By contrast, if the same line of balls were to have springs connecting each ball to all other balls, the system would correspond to a dense matrix. The concept of sparsity is useful in combinatorics and application areas such as network theory and numerical analysis, which typically have a low density of significant data or connections. Large sparse matrices often appear in scientific or engineering applications when solving partial differential equations.
+</p><p>When storing and manipulating sparse matrices on a computer, it is beneficial and often necessary to use specialized algorithms and data structures that take advantage of the sparse structure of the matrix. Specialized computers have been made for sparse matrices,<sup class="reference" id="cite_ref-2">[2]</sup> as they are common in the machine learning field.<sup class="reference" id="cite_ref-3">[3]</sup> Operations using standard dense-matrix structures and algorithms are slow and inefficient when applied to large sparse matrices as processing and memory are wasted on the zeros. Sparse data is by nature more easily compressed and thus requires significantly less storage. Some very large sparse matrices are infeasible to manipulate using standard dense-matrix algorithms.
+</p>
+
+<h2><span class="mw-headline" id="Storing_a_sparse_matrix"><span class="anchor" id="storage"></span> Storing a sparse matrix</span><span class="mw-editsection"></span></h2>
+<p>A matrix is typically stored as a two-dimensional array. Each entry in the array represents an element <span class="texhtml"><i>a</i><sub><i>i</i>,<i>j</i></sub></span> of the matrix and is accessed by the two indices <span class="texhtml"><i>i</i></span> and <span class="texhtml"><i>j</i></span>. Conventionally, <span class="texhtml"><i>i</i></span> is the row index, numbered from top to bottom, and <span class="texhtml"><i>j</i></span> is the column index, numbered from left to right. For an <span class="texhtml"><i>m</i> × <i>n</i></span> matrix, the amount of memory required to store the matrix in this format is proportional to <span class="texhtml"><i>m</i> × <i>n</i></span> (disregarding the fact that the dimensions of the matrix also need to be stored).
+</p><p>In the case of a sparse matrix, substantial memory requirement reductions can be realized by storing only the non-zero entries. Depending on the number and distribution of the non-zero entries, different data structures can be used and yield huge savings in memory when compared to the basic approach. The trade-off is that accessing the individual elements becomes more complex and additional structures are needed to be able to recover the original matrix unambiguously.
+</p><p>Formats can be divided into two groups:
+</p>
+<ul><li>Those that support efficient modification, such as DOK (Dictionary of keys), LIL (List of lists), or COO (Coordinate list). These are typically used to construct the matrices.</li>
+<li>Those that support efficient access and matrix operations, such as CSR (Compressed Sparse Row) or CSC (Compressed Sparse Column).</li></ul>
+<h3><span id="Dictionary_of_keys_.28DOK.29"></span><span class="mw-headline" id="Dictionary_of_keys_(DOK)">Dictionary of keys (DOK)</span><span class="mw-editsection"></span></h3>
+<p>DOK consists of a dictionary that maps <span class="texhtml">(row, column)</span>-pairs to the value of the elements. Elements that are missing from the dictionary are taken to be zero. The format is good for incrementally constructing a sparse matrix in random order, but poor for iterating over non-zero values in lexicographical order. One typically constructs a matrix in this format and then converts to another more efficient format for processing.<sup class="reference" id="cite_ref-4">[4]</sup>
+</p>
+<h3><span id="List_of_lists_.28LIL.29"></span><span class="mw-headline" id="List_of_lists_(LIL)">List of lists (LIL)</span><span class="mw-editsection"></span></h3>
+<p>LIL stores one list per row, with each entry containing the column index and the value. Typically, these entries are kept sorted by column index for faster lookup. This is another format good for incremental matrix construction.<sup class="reference" id="cite_ref-5">[5]</sup>
+</p>
+<h3><span id="Coordinate_list_.28COO.29"></span><span class="mw-headline" id="Coordinate_list_(COO)">Coordinate list (COO)</span><span class="mw-editsection"></span></h3>
+<p>COO stores a list of <span class="texhtml">(row, column, value)</span> tuples. Ideally, the entries are sorted first by row index and then by column index, to improve random access times. This is another format that is good for incremental matrix construction.<sup class="reference" id="cite_ref-6">[6]</sup>
+</p>
+<h3><span id="Compressed_sparse_row_.28CSR.2C_CRS_or_Yale_format.29"></span><span class="mw-headline" id="Compressed_sparse_row_(CSR,_CRS_or_Yale_format)">Compressed sparse row (CSR, CRS or Yale format)</span><span class="mw-editsection"></span></h3>
+<p>The <i>compressed sparse row</i> (CSR) or <i>compressed row storage</i> (CRS) or Yale format represents a matrix <span class="texhtml"><b>M</b></span> by three (one-dimensional) arrays, that respectively contain nonzero values, the extents of rows, and column indices. It is similar to COO, but compresses the row indices, hence the name. This format allows fast row access and matrix-vector multiplications (<span class="texhtml"><b>M</b><i>x</i></span>). The CSR format has been in use since at least the mid-1960s, with the first complete description appearing in 1967.<sup class="reference" id="cite_ref-7">[7]</sup>
+</p><p>The CSR format stores a sparse <span class="texhtml"><i>m</i> × <i>n</i></span> matrix <span class="texhtml"><b>M</b></span> in row form using three (one-dimensional) arrays <span class="texhtml">(V, COL_INDEX, ROW_INDEX)</span>. Let <span class="texhtml">NNZ</span> denote the number of nonzero entries in <span class="texhtml"><b>M</b></span>. (Note that zero-based indices shall be used here.)
+</p>
+<ul><li>The arrays <span class="texhtml">V</span> and <span class="texhtml">COL_INDEX</span> are of length <span class="texhtml">NNZ</span>, and contain the non-zero values and the column indices of those values respectively.</li>
+<li>The array <span class="texhtml">ROW_INDEX</span> is of length <span class="texhtml"><i>m</i> + <i>1</i></span> and encodes the index in <span class="texhtml">V</span> and <span class="texhtml">COL_INDEX</span> where the given row starts. This is equivalent to <span class="texhtml">ROW_INDEX[j]</span> encoding the total number of nonzeros above row <span class="texhtml">j</span>.  The last element is <span class="texhtml">NNZ</span> , i.e., the fictitious index in <span class="texhtml">V</span> immediately after the last valid index <span class="texhtml">NNZ - 1</span>. <sup class="reference" id="cite_ref-8">[8]</sup></li></ul>
+<p>For example, the matrix
+</p>
+is a <span class="texhtml">4 × 4</span> matrix with 4 nonzero elements, hence
+
+<pre>V         = [ 5 8 3 6 ]
+COL_INDEX = [ 0 1 2 1 ]
+ROW_INDEX = [ 0 1 2 3 4 ] 
+</pre>
+<p>assuming a zero-indexed language.
+</p><p>To extract a row, we first define:
+</p>
+<pre>row_start = ROW_INDEX[row]
+row_end   = ROW_INDEX[row + 1]
+</pre>
+<p>Then we take slices from V and COL_INDEX starting at row_start and ending at row_end.
+</p><p>To extract the row 1 (the second row) of this matrix we set <code>row_start=1</code> and <code>row_end=2</code>. Then we make the slices <code>V[1:2] = [8]</code> and <code>COL_INDEX[1:2] = [1]</code>. We now know that in row 1 we have one element at column 1 with value 8.
+</p><p>In this case the CSR representation contains 13 entries, compared to 16 in the original matrix. The CSR format saves on memory only when <span class="texhtml">NNZ &lt; (<i>m</i> (<i>n</i> − 1) − 1) / 2</span>.
+</p><p>Another example, the matrix
+</p>
+is a <span class="texhtml">4 × 6</span> matrix (24 entries) with 8 nonzero elements, so
+
+<pre>V         = [ 10 20 30 40 50 60 70 80 ]
+COL_INDEX = [  0  1  1  3  2  3  4  5 ]   
+ROW_INDEX = [  0  2  4  7  8 ]
+</pre>
+<p>The whole is stored as 21 entries: 8 in <span class="texhtml">V</span>, 8 in <span class="texhtml">COL_INDEX</span>, and 5 in <span class="texhtml">ROW_INDEX</span>.
+</p>
+<ul><li><span class="texhtml">ROW_INDEX</span> splits the array <span class="texhtml">V</span> into rows: <code>(10, 20) (30, 40) (50, 60, 70) (80)</code>, indicating the index of <span class="texhtml">V</span> (and <span class="texhtml">COL_INDEX</span>) where each row starts and ends;</li>
+<li><span class="texhtml">COL_INDEX</span> aligns values in columns: <code>(10, 20, ...) (0, 30, 0, 40, ...)(0, 0, 50, 60, 70, 0) (0, 0, 0, 0, 0, 80)</code>.</li></ul>
+<p>Note that in this format, the first value of <span class="texhtml">ROW_INDEX</span> is always zero and the last is always <span class="texhtml">NNZ</span>, so they are in some sense redundant (although in programming languages where the array length needs to be explicitly stored, <span class="texhtml">NNZ</span> would not be redundant). Nonetheless, this does avoid the need to handle an exceptional case when computing the length of each row, as it guarantees the formula <span class="texhtml">ROW_INDEX[<i>i</i> + 1] − ROW_INDEX[<i>i</i>]</span> works for any row <span class="texhtml"><i>i</i></span>. Moreover, the memory cost of this redundant storage is likely insignificant for a sufficiently large matrix.
+</p><p>The (old and new) Yale sparse matrix formats are instances of the CSR scheme. The old Yale format works exactly as described above, with three arrays; the new format combines <span class="texhtml">ROW_INDEX</span> and <span class="texhtml">COL_INDEX</span> into a single array and handles the diagonal of the matrix separately.<sup class="reference" id="cite_ref-9">[9]</sup>
+</p><p>For  logical  adjacency matrices, the data array can be omitted, as the existence of an entry in the row array is sufficient to model a binary adjacency relation.
+</p><p>It is likely known as the Yale format because it was proposed in the 1977 Yale Sparse Matrix Package report from Department of Computer Science at Yale University.<sup class="reference" id="cite_ref-10">[10]</sup>
+</p>
+<h3><span id="Compressed_sparse_column_.28CSC_or_CCS.29"></span><span class="mw-headline" id="Compressed_sparse_column_(CSC_or_CCS)">Compressed sparse column (CSC or CCS)</span><span class="mw-editsection"></span></h3>
+<p>CSC is similar to CSR except that values are read first by column, a row index is stored for each value, and column pointers are stored. For example, CSC is <span class="texhtml">(val, row_ind, col_ptr)</span>, where <span class="texhtml">val</span> is an array of the (top-to-bottom, then left-to-right) non-zero values of the matrix; <span class="texhtml">row_ind</span> is the row indices corresponding to the values; and, <span class="texhtml">col_ptr</span> is the list of <span class="texhtml">val</span> indexes where each column starts. The name is based on the fact that column index information is compressed relative to the COO format. One typically uses another format (LIL, DOK, COO) for construction. This format is efficient for arithmetic operations, column slicing, and matrix-vector products.  See scipy.sparse.csc_matrix. This is the traditional format for specifying a sparse matrix in MATLAB (via the <code>sparse</code> function).
+</p>
+<h2><span class="mw-headline" id="Special_structure">Special structure</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Banded">Banded</span><span class="mw-editsection"></span></h3>
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p>An important special type of sparse matrices is band matrix, defined as follows. The lower bandwidth of a matrix <span class="texhtml"><b>A</b></span> is the smallest number <span class="texhtml"><i>p</i></span> such that the entry <span class="texhtml"><i>a</i><sub><i>i</i>,<i>j</i></sub></span> vanishes whenever <span class="texhtml"><i>i</i> &gt; <i>j</i> + <i>p</i></span>. Similarly, the upper bandwidth is the smallest number <span class="texhtml"><i>p</i></span> such that <span class="texhtml"><i>a</i><sub><i>i</i>,<i>j</i></sub> = 0</span> whenever <span class="texhtml"><i>i</i> &lt; <i>j</i> − <i>p</i></span> (Golub &amp; Van Loan 1996, §1.2.1). For example, a tridiagonal matrix has lower bandwidth <span class="texhtml">1</span> and upper bandwidth <span class="texhtml">1</span>. As another example, the following sparse matrix has lower and upper bandwidth both equal to 3. Notice that zeros are represented with dots for clarity.
+</p>
+<p>Matrices with reasonably small upper and lower bandwidth are known as band matrices and often lend themselves to simpler algorithms than general sparse matrices; or one can sometimes apply dense matrix algorithms and gain efficiency simply by looping over a reduced number of indices.
+</p><p>By rearranging the rows and columns of a matrix <span class="texhtml"><b>A</b></span> it may be possible to obtain a matrix <span class="texhtml"><b>A</b>′</span> with a lower bandwidth. A number of algorithms are designed for bandwidth minimization.
+</p>
+<h3><span class="mw-headline" id="Diagonal">Diagonal</span><span class="mw-editsection"></span></h3>
+<p>A very efficient structure for an extreme case of band matrices, the diagonal matrix, is to store just the entries in the main diagonal as a one-dimensional array, so a diagonal <span class="texhtml"><i>n</i> × <i>n</i></span> matrix requires only <span class="texhtml"><i>n</i></span> entries.
+</p>
+<h3><span class="mw-headline" id="Symmetric">Symmetric</span><span class="mw-editsection"></span></h3>
+<p>A symmetric sparse matrix arises as the adjacency matrix of an undirected graph; it can be stored efficiently as an adjacency list.
+</p>
+<h3><span class="mw-headline" id="Block_diagonal">Block diagonal</span><span class="mw-editsection"></span></h3>
+<p>A block-diagonal matrix consists of sub-matrices along its diagonal blocks. A block-diagonal matrix <span class="texhtml"><b>A</b></span> has the form
+</p>
+<p>where <span class="texhtml"><b>A</b><sub><i>k</i></sub></span> is a square matrix for all <span class="texhtml"><i>k</i> = 1, ..., <i>n</i></span>.
+</p>
+<h2><span class="mw-headline" id="Reducing_fill-in">Reducing fill-in</span><span class="mw-editsection"></span></h2>
+<p>The <i>fill-in</i> of a matrix are those entries that change from an initial zero to a non-zero value during the execution of an algorithm. To reduce the memory requirements and the number of arithmetic operations used during an algorithm, it is useful to minimize the fill-in by switching rows and columns in the matrix. The symbolic Cholesky decomposition can be used to calculate the worst possible fill-in before doing the actual Cholesky decomposition.
+</p><p>There are other methods than the Cholesky decomposition in use. Orthogonalization methods (such as QR factorization) are common, for example, when solving problems by least squares methods. While the theoretical fill-in is still the same, in practical terms the "false non-zeros" can be different for different methods. And symbolic versions of those algorithms can be used in the same manner as the symbolic Cholesky to compute worst case fill-in.
+</p>
+<h2><span class="mw-headline" id="Solving_sparse_matrix_equations">Solving sparse matrix equations</span><span class="mw-editsection"></span></h2>
+<p>Both iterative and direct methods exist for sparse matrix solving.
+</p><p>Iterative methods, such as conjugate gradient method and GMRES utilize fast computations of matrix-vector products <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Ax_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Ax_{i}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle Ax_{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9a268eb5b5f04010ae93a8f69d069b91dad1f11e" style="vertical-align: -0.671ex; width:3.872ex; height:2.509ex;"/></span>, where matrix <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A}</annotation>
+</semantics>
+</math></span><img alt="A" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7daff47fa58cdfd29dc333def748ff5fa4c923e3" style="vertical-align: -0.338ex; width:1.743ex; height:2.176ex;"/></span> is sparse. The use of preconditioners can significantly accelerate convergence of such iterative methods.
+</p>
+<h2><span class="mw-headline" id="Software">Software</span><span class="mw-editsection"></span></h2>
+<p>Many software libraries support sparse matrices, and provide solvers for sparse matrix equations. The following are open-source:
+</p>
+<ul><li>SuiteSparse, a suite of sparse matrix algorithms, geared toward the direct solution of sparse linear systems.</li>
+<li>PETSc, a large C library, containing many different matrix solvers for a variety of matrix storage formats.</li>
+<li>Trilinos, a large C++ library, with sub-libraries dedicated to the storage of dense and sparse matrices and solution of corresponding linear systems.</li>
+<li>Eigen3 is a C++ library that contains several sparse matrix solvers. However, none of them are parallelized.</li>
+<li>MUMPS (<b>MU</b>ltifrontal <b>M</b>assively <b>P</b>arallel sparse direct <b>S</b>olver), written in Fortran90, is a frontal solver.</li>
+<li>deal.II, a finite element library that also has a sub-library for sparse linear systems and their solution.</li>
+<li>DUNE, another finite element library that also has a sub-library for sparse linear systems and their solution.</li>
+<li>PaStix.</li>
+<li>SuperLU.</li>
+<li>Armadillo provides a user-friendly C++ wrapper for BLAS and LAPACK.</li>
+<li>SciPy provides support for several sparse matrix formats, linear algebra, and solvers.</li>
+<li>SPArse Matrix (spam) R and Python package for sparse matrices.</li>
+<li>Wolfram Language Tools for handling sparse arrays</li>
+<li>ALGLIB is a C++ and C# library with sparse linear algebra support</li>
+<li>ARPACK Fortran 77 library for sparse matrix diagonalization and manipulation, using the Arnoldi algorithm</li>
+<li>SPARSE Reference (old) NIST package for (real or complex) sparse matrix diagonalization</li>
+<li>SLEPc Library for solution of large scale linear systems and sparse matrices</li>
+<li>Sympiler, a domain-specific code generator and library for solving linear systems and quadratic programming problems.</li>
+<li>scikit-learn, a Python library for machine learning, provides support for sparse matrices and solvers.</li>
+<li>sprs implements sparse matrix data structures and linear algebra algorithms in pure Rust.</li>
+<li>Basic Matrix Library (bml) supports several sparse matrix formats and linear algebra algorithms with bindings for C, C++, and Fortran.</li></ul>
+<h2><span class="mw-headline" id="History">History</span><span class="mw-editsection"></span></h2>
+<p>The term <i>sparse matrix</i> was possibly coined by Harry Markowitz who initiated some pioneering work but then left the field.<sup class="reference" id="cite_ref-11">[11]</sup>
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r998391716">.mw-parser-output .div-col{margin-top:0.3em;column-width:30em}.mw-parser-output .div-col-small{font-size:90%}.mw-parser-output .div-col-rules{column-rule:1px solid #aaa}.mw-parser-output .div-col dl,.mw-parser-output .div-col ol,.mw-parser-output .div-col ul{margin-top:0}.mw-parser-output .div-col li,.mw-parser-output .div-col dd{page-break-inside:avoid;break-inside:avoid-column}</style>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFGolubVan_Loan1996">Golub, Gene H.; Van Loan, Charles F. (1996). <i>Matrix Computations</i> (3rd ed.). Baltimore: Johns Hopkins. ISBN <bdi>978-0-8018-5414-9</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Matrix+Computations&amp;rft.place=Baltimore&amp;rft.edition=3rd&amp;rft.pub=Johns+Hopkins&amp;rft.date=1996&amp;rft.isbn=978-0-8018-5414-9&amp;rft.aulast=Golub&amp;rft.aufirst=Gene+H.&amp;rft.au=Van+Loan%2C+Charles+F.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASparse+matrix"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFStoerBulirsch2002">Stoer, Josef; Bulirsch, Roland (2002). <i>Introduction to Numerical Analysis</i> (3rd ed.). Berlin, New York: Springer-Verlag. ISBN <bdi>978-0-387-95452-3</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Introduction+to+Numerical+Analysis&amp;rft.place=Berlin%2C+New+York&amp;rft.edition=3rd&amp;rft.pub=Springer-Verlag&amp;rft.date=2002&amp;rft.isbn=978-0-387-95452-3&amp;rft.aulast=Stoer&amp;rft.aufirst=Josef&amp;rft.au=Bulirsch%2C+Roland&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASparse+matrix"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFTewarson1973">Tewarson, Reginald P. (May 1973). <i>Sparse Matrices (Part of the Mathematics in Science &amp; Engineering series)</i>. Academic Press Inc.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Sparse+Matrices+%28Part+of+the+Mathematics+in+Science+%26+Engineering+series%29&amp;rft.pub=Academic+Press+Inc.&amp;rft.date=1973-05&amp;rft.aulast=Tewarson&amp;rft.aufirst=Reginald+P.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASparse+matrix"></span> (This book, by a professor at the State University of New York at Stony Book, was the first book exclusively dedicated to Sparse Matrices.  Graduate courses using this as a textbook were offered at that University in the early 1980s).</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation web cs1" id="CITEREFBankDouglas">Bank, Randolph E.; Douglas, Craig C. "Sparse Matrix Multiplication Package" <span class="cs1-format">(PDF)</span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=Sparse+Matrix+Multiplication+Package&amp;rft.aulast=Bank&amp;rft.aufirst=Randolph+E.&amp;rft.au=Douglas%2C+Craig+C.&amp;rft_id=http%3A%2F%2Fwww.mgnet.org%2F~douglas%2FPreprints%2Fpub0034.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASparse+matrix"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFPissanetzky1984">Pissanetzky, Sergio (1984). <span class="cs1-lock-registration" title="Free registration required"><i>Sparse Matrix Technology</i></span>. Academic Press. ISBN <bdi>9780125575805</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Sparse+Matrix+Technology&amp;rft.pub=Academic+Press&amp;rft.date=1984&amp;rft.isbn=9780125575805&amp;rft.aulast=Pissanetzky&amp;rft.aufirst=Sergio&amp;rft_id=https%3A%2F%2Farchive.org%2Fdetails%2Fsparsematrixtech0000piss&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASparse+matrix"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFSnay1976">Snay, Richard A. (1976). "Reducing the profile of sparse symmetric matrices". <i>Bulletin Géodésique</i>. <b>50</b> (4): 341–352. Bibcode:1976BGeod..50..341S. doi:10.1007/BF02521587. hdl:<span class="cs1-lock-free" title="Freely accessible">2027/uc1.31210024848523</span>. S2CID 123079384.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Bulletin+G%C3%A9od%C3%A9sique&amp;rft.atitle=Reducing+the+profile+of+sparse+symmetric+matrices&amp;rft.volume=50&amp;rft.issue=4&amp;rft.pages=341-352&amp;rft.date=1976&amp;rft_id=info%3Ahdl%2F2027%2Fuc1.31210024848523&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A123079384%23id-name%3DS2CID&amp;rft_id=info%3Adoi%2F10.1007%2FBF02521587&amp;rft_id=info%3Abibcode%2F1976BGeod..50..341S&amp;rft.aulast=Snay&amp;rft.aufirst=Richard+A.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASparse+matrix"></span> Also NOAA Technical Memorandum NOS NGS-4, National Geodetic Survey, Rockville, MD.<sup class="reference" id="cite_ref-12">[1]</sup></li></ul>
+<p><br/>
+</p>
+<h2><span class="mw-headline" id="Further_reading">Further reading</span><span class="mw-editsection"></span></h2>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFGibbsPooleStockmeyer1976">Gibbs, Norman E.; Poole, William G.; Stockmeyer, Paul K. (1976). "A comparison of several bandwidth and profile reduction algorithms". <i>ACM Transactions on Mathematical Software</i>. <b>2</b> (4): 322–330. doi:10.1145/355705.355707. S2CID 14494429.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=ACM+Transactions+on+Mathematical+Software&amp;rft.atitle=A+comparison+of+several+bandwidth+and+profile+reduction+algorithms&amp;rft.volume=2&amp;rft.issue=4&amp;rft.pages=322-330&amp;rft.date=1976&amp;rft_id=info%3Adoi%2F10.1145%2F355705.355707&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A14494429%23id-name%3DS2CID&amp;rft.aulast=Gibbs&amp;rft.aufirst=Norman+E.&amp;rft.au=Poole%2C+William+G.&amp;rft.au=Stockmeyer%2C+Paul+K.&amp;rft_id=http%3A%2F%2Fportal.acm.org%2Fcitation.cfm%3Fid%3D355707&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASparse+matrix"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFGilbertMolerSchreiber1992">Gilbert, John R.; Moler, Cleve; Schreiber, Robert (1992). "Sparse matrices in MATLAB: Design and Implementation". <i>SIAM Journal on Matrix Analysis and Applications</i>. <b>13</b> (1): 333–356. CiteSeerX <span class="cs1-lock-free" title="Freely accessible">10.1.1.470.1054</span>. doi:10.1137/0613024.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=SIAM+Journal+on+Matrix+Analysis+and+Applications&amp;rft.atitle=Sparse+matrices+in+MATLAB%3A+Design+and+Implementation&amp;rft.volume=13&amp;rft.issue=1&amp;rft.pages=333-356&amp;rft.date=1992&amp;rft_id=%2F%2Fciteseerx.ist.psu.edu%2Fviewdoc%2Fsummary%3Fdoi%3D10.1.1.470.1054%23id-name%3DCiteSeerX&amp;rft_id=info%3Adoi%2F10.1137%2F0613024&amp;rft.aulast=Gilbert&amp;rft.aufirst=John+R.&amp;rft.au=Moler%2C+Cleve&amp;rft.au=Schreiber%2C+Robert&amp;rft_id=http%3A%2F%2Fciteseer.ist.psu.edu%2Fgilbert91sparse.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASparse+matrix"></span></li>
+<li>Sparse Matrix Algorithms Research at the Texas A&amp;M University.</li>
+<li>SuiteSparse Matrix Collection</li>
+<li>SMALL project A EU-funded project on sparse models, algorithms and dictionary learning for large-scale data.</li></ul>
+
+
+
+
+<!-- 
+NewPP limit report
+Parsed by mw2271
+Cached time: 20221223230738
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.506 seconds
+Real time usage: 0.652 seconds
+Preprocessor visited node count: 4640/1000000
+Post‐expand include size: 93726/2097152 bytes
+Template argument size: 6795/2097152 bytes
+Highest expansion depth: 10/100
+Expensive parser function count: 2/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 51553/5000000 bytes
+Lua time usage: 0.276/10.000 seconds
+Lua memory usage: 7897978/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  531.922      1 -total
+ 27.75%  147.601      1 Template:Reflist
+ 18.51%   98.453      2 Template:Cite_conference
+ 13.01%   69.202     67 Template:Math
+ 12.59%   66.994      3 Template:Navbox
+ 11.29%   60.080      1 Template:Short_description
+  9.36%   49.778      1 Template:Data_structures
+  6.81%   36.212      1 Template:Harv
+  6.35%   33.793      2 Template:Pagetype
+  4.91%   26.115      6 Template:Cite_book
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:341015-0!canonical and timestamp 20221223230737 and revision id 1127644829.
+ -->
+</div></body>
+</html>

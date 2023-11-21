@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Fisher-Yates_shuffle</title>
+</head>
+<body>
+<div class="mw-parser-output">
+
+<p>The <b>Fisher–Yates shuffle</b> is an algorithm for generating a random permutation of a finite sequence—in plain terms, the algorithm shuffles the sequence.  The algorithm effectively puts all the elements into a hat; it continually determines the next element by randomly drawing an element from the hat until no elements remain. The algorithm produces an unbiased permutation: every permutation is equally likely.  The modern version of the algorithm is efficient: it takes time proportional to the number of items being shuffled and shuffles them in place.
+</p><p>The Fisher–Yates shuffle is named after Ronald Fisher and Frank Yates, who first described it, and is also known as the <b>Knuth shuffle</b> after Donald Knuth. A variant of the Fisher–Yates shuffle, known as <b>Sattolo's algorithm</b>, may be used to generate random cyclic permutations of length <i>n</i> instead of random permutations.
+</p>
+
+<h2><span id="Fisher_and_Yates.27_original_method"></span><span class="mw-headline" id="Fisher_and_Yates'_original_method">Fisher and Yates' original method</span><span class="mw-editsection"></span></h2>
+<p>The Fisher–Yates shuffle, in its original form, was described in 1938 by Ronald Fisher and Frank Yates in their book <i>Statistical tables for biological, agricultural and medical research</i>.<sup class="reference" id="cite_ref-fisheryates_1-0">[1]</sup>  Their description of the algorithm used pencil and paper; a table of random numbers provided the randomness.  The basic method given for generating a random permutation of the numbers 1 through <i>N</i> goes as follows:
+</p>
+<ol><li>Write down the numbers from 1 through <i>N</i>.</li>
+<li>Pick a random number <i>k</i> between one and the number of unstruck numbers remaining (inclusive).</li>
+<li>Counting from the low end, strike out the <i>k</i>th number not yet struck out, and write it down at the end of a separate list.</li>
+<li>Repeat from step 2 until all the numbers have been struck out.</li>
+<li>The sequence of numbers written down in step 3 is now a random permutation of the original numbers.</li></ol>
+<p>Provided that the random numbers picked in step 2 above are truly random and unbiased, so will be the resulting permutation.  Fisher and Yates took care to describe how to obtain such random numbers in any desired range from the supplied tables in a manner which avoids any bias.  They also suggested the possibility of using a simpler method — picking random numbers from one to <i>N</i> and discarding any duplicates—to generate the first half of the permutation, and only applying the more complex algorithm to the remaining half, where picking a duplicate number would otherwise become frustratingly common.
+</p>
+<h2><span class="mw-headline" id="The_modern_algorithm">The modern algorithm</span><span class="mw-editsection"></span></h2>
+<p>The modern version of the Fisher–Yates shuffle, designed for computer use, was introduced by Richard Durstenfeld in 1964<sup class="reference" id="cite_ref-cacm_2-0">[2]</sup> and popularized by Donald E. Knuth in <i>The Art of Computer Programming</i> as "Algorithm P (Shuffling)".<sup class="reference" id="cite_ref-knuth_3-0">[3]</sup> Neither Durstenfeld's article nor Knuth's first edition of <i>The Art of Computer Programming</i> acknowledged the work of Fisher and Yates; they may not have been aware of it.  Subsequent editions of Knuth's <i>The Art of Computer Programming</i> mention Fisher and Yates' contribution.<sup class="reference" id="cite_ref-knuth3_4-0">[4]</sup>
+</p><p>The algorithm described by Durstenfeld differs from that given by Fisher and Yates in a small but significant way.  Whereas a naïve computer implementation of Fisher and Yates' method would spend needless time counting the remaining numbers in step 3 above, Durstenfeld's solution is to move the "struck" numbers to the end of the list by swapping them with the last unstruck number at each iteration.  This reduces the algorithm's time complexity to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {O}}(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">O</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {O}}(n)}</annotation>
+</semantics>
+</math></span><img alt="{\mathcal {O}}(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3c7bbe0124ae81792773344bc8709fc2f9c9910d" style="vertical-align: -0.838ex; width:5.054ex; height:2.843ex;"/></span> compared to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {O}}(n^{2})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">O</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {O}}(n^{2})}</annotation>
+</semantics>
+</math></span><img alt="{\mathcal {O}}(n^{2})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4441d9689c0e6b2c47994e2f587ac5378faeefba" style="vertical-align: -0.838ex; width:6.108ex; height:3.176ex;"/></span> for the naïve implementation.<sup class="reference" id="cite_ref-nist_5-0">[5]</sup>  This change gives the following algorithm (for a zero-based array).
+</p>
+<pre>-- To shuffle an array <i>a</i> of <i>n</i> elements (indices 0..<i>n</i>-1):
+<b>for</b> <i>i</i> <b>from</b> <i>n</i>−1 <b>downto</b> 1 <b>do</b>
+     <i>j</i> ← random integer such that 0 ≤ <i>j</i> ≤ <i>i</i>
+     exchange <i>a</i>[<i>j</i>] and <i>a</i>[<i>i</i>]
+</pre>
+<p>An equivalent version which shuffles the array in the opposite direction (from lowest index to highest) is:
+</p>
+<pre>-- To shuffle an array <i>a</i> of <i>n</i> elements (indices 0..<i>n</i>-1):
+<b>for</b> <i>i</i> <b>from</b> 0 <b>to</b> <i>n</i>−2 <b>do</b>
+     <i>j</i> ← random integer such that <i>i</i> ≤ <i>j</i> &lt; <i>n</i>
+     exchange <i>a</i>[<i>i</i>] and <i>a</i>[<i>j</i>]
+</pre>
+<h2><span class="mw-headline" id="Examples">Examples</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Pencil-and-paper_method">Pencil-and-paper method</span><span class="mw-editsection"></span></h3>
+<p>As an example, we'll permute the letters from A to H using Fisher and Yates' original method.  We'll start by writing the letters out on a piece of scratch paper like this:
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>Range</th>
+<th>Roll</th>
+<th>Scratch</th>
+<th>Result
+</th></tr>
+<tr>
+<td> </td>
+<td> </td>
+<td>A B C D E F G H</td>
+<td> 
+</td></tr></tbody></table>
+<p>Now we roll a random number <i>k</i> from 1 to 8—let's make it 3—and strike out the <i>k</i>th (i.e. third) letter on the scratch pad and write it down as the result:
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>Range</th>
+<th>Roll</th>
+<th>Scratch</th>
+<th>Result
+</th></tr>
+<tr>
+<td>1–8</td>
+<td>3</td>
+<td>A B  D E F G H</td>
+<td><b>C</b>
+</td></tr></tbody></table>
+<p>Now we pick a second random number, this time from 1 to 7: it turns out to be 4.  Now we strike out the fourth letter <i>not yet struck</i> off the scratch pad—that's letter E—and add it to the result:
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>Range</th>
+<th>Roll</th>
+<th>Scratch</th>
+<th>Result
+</th></tr>
+<tr>
+<td>1–7</td>
+<td>4</td>
+<td>A B  D  F G H</td>
+<td>C <b>E</b>
+</td></tr></tbody></table>
+<p>Now we pick the next random number from 1 to 6, and then from 1 to 5, and so on, always repeating the strike-out process as above:
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>Range</th>
+<th>Roll</th>
+<th>Scratch</th>
+<th>Result
+</th></tr>
+<tr>
+<td>1–6</td>
+<td>5</td>
+<td>A B  D  F  H</td>
+<td>C E <b>G</b>
+</td></tr>
+<tr>
+<td>1–5</td>
+<td>3</td>
+<td>A B    F  H</td>
+<td>C E G <b>D</b>
+</td></tr>
+<tr>
+<td>1–4</td>
+<td>4</td>
+<td>A B    F  </td>
+<td>C E G D <b>H</b>
+</td></tr>
+<tr>
+<td>1–3</td>
+<td>1</td>
+<td> B    F  </td>
+<td>C E G D H <b>A</b>
+</td></tr>
+<tr>
+<td>1–2</td>
+<td>2</td>
+<td> B      </td>
+<td>C E G D H A <b>F</b>
+</td></tr>
+<tr>
+<td> </td>
+<td> </td>
+<td>       </td>
+<td>C E G D H A F <b>B</b>
+</td></tr></tbody></table>
+<h3><span class="mw-headline" id="Modern_method">Modern method</span><span class="mw-editsection"></span></h3>
+<p>We'll now do the same thing using Durstenfeld's version of the algorithm: this time, instead of striking out the chosen letters and copying them elsewhere, we'll swap them with the last letter not yet chosen.  We'll start by writing out the letters from A to H as before:
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>Range</th>
+<th>Roll</th>
+<th>Scratch</th>
+<th>Result
+</th></tr>
+<tr>
+<td> </td>
+<td> </td>
+<td>A B C D E F G H</td>
+<td> 
+</td></tr></tbody></table>
+<p>For our first roll, we roll a random number from 1 to 8: this time it is 6, so we swap the 6th and 8th letters in the list:
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>Range</th>
+<th>Roll</th>
+<th>Scratch</th>
+<th>Result
+</th></tr>
+<tr>
+<td>1–8</td>
+<td>6</td>
+<td>A B C D E <b>H</b> G</td>
+<td><b>F</b>
+</td></tr></tbody></table>
+<p>The next random number we roll from 1 to 7, and turns out to be 2.  Thus, we swap the 2nd and 7th letters and move on:
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>Range</th>
+<th>Roll</th>
+<th>Scratch</th>
+<th>Result
+</th></tr>
+<tr>
+<td>1–7</td>
+<td>2</td>
+<td>A <b>G</b> C D E H</td>
+<td><b>B</b> F
+</td></tr></tbody></table>
+<p>The next random number we roll is from 1 to 6, and just happens to be 6, which means we leave the 6th letter in the list (which, after the swap above, is now letter H) in place and just move to the next step.  Again, we proceed the same way until the permutation is complete:
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>Range</th>
+<th>Roll</th>
+<th colspan="5">Scratch</th>
+<th colspan="1">Result
+</th></tr>
+<tr>
+<td>1–6</td>
+<td>6</td>
+<td colspan="5">A G C D E</td>
+<td align="right" colspan="1"><b>H</b> B F  
+</td></tr>
+<tr>
+<td>1–5</td>
+<td>1</td>
+<td colspan="4"><b>E</b> G C D</td>
+<td align="right" colspan="2"><b>A</b> H B F  
+</td></tr>
+<tr>
+<td>1–4</td>
+<td>3</td>
+<td colspan="3">E G <b>D</b></td>
+<td align="right" colspan="3"><b>C</b> A H B F  
+</td></tr>
+<tr>
+<td>1–3</td>
+<td>3</td>
+<td colspan="2">E G</td>
+<td align="right" colspan="4"><b>D</b> C A H B F  
+</td></tr>
+<tr>
+<td>1–2</td>
+<td>1</td>
+<td colspan="1"><b>G</b></td>
+<td align="right" colspan="5"><b>E</b> D C A H B F  
+</td></tr>
+<tr>
+<td colspan="3" style="padding-top:0;padding-bottom:0;">
+</td>
+<td style="padding-top:0;padding-bottom:0;">
+</td>
+<td style="padding-top:0;padding-bottom:0;">
+</td>
+<td style="padding-top:0;padding-bottom:0;">
+</td>
+<td style="padding-top:0;padding-bottom:0;">
+</td></tr></tbody></table>
+<p>At this point there's nothing more that can be done, so the resulting permutation is G E D C A H B F.
+</p>
+<h2><span class="mw-headline" id="Variants">Variants</span><span class="mw-editsection"></span></h2>
+<h3><span id="The_.22inside-out.22_algorithm"></span><span class="mw-headline" id='The_"inside-out"_algorithm'>The "inside-out" algorithm</span><span class="mw-editsection"></span></h3>
+<style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-Original_research plainlinks metadata ambox ambox-content ambox-Original_research" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<p>The Fisher–Yates shuffle, as implemented by Durstenfeld, is an <i>in-place shuffle</i>. That is, given a preinitialized array, it shuffles the elements of the array in place, rather than producing a shuffled copy of the array. This can be an advantage if the array to be shuffled is large.
+</p><p>To simultaneously initialize and shuffle an array, a bit more efficiency can be attained by doing an "inside-out" version of the shuffle.  In this version, one successively places element number <i>i</i> into a random position among the first <i>i</i> positions in the array, after moving the element previously occupying that position to position <i>i</i>.  In case the random position happens to be number <i>i</i>, this "move" (to the same place) involves an uninitialised value, but that does not matter, as the value is then immediately overwritten. No separate initialization is needed, and no exchange is performed. In the common case where <i>source</i> is defined by some simple function, such as the integers from 0 to <i>n</i> − 1, <i>source</i> can simply be replaced with the function since <i>source</i> is never altered during execution.
+</p>
+<pre>To initialize an array <i>a</i> of <i>n</i> elements to a randomly shuffled copy of <i>source</i>, both 0-based:
+  <b>for</b> <i>i</i> <b>from</b> 0 <b>to</b> <i>n</i> − 1 <b>do</b>
+      <i>j</i> ← random integer such that 0 ≤ <i>j</i> ≤ <i>i</i>
+      <b>if</b> <i>j</i> ≠ <i>i</i>
+          <i>a</i>[<i>i</i>] ← <i>a</i>[<i>j</i>]
+      <i>a</i>[<i>j</i>] ← <i>source</i>[<i>i</i>]
+</pre>
+<p>The inside-out shuffle can be seen to be correct by induction. Assuming a perfect random number generator, every one of the <i>n</i>! different sequences of random numbers that could be obtained from the calls of <i>random</i> will produce a different permutation of the values, so all of these are obtained exactly once. The condition that checks if <i>j</i> ≠ <i>i</i> may be omitted in languages that have no problems accessing uninitialized array values.  This eliminates <i>n</i> conditional branches at the cost of the <i>H<sub>n</sub></i> ≈ ln <i>n</i> + <i>γ</i> redundant assignments.
+</p><p>Another advantage of this technique is that <i>n</i>, the number of elements in the <i>source</i>, does not need to be known in advance; we only need to be able to detect the end of the source data when it is reached.  Below the array <i>a</i> is built iteratively starting from empty, and <i>a</i>.length represents the <i>current</i> number of elements seen.
+</p>
+<pre>To initialize an empty array <i>a</i> to a randomly shuffled copy of <i>source</i> whose length is not known:
+  <b>while</b> <i>source</i>.moreDataAvailable
+      <i>j</i> ← random integer such that 0 ≤ <i>j</i> ≤ <i>a</i>.length
+      <b>if</b> j = <i>a</i>.length
+          <i>a</i>.append(<i>source</i>.next)
+      <b>else</b>
+          <i>a</i>.append(<i>a</i>[<i>j</i>])
+          <i>a</i>[<i>j</i>] ← <i>source</i>.next
+</pre>
+<h3><span id="Sattolo.27s_algorithm"></span><span class="mw-headline" id="Sattolo's_algorithm">Sattolo's algorithm</span><span class="mw-editsection"></span></h3>
+<table class="wikitable infobox" style="border:double silver; width:1px;">
+<tbody><tr>
+<th>Cyclic<br/>permu-<br/>tation</th>
+<th><br/>Example
+</th></tr>
+<tr>
+<td><b>BCDA</b></td>
+<td>ABCD→DABC→CDAB→<b>BCDA</b>→ABCD...
+</td></tr>
+<tr>
+<td><b>DABC</b></td>
+<td>ABCD→BCDA→CDAB→<b>DABC</b>→ABCD...
+</td></tr>
+<tr>
+<td><b>BDAC</b></td>
+<td>ABCD→CADB→DCBA→<b>BDAC</b>→ABCD...
+</td></tr>
+<tr>
+<td><b>CADB</b></td>
+<td>ABCD→BDAC→DCBA→<b>CADB</b>→ABCD...
+</td></tr>
+<tr>
+<td><b>CDBA</b></td>
+<td>ABCD→DCAB→BADC→<b>CDBA</b>→ABCD...
+</td></tr>
+<tr>
+<td><b>DCAB</b></td>
+<td>ABCD→CDBA→BADC→<b>DCAB</b>→ABCD...
+</td></tr>
+<tr>
+<td colspan="2">The six (3!) cyclic permutations of ABCD<br/>generated by Sattolo's algorithm
+</td></tr></tbody></table>
+<p>A very similar algorithm was published in 1986 by Sandra Sattolo for generating uniformly distributed cycles of (maximal) length <i>n</i>.<sup class="reference" id="cite_ref-sattolo_6-0">[6]</sup><sup class="reference" id="cite_ref-wilson_7-0">[7]</sup> The only difference between Durstenfeld's and Sattolo's algorithms is that in the latter, in step 2 above, the random number <i>j</i> is chosen from the range between 1 and <i>i</i>−1 (rather than between 1 and <i>i</i>) inclusive.  This simple change modifies the algorithm so that the resulting permutation always consists of a single cycle.
+</p><p>In fact, as described below, it is quite easy to <i>accidentally</i> implement Sattolo's algorithm when the ordinary Fisher–Yates shuffle is intended.  This will bias the results by causing the permutations to be picked from the smaller set of (<i>n</i>−1)! cycles of length <i>N</i>, instead of from the full set of all <i>n</i>! possible permutations.
+</p><p>The fact that Sattolo's algorithm always produces a cycle of length <i>n</i> can be shown by induction. Assume by induction that after the initial iteration of the loop, the remaining iterations permute the first <i>n</i> − 1 elements according to a cycle of length <i>n</i> − 1 (those remaining iterations are just Sattolo's algorithm applied to those first <i>n</i> − 1 elements). This means that tracing the initial element to its new position <i>p</i>, then the element originally at position <i>p</i> to its new position, and so forth, one only gets back to the initial position after having visited all other positions. Suppose the initial iteration swapped the final element with the one at (non-final) position <i>k</i>, and that the subsequent permutation of first <i>n</i> − 1 elements then moved it to position <i>l</i>; we compare the permutation <i>π</i> of all <i>n</i> elements with that remaining permutation <i>σ</i> of the first <i>n</i> − 1 elements. Tracing successive positions as just mentioned, there is no difference between <i>π</i> and <i>σ</i> until arriving at position <i>k</i>. But then, under <i>π</i> the element originally at position <i>k</i> is moved to the final position rather than to position <i>l</i>, and the element originally at the final position is moved to position <i>l</i>. From there on, the sequence of positions for <i>π</i> again follows the sequence for <i>σ</i>, and all positions will have been visited before getting back to the initial position, as required.
+</p><p>As for the equal probability of the permutations, it suffices to observe that the modified algorithm involves (<i>n</i>−1)! distinct possible sequences of random numbers produced, each of which clearly produces a different permutation, and each of which occurs—assuming the random number source is unbiased—with equal probability.  The (<i>n</i>−1)! different permutations so produced precisely exhaust the set of cycles of length <i>n</i>: each such cycle has a unique cycle notation with the value <i>n</i> in the final position, which allows for (<i>n</i>−1)! permutations of the remaining values to fill the other positions of the cycle notation.
+</p><p>A sample implementation of Sattolo's algorithm in Python is:
+</p>
+
+<h2><span class="mw-headline" id="Comparison_with_other_shuffling_algorithms">Comparison with other shuffling algorithms</span><span class="mw-editsection"></span></h2>
+<p>The asymptotic time and space complexity of the Fisher–Yates shuffle are optimal.  Combined with a high-quality unbiased random number source, it is also guaranteed to produce unbiased results.  Compared to some other solutions, it also has the advantage that, if only part of the resulting permutation is needed, it can be stopped halfway through, or even stopped and restarted repeatedly, generating the permutation incrementally as needed.
+</p>
+<h3><span id="Na.C3.AFve_method"></span><span class="mw-headline" id="Naïve_method">Naïve method</span><span class="mw-editsection"></span></h3>
+<p>The naïve method of swapping each element with another element chosen randomly from all elements is biased and fundamentally broken.<sup class="reference" id="cite_ref-8">[8]</sup> Different permutations will have different probabilities of being generated, for every <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n&gt;2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>&gt;</mo>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n&gt;2}</annotation>
+</semantics>
+</math></span><img alt="n&gt;2" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/44e71ac55b9fbf1e9f341b946cda63d61d3ef2cd" style="vertical-align: -0.338ex; width:5.656ex; height:2.176ex;"/></span>, because the number of different permutations, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n!}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>!</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n!}</annotation>
+</semantics>
+</math></span><img alt="n!" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bae971720be3cc9b8d82f4cdac89cb89877514a6" style="vertical-align: -0.338ex; width:2.042ex; height:2.176ex;"/></span>, does not evenly divide the number of random outcomes of the algorithm, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{n}}</annotation>
+</semantics>
+</math></span><img alt="n^n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/88ce30228c74c7fb8b0d262d7d9363f87d30d42f" style="vertical-align: -0.338ex; width:2.613ex; height:2.343ex;"/></span>. In particular, by Bertrand's postulate there will be at least one prime number between <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n/2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n/2}</annotation>
+</semantics>
+</math></span><img alt="n/2" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/95c3931a3fa03cc98cfacd2c49a7ca35b96eaa9b" style="vertical-align: -0.838ex; width:3.72ex; height:2.843ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span>, and this number will divide <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n!}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>!</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n!}</annotation>
+</semantics>
+</math></span><img alt="n!" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bae971720be3cc9b8d82f4cdac89cb89877514a6" style="vertical-align: -0.338ex; width:2.042ex; height:2.176ex;"/></span> but not divide <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{n}}</annotation>
+</semantics>
+</math></span><img alt="n^n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/88ce30228c74c7fb8b0d262d7d9363f87d30d42f" style="vertical-align: -0.338ex; width:2.613ex; height:2.343ex;"/></span>.
+</p>
+
+<h3><span class="mw-headline" id="Sorting">Sorting</span><span class="mw-editsection"></span></h3>
+<p>An alternative method assigns a random number to each element of the set to be shuffled and then sorts the set according to the assigned numbers. The sorting method has the same asymptotic time complexity as Fisher–Yates: although general sorting is <i>O</i>(<i>n</i> log <i>n</i>), numbers are efficiently sorted using Radix sort in <i>O</i>(<i>n</i>) time. Like the Fisher–Yates shuffle, the sorting method produces unbiased results.  However, care must be taken to ensure that the assigned random numbers are never duplicated, since sorting algorithms typically don't order elements randomly in case of a tie.<sup class="reference" id="cite_ref-9">[9]</sup>  Additionally, this method requires asymptotically larger space: <i>O</i>(<i>n</i>) additional storage space for the random numbers, versus <i>O</i>(1) space for the Fisher–Yates shuffle.  Finally, we note that the sorting method has a simple parallel implementation, unlike the Fisher–Yates shuffle, which is sequential.
+</p><p>A variant of the above method that has seen some use in languages that support sorting with user-specified comparison functions is to shuffle a list by sorting it with a comparison function that returns random values.  However, <i>this is an extremely bad method</i>: it is very likely to produce highly non-uniform distributions, which in addition depends heavily on the sorting algorithm used.<sup class="reference" id="cite_ref-10">[10]</sup><sup class="reference" id="cite_ref-11">[11]</sup>
+For instance suppose quicksort is used as sorting algorithm, with a fixed element selected as first pivot element. The algorithm starts comparing the pivot with all other elements to separate them into those less and those greater than it, and the relative sizes of those groups will determine the final place of the pivot element. For a uniformly distributed random permutation, each possible final position should be equally likely for the pivot element, but if each of the initial comparisons returns "less" or "greater" with equal probability, then that position will have a binomial distribution for <i>p</i> = 1/2, which gives positions near the middle of the sequence with a much higher probability for than positions near the ends. Randomized comparison functions applied to other sorting methods like merge sort may produce results that appear more uniform, but are not quite so either, since merging two sequences by repeatedly choosing one of them with equal probability (until the choice is forced by the exhaustion of one sequence) does not produce results with a uniform distribution; instead the probability to choose a sequence should be proportional to the number of elements left in it<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (February 2019)">citation needed</span></i>]</sup>. In fact no method that uses only two-way random events with equal probability ("coin flipping"), repeated a bounded number of times, can produce permutations of a sequence (of more than two elements) with a uniform distribution, because every execution path will have as probability a rational number with as denominator a power of 2, while the required probability 1/<i>n</i>! for each possible permutation is not of that form<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (February 2019)">citation needed</span></i>]</sup>.
+</p><p>In principle this shuffling method can even result in program failures like endless loops or access violations, because the correctness of a sorting algorithm may depend on properties of the order relation (like transitivity) that a comparison producing random values will certainly not have.<sup class="reference" id="cite_ref-12">[12]</sup>
+While this kind of behaviour should not occur with sorting routines that never perform a comparison whose outcome can be predicted with certainty (based on previous comparisons), there can be valid reasons for deliberately making such comparisons. For instance the fact that any element should compare equal to itself allows using them as sentinel value for efficiency reasons, and if this is the case, a random comparison function would break the sorting algorithm.
+</p>
+<h2><span class="mw-headline" id="Potential_sources_of_bias">Potential sources of bias</span><span class="mw-editsection"></span></h2>
+<p>Care must be taken when implementing the Fisher–Yates shuffle, both in the implementation of the algorithm itself and in the generation of the random numbers it is built on, otherwise the results may show detectable bias.  A number of common sources of bias have been listed below.
+</p>
+<h3><span class="mw-headline" id="Implementation_errors">Implementation errors</span><span class="mw-editsection"></span></h3>
+<p>A common error when implementing the Fisher–Yates shuffle is to pick the random numbers from the wrong range. The flawed algorithm may appear to work correctly, but it will not produce each possible permutation with equal probability, and it may not produce certain permutations at all.  For example, a common off-by-one error would be choosing the index <i>j</i> of the entry to swap in the example above to be always strictly less than the index <i>i</i> of the entry it will be swapped with. This turns the Fisher–Yates shuffle into Sattolo's algorithm, which produces only permutations consisting of a single cycle involving all elements: in particular, with this modification, no element of the array can ever end up in its original position.
+</p>
+
+
+<p>Similarly, always selecting <i>j</i> from the entire range of valid array indices on <i>every</i> iteration also produces a result which is biased, albeit less obviously so.  This can be seen from the fact that doing so yields <i>n</i><sup><i>n</i></sup> distinct possible sequences of swaps, whereas there are only <i>n</i>! possible permutations of an <i>n</i>-element array.  Since <i>n</i><sup><i>n</i></sup> can never be evenly divisible by <i>n</i>!  when <i>n</i> &gt; 2 (as the latter is divisible by <i>n</i>−1, which shares no prime factors with <i>n</i>), some permutations must be produced by more of the <i>n</i><sup><i>n</i></sup> sequences of swaps than others.  As a concrete example of this bias, observe the distribution of possible outcomes of shuffling a three-element array [1, 2, 3].  There are 6 possible permutations of this array (3! = 6), but the algorithm produces 27 possible shuffles (3<sup>3</sup> = 27).  In this case, [1, 2, 3], [3, 1, 2], and [3, 2, 1] each result from 4 of the 27 shuffles, while each of the remaining 3 permutations occurs in 5 of the 27 shuffles.
+</p><p>The matrix to the right shows the probability of each element in a list of length 7 ending up in any other position.  Observe that for most elements, ending up in their original position (the matrix's main diagonal) has lowest probability, and moving one slot backwards has highest probability.
+</p>
+<h3><span class="mw-headline" id="Modulo_bias">Modulo bias</span><span class="mw-editsection"></span></h3>
+<link href="mw-data:TemplateStyles:r1097763485" rel="mw-deduplicated-inline-style"/><table class="box-Unreferenced_section plainlinks metadata ambox ambox-content ambox-Unreferenced" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<p>Doing a Fisher–Yates shuffle involves picking uniformly distributed random integers from various ranges.  Most random number generators, however — whether true or pseudorandom — will only directly provide numbers in a fixed range from 0 to RAND_MAX, and in some libraries, RAND_MAX may be as low as 32767.<sup class="reference" id="cite_ref-13">[13]</sup>  A simple and commonly used way to force such numbers into a desired range is to apply the modulo operator; that is, to divide them by the size of the range and take the remainder.  However, the need in a Fisher–Yates shuffle to generate random numbers in every range from 0–1 to 0–<i>n</i> almost guarantees that some of these ranges will not evenly divide the natural range of the random number generator.  Thus, the remainders will not always be evenly distributed and, worse yet, the bias will be systematically in favor of small remainders.
+</p><p>For example, assume that your random number source gives numbers from 0 to 99 (as was the case for Fisher and Yates' original tables), and that you wish to obtain an unbiased random number from 0 to 15.  If you simply divide the numbers by 16 and take the remainder, you'll find that the numbers 0–3 occur about 17% more often than others.  This is because 16 does not evenly divide 100: the largest multiple of 16 less than or equal to 100 is 6×16 = 96, and it is the numbers in the incomplete range 96–99 that cause the bias.  The simplest way to fix the problem is to discard those numbers before taking the remainder and to keep trying again until a number in the suitable range comes up.  While in principle this could, in the worst case, take forever, the expected number of retries will always be less than one.
+</p><p>A related problem occurs with implementations that first generate a random floating-point number—usually in the range [0,1]—and then multiply it by the size of the desired range and round down.  The problem here is that random floating-point numbers, however carefully generated, always have only finite precision.  This means that there are only a finite number of possible floating point values in any given range, and if the range is divided into a number of segments that doesn't divide this number evenly, some segments will end up with more possible values than others.  While the resulting bias will not show the same systematic downward trend as in the previous case, it will still be there.
+</p>
+<h3><span class="mw-headline" id="Pseudorandom_generators">Pseudorandom generators</span><span class="mw-editsection"></span></h3>
+<link href="mw-data:TemplateStyles:r1097763485" rel="mw-deduplicated-inline-style"/><table class="box-Unreferenced_section plainlinks metadata ambox ambox-content ambox-Unreferenced" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<table class="wikitable" style="margin:0 0 0 1em; text-align:right; float:right;">
+<caption>Size of PRNG seeds and the largest list where every permutation could be reached
+</caption>
+<tbody><tr>
+<th>seed bits
+</th>
+<th>maximum list length
+</th></tr>
+<tr>
+<td>0</td>
+<td>1
+</td></tr>
+<tr>
+<td>1</td>
+<td>2
+</td></tr>
+<tr>
+<td>3</td>
+<td>3
+</td></tr>
+<tr>
+<td>5</td>
+<td>4
+</td></tr>
+<tr>
+<td>7</td>
+<td>5
+</td></tr>
+<tr>
+<td>10</td>
+<td>6
+</td></tr>
+<tr>
+<td>13</td>
+<td>7
+</td></tr>
+<tr>
+<td>16</td>
+<td>8
+</td></tr>
+<tr>
+<td>22</td>
+<td>10
+</td></tr>
+<tr>
+<td>24</td>
+<td>10
+</td></tr>
+<tr>
+<td>32</td>
+<td>12
+</td></tr>
+<tr>
+<td>48</td>
+<td>16
+</td></tr>
+<tr>
+<td>64</td>
+<td>20
+</td></tr>
+<tr>
+<td>128</td>
+<td>34
+</td></tr>
+<tr>
+<td>160</td>
+<td>40
+</td></tr>
+<tr>
+<td>226</td>
+<td>52
+</td></tr>
+<tr>
+<td>256</td>
+<td>57
+</td></tr>
+<tr>
+<td>512</td>
+<td>98
+</td></tr>
+<tr>
+<td>1024</td>
+<td>170
+</td></tr>
+<tr>
+<td>1600</td>
+<td>245
+</td></tr>
+<tr>
+<td>19937</td>
+<td>2080
+</td></tr>
+<tr>
+<td>44497</td>
+<td>4199
+</td></tr></tbody></table>
+<p>An additional problem occurs when the Fisher–Yates shuffle is used with a pseudorandom number generator or PRNG: as the sequence of numbers output by such a generator is entirely determined by its internal state at the start of a sequence, a shuffle driven by such a generator cannot possibly produce more distinct permutations than the generator has distinct possible states.<sup class="reference" id="cite_ref-14">[14]</sup>  Even when the number of possible states exceeds the number of permutations, the irregular nature of the mapping from sequences of numbers to permutations means that some permutations will occur more often than others.  Thus, to minimize bias, the number of states of the PRNG should exceed the number of permutations by at least several orders of magnitude.
+</p><p>For example, the built-in pseudorandom number generator provided by many programming languages and/or libraries may often have only 32 bits of internal state, which means it can only produce 2<sup>32</sup> different sequences of numbers.  If such a generator is used to shuffle a deck of 52 playing cards, it can only ever produce a very small fraction of the 52! ≈ 2<sup>225.6</sup> possible permutations.  It is impossible for a generator with less than 226 bits of internal state to produce all the possible permutations of a 52-card deck.
+</p><p>No pseudorandom number generator can produce more distinct sequences, starting from the point of initialization, than there are distinct seed values it may be initialized with.  Thus, a generator that has 1024 bits of internal state but which is initialized with a 32-bit seed can still only produce 2<sup>32</sup> different permutations right after initialization. It can produce more permutations if one exercises the generator a great many times before starting to use it for generating permutations, but this is a very inefficient way of increasing randomness: supposing one can arrange to use the generator a random number of up to a billion, say 2<sup>30</sup> for simplicity, times between initialization and generating permutations, then the number of possible permutations is still only 2<sup>62</sup>.
+</p><p>A further problem occurs when a simple linear congruential PRNG is used with the divide-and-take-remainder method of range reduction described above.  The problem here is that the low-order bits of a linear congruential PRNG with modulo 2<sup><i>e</i></sup> are less random than the high-order ones:<sup class="reference" id="cite_ref-knuth3_4-1">[4]</sup> the low <i>n</i> bits of the generator themselves have a period of at most 2<sup><i>n</i></sup>.  When the divisor is a power of two, taking the remainder essentially means throwing away the high-order bits, such that one ends up with a significantly less random value. Different rules apply if the LCG has prime modulo, but such generators are uncommon. This is an example of the general rule that a poor-quality RNG or PRNG will produce poor-quality shuffles.
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>RC4, a stream cipher based on shuffling an array</li>
+<li>Reservoir sampling, in particular Algorithm R which is a specialization of the Fisher–Yates shuffle</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>An interactive example</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2303
+Cached time: 20221223233219
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.318 seconds
+Real time usage: 0.448 seconds
+Preprocessor visited node count: 2108/1000000
+Post‐expand include size: 57916/2097152 bytes
+Template argument size: 2351/2097152 bytes
+Highest expansion depth: 16/100
+Expensive parser function count: 5/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 53502/5000000 bytes
+Lua time usage: 0.170/10.000 seconds
+Lua memory usage: 5717356/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  335.445      1 -total
+ 41.94%  140.670      1 Template:Reflist
+ 22.50%   75.469      4 Template:Cite_book
+ 16.62%   55.739      1 Template:Short_description
+ 13.90%   46.616      1 Template:Original_research
+ 13.72%   46.008      1 Template:Donald_Knuth_navbox
+ 13.48%   45.204      3 Template:Ambox
+ 12.53%   42.015      1 Template:Navbox
+  9.31%   31.232      2 Template:Pagetype
+  7.16%   24.014      2 Template:Citation_needed
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:12684962-0!canonical and timestamp 20221223233219 and revision id 1114230716.
+ -->
+</div></body>
+</html>

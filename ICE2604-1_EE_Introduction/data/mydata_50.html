@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>arithmetic_coding</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p class="mw-empty-elt">
+</p>
+<style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-More_footnotes plainlinks metadata ambox ambox-style ambox-More_footnotes" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<p><b>Arithmetic coding</b> (<b>AC</b>) is a form of entropy encoding used in lossless data compression. Normally, a string of characters is represented using a fixed number of bits per character, as in the ASCII code. When a string is converted to arithmetic encoding, frequently used characters will be stored with fewer bits and not-so-frequently occurring characters will be stored with more bits, resulting in fewer bits used in total. Arithmetic coding differs from other forms of entropy encoding, such as Huffman coding, in that rather than separating the input into component symbols and replacing each with a code, arithmetic coding encodes the entire message into a single number, an arbitrary-precision fraction <i>q</i>, where <span class="nowrap">0.0 ≤ <i>q</i> &lt; 1.0</span>. It represents the current information as a range, defined by two numbers.<sup class="reference" id="cite_ref-LiDrew2014_1-0">[1]</sup> A recent family of entropy coders called asymmetric numeral systems allows for faster implementations thanks to directly operating on a single natural number representing the current information.<sup class="reference" id="cite_ref-PCS2015_2-0">[2]</sup>
+</p>
+
+
+<h2><span class="mw-headline" id="Implementation_details_and_examples">Implementation details and examples</span><span class="mw-editsection"></span></h2>
+
+
+<h3><span class="mw-headline" id="Equal_probabilities">Equal probabilities</span><span class="mw-editsection"></span></h3>
+<p>In the simplest case, the probability of each symbol occurring is equal. For example, consider a set of three symbols, A, B, and C, each equally likely to occur. Simple block encoding would require 2 bits per symbol, which is wasteful: one of the bit variations is never used. That is to say, symbols A, B and C might be encoded respectively as 00, 01 and 10, with 11 unused.
+</p><p>A more efficient solution is to represent a sequence of these three symbols as a rational number in base 3 where each digit represents a symbol. For example, the sequence "ABBCAB" could become 0.011201<sub>3</sub>, in arithmetic coding as a value in the interval [0, 1). The next step is to encode this ternary number using a fixed-point binary number of sufficient precision to recover it, such as 0.0010110010<sub>2</sub> – this is only 10 bits; 2 bits are saved in comparison with naïve block encoding. This is feasible for long sequences because there are efficient, in-place algorithms for converting the base of arbitrarily precise numbers.
+</p><p>To decode the value, knowing the original string had length 6, one can simply convert back to base 3, round to 6 digits, and recover the string.
+</p>
+<h3><span class="mw-headline" id="Defining_a_model">Defining a model</span><span class="mw-editsection"></span></h3>
+<p>In general, arithmetic coders can produce near-optimal output for any given set of symbols and probabilities. (The optimal value is −log<sub>2</sub><i>P</i> bits for each symbol of probability <i>P</i>; see <i>Source coding theorem</i>.) Compression algorithms that use arithmetic coding start by determining a model of the data – basically a prediction of what patterns will be found in the symbols of the message. The more accurate this prediction is, the closer to optimal the output will be.
+</p><p><b>Example</b>: a simple, static model for describing the output of a particular monitoring instrument over time might be:
+</p>
+<ul><li>60% chance of symbol NEUTRAL</li>
+<li>20% chance of symbol POSITIVE</li>
+<li>10% chance of symbol NEGATIVE</li>
+<li>10% chance of symbol END-OF-DATA. <i>(The presence of this symbol means that the stream will be 'internally terminated', as is fairly common in data compression; when this symbol appears in the data stream, the decoder will know that the entire stream has been decoded.)</i></li></ul>
+<p>Models can also handle alphabets other than the simple four-symbol set chosen for this example. More sophisticated models are also possible: <i>higher-order</i> modelling changes its estimation of the current probability of a symbol based on the symbols that precede it (the <i>context</i>), so that in a model for English text, for example, the percentage chance of "u" would be much higher when it follows a "Q" or a "q". Models can even be <i>adaptive</i>, so that they continually change their prediction of the data based on what the stream actually contains. The decoder must have the same model as the encoder.
+</p>
+<h3><span class="mw-headline" id="Encoding_and_decoding:_overview">Encoding and decoding: overview</span><span class="mw-editsection"></span></h3>
+<p>In general, each step of the encoding process, except for the last, is the same; the encoder has basically just three pieces of data to consider:
+</p>
+<ul><li>The next symbol that needs to be encoded</li>
+<li>The current interval (at the very start of the encoding process, the interval is set to [0,1], but that will change)</li>
+<li>The probabilities the model assigns to each of the various symbols that are possible at this stage (as mentioned earlier, higher-order or adaptive models mean that these probabilities are not necessarily the same in each step.)</li></ul>
+<p>The encoder divides the current interval into sub-intervals, each representing a fraction of the current interval proportional to the probability of that symbol in the current context. Whichever interval corresponds to the actual symbol that is next to be encoded becomes the interval used in the next step.
+</p><p><b>Example</b>: for the four-symbol model above:
+</p>
+<ul><li>the interval for NEUTRAL would be [0, 0.6)</li>
+<li>the interval for POSITIVE would be [0.6, 0.8)</li>
+<li>the interval for NEGATIVE would be [0.8, 0.9)</li>
+<li>the interval for END-OF-DATA would be [0.9, 1).</li></ul>
+<p>When all symbols have been encoded, the resulting interval unambiguously identifies the sequence of symbols that produced it. Anyone who has the same final interval and model that is being used can reconstruct the symbol sequence that must have entered the encoder to result in that final interval.
+</p><p>It is not necessary to transmit the final interval, however; it is only necessary to transmit <i>one fraction</i> that lies within that interval. In particular, it is only necessary to transmit enough digits (in whatever base) of the fraction so that all fractions that begin with those digits fall into the final interval; this will guarantee that the resulting code is a prefix code.
+</p>
+<h3><span class="mw-headline" id="Encoding_and_decoding:_example">Encoding and decoding: example</span><span class="mw-editsection"></span></h3>
+
+<p>Consider the process for decoding a message encoded with the given four-symbol model. The message is encoded in the fraction 0.538 (using decimal for clarity, instead of binary; also assuming that there are only as many digits as needed to decode the message.)
+</p><p>The process starts with the same interval used by the encoder: [0,1), and using the same model, dividing it into the same four sub-intervals that the encoder must have. The fraction 0.538 falls into the sub-interval for NEUTRAL, [0, 0.6); this indicates that the first symbol the encoder read must have been NEUTRAL, so this is the first symbol of the message.
+</p><p>Next divide the interval [0, 0.6) into sub-intervals:
+</p>
+<ul><li>the interval for NEUTRAL would be [0, 0.36), <i>60% of [0, 0.6)</i>.</li>
+<li>the interval for POSITIVE would be [0.36, 0.48), <i>20% of [0, 0.6)</i>.</li>
+<li>the interval for NEGATIVE would be [0.48, 0.54), <i>10% of [0, 0.6)</i>.</li>
+<li>the interval for END-OF-DATA would be [0.54, 0.6), <i>10% of [0, 0.6)</i>.</li></ul>
+<p>Since 0.538 is within the interval [0.48, 0.54), the second symbol of the message must have been NEGATIVE.
+</p><p>Again divide our current interval into sub-intervals:
+</p>
+<ul><li>the interval for NEUTRAL would be [0.48, 0.516).</li>
+<li>the interval for POSITIVE would be [0.516, 0.528).</li>
+<li>the interval for NEGATIVE would be [0.528, 0.534).</li>
+<li>the interval for END-OF-DATA would be [0.534, 0.540).</li></ul>
+<p>Now 0.538 falls within the interval of the END-OF-DATA symbol; therefore, this must be the next symbol. Since it is also the internal termination symbol, it means the decoding is complete. If the stream is not internally terminated, there needs to be some other way to indicate where the stream stops. Otherwise, the decoding process could continue forever, mistakenly reading more symbols from the fraction than were in fact encoded into it.
+</p>
+<h3><span class="mw-headline" id="Sources_of_inefficiency">Sources of inefficiency</span><span class="mw-editsection"></span></h3>
+<p>The message 0.538 in the previous example could have been encoded by the equally short fractions 0.534, 0.535, 0.536, 0.537 or 0.539. This suggests that the use of decimal instead of binary introduced some inefficiency. This is correct; the information content of a three-digit decimal is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 3\times \log _{2}(10)\approx 9.966}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>3</mn>
+<mo>×<!-- × --></mo>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mn>10</mn>
+<mo stretchy="false">)</mo>
+<mo>≈<!-- ≈ --></mo>
+<mn>9.966</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 3\times \log _{2}(10)\approx 9.966}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 3\times \log _{2}(10)\approx 9.966}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5d4780a23f462bb1e772155685b1da606ee2667a" style="vertical-align: -0.838ex; width:20.558ex; height:2.843ex;"/></span> bits; the same message could have been encoded in the binary fraction 0.10001010 (equivalent to 0.5390625 decimal) at a cost of only 8bits. (The final zero must be specified in the binary fraction, or else the message would be ambiguous without external information such as compressed stream size.)
+</p><p>This 8 bit output is larger than the information content, or entropy of the message, which is
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sum -\log _{2}(p_{i})=-\log _{2}(0.6)-\log _{2}(0.1)-\log _{2}(0.1)=7.381{\text{ bits}}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>∑<!-- ∑ --></mo>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mn>0.6</mn>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mn>0.1</mn>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mn>0.1</mn>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>7.381</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext> bits</mtext>
+</mrow>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sum -\log _{2}(p_{i})=-\log _{2}(0.6)-\log _{2}(0.1)-\log _{2}(0.1)=7.381{\text{ bits}}.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \sum -\log _{2}(p_{i})=-\log _{2}(0.6)-\log _{2}(0.1)-\log _{2}(0.1)=7.381{\text{ bits}}.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4e964177a2eb4c866dc4fa7ad94657825ac5fbab" style="vertical-align: -1.338ex; width:64.52ex; height:3.843ex;"/></span></dd></dl>
+<p>But an integer number of bits must be used in the binary encoding, so an encoder for this message would use at least 8 bits, resulting in a message 8.4% larger than the entropy contents. This inefficiency of at most 1 bit results in relatively less overhead as the message size grows.
+</p><p>Moreover, the claimed symbol probabilities were [0.6, 0.2, 0.1, 0.1), but the actual frequencies in this example are [0.33, 0, 0.33, 0.33). If the intervals are readjusted for these frequencies, the entropy of the message would be 4.755 bits and the same NEUTRAL NEGATIVE END-OF-DATA message could be encoded as intervals [0, 1/3); [1/9, 2/9); [5/27, 6/27); and a binary interval of [0.00101111011, 0.00111000111). This is also an example of how statistical coding methods like arithmetic encoding can produce an output message that is larger than the input message, especially if the probability model is off.
+</p>
+<h2><span class="mw-headline" id="Adaptive_arithmetic_coding">Adaptive arithmetic coding</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p>One advantage of arithmetic coding over other similar methods of data compression is the convenience of adaptation. <i>Adaptation</i> is the changing of the frequency (or probability) tables while processing the data. The decoded data matches the original data as long as the frequency table in decoding is replaced in the same way and in the same step as in encoding. The synchronization is, usually, based on a combination of symbols occurring during the encoding and decoding process.
+</p>
+<h2><span class="mw-headline" id="Precision_and_renormalization">Precision and renormalization</span><span class="mw-editsection"></span></h2>
+<p>The above explanations of arithmetic coding contain some simplification. In particular, they are written as if the encoder first calculated the fractions representing the endpoints of the interval in full, using infinite precision, and only converted the fraction to its final form at the end of encoding. Rather than try to simulate infinite precision, most arithmetic coders instead operate at a fixed limit of precision which they know the decoder will be able to match, and round the calculated fractions to their nearest equivalents at that precision. An example shows how this would work if the model called for the interval <span class="texhtml">[0,1)</span> to be divided into thirds, and this was approximated with 8 bit precision. Note that since now the precision is known, so are the binary ranges we'll be able to use.
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th rowspan="2">Symbol
+</th>
+<th>Probability
+</th>
+<th colspan="2">Interval reduced to eight-bit precision
+</th>
+<th>Range
+</th></tr>
+<tr>
+<th>(expressed as fraction)
+</th>
+<th>(as fractions)
+</th>
+<th>(in binary)
+</th>
+<th>(in binary)
+</th></tr>
+<tr align="center">
+<td>A
+</td>
+<td>1/3
+</td>
+<td><span class="texhtml">[0, 85/256)</span>
+</td>
+<td><span style="font-family:monospace">[0.00000000, 0.01010101)</span>
+</td>
+<td><span style="font-family:monospace">00000000 – 01010100</span>
+</td></tr>
+<tr align="center">
+<td>B
+</td>
+<td>1/3
+</td>
+<td><span class="texhtml">[85/256, 171/256)</span>
+</td>
+<td><span style="font-family:monospace">[0.01010101, 0.10101011)</span>
+</td>
+<td><span style="font-family:monospace">01010101 – 10101010</span>
+</td></tr>
+<tr align="center">
+<td>C
+</td>
+<td>1/3
+</td>
+<td><span class="texhtml">[171/256, 1)</span>
+</td>
+<td><span style="font-family:monospace">[0.10101011, 1.00000000)</span>
+</td>
+<td><span style="font-family:monospace">10101011 – 11111111</span>
+</td></tr></tbody></table>
+<p>A process called <i>renormalization</i> keeps the finite precision from becoming a limit on the total number of symbols that can be encoded. Whenever the range is reduced to the point where all values in the range share certain beginning digits, those digits are sent to the output. For however many digits of precision the computer <i>can</i> handle, it is now handling fewer than that, so the existing digits are shifted left, and at the right, new digits are added to expand the range as widely as possible. Note that this result occurs in two of the three cases from our previous example.
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>Symbol
+</th>
+<th>Probability
+</th>
+<th>Range
+</th>
+<th>Digits that can be sent to output
+</th>
+<th>Range after renormalization
+</th></tr>
+<tr align="center">
+<td>A
+</td>
+<td>1/3
+</td>
+<td><style data-mw-deduplicate="TemplateStyles:r886049734">.mw-parser-output .monospaced{font-family:monospace,monospace}</style><span class="monospaced"><b>0</b>0000000 – <b>0</b>1010100</span>
+</td>
+<td><b>0</b>
+</td>
+<td><link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">0000000<b>0</b> – 1010100<b>1</b></span>
+</td></tr>
+<tr align="center">
+<td>B
+</td>
+<td>1/3
+</td>
+<td><link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">01010101 – 10101010</span>
+</td>
+<td class="table-cast" style="background: #ECECEC; vertical-align: middle; text-align: center;">None
+</td>
+<td><link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">01010101 – 10101010</span>
+</td></tr>
+<tr align="center">
+<td>C
+</td>
+<td>1/3
+</td>
+<td><link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced"><b>1</b>0101011 – <b>1</b>1111111</span>
+</td>
+<td><b>1</b>
+</td>
+<td><link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">0101011<b>0</b> – 1111111<b>1</b></span>
+</td></tr></tbody></table>
+<h2><span class="mw-headline" id="Arithmetic_coding_as_a_generalized_change_of_radix">Arithmetic coding as a generalized change of radix</span><span class="mw-editsection"></span></h2>
+<p>Recall that in the case where the symbols had equal probabilities, arithmetic coding could be implemented by a simple change of base, or radix. In general, arithmetic (and range) coding may be interpreted as a <i>generalized</i> change of radix. For example, we may look at any sequence of symbols:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathrm {DABDDB} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">D</mi>
+<mi mathvariant="normal">A</mi>
+<mi mathvariant="normal">B</mi>
+<mi mathvariant="normal">D</mi>
+<mi mathvariant="normal">D</mi>
+<mi mathvariant="normal">B</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathrm {DABDDB} }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \mathrm {DABDDB} }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/55c50556506a64671c10b519c1b2bc589d587ae6" style="vertical-align: -0.338ex; width:10.361ex; height:2.176ex;"/></span></dd></dl>
+<p>as a number in a certain base presuming that the involved symbols form an ordered set and each symbol in the ordered set denotes a sequential integer A = 0, B = 1, C = 2, D = 3, and so on. This results in the following frequencies and cumulative frequencies:
+</p>
+<table class="wikitable" style="text-align:center;">
+<tbody><tr>
+<th>Symbol
+</th>
+<th>Frequency of occurrence
+</th>
+<th>Cumulative frequency
+</th></tr>
+<tr>
+<td>A
+</td>
+<td>1
+</td>
+<td>0
+</td></tr>
+<tr>
+<td>B
+</td>
+<td>2
+</td>
+<td>1
+</td></tr>
+<tr>
+<td>D
+</td>
+<td>3
+</td>
+<td>3
+</td></tr></tbody></table>
+<p>The <i>cumulative frequency</i> for an item is the sum of all frequencies preceding the item. In other words, cumulative frequency is a running total of frequencies.
+</p><p>In a positional numeral system the radix, or base, is numerically equal to a number of different symbols used to express the number. For example, in the decimal system the number of symbols is 10, namely 0, 1, 2, 3, 4, 5, 6, 7, 8, and 9. The radix is used to express any finite integer in a presumed multiplier in polynomial form. For example, the number 457 is actually 4×10<sup>2</sup> + 5×10<sup>1</sup> + 7×10<sup>0</sup>, where base 10 is presumed but not shown explicitly.
+</p><p>Initially, we will convert DABDDB into a base-6 numeral, because 6 is the length of the string. The string is first mapped into the digit string 301331, which then maps to an integer by the polynomial:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 6^{5}\times 3+6^{4}\times 0+6^{3}\times 1+6^{2}\times 3+6^{1}\times 3+6^{0}\times 1=23671}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>6</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>5</mn>
+</mrow>
+</msup>
+<mo>×<!-- × --></mo>
+<mn>3</mn>
+<mo>+</mo>
+<msup>
+<mn>6</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>4</mn>
+</mrow>
+</msup>
+<mo>×<!-- × --></mo>
+<mn>0</mn>
+<mo>+</mo>
+<msup>
+<mn>6</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+<mo>×<!-- × --></mo>
+<mn>1</mn>
+<mo>+</mo>
+<msup>
+<mn>6</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>×<!-- × --></mo>
+<mn>3</mn>
+<mo>+</mo>
+<msup>
+<mn>6</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msup>
+<mo>×<!-- × --></mo>
+<mn>3</mn>
+<mo>+</mo>
+<msup>
+<mn>6</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msup>
+<mo>×<!-- × --></mo>
+<mn>1</mn>
+<mo>=</mo>
+<mn>23671</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 6^{5}\times 3+6^{4}\times 0+6^{3}\times 1+6^{2}\times 3+6^{1}\times 3+6^{0}\times 1=23671}</annotation>
+</semantics>
+</math></span><img alt="6^{5}\times 3+6^{4}\times 0+6^{3}\times 1+6^{2}\times 3+6^{1}\times 3+6^{0}\times 1=23671" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/eabc310011f9755b943c4b0d13786db42e7e1d8c" style="vertical-align: -0.505ex; width:60.43ex; height:2.843ex;"/></span></dd></dl>
+<p>The result 23671 has a length of 15 bits, which is not very close to the theoretical limit (the entropy of the message), which is approximately 9 bits.
+</p><p>To encode a message with a length closer to the theoretical limit imposed by information theory we need to slightly generalize the classic formula for changing the radix. We will compute lower and upper bounds <i>L</i> and <i>U</i> and choose a number between them. For the computation of <i>L</i> we multiply each term in the above expression by the product of the frequencies of all previously occurred symbols:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{aligned}L={}&amp;(6^{5}\times 3)+{}\\&amp;3\times (6^{4}\times 0)+{}\\&amp;(3\times 1)\times (6^{3}\times 1)+{}\\&amp;(3\times 1\times 2)\times (6^{2}\times 3)+{}\\&amp;(3\times 1\times 2\times 3)\times (6^{1}\times 3)+{}\\&amp;(3\times 1\times 2\times 3\times 3)\times (6^{0}\times 1){}\\={}&amp;25002\end{aligned}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="right left right left right left right left right left right left" columnspacing="0em 2em 0em 2em 0em 2em 0em 2em 0em 2em 0em" displaystyle="true" rowspacing="3pt">
+<mtr>
+<mtd>
+<mi>L</mi>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+</mrow>
+</mtd>
+<mtd>
+<mi></mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mn>6</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>5</mn>
+</mrow>
+</msup>
+<mo>×<!-- × --></mo>
+<mn>3</mn>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mn>3</mn>
+<mo>×<!-- × --></mo>
+<mo stretchy="false">(</mo>
+<msup>
+<mn>6</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>4</mn>
+</mrow>
+</msup>
+<mo>×<!-- × --></mo>
+<mn>0</mn>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mo stretchy="false">(</mo>
+<mn>3</mn>
+<mo>×<!-- × --></mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo>×<!-- × --></mo>
+<mo stretchy="false">(</mo>
+<msup>
+<mn>6</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+<mo>×<!-- × --></mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mo stretchy="false">(</mo>
+<mn>3</mn>
+<mo>×<!-- × --></mo>
+<mn>1</mn>
+<mo>×<!-- × --></mo>
+<mn>2</mn>
+<mo stretchy="false">)</mo>
+<mo>×<!-- × --></mo>
+<mo stretchy="false">(</mo>
+<msup>
+<mn>6</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>×<!-- × --></mo>
+<mn>3</mn>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mo stretchy="false">(</mo>
+<mn>3</mn>
+<mo>×<!-- × --></mo>
+<mn>1</mn>
+<mo>×<!-- × --></mo>
+<mn>2</mn>
+<mo>×<!-- × --></mo>
+<mn>3</mn>
+<mo stretchy="false">)</mo>
+<mo>×<!-- × --></mo>
+<mo stretchy="false">(</mo>
+<msup>
+<mn>6</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msup>
+<mo>×<!-- × --></mo>
+<mn>3</mn>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mo stretchy="false">(</mo>
+<mn>3</mn>
+<mo>×<!-- × --></mo>
+<mn>1</mn>
+<mo>×<!-- × --></mo>
+<mn>2</mn>
+<mo>×<!-- × --></mo>
+<mn>3</mn>
+<mo>×<!-- × --></mo>
+<mn>3</mn>
+<mo stretchy="false">)</mo>
+<mo>×<!-- × --></mo>
+<mo stretchy="false">(</mo>
+<msup>
+<mn>6</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msup>
+<mo>×<!-- × --></mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+</mrow>
+</mtd>
+<mtd>
+<mn>25002</mn>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{aligned}L={}&amp;(6^{5}\times 3)+{}\\&amp;3\times (6^{4}\times 0)+{}\\&amp;(3\times 1)\times (6^{3}\times 1)+{}\\&amp;(3\times 1\times 2)\times (6^{2}\times 3)+{}\\&amp;(3\times 1\times 2\times 3)\times (6^{1}\times 3)+{}\\&amp;(3\times 1\times 2\times 3\times 3)\times (6^{0}\times 1){}\\={}&amp;25002\end{aligned}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\begin{aligned}L={}&amp;(6^{5}\times 3)+{}\\&amp;3\times (6^{4}\times 0)+{}\\&amp;(3\times 1)\times (6^{3}\times 1)+{}\\&amp;(3\times 1\times 2)\times (6^{2}\times 3)+{}\\&amp;(3\times 1\times 2\times 3)\times (6^{1}\times 3)+{}\\&amp;(3\times 1\times 2\times 3\times 3)\times (6^{0}\times 1){}\\={}&amp;25002\end{aligned}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5ece1bb92ee15232219757b8086a9e2b60cdb3d9" style="vertical-align: -10.838ex; width:35.285ex; height:22.843ex;"/></span></dd></dl>
+<p>The difference between this polynomial and the polynomial above is that each term is multiplied by the product of the frequencies of all previously occurring symbols. More generally, <i>L</i> may be computed as:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle L=\sum _{i=1}^{n}n^{n-i}C_{i}{\prod _{k=1}^{i-1}f_{k}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>L</mi>
+<mo>=</mo>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</munderover>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+</mrow>
+</msup>
+<msub>
+<mi>C</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<munderover>
+<mo>∏<!-- ∏ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</munderover>
+<msub>
+<mi>f</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle L=\sum _{i=1}^{n}n^{n-i}C_{i}{\prod _{k=1}^{i-1}f_{k}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle L=\sum _{i=1}^{n}n^{n-i}C_{i}{\prod _{k=1}^{i-1}f_{k}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/370b599be53a683cafbb02c1c47812e877a0d751" style="vertical-align: -3.005ex; width:20.929ex; height:7.343ex;"/></span></dd></dl>
+<p>where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \scriptstyle C_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mstyle displaystyle="false" scriptlevel="1">
+<msub>
+<mi>C</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \scriptstyle C_{i}}</annotation>
+</semantics>
+</math></span><img alt="\scriptstyle C_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/df705c5dd9cb12e0fa51e784ac1295910e45c0ef" style="vertical-align: -0.505ex; width:1.8ex; height:1.843ex;"/></span> are the cumulative frequencies and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \scriptstyle f_{k}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mstyle displaystyle="false" scriptlevel="1">
+<msub>
+<mi>f</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+</mstyle>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \scriptstyle f_{k}}</annotation>
+</semantics>
+</math></span><img alt="\scriptstyle f_{k}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dad0521e664a790a89126a7e4329b75921ae7df5" style="vertical-align: -0.671ex; width:1.665ex; height:2.009ex;"/></span> are the frequencies of occurrences. Indexes denote the position of the symbol in a message. In the special case where all frequencies <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \scriptstyle f_{k}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mstyle displaystyle="false" scriptlevel="1">
+<msub>
+<mi>f</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+</mstyle>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \scriptstyle f_{k}}</annotation>
+</semantics>
+</math></span><img alt="\scriptstyle f_{k}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dad0521e664a790a89126a7e4329b75921ae7df5" style="vertical-align: -0.671ex; width:1.665ex; height:2.009ex;"/></span> are 1, this is the change-of-base formula.
+</p><p>The upper bound <i>U</i> will be <i>L</i> plus the product of all frequencies; in this case <i>U</i> = <i>L</i> + (3 × 1 × 2 × 3 × 3 × 2) = 25002 + 108 = 25110. In general, <i>U</i> is given by:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle U=L+\prod _{k=1}^{n}f_{k}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>U</mi>
+<mo>=</mo>
+<mi>L</mi>
+<mo>+</mo>
+<munderover>
+<mo>∏<!-- ∏ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>f</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle U=L+\prod _{k=1}^{n}f_{k}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle U=L+\prod _{k=1}^{n}f_{k}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3678e026bad963eab9da89b3b9cfdb92a99c009c" style="vertical-align: -3.005ex; width:14.889ex; height:6.843ex;"/></span></dd></dl>
+<p>Now we can choose any number from the interval [<i>L</i>, <i>U</i>) to represent the message; one convenient choice is the value with the longest possible trail of zeroes, 25100, since it allows us to achieve compression by representing the result as 251×10<sup>2</sup>. The zeroes can also be truncated, giving 251, if the length of the message is stored separately. Longer messages will tend to have longer trails of zeroes.
+</p><p>To decode the integer 25100, the polynomial computation can be reversed as shown in the table below. At each stage the current symbol is identified, then the corresponding term is subtracted from the result.
+</p>
+<table class="wikitable" style="text-align:center;">
+<tbody><tr>
+<th>Remainder
+</th>
+<th>Identification
+</th>
+<th>Identified symbol
+</th>
+<th>Corrected remainder
+</th></tr>
+<tr>
+<td>25100
+</td>
+<td style="text-align:right;">25100 / 6<sup>5</sup> = 3
+</td>
+<td>D
+</td>
+<td style="text-align:right;">(25100 − 6<sup>5</sup> × 3) / 3 = 590
+</td></tr>
+<tr>
+<td>590
+</td>
+<td style="text-align:right;">590 / 6<sup>4</sup> = 0
+</td>
+<td>A
+</td>
+<td style="text-align:right;">(590 − 6<sup>4</sup> × 0) / 1 = 590
+</td></tr>
+<tr>
+<td>590
+</td>
+<td style="text-align:right;">590 / 6<sup>3</sup> = 2
+</td>
+<td>B
+</td>
+<td style="text-align:right;">(590 − 6<sup>3</sup> × 1) / 2 = 187
+</td></tr>
+<tr>
+<td>187
+</td>
+<td style="text-align:right;">187 / 6<sup>2</sup> = 5
+</td>
+<td>D
+</td>
+<td style="text-align:right;">(187 − 6<sup>2</sup> × 3) / 3 = 26<span class="nowrap"> </span>
+</td></tr>
+<tr>
+<td>26
+</td>
+<td style="text-align:right;">26 / 6<sup>1</sup> = 4
+</td>
+<td>D
+</td>
+<td style="text-align:right;">(26 − 6<sup>1</sup> × 3) / 3 = 2<span class="nowrap"> </span><span class="nowrap"> </span>
+</td></tr>
+<tr>
+<td>2
+</td>
+<td style="text-align:right;">2 / 6<sup>0</sup> = 2
+</td>
+<td>B
+</td>
+<td>—
+</td></tr></tbody></table>
+<p>During decoding we take the floor after dividing by the corresponding power of 6. The result is then matched against the cumulative intervals and the appropriate symbol is selected from look up table. When the symbol is identified the result is corrected. The process is continued for the known length of the message or while the remaining result is positive. The only difference compared to the classical change-of-base is that there may be a range of values associated with each symbol. In this example, A is always 0, B is either 1 or 2, and D is any of 3, 4, 5. This is in exact accordance with our intervals that are determined by the frequencies. When all intervals are equal to 1 we have a special case of the classic base change.
+</p>
+<h3><span class="mw-headline" id="Theoretical_limit_of_compressed_message">Theoretical limit of compressed message</span><span class="mw-editsection"></span></h3>
+<p>The lower bound <i>L</i> never exceeds <i>n</i><sup><i>n</i></sup>, where <i>n</i> is the size of the message, and so can be represented in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \log _{2}(n^{n})=n\log _{2}(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>n</mi>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \log _{2}(n^{n})=n\log _{2}(n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \log _{2}(n^{n})=n\log _{2}(n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a875558c1f90184f068a338b755402aaf220e4d5" style="vertical-align: -0.838ex; width:20.559ex; height:2.843ex;"/></span> bits. After the computation of the upper bound <i>U</i> and the reduction of the message by selecting a number from the interval [<i>L</i>, <i>U</i>) with the longest trail of zeros we can presume that this length can be reduced by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \textstyle \log _{2}\left(\prod _{k=1}^{n}f_{k}\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mstyle displaystyle="false" scriptlevel="0">
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow>
+<mo>(</mo>
+<mrow>
+<munderover>
+<mo>∏<!-- ∏ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>f</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \textstyle \log _{2}\left(\prod _{k=1}^{n}f_{k}\right)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \textstyle \log _{2}\left(\prod _{k=1}^{n}f_{k}\right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/828c8bce8f36a625a9c2ba34d3e3696038426e3f" style="vertical-align: -1.005ex; width:13.833ex; height:3.176ex;"/></span> bits. Since each frequency in a product occurs exactly the same number of times as the value of this frequency, we can use the size of the alphabet <i>A</i> for the computation of the product
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \prod _{k=1}^{n}f_{k}=\prod _{k=1}^{A}f_{k}^{f_{k}}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<munderover>
+<mo>∏<!-- ∏ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>f</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<munderover>
+<mo>∏<!-- ∏ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>A</mi>
+</mrow>
+</munderover>
+<msubsup>
+<mi>f</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>f</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+</mrow>
+</msubsup>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \prod _{k=1}^{n}f_{k}=\prod _{k=1}^{A}f_{k}^{f_{k}}.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \prod _{k=1}^{n}f_{k}=\prod _{k=1}^{A}f_{k}^{f_{k}}.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/25c4063d2bdb77d7516d57323c0bdc0516985c20" style="vertical-align: -3.005ex; width:15.904ex; height:7.343ex;"/></span></dd></dl>
+<p>Applying log<sub>2</sub> for the estimated number of bits in the message, the final message (not counting a logarithmic overhead for the message length and frequency tables) will match the number of bits given by entropy, which for long messages is very close to optimal:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle -\left[\sum _{i=1}^{A}f_{i}\log _{2}(f_{i})\right]n.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>−<!-- − --></mo>
+<mrow>
+<mo>[</mo>
+<mrow>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>A</mi>
+</mrow>
+</munderover>
+<msub>
+<mi>f</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>f</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mrow>
+<mo>]</mo>
+</mrow>
+<mi>n</mi>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle -\left[\sum _{i=1}^{A}f_{i}\log _{2}(f_{i})\right]n.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle -\left[\sum _{i=1}^{A}f_{i}\log _{2}(f_{i})\right]n.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5a9148789298cc9297116172b80ca8335d837aef" style="vertical-align: -3.171ex; width:21.177ex; height:7.509ex;"/></span></dd></dl>
+<h2><span class="mw-headline" id="Connections_with_other_compression_methods">Connections with other compression methods</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Huffman_coding">Huffman coding</span><span class="mw-editsection"></span></h3>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>Because arithmetic coding doesn't compress one datum at a time, it can get arbitrarily close to entropy when compressing IID strings. By contrast, using the extension of Huffman coding (to strings) does not reach entropy unless all probabilities of alphabet symbols are powers of two, in which case both Huffman and arithmetic coding achieve entropy.
+</p><p>When naively Huffman coding binary strings, no compression is possible, even if entropy is low (e.g. ({0, 1}) has probabilities {0.95, 0.05}). Huffman encoding assigns 1 bit to each value, resulting in a code of the same length as the input. By contrast, arithmetic coding compresses bits well, approaching the optimal compression ratio of
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1-[-0.95\log _{2}(0.95)+-0.05\log _{2}(0.05)]\approx 71.4\%.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mo>−<!-- − --></mo>
+<mo stretchy="false">[</mo>
+<mo>−<!-- − --></mo>
+<mn>0.95</mn>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mn>0.95</mn>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mo>−<!-- − --></mo>
+<mn>0.05</mn>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mn>0.05</mn>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">]</mo>
+<mo>≈<!-- ≈ --></mo>
+<mn>71.4</mn>
+<mi mathvariant="normal">%<!-- % --></mi>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1-[-0.95\log _{2}(0.95)+-0.05\log _{2}(0.05)]\approx 71.4\%.}</annotation>
+</semantics>
+</math></span><img alt="1-[-0.95\log _{2}(0.95)+-0.05\log _{2}(0.05)]\approx 71.4\%." aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6d67ecf0a07f6d1d6a34dc7730f5cfe74bc75e98" style="vertical-align: -0.838ex; width:50.55ex; height:2.843ex;"/></span></dd></dl>
+<p>One simple way to address Huffman coding's suboptimality is to concatenate symbols ("blocking") to form a new alphabet in which each new symbol represents a sequence of original symbols – in this case bits – from the original alphabet. In the above example, grouping sequences of three symbols before encoding would produce new "super-symbols" with the following frequencies:
+</p>
+<ul><li><samp style="padding-left:0.4em; padding-right:0.4em; color:#666666;">000</samp>: 85.7%</li>
+<li><samp style="padding-left:0.4em; padding-right:0.4em; color:#666666;">001</samp>, <samp style="padding-left:0.4em; padding-right:0.4em; color:#666666;">010</samp>, <samp style="padding-left:0.4em; padding-right:0.4em; color:#666666;">100</samp>: 4.5% each</li>
+<li><samp style="padding-left:0.4em; padding-right:0.4em; color:#666666;">011</samp>, <samp style="padding-left:0.4em; padding-right:0.4em; color:#666666;">101</samp>, <samp style="padding-left:0.4em; padding-right:0.4em; color:#666666;">110</samp>: 0.24% each</li>
+<li><samp style="padding-left:0.4em; padding-right:0.4em; color:#666666;">111</samp>: 0.0125%</li></ul>
+<p>With this grouping, Huffman coding averages 1.3 bits for every three symbols, or 0.433 bits per symbol, compared with one bit per symbol in the original encoding, i.e., <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 56.7\%}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>56.7</mn>
+<mi mathvariant="normal">%<!-- % --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 56.7\%}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 56.7\%}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/06adb85b86fefbc59396c0604358059e820324a1" style="vertical-align: -0.338ex; width:6.07ex; height:2.343ex;"/></span> compression. Allowing arbitrarily large sequences gets arbitrarily close to entropy – just like arithmetic coding – but requires huge codes to do so, so is not as practical as arithmetic coding for this purpose.
+</p><p>An alternative is encoding run lengths via Huffman-based Golomb-Rice codes. Such an approach allows simpler and faster encoding/decoding than arithmetic coding or even Huffman coding, since the latter requires a table lookups. In the {0.95, 0.05} example, a Golomb-Rice code with a four-bit remainder achieves a compression ratio of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 71.1\%}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>71.1</mn>
+<mi mathvariant="normal">%<!-- % --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 71.1\%}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 71.1\%}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0f4b0e574b7ca41182e827255f1ce83f4091c97e" style="vertical-align: -0.338ex; width:6.07ex; height:2.343ex;"/></span>, far closer to optimum than using three-bit blocks. Golomb-Rice codes only apply to Bernoulli inputs such as the one in this example, however, so it is not a substitute for blocking in all cases.
+</p>
+<h2><span class="mw-headline" id="History_and_patents">History and patents</span><span class="mw-editsection"></span></h2>
+<p>Basic algorithms for arithmetic coding were developed independently by Jorma J. Rissanen, at IBM Research, and by Richard C. Pasco, a Ph.D. student at Stanford University; both were published in May 1976. Pasco cites a pre-publication draft of Rissanen's article and comments on the relationship between their works:<sup class="reference" id="cite_ref-3">[3]</sup>
+</p>
+<style data-mw-deduplicate="TemplateStyles:r996844942">.mw-parser-output .templatequote{overflow:hidden;margin:1em 0;padding:0 40px}.mw-parser-output .templatequote .templatequotecite{line-height:1.5em;text-align:left;padding-left:1.6em;margin-top:0}</style><blockquote class="templatequote"><p>
+One algorithm of the family was developed independently by Rissanen [1976]. It shifts the code element to the most significant end of the accumulator, using a pointer obtained by addition and exponentiation. We shall now compare the alternatives in the three choices, and see that it is preferable to shift the code element rather than the accumulator, and to add code elements to the least significant end of the accumulator.</p></blockquote>
+<p>Less than a year after publication, IBM filed for a US patent on Rissanen's work. Pasco's work was not patented.
+</p><p>A variety of specific techniques for arithmetic coding have historically been covered by US patents, although various well-known methods have since passed into the public domain as the patents have expired. Techniques covered by patents may be essential for implementing the algorithms for arithmetic coding that are specified in some formal international standards. When this is the case, such patents are generally available for licensing under what is called "reasonable and non-discriminatory" (RAND) licensing terms (at least as a matter of standards-committee policy). In some well-known instances, (including some involving IBM patents that have since expired), such licenses were available for free, and in other instances, licensing fees have been required. The availability of licenses under RAND terms does not necessarily satisfy everyone who might want to use the technology, as what may seem "reasonable" for a company preparing a proprietary commercial software product may seem much less reasonable for a free software or open source project.
+</p><p>At least one significant compression software program, bzip2, deliberately discontinued the use of arithmetic coding in favor of Huffman coding due to the perceived patent situation at the time. Also, encoders and decoders of the JPEG file format, which has options for both Huffman encoding and arithmetic coding, typically only support the Huffman encoding option, which was originally because of patent concerns; the result is that nearly all JPEG images in use today use Huffman encoding<sup class="reference" id="cite_ref-4">[4]</sup> although JPEG's arithmetic coding patents<sup class="reference" id="cite_ref-5">[5]</sup> have expired due to the age of the JPEG standard (the design of which was approximately completed by 1990).<sup class="reference" id="cite_ref-6">[6]</sup> JPEG XL, as well as archivers like PackJPG, Brunsli and Lepton, that can losslessly convert Huffman encoded files to ones with arithmetic coding (or asymmetric numeral systems in case of JPEG XL), showing up to 25% size saving.
+</p><p>The JPEG image compression format's arithmetic coding algorithm is based on the following cited patents (since expired).<sup class="reference" id="cite_ref-t81_7-0">[7]</sup>
+</p>
+<ul><li><span>U.S. Patent 4,652,856</span> – (IBM) Filed 4 February 1986, granted 24 March 1987 – Kottappuram M. A. Mohiuddin, Jorma Johannes Rissanen – Multiplication-free multi-alphabet arithmetic code</li>
+<li><span>U.S. Patent 4,905,297</span> – (IBM) Filed 18 November 1988, granted 27 February 1990 – Glen George Langdon, Joan L. Mitchell, William B. Pennebaker, Jorma Johannes Rissanen – Arithmetic coding encoder and decoder system</li>
+<li><span>U.S. Patent 4,935,882</span> – (IBM) Filed 20 July 1988, granted 19 June 1990 – William B. Pennebaker, Joan L. Mitchell – Probability adaptation for arithmetic coders</li>
+<li>JP Patent 1021672 – (Mitsubishi) Filed 21 January 1989, granted 10 August 1990 – Toshihiro Kimura, Shigenori Kino, Fumitaka Ono, Masayuki Yoshida – Coding system</li>
+<li>JP Patent 2-46275 – (Mitsubishi) Filed 26 February 1990, granted 5 November 1991 – Fumitaka Ono, Tomohiro Kimura, Masayuki Yoshida, Shigenori Kino – Coding apparatus and coding method</li></ul>
+<p>Other patents (mostly also expired) related to arithmetic coding include the following.
+</p>
+<ul><li><span>U.S. Patent 4,122,440</span> – (IBM) Filed 4 March 1977, granted 24 October 1978 – Glen George Langdon, Jorma Johannes Rissanen – Method and means for arithmetic string coding</li>
+<li><span>U.S. Patent 4,286,256</span> – (IBM) Filed 28 November 1979, granted 25 August 1981 – Glen George Langdon, Jorma Johannes Rissanen – Method and means for arithmetic coding utilizing a reduced number of operations</li>
+<li><span>U.S. Patent 4,467,317</span> – (IBM) Filed 30 March 1981, granted 21 August 1984 – Glen George Langdon, Jorma Johannes Rissanen – High-speed arithmetic compression coding using concurrent value updating</li>
+<li><span>U.S. Patent 4,891,643</span> – (IBM) Filed 15 September 1986, granted 2 January 1990 – Joan L. Mitchell, William B. Pennebaker – Arithmetic coding data compression/de-compression by selectively employed, diverse arithmetic coding encoders and decoders</li>
+<li>JP Patent 11782787 – (NEC) Filed 13 May 1987, granted 18 November 1988 – Michio Shimada – Data compressing arithmetic encoding device</li>
+<li>JP Patent 15015487 – (KDDI) Filed 18 June 1987, granted 22 December 1988 – Shuichi Matsumoto, Masahiro Saito – System for preventing carrying propagation in arithmetic coding</li>
+<li><span>U.S. Patent 4,933,883</span> – (IBM) Filed 3 May 1988, granted 12 June 1990 – William B. Pennebaker, Joan L. Mitchell – Probability adaptation for arithmetic coders</li>
+<li><span>U.S. Patent 4,989,000</span> – (IBM) Filed 19 June 1989, granted 29 January 1991 – Dan S. Chevion, Ehud D. Karnin, Eugeniusz Walach – Data string compression using arithmetic encoding with simplified probability subinterval estimation</li>
+<li><span>U.S. Patent 5,099,440</span> – (IBM) Filed 5 January 1990, granted 24 March 1992 – William B. Pennebaker, Joan L. Mitchell – Probability adaptation for arithmetic coders</li>
+<li><span>U.S. Patent 5,272,478</span> – (Ricoh) Filed 17 August 1992, granted 21 December 1993 – James D. Allen – Method and apparatus for entropy coding</li></ul>
+<p>Note: This list is not exhaustive. See the following links for a list of more US patents.<sup class="reference" id="cite_ref-8">[8]</sup> The Dirac codec uses arithmetic coding and is not patent pending.<sup class="reference" id="cite_ref-9">[9]</sup>
+</p><p>Patents on arithmetic coding may exist in other jurisdictions; see software patents for a discussion of the patentability of software around the world.
+</p>
+<h2><span class="mw-headline" id="Benchmarks_and_other_technical_characteristics">Benchmarks and other technical characteristics</span><span class="mw-editsection"></span></h2>
+<p>Every programmatic implementation of arithmetic encoding has a different compression ratio and performance. While compression ratios vary only a little (usually under 1%),<sup class="reference" id="cite_ref-10">[10]</sup> the code execution time can vary by a factor of 10. Choosing the right encoder from a list of publicly available encoders is not a simple task because performance and compression ratio depend also on the type of data, particularly on the size of the alphabet (number of different symbols). One of two particular encoders may have better performance for small alphabets while the other may show better performance for large alphabets. Most encoders have limitations on the size of the alphabet and many of them are specialized for alphabets of exactly two symbols (0 and 1).
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Asymmetric numeral systems</li>
+<li>Context-adaptive binary arithmetic coding (CABAC)</li>
+<li>Data compression</li>
+<li>Entropy encoding</li>
+<li>Huffman coding</li>
+<li>Range encoding</li></ul>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFMacKay2003">MacKay, David J.C. (September 2003). "Chapter 6: Stream Codes". <i>Information Theory, Inference, and Learning Algorithms</i>. Cambridge University Press. ISBN <bdi>0-521-64298-1</bdi>. Archived from the original <span class="cs1-format">(PDF/PostScript/DjVu/LaTeX)</span> on 22 December 2007<span class="reference-accessdate">. Retrieved <span class="nowrap">30 December</span> 2007</span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Chapter+6%3A+Stream+Codes&amp;rft.btitle=Information+Theory%2C+Inference%2C+and+Learning+Algorithms&amp;rft.pub=Cambridge+University+Press&amp;rft.date=2003-09&amp;rft.isbn=0-521-64298-1&amp;rft.aulast=MacKay&amp;rft.aufirst=David+J.C.&amp;rft_id=http%3A%2F%2Fwww.inference.phy.cam.ac.uk%2Fmackay%2Fitila%2Fbook.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AArithmetic+coding"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFPressTeukolskyVetterlingFlannery2007">Press, WH; Teukolsky, SA; Vetterling, WT; Flannery, BP (2007). "Section 22.6. Arithmetic Coding". <i>Numerical Recipes: The Art of Scientific Computing</i> (3rd ed.). New York: Cambridge University Press. ISBN <bdi>978-0-521-88068-8</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Section+22.6.+Arithmetic+Coding&amp;rft.btitle=Numerical+Recipes%3A+The+Art+of+Scientific+Computing&amp;rft.place=New+York&amp;rft.edition=3rd&amp;rft.pub=Cambridge+University+Press&amp;rft.date=2007&amp;rft.isbn=978-0-521-88068-8&amp;rft.aulast=Press&amp;rft.aufirst=WH&amp;rft.au=Teukolsky%2C+SA&amp;rft.au=Vetterling%2C+WT&amp;rft.au=Flannery%2C+BP&amp;rft_id=http%3A%2F%2Fapps.nrbook.com%2Fempanel%2Findex.html%23pg%3D1181&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AArithmetic+coding"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFRissanen1976">Rissanen, Jorma (May 1976). "Generalized Kraft Inequality and Arithmetic Coding". <i>IBM Journal of Research and Development</i>. <b>20</b> (3): 198–203. doi:10.1147/rd.203.0198<span class="reference-accessdate">. Retrieved <span class="nowrap">21 September</span> 2007</span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=IBM+Journal+of+Research+and+Development&amp;rft.atitle=Generalized+Kraft+Inequality+and+Arithmetic+Coding&amp;rft.volume=20&amp;rft.issue=3&amp;rft.pages=198-203&amp;rft.date=1976-05&amp;rft_id=info%3Adoi%2F10.1147%2Frd.203.0198&amp;rft.aulast=Rissanen&amp;rft.aufirst=Jorma&amp;rft_id=http%3A%2F%2Fdomino.watson.ibm.com%2Ftchjr%2Fjournalindex.nsf%2F4ac37cf0bdc4dd6a85256547004d47e1%2F53fec2e5af172a3185256bfa0067f7a0%3FOpenDocument&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AArithmetic+coding"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFRissanenLangdon_G.G.,_Jr1979">Rissanen, J.J.; Langdon G.G., Jr (March 1979). "Arithmetic coding" <span class="cs1-format">(PDF)</span>. <i>IBM Journal of Research and Development</i>. <b>23</b> (2): 149–162. doi:10.1147/rd.232.0149. Archived from the original <span class="cs1-format">(PDF)</span> on 28 September 2007<span class="reference-accessdate">. Retrieved <span class="nowrap">22 September</span> 2007</span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=IBM+Journal+of+Research+and+Development&amp;rft.atitle=Arithmetic+coding&amp;rft.volume=23&amp;rft.issue=2&amp;rft.pages=149-162&amp;rft.date=1979-03&amp;rft_id=info%3Adoi%2F10.1147%2Frd.232.0149&amp;rft.aulast=Rissanen&amp;rft.aufirst=J.J.&amp;rft.au=Langdon+G.G.%2C+Jr&amp;rft_id=http%3A%2F%2Fresearchweb.watson.ibm.com%2Fjournal%2Frd%2F232%2Fibmrd2302G.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AArithmetic+coding"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFWittenNeal,_Radford_M.Cleary,_John_G.1987">Witten, Ian H.; Neal, Radford M.; Cleary, John G. (June 1987). "Arithmetic Coding for Data Compression" <span class="cs1-format">(PDF)</span>. <i>Communications of the ACM</i>. <b>30</b> (6): 520–540. doi:10.1145/214762.214771. S2CID 3343393. Archived <span class="cs1-format">(PDF)</span> from the original on 28 September 2007<span class="reference-accessdate">. Retrieved <span class="nowrap">21 September</span> 2007</span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Communications+of+the+ACM&amp;rft.atitle=Arithmetic+Coding+for+Data+Compression&amp;rft.volume=30&amp;rft.issue=6&amp;rft.pages=520-540&amp;rft.date=1987-06&amp;rft_id=info%3Adoi%2F10.1145%2F214762.214771&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A3343393%23id-name%3DS2CID&amp;rft.aulast=Witten&amp;rft.aufirst=Ian+H.&amp;rft.au=Neal%2C+Radford+M.&amp;rft.au=Cleary%2C+John+G.&amp;rft_id=http%3A%2F%2Fwww.stanford.edu%2Fclass%2Fee398a%2Fhandouts%2Fpapers%2FWittenACM87ArithmCoding.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AArithmetic+coding"></span></li></ul>
+<ul><li>Rodionov Anatoly, Volkov Sergey (2010) "p-adic arithmetic coding" Contemporary Mathematics Volume 508, 2010 Contemporary Mathematics</li>
+<li>Rodionov Anatoly, Volkov Sergey (2007) "p-adic arithmetic coding", https://arxiv.org/abs//0704.0834v1</li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li><img alt="Public Domain" class="noviewer" data-file-height="196" data-file-width="196" decoding="async" height="12" src="//upload.wikimedia.org/wikipedia/en/thumb/6/62/PD-icon.svg/12px-PD-icon.svg.png" srcset="//upload.wikimedia.org/wikipedia/en/thumb/6/62/PD-icon.svg/18px-PD-icon.svg.png 1.5x, //upload.wikimedia.org/wikipedia/en/thumb/6/62/PD-icon.svg/24px-PD-icon.svg.png 2x" width="12"/> This article incorporates public domain material from <link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs1" id="CITEREFPaul_E._Black">Paul E. Black. "Arithmetic coding". <i>Dictionary of Algorithms and Data Structures</i>. NIST.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Dictionary+of+Algorithms+and+Data+Structures&amp;rft.atitle=Arithmetic+coding&amp;rft.au=Paul+E.+Black&amp;rft_id=https%3A%2F%2Fxlinux.nist.gov%2Fdads%2FHTML%2FarithmeticCoding.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AArithmetic+coding"></span></li>
+<li>Newsgroup posting with a short worked example of arithmetic encoding (integer-only).</li>
+<li>PlanetMath article on arithmetic coding</li>
+<li>Anatomy of Range Encoder The article explains both range and arithmetic coding. It has also code samples for 3 different arithmetic encoders along with performance comparison.</li>
+<li>Introduction to Arithmetic Coding. 60 pages.</li>
+<li>Eric Bodden, Malte Clasen and Joachim Kneis: Arithmetic Coding revealed. Technical Report 2007-5, Sable Research Group, McGill University.</li>
+<li>Arithmetic Coding + Statistical Modeling = Data Compression by Mark Nelson.</li>
+<li>Data Compression With Arithmetic Coding by Mark Nelson (2014)</li>
+<li>Fast implementation of range coding and rANS by James K. Bonfield</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2408
+Cached time: 20221220213656
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.392 seconds
+Real time usage: 0.543 seconds
+Preprocessor visited node count: 3055/1000000
+Post‐expand include size: 93005/2097152 bytes
+Template argument size: 2701/2097152 bytes
+Highest expansion depth: 17/100
+Expensive parser function count: 5/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 45611/5000000 bytes
+Lua time usage: 0.218/10.000 seconds
+Lua memory usage: 7689828/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  399.212      1 -total
+ 17.92%   71.545      4 Template:Cite_book
+ 13.88%   55.394      6 Template:Navbox
+ 13.17%   52.595      1 Template:Compression_Methods
+ 11.58%   46.242      1 Template:Short_description
+ 10.59%   42.263      1 Template:More_footnotes
+  9.61%   38.349      1 Template:Ambox
+  7.59%   30.309      1 Template:Harvtxt
+  7.30%   29.152     11 Template:US_patent
+  6.36%   25.403      2 Template:Pagetype
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:62545-0!canonical and timestamp 20221220213655 and revision id 1121148893.
+ -->
+</div></body>
+</html>

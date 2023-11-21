@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Johnson's_algorithm</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1066479718">.mw-parser-output .infobox-subbox{padding:0;border:none;margin:-3px;width:auto;min-width:100%;font-size:100%;clear:none;float:none;background-color:transparent}.mw-parser-output .infobox-3cols-child{margin:auto}.mw-parser-output .infobox .navbar{font-size:100%}body.skin-minerva .mw-parser-output .infobox-header,body.skin-minerva .mw-parser-output .infobox-subheader,body.skin-minerva .mw-parser-output .infobox-above,body.skin-minerva .mw-parser-output .infobox-title,body.skin-minerva .mw-parser-output .infobox-image,body.skin-minerva .mw-parser-output .infobox-full-data,body.skin-minerva .mw-parser-output .infobox-below{text-align:center}</style><table class="infobox"><caption class="infobox-title">Johnson's algorithm</caption><tbody><tr><th class="infobox-label" scope="row">Class</th><td class="infobox-data">All-pairs shortest path problem (for weighted graphs)</td></tr><tr><th class="infobox-label" scope="row">Data structure</th><td class="infobox-data">Graph</td></tr><tr><th class="infobox-label" scope="row">Worst-case performance</th><td class="infobox-data"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(|V|^{2}\log |V|+|V||E|)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(|V|^{2}\log |V|+|V||E|)}</annotation>
+</semantics>
+</math></span><img alt="O(|V|^{2}\log |V|+|V||E|)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fb710833bfcdc985b76d7594d0e7998c182dabe9" style="vertical-align: -0.838ex; width:23.535ex; height:3.343ex;"/></span></td></tr></tbody></table>
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<style data-mw-deduplicate="TemplateStyles:r1045330069">.mw-parser-output .sidebar{width:22em;float:right;clear:right;margin:0.5em 0 1em 1em;background:#f8f9fa;border:1px solid #aaa;padding:0.2em;text-align:center;line-height:1.4em;font-size:88%;border-collapse:collapse;display:table}body.skin-minerva .mw-parser-output .sidebar{display:table!important;float:right!important;margin:0.5em 0 1em 1em!important}.mw-parser-output .sidebar-subgroup{width:100%;margin:0;border-spacing:0}.mw-parser-output .sidebar-left{float:left;clear:left;margin:0.5em 1em 1em 0}.mw-parser-output .sidebar-none{float:none;clear:both;margin:0.5em 1em 1em 0}.mw-parser-output .sidebar-outer-title{padding:0 0.4em 0.2em;font-size:125%;line-height:1.2em;font-weight:bold}.mw-parser-output .sidebar-top-image{padding:0.4em}.mw-parser-output .sidebar-top-caption,.mw-parser-output .sidebar-pretitle-with-top-image,.mw-parser-output .sidebar-caption{padding:0.2em 0.4em 0;line-height:1.2em}.mw-parser-output .sidebar-pretitle{padding:0.4em 0.4em 0;line-height:1.2em}.mw-parser-output .sidebar-title,.mw-parser-output .sidebar-title-with-pretitle{padding:0.2em 0.8em;font-size:145%;line-height:1.2em}.mw-parser-output .sidebar-title-with-pretitle{padding:0.1em 0.4em}.mw-parser-output .sidebar-image{padding:0.2em 0.4em 0.4em}.mw-parser-output .sidebar-heading{padding:0.1em 0.4em}.mw-parser-output .sidebar-content{padding:0 0.5em 0.4em}.mw-parser-output .sidebar-content-with-subgroup{padding:0.1em 0.4em 0.2em}.mw-parser-output .sidebar-above,.mw-parser-output .sidebar-below{padding:0.3em 0.8em;font-weight:bold}.mw-parser-output .sidebar-collapse .sidebar-above,.mw-parser-output .sidebar-collapse .sidebar-below{border-top:1px solid #aaa;border-bottom:1px solid #aaa}.mw-parser-output .sidebar-navbar{text-align:right;font-size:115%;padding:0 0.4em 0.4em}.mw-parser-output .sidebar-list-title{padding:0 0.4em;text-align:left;font-weight:bold;line-height:1.6em;font-size:105%}.mw-parser-output .sidebar-list-title-c{padding:0 0.4em;text-align:center;margin:0 3.3em}@media(max-width:720px){body.mediawiki .mw-parser-output .sidebar{width:100%!important;clear:both;float:none!important;margin-left:0!important;margin-right:0!important}}</style><table class="sidebar nomobile nowraplinks hlist"><tbody><tr><th class="sidebar-title">Graph and tree<br/>search algorithms</th></tr><tr><td class="sidebar-content">
+<ul><li>α–β pruning</li>
+<li>Backtracking</li>
+<li>Beam search</li>
+<li>Best-first search</li>
+<li>Branch &amp; bound</li>
+<li>Breadth-First Search (<b>BFS</b>)</li>
+<li>British Museum</li>
+<li>Depth-First Search (<b>DFS</b>)</li>
+<li>Hill climbing</li>
+<li>Iterative Deepening DFS (IDDFS)</li>
+<li>Lexicographic BFS</li></ul></td>
+</tr><tr><th class="sidebar-heading">
+Shortest path</th></tr><tr><td class="sidebar-content">
+<ul><li><b>A*</b></li>
+<li>B*</li>
+<li>Bellman–Ford</li>
+<li>Bidirectional search</li>
+<li>D*</li>
+<li><b>Dijkstra's</b></li>
+<li>Floyd–Warshall</li>
+<li>Fringe search</li>
+<li>Iterative Deepening (IDA*)</li>
+<li>Johnson's</li>
+<li>Jump point search</li>
+<li>Kruskal's</li>
+<li>Lifelong Planning A* (LPA*)</li>
+<li>Pathfinding</li>
+<li>SMA*</li></ul></td>
+</tr><tr><th class="sidebar-heading">
+Lists</th></tr><tr><td class="sidebar-content">
+<ul><li><i>Graph algorithms</i></li>
+<li><i>Search algorithms</i></li>
+<li><i>List of graph algorithms</i></li></ul></td>
+</tr><tr><th class="sidebar-heading">
+Related topics</th></tr><tr><td class="sidebar-content">
+<ul><li>Dynamic programming</li>
+<li>Graph coloring</li>
+<li>Graph traversal</li>
+<li>Minimum spanning tree</li>
+<li>Search games</li>
+<li>Threaded binary tree</li>
+<li>Tree traversal</li></ul></td>
+</tr><tr><td class="sidebar-navbar"><style data-mw-deduplicate="TemplateStyles:r1063604349">.mw-parser-output .navbar{display:inline;font-size:88%;font-weight:normal}.mw-parser-output .navbar-collapse{float:left;text-align:left}.mw-parser-output .navbar-boxtext{word-spacing:0}.mw-parser-output .navbar ul{display:inline-block;white-space:nowrap;line-height:inherit}.mw-parser-output .navbar-brackets::before{margin-right:-0.125em;content:"[ "}.mw-parser-output .navbar-brackets::after{margin-left:-0.125em;content:" ]"}.mw-parser-output .navbar li{word-spacing:-0.125em}.mw-parser-output .navbar a>span,.mw-parser-output .navbar a>abbr{text-decoration:inherit}.mw-parser-output .navbar-mini abbr{font-variant:small-caps;border-bottom:none;text-decoration:none;cursor:inherit}.mw-parser-output .navbar-ct-full{font-size:114%;margin:0 7em}.mw-parser-output .navbar-ct-mini{font-size:114%;margin:0 4em}</style></td></tr></tbody></table>
+<p><b>Johnson's algorithm</b> is a way to find the shortest paths between all pairs of vertices in an edge-weighted directed graph. It allows some of the edge weights to be negative numbers, but no negative-weight cycles may exist. It works by using the Bellman–Ford algorithm to compute a transformation of the input graph that removes all negative weights, allowing Dijkstra's algorithm to be used on the transformed graph.<sup class="reference" id="cite_ref-clrs_1-0">[1]</sup><sup class="reference" id="cite_ref-black_2-0">[2]</sup> It is named after Donald B. Johnson, who first published the technique in 1977.<sup class="reference" id="cite_ref-3">[3]</sup>
+</p><p>A similar reweighting technique is also used in Suurballe's algorithm for finding two disjoint paths of minimum total length between the same two vertices in a graph with non-negative edge weights.<sup class="reference" id="cite_ref-4">[4]</sup>
+</p>
+
+<h2><span class="mw-headline" id="Algorithm_description">Algorithm description</span><span class="mw-editsection"></span></h2>
+<p>Johnson's algorithm consists of the following steps:<sup class="reference" id="cite_ref-clrs_1-1">[1]</sup><sup class="reference" id="cite_ref-black_2-1">[2]</sup>
+</p>
+<ol><li>First, a new node <span class="texhtml mvar" style="font-style:italic;">q</span> is added to the graph, connected by zero-weight edges to each of the other nodes.</li>
+<li>Second, the Bellman–Ford algorithm is used, starting from the new vertex <span class="texhtml mvar" style="font-style:italic;">q</span>, to find for each vertex <span class="texhtml mvar" style="font-style:italic;">v</span> the minimum weight <span class="texhtml"><i>h</i>(<i>v</i>)</span> of a path from <span class="texhtml mvar" style="font-style:italic;">q</span> to <span class="texhtml mvar" style="font-style:italic;">v</span>. If this step detects a negative cycle, the algorithm is terminated.</li>
+<li>Next the edges of the original graph are reweighted using the values computed by the Bellman–Ford algorithm: an edge from <span class="texhtml mvar" style="font-style:italic;">u</span> to <span class="texhtml mvar" style="font-style:italic;">v</span>, having length <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w(u,v)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+<mo stretchy="false">(</mo>
+<mi>u</mi>
+<mo>,</mo>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w(u,v)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle w(u,v)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c820425919af804281a4d42c9798951ba8f76140" style="vertical-align: -0.838ex; width:6.965ex; height:2.843ex;"/></span>, is given the new length <span class="texhtml"><i>w</i>(<i>u</i>,<i>v</i>) + <i>h</i>(<i>u</i>) − <i>h</i>(<i>v</i>)</span>.</li>
+<li>Finally, <span class="texhtml mvar" style="font-style:italic;">q</span> is removed, and Dijkstra's algorithm is used to find the shortest paths from each node <span class="texhtml mvar" style="font-style:italic;">s</span> to every other vertex in the reweighted graph. The distance in the original graph is then computed for each distance <span class="texhtml mvar" style="font-style:italic;">D</span>(<span class="texhtml mvar" style="font-style:italic;">u</span> , <span class="texhtml mvar" style="font-style:italic;">v</span>), by adding <span class="texhtml mvar" style="font-style:italic;"><i>h</i>(<i>v</i>) − <i>h</i>(<i>u</i>)</span> to the distance returned by Dijkstra's algorithm.</li></ol>
+<h2><span class="mw-headline" id="Example">Example</span><span class="mw-editsection"></span></h2>
+<p>The first three stages of Johnson's algorithm are depicted in the illustration below.
+</p>
+
+<p>The graph on the left of the illustration has two negative edges, but no negative cycles. The center graph shows the new vertex <span class="texhtml mvar" style="font-style:italic;">q</span>, a shortest path tree as computed by the Bellman–Ford algorithm with <span class="texhtml mvar" style="font-style:italic;">q</span> as starting vertex, and the values <span class="texhtml"><i>h</i>(<i>v</i>)</span> computed at each other node as the length of the shortest path from <span class="texhtml mvar" style="font-style:italic;">q</span> to that node. Note that these values are all non-positive, because <span class="texhtml mvar" style="font-style:italic;">q</span> has a length-zero edge to each vertex and the shortest path can be no longer than that edge. On the right is shown the reweighted graph, formed by replacing each edge weight <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w(u,v)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+<mo stretchy="false">(</mo>
+<mi>u</mi>
+<mo>,</mo>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w(u,v)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle w(u,v)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c820425919af804281a4d42c9798951ba8f76140" style="vertical-align: -0.838ex; width:6.965ex; height:2.843ex;"/></span> by <span class="texhtml"><i>w</i>(<i>u</i>,<i>v</i>) + <i>h</i>(<i>u</i>) − <i>h</i>(<i>v</i>)</span>. In this reweighted graph, all edge weights are non-negative, but the shortest path between any two nodes uses the same sequence of edges as the shortest path between the same two nodes in the original graph. The algorithm concludes by applying Dijkstra's algorithm to each of the four starting nodes in the reweighted graph.
+</p>
+<h2><span class="mw-headline" id="Correctness">Correctness</span><span class="mw-editsection"></span></h2>
+<p>In the reweighted graph, all paths between a pair <span class="texhtml mvar" style="font-style:italic;">s</span> and <span class="texhtml mvar" style="font-style:italic;">t</span> of nodes have the same quantity <span class="texhtml"><i>h</i>(<i>s</i>) − <i>h</i>(<i>t</i>)</span> added to them. The previous statement can be proven as follows: Let <span class="texhtml mvar" style="font-style:italic;">p</span> be an <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s-t}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>s</mi>
+<mo>−<!-- − --></mo>
+<mi>t</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s-t}</annotation>
+</semantics>
+</math></span><img alt="s-t" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e8f385419e3b33f77328af12a164770bec2347bd" style="vertical-align: -0.505ex; width:4.77ex; height:2.176ex;"/></span> path. Its weight W in the reweighted graph is given by the following expression:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\bigl (}w(s,p_{1})+h(s)-h(p_{1}){\bigr )}+{\bigl (}w(p_{1},p_{2})+h(p_{1})-h(p_{2}){\bigr )}+...+{\bigl (}w(p_{n},t)+h(p_{n})-h(t){\bigr )}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-OPEN">
+<mo maxsize="1.2em" minsize="1.2em">(</mo>
+</mrow>
+</mrow>
+<mi>w</mi>
+<mo stretchy="false">(</mo>
+<mi>s</mi>
+<mo>,</mo>
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<mi>s</mi>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-CLOSE">
+<mo maxsize="1.2em" minsize="1.2em">)</mo>
+</mrow>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-OPEN">
+<mo maxsize="1.2em" minsize="1.2em">(</mo>
+</mrow>
+</mrow>
+<mi>w</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-CLOSE">
+<mo maxsize="1.2em" minsize="1.2em">)</mo>
+</mrow>
+</mrow>
+<mo>+</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-OPEN">
+<mo maxsize="1.2em" minsize="1.2em">(</mo>
+</mrow>
+</mrow>
+<mi>w</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>t</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<mi>t</mi>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-CLOSE">
+<mo maxsize="1.2em" minsize="1.2em">)</mo>
+</mrow>
+</mrow>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\bigl (}w(s,p_{1})+h(s)-h(p_{1}){\bigr )}+{\bigl (}w(p_{1},p_{2})+h(p_{1})-h(p_{2}){\bigr )}+...+{\bigl (}w(p_{n},t)+h(p_{n})-h(t){\bigr )}.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\bigl (}w(s,p_{1})+h(s)-h(p_{1}){\bigr )}+{\bigl (}w(p_{1},p_{2})+h(p_{1})-h(p_{2}){\bigr )}+...+{\bigl (}w(p_{n},t)+h(p_{n})-h(t){\bigr )}.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fcf6d94a061b6f01088aed2dc7ee6ef70aa11c55" style="vertical-align: -1.005ex; width:88.027ex; height:3.176ex;"/></span></dd></dl>
+<p>Every <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle +h(p_{i})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>+</mo>
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle +h(p_{i})}</annotation>
+</semantics>
+</math></span><img alt="+h(p_i)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5d12c8009ff6081cf94762595990d06a1d5d01e2" style="vertical-align: -0.838ex; width:6.926ex; height:2.843ex;"/></span> is cancelled by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle -h(p_{i})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>−<!-- − --></mo>
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle -h(p_{i})}</annotation>
+</semantics>
+</math></span><img alt="-h(p_i)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/30c64b06af5cbdc28ee807922192971ecf4bcff9" style="vertical-align: -0.838ex; width:6.926ex; height:2.843ex;"/></span> in the previous bracketed expression; therefore, we are left with the following expression for <i>W</i>:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\bigl (}w(s,p_{1})+w(p_{1},p_{2})+...+w(p_{n},t){\bigr )}+h(s)-h(t)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-OPEN">
+<mo maxsize="1.2em" minsize="1.2em">(</mo>
+</mrow>
+</mrow>
+<mi>w</mi>
+<mo stretchy="false">(</mo>
+<mi>s</mi>
+<mo>,</mo>
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>w</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>+</mo>
+<mi>w</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>t</mi>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-CLOSE">
+<mo maxsize="1.2em" minsize="1.2em">)</mo>
+</mrow>
+</mrow>
+<mo>+</mo>
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<mi>s</mi>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<mi>t</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\bigl (}w(s,p_{1})+w(p_{1},p_{2})+...+w(p_{n},t){\bigr )}+h(s)-h(t)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\bigl (}w(s,p_{1})+w(p_{1},p_{2})+...+w(p_{n},t){\bigr )}+h(s)-h(t)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e67adf46c582d7f38f0173c912e44409b130a643" style="vertical-align: -1.005ex; width:50.107ex; height:3.176ex;"/></span></dd></dl>
+<p>The bracketed expression is the weight of <i>p</i> in the original weighting.
+</p><p>Since the reweighting adds the same amount to the weight of every <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s-t}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>s</mi>
+<mo>−<!-- − --></mo>
+<mi>t</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s-t}</annotation>
+</semantics>
+</math></span><img alt="s-t" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e8f385419e3b33f77328af12a164770bec2347bd" style="vertical-align: -0.505ex; width:4.77ex; height:2.176ex;"/></span> path, a path is a shortest path in the original weighting if and only if it is a shortest path after reweighting. The weight of edges that belong to a shortest path from <i>q</i> to any node is zero, and therefore the lengths of the shortest paths from <i>q</i> to every node become zero in the reweighted graph; however, they still remain shortest paths. Therefore, there can be no negative edges: if edge <i>uv</i> had a negative weight after the reweighting, then the zero-length path from <i>q</i> to <i>u</i> together with this edge would form a negative-length path from <i>q</i> to <i>v</i>, contradicting the fact that all vertices have zero distance from <i>q</i>. The non-existence of negative edges ensures the optimality of the paths found by Dijkstra's algorithm. The distances in the original graph may be calculated from the distances calculated by Dijkstra's algorithm in the reweighted graph by reversing the reweighting transformation.<sup class="reference" id="cite_ref-clrs_1-2">[1]</sup>
+</p>
+<h2><span class="mw-headline" id="Analysis">Analysis</span><span class="mw-editsection"></span></h2>
+<p>The time complexity of this algorithm, using Fibonacci heaps in the implementation of Dijkstra's algorithm, is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(|V|^{2}\log |V|+|V||E|)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(|V|^{2}\log |V|+|V||E|)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(|V|^{2}\log |V|+|V||E|)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fb710833bfcdc985b76d7594d0e7998c182dabe9" style="vertical-align: -0.838ex; width:23.535ex; height:3.343ex;"/></span>: the algorithm uses <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(|V||E|)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(|V||E|)}</annotation>
+</semantics>
+</math></span><img alt="O(|V||E|)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2d81aded51fae699d4f659fee1faa684233ab581" style="vertical-align: -0.838ex; width:9.733ex; height:2.843ex;"/></span> time for the Bellman–Ford stage of the algorithm, and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(|V|\log |V|+|E|)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(|V|\log |V|+|E|)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(|V|\log |V|+|E|)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f053fdfa75a22bf593bfbac6cf09eff0ab8d64d5" style="vertical-align: -0.838ex; width:19.4ex; height:2.843ex;"/></span> for each of the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |V|}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |V|}</annotation>
+</semantics>
+</math></span><img alt="|V|" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9ddcffc28643ac01a14dd0fb32c3157859e365a7" style="vertical-align: -0.838ex; width:3.081ex; height:2.843ex;"/></span> instantiations of Dijkstra's algorithm. Thus, when the graph is sparse, the total time can be faster than the Floyd–Warshall algorithm, which solves the same problem in time <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(|V|^{3})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(|V|^{3})}</annotation>
+</semantics>
+</math></span><img alt="O(|V|^{3})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/04ad8b53a2cea864c6d746895cc7397971f72912" style="vertical-align: -0.838ex; width:7.718ex; height:3.343ex;"/></span>.<sup class="reference" id="cite_ref-clrs_1-3">[1]</sup>
+</p>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>Boost: All Pairs Shortest Paths</li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw2409
+Cached time: 20221224001503
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.208 seconds
+Real time usage: 0.334 seconds
+Preprocessor visited node count: 1099/1000000
+Post‐expand include size: 19718/2097152 bytes
+Template argument size: 1175/2097152 bytes
+Highest expansion depth: 8/100
+Expensive parser function count: 1/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 18114/5000000 bytes
+Lua time usage: 0.117/10.000 seconds
+Lua memory usage: 4460978/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  237.769      1 -total
+ 35.65%   84.761      1 Template:Reflist
+ 30.23%   71.889      4 Template:Citation
+ 22.79%   54.177      1 Template:Short_description
+ 16.99%   40.406      1 Template:Tree_search_algorithm
+ 15.74%   37.429      1 Template:Sidebar
+ 11.65%   27.706      2 Template:Pagetype
+ 11.60%   27.591      1 Template:Infobox_Algorithm
+  9.92%   23.596      1 Template:Infobox
+  7.48%   17.787      9 Template:Main_other
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:1284311-0!canonical and timestamp 20221224001503 and revision id 1089573529.
+ -->
+</div></body>
+</html>

@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Karnaugh_map</title>
+</head>
+<body>
+<div class="mw-parser-output"><style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-Expand_language plainlinks metadata ambox ambox-notice" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+
+<p>
+<span class="anchor" id="1"></span><span class="anchor" id="2"></span><span class="anchor" id="3"></span><span class="anchor" id="4"></span><span class="anchor" id="5"></span><span class="anchor" id="6"></span><span class="anchor" id="7"></span><span class="anchor" id="8"></span>
+</p>
+
+<p>The <b>Karnaugh map</b> (<b>KM</b> or <b>K-map</b>) is a method of simplifying Boolean algebra expressions. Maurice Karnaugh introduced it in 1953<sup class="reference" id="cite_ref-Karnaugh_1953_1-0">[1]</sup><sup class="reference" id="cite_ref-Curtis_1962_2-0">[2]</sup> as a refinement of Edward W. Veitch's 1952 <b>Veitch chart</b>,<sup class="reference" id="cite_ref-Veitch_1952_3-0">[3]</sup><sup class="reference" id="cite_ref-Brown_2012_4-0">[4]</sup> which was a rediscovery of Allan Marquand's 1881 <i>logical diagram</i><sup class="reference" id="cite_ref-Marquand_1881_5-0">[5]</sup><sup class="reference" id="cite_ref-Gardner_1958_6-0">[6]</sup> aka <b>Marquand diagram</b><sup class="reference" id="cite_ref-Brown_2012_4-1">[4]</sup> but with a focus now set on its utility for switching circuits.<sup class="reference" id="cite_ref-Brown_2012_4-2">[4]</sup> Veitch charts are also known as <b>Marquand–Veitch diagrams</b><sup class="reference" id="cite_ref-Brown_2012_4-3">[4]</sup> or, rarely, as <b>Svoboda charts</b>,<sup class="reference" id="cite_ref-Klir_1972_7-0">[7]</sup> and Karnaugh maps as <b>Karnaugh–Veitch maps</b> (<b>KV maps</b>).
+</p><p>The Karnaugh map reduces the need for extensive calculations by taking advantage of humans' pattern-recognition capability.<sup class="reference" id="cite_ref-Karnaugh_1953_1-1">[1]</sup> It also permits the rapid identification and elimination of potential race conditions.
+</p><p>The required Boolean results are transferred from a truth table onto a two-dimensional grid where, in Karnaugh maps, the cells are ordered in Gray code,<sup class="reference" id="cite_ref-Wakerly_1994_8-0">[8]</sup><sup class="reference" id="cite_ref-Brown_2012_4-4">[4]</sup> and each cell position represents one combination of input conditions. Cells are also known as minterms, while each cell value represents the corresponding output value of the boolean function. Optimal groups of 1s or 0s are identified, which represent the terms of a canonical form of the logic in the original truth table.<sup class="reference" id="cite_ref-Belton_1998_9-0">[9]</sup> These terms can be used to write a minimal Boolean expression representing the required logic.
+</p><p>Karnaugh maps are used to simplify real-world logic requirements so that they can be implemented using a minimum number of logic gates. A sum-of-products expression (SOP) can always be implemented using AND gates feeding into an OR gate, and a product-of-sums expression (POS) leads to OR gates feeding an AND gate. The POS expression gives a complement of the function (if F is the function so its complement will be F').<sup class="reference" id="cite_ref-Dodge_2016_10-0">[10]</sup> Karnaugh maps can also be used to simplify logic expressions in software design. Boolean conditions, as used for example in conditional statements, can get very complicated, which makes the code difficult to read and to maintain. Once minimised, canonical sum-of-products and product-of-sums expressions can be implemented directly using AND and OR logic operators.<sup class="reference" id="cite_ref-Cook_2012_11-0">[11]</sup>
+</p>
+
+<h2><span class="mw-headline" id="Example">Example</span><span class="mw-editsection"></span></h2>
+<p>Karnaugh maps are used to facilitate the simplification of Boolean algebra functions. For example, consider the Boolean function described by the following truth table.
+</p>
+<table class="wikitable" style="text-align: center">
+<caption>Truth table of a function
+</caption>
+<tbody><tr>
+<th> </th>
+<th><i>A</i></th>
+<th><i>B</i></th>
+<th><i>C</i></th>
+<th><i>D</i></th>
+<th><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(A,B,C,D)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>A</mi>
+<mo>,</mo>
+<mi>B</mi>
+<mo>,</mo>
+<mi>C</mi>
+<mo>,</mo>
+<mi>D</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(A,B,C,D)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle f(A,B,C,D)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b5366d3d2c00947c0a83cfd3cecf90a85753c9e8" style="vertical-align: -0.838ex; width:13.387ex; height:2.843ex;"/></span>
+</th></tr>
+<tr>
+<th scope="row">0
+</th>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0
+</td></tr>
+<tr>
+<th scope="row">1
+</th>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0
+</td></tr>
+<tr>
+<th scope="row">2
+</th>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0
+</td></tr>
+<tr>
+<th scope="row">3
+</th>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>0
+</td></tr>
+<tr>
+<th scope="row">4
+</th>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0
+</td></tr>
+<tr>
+<th scope="row">5
+</th>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>0
+</td></tr>
+<tr>
+<th scope="row">6
+</th>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>1
+</td></tr>
+<tr>
+<th scope="row">7
+</th>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>0
+</td></tr>
+<tr>
+<th scope="row">8
+</th>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1
+</td></tr>
+<tr>
+<th scope="row">9
+</th>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1
+</td></tr>
+<tr>
+<th scope="row">10
+</th>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>1
+</td></tr>
+<tr>
+<th scope="row">11
+</th>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1
+</td></tr>
+<tr>
+<th scope="row">12
+</th>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>1
+</td></tr>
+<tr>
+<th scope="row">13
+</th>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>1
+</td></tr>
+<tr>
+<th scope="row">14
+</th>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>1
+</td></tr>
+<tr>
+<th scope="column">15
+</th>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>0
+</td></tr></tbody></table>
+<p>Following are two different notations describing the same function in unsimplified Boolean algebra, using the Boolean variables <span class="texhtml mvar" style="font-style:italic;">A</span>, <span class="texhtml mvar" style="font-style:italic;">B</span>, <span class="texhtml mvar" style="font-style:italic;">C</span>, <span class="texhtml mvar" style="font-style:italic;">D</span> and their inverses.
+</p>
+<ul><li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(A,B,C,D)=\sum _{}m_{i},i\in \{6,8,9,10,11,12,13,14\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>A</mi>
+<mo>,</mo>
+<mi>B</mi>
+<mo>,</mo>
+<mi>C</mi>
+<mo>,</mo>
+<mi>D</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<munder>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+</mrow>
+</munder>
+<msub>
+<mi>m</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>i</mi>
+<mo>∈<!-- ∈ --></mo>
+<mo fence="false" stretchy="false">{</mo>
+<mn>6</mn>
+<mo>,</mo>
+<mn>8</mn>
+<mo>,</mo>
+<mn>9</mn>
+<mo>,</mo>
+<mn>10</mn>
+<mo>,</mo>
+<mn>11</mn>
+<mo>,</mo>
+<mn>12</mn>
+<mo>,</mo>
+<mn>13</mn>
+<mo>,</mo>
+<mn>14</mn>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(A,B,C,D)=\sum _{}m_{i},i\in \{6,8,9,10,11,12,13,14\}}</annotation>
+</semantics>
+</math></span><img alt="f(A, B, C, D) = \sum_{}m_i, i \in \{6, 8, 9, 10, 11, 12, 13, 14\}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d78307586c3ab53f26dad1d5586737ddc51078b0" style="vertical-align: -3.005ex; width:52.419ex; height:5.509ex;"/></span> where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle m_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>m</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle m_{i}}</annotation>
+</semantics>
+</math></span><img alt="m_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/95ec8e804f69706d3f5ad235f4f983220c8df7c2" style="vertical-align: -0.671ex; width:2.84ex; height:2.009ex;"/></span> are the minterms to map (i.e., rows that have output 1 in the truth table).</li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(A,B,C,D)=\prod _{}M_{i},i\in \{0,1,2,3,4,5,7,15\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>A</mi>
+<mo>,</mo>
+<mi>B</mi>
+<mo>,</mo>
+<mi>C</mi>
+<mo>,</mo>
+<mi>D</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<munder>
+<mo>∏<!-- ∏ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+</mrow>
+</munder>
+<msub>
+<mi>M</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>i</mi>
+<mo>∈<!-- ∈ --></mo>
+<mo fence="false" stretchy="false">{</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mn>2</mn>
+<mo>,</mo>
+<mn>3</mn>
+<mo>,</mo>
+<mn>4</mn>
+<mo>,</mo>
+<mn>5</mn>
+<mo>,</mo>
+<mn>7</mn>
+<mo>,</mo>
+<mn>15</mn>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(A,B,C,D)=\prod _{}M_{i},i\in \{0,1,2,3,4,5,7,15\}}</annotation>
+</semantics>
+</math></span><img alt="f(A, B, C, D) = \prod_{}M_i, i \in \{0, 1, 2, 3, 4, 5, 7, 15\}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8d1750875b81ca49597b8c84be2ca6bc6b4f04c5" style="vertical-align: -3.005ex; width:47.598ex; height:5.509ex;"/></span> where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>M</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M_{i}}</annotation>
+</semantics>
+</math></span><img alt="M_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/eda8fd06f1cd5de22ed07385a0f8aa19773b2de9" style="vertical-align: -0.671ex; width:3.054ex; height:2.509ex;"/></span> are the maxterms to map (i.e., rows that have output 0 in the truth table).</li></ul>
+
+
+
+<h3><span class="mw-headline" id="Construction"><span class="anchor" id="Karnaugh_map"></span>Construction</span><span class="mw-editsection"></span></h3>
+<p>In the example above, the four input variables can be combined in 16 different ways, so the truth table has 16 rows, and the Karnaugh map has 16 positions. The Karnaugh map is therefore arranged in a 4 × 4 grid.
+</p><p>The row and column indices (shown across the top and down the left side of the Karnaugh map) are ordered in Gray code rather than binary numerical order. Gray code ensures that only one variable changes between each pair of adjacent cells. Each cell of the completed Karnaugh map contains a binary digit representing the function's output for that combination of inputs.
+</p>
+<h3><span class="mw-headline" id="Grouping">Grouping</span><span class="mw-editsection"></span></h3>
+<p>After the Karnaugh map has been constructed, it is used to find one of the simplest possible forms — a canonical form — for the information in the truth table. Adjacent 1s in the Karnaugh map represent opportunities to simplify the expression. The minterms ('minimal terms') for the final expression are found by encircling groups of 1s in the map. Minterm groups must be rectangular and must have an area that is a power of two (i.e., 1, 2, 4, 8...). Minterm rectangles should be as large as possible without containing any 0s. Groups may overlap in order to make each one larger. The optimal groupings in the example below are marked by the green, red and blue lines, and the red and green groups overlap. The red group is a 2 × 2 square, the green group is a 4 × 1 rectangle, and the overlap area is indicated in brown.
+</p><p>The cells are often denoted by a shorthand which describes the logical value of the inputs that the cell covers. For example, <span class="texhtml mvar" style="font-style:italic;">AD</span> would mean a cell which covers the 2x2 area where <span class="texhtml mvar" style="font-style:italic;">A</span> and <span class="texhtml mvar" style="font-style:italic;">D</span> are true, i.e. the cells numbered 13, 9, 15, 11 in the diagram above. On the other hand, <span class="texhtml mvar" style="font-style:italic;">A<span style="text-decoration:overline;">D</span></span> would mean the cells where <span class="texhtml mvar" style="font-style:italic;">A</span> is true and <span class="texhtml mvar" style="font-style:italic;">D</span> is false (that is, <span class="texhtml mvar" style="font-style:italic;"><span style="text-decoration:overline;">D</span></span> is true).
+</p><p>The grid is toroidally connected, which means that rectangular groups can wrap across the edges (see picture). Cells on the extreme right are actually 'adjacent' to those on the far left, in the sense that the corresponding input values only differ by one bit; similarly, so are those at the very top and those at the bottom. Therefore, <span class="texhtml mvar" style="font-style:italic;">A<span style="text-decoration:overline;">D</span></span> can be a valid term—it includes cells 12 and 8 at the top, and wraps to the bottom to include cells 10 and 14—as is <span class="texhtml mvar" style="font-style:italic;"><span style="text-decoration:overline;">B</span><span style="text-decoration:overline;">D</span></span>, which includes the four corners.
+</p>
+<h3><span class="mw-headline" id="Solution">Solution</span><span class="mw-editsection"></span></h3>
+
+<p>Once the Karnaugh map has been constructed and the adjacent 1s linked by rectangular and square boxes, the algebraic minterms can be found by examining which variables stay the same within each box.
+</p><p>For the red grouping:
+</p>
+<ul><li><i>A</i> is the same and is equal to 1 throughout the box, therefore it should be included in the algebraic representation of the red minterm.</li>
+<li><i>B</i> does not maintain the same state (it shifts from 1 to 0), and should therefore be excluded.</li>
+<li><i>C</i> does not change. It is always 0, so its complement, NOT-C, should be included. Thus, <span class="texhtml mvar" style="font-style:italic;"><span style="text-decoration:overline;">C</span></span> should be included.</li>
+<li><i>D</i> changes, so it is excluded.</li></ul>
+<p>Thus the first minterm in the Boolean sum-of-products expression is <span class="texhtml mvar" style="font-style:italic;">A<span style="text-decoration:overline;">C</span></span>.
+</p><p>For the green grouping, <i>A</i> and <i>B</i> maintain the same state, while <i>C</i> and <i>D</i> change. <i>B</i> is 0 and has to be negated before it can be included. The second term is therefore <span class="texhtml mvar" style="font-style:italic;">A<span style="text-decoration:overline;">B</span></span>. Note that it is acceptable that the green grouping overlaps with the red one.
+</p><p>In the same way, the blue grouping gives the term <span class="texhtml mvar" style="font-style:italic;">BC<span style="text-decoration:overline;">D</span></span>.
+</p><p>The solutions of each grouping are combined: the normal form of the circuit is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A{\overline {C}}+A{\overline {B}}+BC{\overline {D}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>C</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>+</mo>
+<mi>A</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>B</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>+</mo>
+<mi>B</mi>
+<mi>C</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>D</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A{\overline {C}}+A{\overline {B}}+BC{\overline {D}}}</annotation>
+</semantics>
+</math></span><img alt="A\overline{C} + A\overline{B} + BC\overline{D}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/09d22dd743669e41e100eb992a94992b93225e89" style="vertical-align: -0.505ex; width:18.565ex; height:3.176ex;"/></span>.
+</p><p>Thus the Karnaugh map has guided a simplification of
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{aligned}f(A,B,C,D)={}&amp;{\overline {A}}BC{\overline {D}}+A{\overline {B}}\,{\overline {C}}\,{\overline {D}}+A{\overline {B}}\,{\overline {C}}D+A{\overline {B}}C{\overline {D}}+{}\\&amp;A{\overline {B}}CD+AB{\overline {C}}\,{\overline {D}}+AB{\overline {C}}D+ABC{\overline {D}}\\={}&amp;A{\overline {C}}+A{\overline {B}}+BC{\overline {D}}\end{aligned}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="right left right left right left right left right left right left" columnspacing="0em 2em 0em 2em 0em 2em 0em 2em 0em 2em 0em" displaystyle="true" rowspacing="3pt">
+<mtr>
+<mtd>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>A</mi>
+<mo>,</mo>
+<mi>B</mi>
+<mo>,</mo>
+<mi>C</mi>
+<mo>,</mo>
+<mi>D</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+</mrow>
+</mtd>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>A</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mi>B</mi>
+<mi>C</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>D</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>+</mo>
+<mi>A</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>B</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mspace width="thinmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>C</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mspace width="thinmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>D</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>+</mo>
+<mi>A</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>B</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mspace width="thinmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>C</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mi>D</mi>
+<mo>+</mo>
+<mi>A</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>B</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mi>C</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>D</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi>A</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>B</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mi>C</mi>
+<mi>D</mi>
+<mo>+</mo>
+<mi>A</mi>
+<mi>B</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>C</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mspace width="thinmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>D</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>+</mo>
+<mi>A</mi>
+<mi>B</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>C</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mi>D</mi>
+<mo>+</mo>
+<mi>A</mi>
+<mi>B</mi>
+<mi>C</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>D</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+</mrow>
+</mtd>
+<mtd>
+<mi>A</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>C</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>+</mo>
+<mi>A</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>B</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>+</mo>
+<mi>B</mi>
+<mi>C</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>D</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{aligned}f(A,B,C,D)={}&amp;{\overline {A}}BC{\overline {D}}+A{\overline {B}}\,{\overline {C}}\,{\overline {D}}+A{\overline {B}}\,{\overline {C}}D+A{\overline {B}}C{\overline {D}}+{}\\&amp;A{\overline {B}}CD+AB{\overline {C}}\,{\overline {D}}+AB{\overline {C}}D+ABC{\overline {D}}\\={}&amp;A{\overline {C}}+A{\overline {B}}+BC{\overline {D}}\end{aligned}}}</annotation>
+</semantics>
+</math></span><img alt="\begin{align}
+              f(A, B, C, D) = {} &amp;\overline{A}BC\overline{D} + A\overline{B}\,\overline{C}\,\overline{D} + A\overline{B}\,\overline{C}D + A\overline{B}C\overline{D} + {}\\
+                                 &amp;A\overline{B}CD + AB\overline{C}\,\overline{D} + AB\overline{C}D + ABC\overline{D}\\
+                            = {} &amp;A\overline{C} + A\overline{B} + BC\overline{D}
+\end{align}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8a7ca0cd01dce3e4471dc90608548babe92a909c" style="vertical-align: -4.838ex; width:59.722ex; height:10.843ex;"/></span></dd></dl>
+<p>It would also have been possible to derive this simplification by carefully applying the axioms of Boolean algebra, but the time it takes to do that grows exponentially with the number of terms.
+</p>
+<h3><span class="mw-headline" id="Inverse">Inverse</span><span class="mw-editsection"></span></h3>
+<p>The inverse of a function is solved in the same way by grouping the 0s instead.<sup class="reference" id="cite_ref-NB_NotNeg_12-0">[nb 1]</sup>
+</p><p>The three terms to cover the inverse are all shown with grey boxes with different colored borders:
+</p>
+<ul><li><span style="color: #5E200E;">brown</span>: <span class="texhtml mvar" style="font-style:italic;"><span style="text-decoration:overline;">A</span></span> <span class="texhtml mvar" style="font-style:italic;"><span style="text-decoration:overline;">B</span></span></li>
+<li><span style="color: #926700;">gold</span>: <span class="texhtml mvar" style="font-style:italic;"><span style="text-decoration:overline;">A</span></span> <span class="texhtml mvar" style="font-style:italic;"><span style="text-decoration:overline;">C</span></span></li>
+<li><span style="color: #064483;">blue</span>: <span class="texhtml mvar" style="font-style:italic;">BCD</span></li></ul>
+<p>This yields the inverse:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\overline {f(A,B,C,D)}}={\overline {A}}\,{\overline {B}}+{\overline {A}}\,{\overline {C}}+BCD}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mrow>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>A</mi>
+<mo>,</mo>
+<mi>B</mi>
+<mo>,</mo>
+<mi>C</mi>
+<mo>,</mo>
+<mi>D</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>A</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mspace width="thinmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>B</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>A</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mspace width="thinmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>C</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>+</mo>
+<mi>B</mi>
+<mi>C</mi>
+<mi>D</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\overline {f(A,B,C,D)}}={\overline {A}}\,{\overline {B}}+{\overline {A}}\,{\overline {C}}+BCD}</annotation>
+</semantics>
+</math></span><img alt="\overline{f(A,B,C,D)} = \overline{A}\,\overline{B} + \overline{A}\,\overline{C} + BCD" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1c1ab4dfbdb14185d82ee2f339b95092680254bf" style="vertical-align: -0.838ex; width:36.055ex; height:3.676ex;"/></span></dd></dl>
+<p>Through the use of De Morgan's laws, the product of sums can be determined:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{aligned}f(A,B,C,D)&amp;={\overline {\overline {f(A,B,C,D)}}}\\&amp;={\overline {{\overline {A}}\,{\overline {B}}+{\overline {A}}\,{\overline {C}}+BCD}}\\&amp;=\left({\overline {{\overline {A}}\,{\overline {B}}}}\right)\left({\overline {{\overline {A}}\,{\overline {C}}}}\right)\left({\overline {BCD}}\right)\\&amp;=\left(A+B\right)\left(A+C\right)\left({\overline {B}}+{\overline {C}}+{\overline {D}}\right)\end{aligned}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="right left right left right left right left right left right left" columnspacing="0em 2em 0em 2em 0em 2em 0em 2em 0em 2em 0em" displaystyle="true" rowspacing="3pt">
+<mtr>
+<mtd>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>A</mi>
+<mo>,</mo>
+<mi>B</mi>
+<mo>,</mo>
+<mi>C</mi>
+<mo>,</mo>
+<mi>D</mi>
+<mo stretchy="false">)</mo>
+</mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mover>
+<mrow>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>A</mi>
+<mo>,</mo>
+<mi>B</mi>
+<mo>,</mo>
+<mi>C</mi>
+<mo>,</mo>
+<mi>D</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>A</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mspace width="thinmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>B</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>A</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mspace width="thinmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>C</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>+</mo>
+<mi>B</mi>
+<mi>C</mi>
+<mi>D</mi>
+</mrow>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mrow>
+<mo>(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>A</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mspace width="thinmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>B</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mrow>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mrow>
+<mo>(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>A</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mspace width="thinmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>C</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mrow>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mrow>
+<mo>(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mrow>
+<mi>B</mi>
+<mi>C</mi>
+<mi>D</mi>
+</mrow>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mi>A</mi>
+<mo>+</mo>
+<mi>B</mi>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mi>A</mi>
+<mo>+</mo>
+<mi>C</mi>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>B</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>C</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>D</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{aligned}f(A,B,C,D)&amp;={\overline {\overline {f(A,B,C,D)}}}\\&amp;={\overline {{\overline {A}}\,{\overline {B}}+{\overline {A}}\,{\overline {C}}+BCD}}\\&amp;=\left({\overline {{\overline {A}}\,{\overline {B}}}}\right)\left({\overline {{\overline {A}}\,{\overline {C}}}}\right)\left({\overline {BCD}}\right)\\&amp;=\left(A+B\right)\left(A+C\right)\left({\overline {B}}+{\overline {C}}+{\overline {D}}\right)\end{aligned}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\begin{aligned}f(A,B,C,D)&amp;={\overline {\overline {f(A,B,C,D)}}}\\&amp;={\overline {{\overline {A}}\,{\overline {B}}+{\overline {A}}\,{\overline {C}}+BCD}}\\&amp;=\left({\overline {{\overline {A}}\,{\overline {B}}}}\right)\left({\overline {{\overline {A}}\,{\overline {C}}}}\right)\left({\overline {BCD}}\right)\\&amp;=\left(A+B\right)\left(A+C\right)\left({\overline {B}}+{\overline {C}}+{\overline {D}}\right)\end{aligned}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3e1e40f7ead399bc96560e2e36232519f92510e2" style="vertical-align: -9.338ex; width:48.651ex; height:19.843ex;"/></span></dd></dl>
+<h3><span id="Don.27t_cares"></span><span class="mw-headline" id="Don't_cares">Don't cares</span><span class="mw-editsection"></span></h3>
+
+<p>Karnaugh maps also allow easier minimizations of functions whose truth tables include "don't care" conditions. A "don't care" condition is a combination of inputs for which the designer doesn't care what the output is. Therefore, "don't care" conditions can either be included in or excluded from any rectangular group, whichever makes it larger. They are usually indicated on the map with a dash or X.
+</p><p>The example on the right is the same as the example above but with the value of <i>f</i>(1,1,1,1) replaced by a "don't care". This allows the red term to expand all the way down and, thus, removes the green term completely.
+</p><p>This yields the new minimum equation:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(A,B,C,D)=A+BC{\overline {D}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>A</mi>
+<mo>,</mo>
+<mi>B</mi>
+<mo>,</mo>
+<mi>C</mi>
+<mo>,</mo>
+<mi>D</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>A</mi>
+<mo>+</mo>
+<mi>B</mi>
+<mi>C</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>D</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(A,B,C,D)=A+BC{\overline {D}}}</annotation>
+</semantics>
+</math></span><img alt="f(A,B,C,D) = A + BC\overline{D}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0284b91918998b150127406dc67d4cbcd69796b0" style="vertical-align: -0.838ex; width:26.639ex; height:3.509ex;"/></span></dd></dl>
+<p>Note that the first term is just <span class="texhtml mvar" style="font-style:italic;">A</span>, not <span class="texhtml mvar" style="font-style:italic;">A<span style="text-decoration:overline;">C</span></span>. In this case, the don't care has dropped a term (the green rectangle); simplified another (the red one); and removed the race hazard (removing the yellow term as shown in the following section on race hazards).
+</p><p>The inverse case is simplified as follows:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\overline {f(A,B,C,D)}}={\overline {A}}\,{\overline {B}}+{\overline {A}}\,{\overline {C}}+{\overline {A}}D}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mrow>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>A</mi>
+<mo>,</mo>
+<mi>B</mi>
+<mo>,</mo>
+<mi>C</mi>
+<mo>,</mo>
+<mi>D</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>A</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mspace width="thinmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>B</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>A</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mspace width="thinmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>C</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>A</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mi>D</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\overline {f(A,B,C,D)}}={\overline {A}}\,{\overline {B}}+{\overline {A}}\,{\overline {C}}+{\overline {A}}D}</annotation>
+</semantics>
+</math></span><img alt="\overline{f(A,B,C,D)} = \overline{A}\,\overline{B} + \overline{A}\,\overline{C} + \overline{A}D" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/29222f71b3dd58ec0a3bcb16c74be10a5fe99b2b" style="vertical-align: -0.838ex; width:34.383ex; height:3.676ex;"/></span></dd></dl>
+<p>Through the use of De Morgan's laws, the product of sums can be determined:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{aligned}f(A,B,C,D)&amp;={\overline {\overline {f(A,B,C,D)}}}\\&amp;={\overline {{\overline {A}}\,{\overline {B}}+{\overline {A}}\,{\overline {C}}+{\overline {A}}\,D}}\\&amp;=\left({\overline {{\overline {A}}\,{\overline {B}}}}\right)\left({\overline {{\overline {A}}\,{\overline {C}}}}\right)\left({\overline {{\overline {A}}\,D}}\right)\\&amp;=\left(A+B\right)\left(A+C\right)\left(A+{\overline {D}}\right)\end{aligned}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="right left right left right left right left right left right left" columnspacing="0em 2em 0em 2em 0em 2em 0em 2em 0em 2em 0em" displaystyle="true" rowspacing="3pt">
+<mtr>
+<mtd>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>A</mi>
+<mo>,</mo>
+<mi>B</mi>
+<mo>,</mo>
+<mi>C</mi>
+<mo>,</mo>
+<mi>D</mi>
+<mo stretchy="false">)</mo>
+</mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mover>
+<mrow>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>A</mi>
+<mo>,</mo>
+<mi>B</mi>
+<mo>,</mo>
+<mi>C</mi>
+<mo>,</mo>
+<mi>D</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>A</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mspace width="thinmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>B</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>A</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mspace width="thinmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>C</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>A</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mspace width="thinmathspace"></mspace>
+<mi>D</mi>
+</mrow>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mrow>
+<mo>(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>A</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mspace width="thinmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>B</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mrow>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mrow>
+<mo>(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>A</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mspace width="thinmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>C</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mrow>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mrow>
+<mo>(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>A</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mspace width="thinmathspace"></mspace>
+<mi>D</mi>
+</mrow>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mi>A</mi>
+<mo>+</mo>
+<mi>B</mi>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mi>A</mi>
+<mo>+</mo>
+<mi>C</mi>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mi>A</mi>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>D</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{aligned}f(A,B,C,D)&amp;={\overline {\overline {f(A,B,C,D)}}}\\&amp;={\overline {{\overline {A}}\,{\overline {B}}+{\overline {A}}\,{\overline {C}}+{\overline {A}}\,D}}\\&amp;=\left({\overline {{\overline {A}}\,{\overline {B}}}}\right)\left({\overline {{\overline {A}}\,{\overline {C}}}}\right)\left({\overline {{\overline {A}}\,D}}\right)\\&amp;=\left(A+B\right)\left(A+C\right)\left(A+{\overline {D}}\right)\end{aligned}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\begin{aligned}f(A,B,C,D)&amp;={\overline {\overline {f(A,B,C,D)}}}\\&amp;={\overline {{\overline {A}}\,{\overline {B}}+{\overline {A}}\,{\overline {C}}+{\overline {A}}\,D}}\\&amp;=\left({\overline {{\overline {A}}\,{\overline {B}}}}\right)\left({\overline {{\overline {A}}\,{\overline {C}}}}\right)\left({\overline {{\overline {A}}\,D}}\right)\\&amp;=\left(A+B\right)\left(A+C\right)\left(A+{\overline {D}}\right)\end{aligned}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2fd33323842a9234cd13d0cf1cf09561f7e178d9" style="vertical-align: -9.338ex; width:43.726ex; height:19.843ex;"/></span></dd></dl>
+<h2><span class="mw-headline" id="Race_hazards">Race hazards</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Elimination">Elimination</span><span class="mw-editsection"></span></h3>
+<p>Karnaugh maps are useful for detecting and eliminating race conditions. Race hazards are very easy to spot using a Karnaugh map, because a race condition may exist when moving between any pair of adjacent, but disjoint, regions circumscribed on the map. However, because of the nature of Gray coding, <i>adjacent</i> has a special definition explained above – we're in fact moving on a torus, rather than a rectangle, wrapping around the top, bottom, and the sides.
+</p>
+<ul><li>In the example above, a potential race condition exists when <i>C</i> is 1 and <i>D</i> is 0, <i>A</i> is 1, and <i>B</i> changes from 1 to 0 (moving from the blue state to the green state). For this case, the output is defined to remain unchanged at 1, but because this transition is not covered by a specific term in the equation, a potential for a <i>glitch</i> (a momentary transition of the output to 0) exists.</li>
+<li>There is a second potential glitch in the same example that is more difficult to spot: when <i>D</i> is 0 and <i>A</i> and <i>B</i> are both 1, with C changing from 1 to 0 (moving from the blue state to the red state). In this case the glitch wraps around from the top of the map to the bottom.</li></ul>
+
+
+<p>Whether glitches will actually occur depends on the physical nature of the implementation, and whether we need to worry about it depends on the application. In clocked logic, it is enough that the logic settles on the desired value in time to meet the timing deadline. In our example, we are not considering clocked logic.
+</p><p>In our case, an additional term of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A{\overline {D}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>D</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A{\overline {D}}}</annotation>
+</semantics>
+</math></span><img alt="A\overline{D}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a45a9570954371033d869948de9f2090eb648d04" style="vertical-align: -0.338ex; width:3.782ex; height:3.009ex;"/></span> would eliminate the potential race hazard, bridging between the green and blue output states or blue and red output states: this is shown as the yellow region (which wraps around from the bottom to the top of the right half) in the adjacent diagram.
+</p><p>The term is redundant in terms of the static logic of the system, but such redundant, or consensus terms, are often needed to assure race-free dynamic performance.
+</p><p>Similarly, an additional term of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\overline {A}}D}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>A</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mi>D</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\overline {A}}D}</annotation>
+</semantics>
+</math></span><img alt="\overline{A}D" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/14f516ff463bc231a0acbdd3767b0e8e3b6509db" style="vertical-align: -0.338ex; width:3.782ex; height:3.009ex;"/></span> must be added to the inverse to eliminate another potential race hazard. Applying De Morgan's laws creates another product of sums expression for <i>f</i>, but with a new factor of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \left(A+{\overline {D}}\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow>
+<mo>(</mo>
+<mrow>
+<mi>A</mi>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>D</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \left(A+{\overline {D}}\right)}</annotation>
+</semantics>
+</math></span><img alt="\left(A + \overline{D}\right)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3b84f78480e5fb5f25e0b7d34323a9420a819b5c" style="vertical-align: -1.838ex; width:9.398ex; height:4.843ex;"/></span>.
+</p>
+<h3><span class="mw-headline" id="2-variable_map_examples">2-variable map examples</span><span class="mw-editsection"></span></h3>
+<p>The following are all the possible 2-variable, 2 × 2 Karnaugh maps. Listed with each is the minterms as a function of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle \sum m()}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mo>∑<!-- ∑ --></mo>
+<mi>m</mi>
+<mo stretchy="false">(</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle \sum m()}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle \sum m()}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a535acb00c0a8cefcdb59b8faadb435e472a04f5" style="vertical-align: -0.838ex; width:6.691ex; height:2.843ex;"/></span> and the race hazard free (<i>see previous section</i>) minimum equation. A minterm is defined as an expression that gives the most minimal form of expression of the mapped variables. All possible horizontal and vertical interconnected blocks can be formed. These blocks must be of the size of the powers of 2 (1, 2, 4, 8, 16, 32, ...). These expressions create a minimal logical mapping of the minimal logic variable expressions for the binary expressions to be mapped. Here are all the blocks with one field.
+</p><p>A block can be continued across the bottom, top, left, or right of the chart. That can even wrap beyond the edge of the chart for variable minimization. This is because each logic variable corresponds to each vertical column and horizontal row. A visualization of the k-map can be considered cylindrical. The fields at edges on the left and right are adjacent, and the top and bottom are adjacent. K-Maps for four variables must be depicted as a donut or torus shape. The four corners of the square drawn by the k-map are adjacent. Still more complex maps are needed for 5 variables and more.
+</p>
+<ul class="gallery mw-gallery-traditional" style="max-width: 815px;">
+<li class="gallerybox" style="width: 155px"></li>
+<li class="gallerybox" style="width: 155px"></li>
+<li class="gallerybox" style="width: 155px"></li>
+<li class="gallerybox" style="width: 155px"></li>
+<li class="gallerybox" style="width: 155px"></li>
+<li class="gallerybox" style="width: 155px"></li>
+<li class="gallerybox" style="width: 155px"></li>
+<li class="gallerybox" style="width: 155px"></li>
+<li class="gallerybox" style="width: 155px"></li>
+<li class="gallerybox" style="width: 155px"></li>
+<li class="gallerybox" style="width: 155px"></li>
+<li class="gallerybox" style="width: 155px"></li>
+<li class="gallerybox" style="width: 155px"></li>
+<li class="gallerybox" style="width: 155px"></li>
+<li class="gallerybox" style="width: 155px"></li>
+<li class="gallerybox" style="width: 155px"></li>
+</ul>
+<h2><span class="mw-headline" id="Related_graphical_methods"><span class="anchor" id="Marquand"></span><span class="anchor" id="Veitch"></span><span class="anchor" id="Svoboda"></span><span class="anchor" id="Mahoney"></span><span class="anchor" id="RKM"></span><span class="anchor" id="MEV"></span><span class="anchor" id="VEKM"></span><span class="anchor" id="VEM"></span><span class="anchor" id="MRM"></span>Related graphical methods</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p>Related graphical minimization methods include:
+</p>
+<ul><li><i>Marquand diagram</i> (1881) by Allan Marquand (1853–1924)<sup class="reference" id="cite_ref-Marquand_1881_5-1">[5]</sup><sup class="reference" id="cite_ref-Gardner_1958_6-1">[6]</sup><sup class="reference" id="cite_ref-Brown_2012_4-5">[4]</sup></li>
+<li><i>Veitch chart</i> (1952) by Edward W. Veitch (1924–2013)<sup class="reference" id="cite_ref-Veitch_1952_3-1">[3]</sup><sup class="reference" id="cite_ref-Brown_2012_4-6">[4]</sup></li>
+<li><i>Svoboda chart</i> (1956) by Antonín Svoboda (1907–1980)<sup class="reference" id="cite_ref-Klir_1972_7-1">[7]</sup></li>
+<li><i>Mahoney map</i> (<i>M-map</i>, <i>designation numbers</i>, 1963) by Matthew V. Mahoney (a reflection-symmetrical extension of Karnaugh maps for larger numbers of inputs)</li>
+<li><i>Reduced Karnaugh map</i> (RKM) techniques (from 1969) like <i>infrequent variables</i>, <i>map-entered variables</i> (MEV), <i>variable-entered map</i> (VEM) or <i>variable-entered Karnaugh map</i> (VEKM) by G. W. Schultz, Thomas E. Osborne, Christopher R. Clare, J. Robert Burgoon, Larry L. Dornhoff, William I. Fletcher, Ali M. Rushdi and others (several successive Karnaugh map extensions based on variable inputs for a larger numbers of inputs)</li>
+<li><i>Minterm-ring map</i> (MRM, 1990) by Thomas R. McCalla (a three-dimensional extension of Karnaugh maps for larger numbers of inputs)</li></ul>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Algebraic normal form (ANF)</li>
+<li>Binary decision diagram (BDD), a data structure that is a compressed representation of a Boolean function</li>
+<li>Espresso heuristic logic minimizer</li>
+<li>List of Boolean algebra topics</li>
+<li>Logic optimization</li>
+<li>Punnett square (1905), a similar diagram in biology</li>
+<li>Quine–McCluskey algorithm</li>
+<li>Reed–Muller expansion</li>
+<li>Venn diagram (1880)</li>
+<li>Zhegalkin polynomial</li></ul>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1011085734" rel="mw-deduplicated-inline-style"/>
+<h2><span class="mw-headline" id="Further_reading">Further reading</span><span class="mw-editsection"></span></h2>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFKatz1998">Katz, Randy Howard (1998) [1994]. <i>Contemporary Logic Design</i>. The Benjamin/Cummings Publishing Company. pp. 70–85. doi:10.1016/0026-2692(95)90052-7. ISBN <bdi>0-8053-2703-7</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Contemporary+Logic+Design&amp;rft.pages=70-85&amp;rft.pub=The+Benjamin%2FCummings+Publishing+Company&amp;rft.date=1998&amp;rft_id=info%3Adoi%2F10.1016%2F0026-2692%2895%2990052-7&amp;rft.isbn=0-8053-2703-7&amp;rft.aulast=Katz&amp;rft.aufirst=Randy+Howard&amp;rft_id=https%3A%2F%2Farchive.org%2Fdetails%2Fcontemporarylogi00katz%2Fpage%2F70&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AKarnaugh+map"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFVingron2004">Vingron, Shimon Peter (2004) [2003-11-05]. "Karnaugh Maps". <i>Switching Theory: Insight Through Predicate Logic</i>. Berlin, Heidelberg, New York: Springer-Verlag. pp. 57–76. ISBN <bdi>3-540-40343-4</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Karnaugh+Maps&amp;rft.btitle=Switching+Theory%3A+Insight+Through+Predicate+Logic&amp;rft.place=Berlin%2C+Heidelberg%2C+New+York&amp;rft.pages=57-76&amp;rft.pub=Springer-Verlag&amp;rft.date=2004&amp;rft.isbn=3-540-40343-4&amp;rft.aulast=Vingron&amp;rft.aufirst=Shimon+Peter&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AKarnaugh+map"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFWickes1968">Wickes, William E. (1968). "3.5. Veitch Diagrams". <span class="cs1-lock-registration" title="Free registration required"><i>Logic Design with Integrated Circuits</i></span>. New York, USA: John Wiley &amp; Sons. pp. 36–49. LCCN 68-21185. p. 36: <q>[…] a refinement of the Venn diagram in that circles are replaced by squares and arranged in a form of matrix. The Veitch diagram labels the squares with the minterms. Karnaugh assigned 1s and 0s to the squares and their labels and deduced the numbering scheme in common use.</q></cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=3.5.+Veitch+Diagrams&amp;rft.btitle=Logic+Design+with+Integrated+Circuits&amp;rft.place=New+York%2C+USA&amp;rft.pages=36-49&amp;rft.pub=John+Wiley+%26+Sons&amp;rft.date=1968&amp;rft_id=info%3Alccn%2F68-21185&amp;rft.aulast=Wickes&amp;rft.aufirst=William+E.&amp;rft_id=https%3A%2F%2Farchive.org%2Fdetails%2Flogicdesignwithi00wick_0&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AKarnaugh+map"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation web cs1" id="CITEREFMaxfield2006">Maxfield, Clive "Max" (2006-11-29). "Reed-Muller Logic". <i>Logic 101</i>. EE Times. Part 3. Archived from the original on 2017-04-19<span class="reference-accessdate">. Retrieved <span class="nowrap">2017-04-19</span></span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=unknown&amp;rft.jtitle=Logic+101&amp;rft.atitle=Reed-Muller+Logic&amp;rft.pages=Part+3&amp;rft.date=2006-11-29&amp;rft.aulast=Maxfield&amp;rft.aufirst=Clive+%22Max%22&amp;rft_id=http%3A%2F%2Fwww.eetimes.com%2Fauthor.asp%3Fsection_id%3D216%26doc_id%3D1274545&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AKarnaugh+map"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFLindNelson1977">Lind, Larry Frederick; Nelson, John Christopher Cunliffe (1977). "Section 2.3". <i>Analysis and Design of Sequential Digital Systems</i>. Macmillan Press. ISBN <bdi>0-33319266-4</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Section+2.3&amp;rft.btitle=Analysis+and+Design+of+Sequential+Digital+Systems&amp;rft.pub=Macmillan+Press&amp;rft.date=1977&amp;rft.isbn=0-33319266-4&amp;rft.aulast=Lind&amp;rft.aufirst=Larry+Frederick&amp;rft.au=Nelson%2C+John+Christopher+Cunliffe&amp;rft_id=https%3A%2F%2Farchive.org%2Fdetails%2FAnalysisDesignOfSequentialDigitalSystems%2F&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AKarnaugh+map"></span> (146 pages)</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFHolder2005">Holder, Michel Elizabeth (March 2005) [2005-02-14]. "A modified Karnaugh map technique". <i>IEEE Transactions on Education</i>. IEEE. <b>48</b> (1): 206–207. doi:10.1109/TE.2004.832879. eISSN 1557-9638. ISSN 0018-9359. S2CID 25576523.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=IEEE+Transactions+on+Education&amp;rft.atitle=A+modified+Karnaugh+map+technique&amp;rft.volume=48&amp;rft.issue=1&amp;rft.pages=206-207&amp;rft.date=2005-03&amp;rft.issn=0018-9359&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A25576523%23id-name%3DS2CID&amp;rft.eissn=1557-9638&amp;rft_id=info%3Adoi%2F10.1109%2FTE.2004.832879&amp;rft.aulast=Holder&amp;rft.aufirst=Michel+Elizabeth&amp;rft_id=https%3A%2F%2Fieeexplore.ieee.org%2Fabstract%2Fdocument%2F1393123&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AKarnaugh+map"></span> [2]</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFCavanagh2008">Cavanagh, Joseph (2008). <i>Computer Arithmetic and Verilog HDL Fundamentals</i> (1 ed.). CRC Press.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Computer+Arithmetic+and+Verilog+HDL+Fundamentals&amp;rft.edition=1&amp;rft.pub=CRC+Press&amp;rft.date=2008&amp;rft.aulast=Cavanagh&amp;rft.aufirst=Joseph&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AKarnaugh+map"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFKohaviJha2009">Kohavi, Zvi; Jha, Niraj K. (2009). <i>Switching and Finite Automata Theory</i> (3 ed.). Cambridge University Press. ISBN <bdi>978-0-521-85748-2</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Switching+and+Finite+Automata+Theory&amp;rft.edition=3&amp;rft.pub=Cambridge+University+Press&amp;rft.date=2009&amp;rft.isbn=978-0-521-85748-2&amp;rft.aulast=Kohavi&amp;rft.aufirst=Zvi&amp;rft.au=Jha%2C+Niraj+K.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AKarnaugh+map"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1 cs1-prop-foreign-lang-source" id="CITEREFGrund2011">Grund, Jürgen (2011). <i>KV-Diagramme in der Schaltalgebra - Verknüpfungen, Beweise, Normalformen, schaltalgebraische Umformungen, Anschauungsmodelle, Paradebeispiele</i> [<i>KV diagrams in Boolean algebra - relations, proofs, normal forms, algebraic transformations, illustrative models, typical examples</i>] <span class="cs1-format">(Windows/Mac executable or Adobe Flash-capable browser on CD-ROM)</span> (e-book) (in German) (1 ed.). Berlin, Germany: viademica Verlag. ISBN <bdi>978-3-939290-08-7</bdi>. Archived <span class="cs1-format">(PDF)</span> from the original on 2022-11-11<span class="reference-accessdate">. Retrieved <span class="nowrap">2022-11-26</span></span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=KV-Diagramme+in+der+Schaltalgebra+-+Verkn%C3%BCpfungen%2C+Beweise%2C+Normalformen%2C+schaltalgebraische+Umformungen%2C+Anschauungsmodelle%2C+Paradebeispiele&amp;rft.place=Berlin%2C+Germany&amp;rft.edition=1&amp;rft.pub=viademica+Verlag&amp;rft.date=2011&amp;rft.isbn=978-3-939290-08-7&amp;rft.aulast=Grund&amp;rft.aufirst=J%C3%BCrgen&amp;rft_id=http%3A%2F%2Fwww.viademica.de%2Fcontent%2Fminititel%2F263.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AKarnaugh+map"></span> [3] (282 pages with 14 animations)</li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097025294">.mw-parser-output .side-box{margin:4px 0;box-sizing:border-box;border:1px solid #aaa;font-size:88%;line-height:1.25em;background-color:#f9f9f9}.mw-parser-output .side-box-abovebelow,.mw-parser-output .side-box-text{padding:0.25em 0.9em}.mw-parser-output .side-box-image{padding:2px 0 2px 0.9em;text-align:center}.mw-parser-output .side-box-imageright{padding:2px 0.9em 2px 0;text-align:center}@media(min-width:500px){.mw-parser-output .side-box-flex{display:flex;align-items:center}.mw-parser-output .side-box-text{flex:1}}@media(min-width:720px){.mw-parser-output .side-box{width:238px}.mw-parser-output .side-box-right{clear:right;float:right;margin-left:1em}.mw-parser-output .side-box-left{margin-right:1em}}</style><style data-mw-deduplicate="TemplateStyles:r1097092911">.mw-parser-output .sister-box .side-box-abovebelow{padding:0.75em 0;text-align:center}.mw-parser-output .sister-box .side-box-abovebelow>b{display:block}.mw-parser-output .sister-box .side-box-text>ul{border-top:1px solid #aaa;padding:0.75em 0;width:217px;margin:0 auto}.mw-parser-output .sister-box .side-box-text>ul>li{min-height:31px}.mw-parser-output .sister-logo{display:inline-block;width:31px;line-height:31px;vertical-align:middle;text-align:center}.mw-parser-output .sister-link{display:inline-block;margin-left:4px;width:182px;vertical-align:middle}</style>
+<ul><li>Detect Overlapping Rectangles, by Herbert Glarner.</li>
+<li>Using Karnaugh maps in practical applications, Circuit design project to control traffic lights.</li>
+<li>K-Map Tutorial for 2,3,4 and 5 variables </li>
+<li>Karnaugh Map Example</li>
+<li>POCKET–PC BOOLEAN FUNCTION SIMPLIFICATION, Ledion Bitincka — George E. Antoniou</li>
+<li>K-Map troubleshoot</li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw2415
+Cached time: 20221224021417
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.408 seconds
+Real time usage: 0.597 seconds
+Preprocessor visited node count: 2940/1000000
+Post‐expand include size: 76131/2097152 bytes
+Template argument size: 5195/2097152 bytes
+Highest expansion depth: 20/100
+Expensive parser function count: 5/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 76457/5000000 bytes
+Lua time usage: 0.194/10.000 seconds
+Lua memory usage: 8059941/52428800 bytes
+Number of Wikibase entities loaded: 1/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  438.815      1 -total
+ 32.78%  143.825      2 Template:Reflist
+ 20.73%   90.973      1 Template:Expand_German
+ 17.36%   76.162      1 Template:Expand_language
+ 16.72%   73.383      4 Template:Cite_journal
+ 15.77%   69.192      1 Template:Ambox
+ 14.88%   65.312     12 Template:Cite_book
+ 12.21%   53.568      1 Template:Sisterlinks
+  9.25%   40.611      1 Template:Hidden
+  6.56%   28.766      1 Template:Short_description
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:10854684-0!canonical and timestamp 20221224021416 and revision id 1123969539.
+ -->
+</div></body>
+</html>

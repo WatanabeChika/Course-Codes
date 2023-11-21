@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>priority_queue</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p>In computer science, a <b>priority queue</b> is an  abstract data-type similar to a regular queue or stack data structure in which each element additionally has a <i>priority</i> associated with it. In a priority queue, an element with high priority is served before an element with low priority. In some implementations, if two elements have the same priority, they are served according to the order in which they were enqueued; in other implementations ordering of elements with the same priority remains undefined.
+</p><p>While coders often implement priority queues with heaps, they are conceptually distinct from heaps. A priority queue is a concept like a list or a map; just as a list can be implemented with a linked list or with an array, a priority queue can be implemented with a heap or with a variety of other methods such as an unordered array.
+</p>
+
+<h2><span class="mw-headline" id="Operations">Operations</span><span class="mw-editsection"></span></h2>
+<p>A priority queue must at least support the following operations:
+</p>
+<ul><li><i>is_empty</i>: check whether the queue has no elements.</li>
+<li><i>insert_with_priority</i>: add an element to the queue with an associated priority.</li>
+<li><i>pull_highest_priority_element</i>: remove the element from the queue that has the <i>highest priority</i>, and return it.
+<dl><dd>This is also known as "<i>pop_element(Off)</i>", "<i>get_maximum_element</i>" or "<i>get_front(most)_element</i>".</dd>
+<dd>Some conventions reverse the order of priorities, considering lower values to be higher priority, so this may also be known as "<i>get_minimum_element</i>", and is often referred to as "<i>get-min</i>" in the literature.</dd>
+<dd>This may instead be specified as separate "<i>peek_at_highest_priority_element</i>" and "<i>delete_element</i>" functions, which can be combined to produce "<i>pull_highest_priority_element</i>".</dd></dl></li></ul>
+<p>In addition, <i>peek</i> (in this context often called <i>find-max</i> or <i>find-min</i>), which returns the highest-priority element but does not modify the queue, is very frequently implemented, and nearly always executes in <i>O</i>(1) time. This operation and its <i>O</i>(1) performance is crucial to many applications of priority queues.
+</p><p>More advanced implementations may support more complicated operations, such as <i>pull_lowest_priority_element</i>, inspecting the first few highest- or lowest-priority elements, clearing the queue, clearing subsets of the queue, performing a batch insert, merging two or more queues into one, incrementing priority of any element, etc.
+</p><p>Stacks and queues can be implemented as particular kinds of priority queues, with the priority determined by the order in which the elements are inserted. In a stack, the priority of each inserted element is monotonically increasing; thus, the last element inserted is always the first retrieved. In a queue, the priority of each inserted element is monotonically decreasing; thus, the first element inserted is always the first retrieved.
+</p>
+<h2><span class="mw-headline" id="Implementation">Implementation</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Naive_implementations">Naive implementations</span><span class="mw-editsection"></span></h3>
+<p>There are a variety of simple, usually inefficient, ways to implement a priority queue. They provide an analogy to help one understand what a priority queue is.
+</p><p>For instance, one can keep all the elements in an unsorted list (<i>O</i>(1) insertion time). Whenever the highest-priority element is requested, search through all elements for the one with the highest priority. (<i>O</i>(<i>n</i>) pull time),
+</p>
+<pre><b>insert</b>(node)
+{
+  list.append(node)
+}
+</pre>
+<pre><b>pull</b>()
+{
+  highest = list.get_first_element()
+  foreach node in list
+  {
+     if highest.priority &lt; node.priority
+     {
+         highest = node
+     }
+  }
+  list.remove(highest)
+  return highest
+}
+</pre>
+<p>In another case, one can keep all the elements in a priority sorted list (<i>O</i>(n) insertion sort time), whenever the highest-priority element is requested, the first one in the list can be returned. (<i>O</i>(1) pull time)
+</p>
+<pre><b>insert</b>(node)
+{
+  foreach (index, element) in list
+  {
+    if node.priority &lt; element.priority
+    {
+       list.insert_at_index(node,index)
+       break
+    }
+  }
+}
+</pre>
+<pre><b>pull</b>()
+{
+    highest = list.get_at_index(list.length-1)
+    list.remove(highest)
+    return highest
+}
+</pre>
+<h3><span class="mw-headline" id="Usual_implementation">Usual implementation</span><span class="mw-editsection"></span></h3>
+<p>To improve performance, priority queues are typically based on a heap, giving <i>O</i>(log <i>n</i>) performance for inserts and removals, and <i>O</i>(<i>n</i>) to build the heap initially from a set of <i>n</i> elements. Variants of the basic heap data structure such as pairing heaps or Fibonacci heaps can provide better bounds for some operations.<sup class="reference" id="cite_ref-CLRS_priority_queue_pp476_1-0">[1]</sup>
+</p><p>Alternatively, when a self-balancing binary search tree is used, insertion and removal also take <i>O</i>(log <i>n</i>) time, although building trees from existing sequences of elements takes <i>O</i>(<i>n</i> log <i>n</i>) time; this is typical where one might already have access to these data structures, such as with third-party or standard libraries. From a space-complexity standpoint, using self-balancing binary search tree with linked list takes more storage, since it requires to store extra references to other nodes.
+</p><p>From a computational-complexity standpoint, priority queues are congruent to sorting algorithms. The section on the equivalence of priority queues and sorting algorithms, below, describes how efficient sorting algorithms can create efficient priority queues.
+</p>
+<h3><span class="mw-headline" id="Specialized_heaps">Specialized heaps</span><span class="mw-editsection"></span></h3>
+<p>There are several specialized heap data structures that either supply additional operations or outperform heap-based implementations for specific types of keys, specifically integer keys. Suppose the set of possible keys is {1, 2, ..., C}.
+</p>
+<ul><li>When only <i>insert</i>, <i>find-min</i> and <i>extract-min</i> are needed and in case of integer priorities, a bucket queue can be constructed as an array of <span class="texhtml mvar" style="font-style:italic;">C</span> linked lists plus a pointer <span class="texhtml">top</span>, initially <span class="texhtml mvar" style="font-style:italic;">C</span>. Inserting an item with key <span class="texhtml mvar" style="font-style:italic;">k</span> appends the item to the <span class="texhtml mvar" style="font-style:italic;">k</span>'th, and updates <span class="texhtml">top ← min(top, <i>k</i>)</span>, both in constant time. <i>Extract-min</i> deletes and returns one item from the list with index <span class="texhtml">top</span>, then increments <span class="texhtml">top</span> if needed until it again points to a non-empty list; this takes <span class="texhtml"><i>O</i>(<i>C</i>)</span> time in the worst case. These queues are useful for sorting the vertices of a graph by their degree.<sup class="reference" id="cite_ref-2">[2]</sup><sup class="reference nowrap"><span title="Page / location: 374">: 374 </span></sup></li>
+<li>A van Emde Boas tree supports the <i>minimum</i>, <i>maximum</i>, <i>insert</i>, <i>delete</i>, <i>search</i>, <i>extract-min</i>, <i>extract-max</i>, <i>predecessor</i> and <i>successor]</i> operations in <i>O</i>(log log <i>C</i>) time, but has a space cost for small queues of about <i>O</i>(2<sup><i>m</i>/2</sup>), where <i>m</i> is the number of bits in the priority value.<sup class="reference" id="cite_ref-3">[3]</sup> The space can be reduced significantly with hashing.</li>
+<li>The Fusion tree by Fredman and Willard implements the <i>minimum</i> operation in <i>O</i>(1) time and <i>insert</i> and <i>extract-min</i> operations in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(\log n/\log \log C)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>C</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(\log n/\log \log C)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(\log n/\log \log C)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5b962ccdeb17f601f2c34a5b4bcb8d1c0d455534" style="vertical-align: -0.838ex; width:18.37ex; height:2.843ex;"/></span>time. However it is stated by the author that, "Our algorithms have theoretical interest only; The constant factors involved in the execution times preclude practicality."<sup class="reference" id="cite_ref-4">[4]</sup></li></ul>
+<p>For applications that do many "peek" operations for every "extract-min" operation, the time complexity for peek actions can be reduced to <i>O</i>(1) in all tree and heap implementations by caching the highest priority element after every insertion and removal. For insertion, this adds at most a constant cost, since the newly inserted element is compared only to the previously cached minimum element. For deletion, this at most adds an additional "peek" cost, which is typically cheaper than the deletion cost, so overall time complexity is not significantly impacted.
+</p><p>Monotone priority queues are specialized queues that are optimized for the case where no item is ever inserted that has a lower priority (in the case of min-heap) than any item previously extracted. This restriction is met by several practical applications of priority queues.
+</p>
+<h3><span class="mw-headline" id="Summary_of_running_times">Summary of running times</span><span class="mw-editsection"></span></h3>
+<p>Here are time complexities<sup class="reference" id="cite_ref-CLRS_5-0">[5]</sup> of various heap data structures. Function names assume a min-heap.  For the meaning of "<i>O</i>(<i>f</i>)" and "<i>Θ</i>(<i>f</i>)" see Big O notation.
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>Operation
+</th>
+<th>find-min
+</th>
+<th>delete-min
+</th>
+<th>insert
+</th>
+<th>decrease-key
+</th>
+<th>meld
+</th></tr>
+<tr>
+<th>Binary<sup class="reference" id="cite_ref-CLRS_5-1">[5]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>Θ</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)
+</td>
+<td style="background:#ffdddd"><i>Θ</i>(<i>n</i>)
+</td></tr>
+<tr>
+<th>Leftist
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>Θ</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>Θ</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>Θ</i>(log <i>n</i>)
+</td></tr>
+<tr>
+<th>Binomial<sup class="reference" id="cite_ref-CLRS_5-2">[5]</sup><sup class="reference" id="cite_ref-6">[6]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>Θ</i>(log <i>n</i>)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)<sup class="reference" id="cite_ref-amortized_7-0">[a]</sup>
+</td>
+<td style="background:#ffffdd"><i>Θ</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)<sup class="reference" id="cite_ref-meld_8-0">[b]</sup>
+</td></tr>
+<tr>
+<th>Fibonacci<sup class="reference" id="cite_ref-CLRS_5-3">[5]</sup><sup class="reference" id="cite_ref-Fredman_And_Tarjan_9-0">[7]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)<sup class="reference" id="cite_ref-amortized_7-1">[a]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)<sup class="reference" id="cite_ref-amortized_7-2">[a]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td></tr>
+<tr>
+<th>Pairing<sup class="reference" id="cite_ref-Iacono_10-0">[8]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)<sup class="reference" id="cite_ref-amortized_7-3">[a]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>o</i>(log <i>n</i>)<sup class="reference" id="cite_ref-amortized_7-4">[a]</sup><sup class="reference" id="cite_ref-pairingdecreasekey_13-0">[c]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td></tr>
+<tr>
+<th>Brodal<sup class="reference" id="cite_ref-14">[11]</sup><sup class="reference" id="cite_ref-brodal_16-0">[d]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td></tr>
+<tr>
+<th>Rank-pairing<sup class="reference" id="cite_ref-17">[13]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)<sup class="reference" id="cite_ref-amortized_7-5">[a]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)<sup class="reference" id="cite_ref-amortized_7-6">[a]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td></tr>
+<tr>
+<th>Strict Fibonacci<sup class="reference" id="cite_ref-18">[14]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td></tr>
+<tr>
+<th>2–3 heap<sup class="reference" id="cite_ref-19">[15]</sup>
+</th>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)<sup class="reference" id="cite_ref-amortized_7-7">[a]</sup>
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)<sup class="reference" id="cite_ref-amortized_7-8">[a]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>?</i>
+</td></tr></tbody></table>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="Equivalence_of_priority_queues_and_sorting_algorithms">Equivalence of priority queues and sorting algorithms</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Using_a_priority_queue_to_sort">Using a priority queue to sort</span><span class="mw-editsection"></span></h3>
+<p>The semantics of priority queues naturally suggest a sorting method: insert all the elements to be sorted into a priority queue, and sequentially remove them; they will come out in sorted order. This is actually the procedure used by several sorting algorithms, once the layer of abstraction provided by the priority queue is removed. This sorting method is equivalent to the following sorting algorithms:
+</p>
+<table class="wikitable sortable">
+<tbody><tr>
+<th>Name</th>
+<th>Priority Queue Implementation</th>
+<th>Best</th>
+<th>Average</th>
+<th>Worst
+</th></tr>
+<tr align="center">
+<td>Heapsort
+</td>
+<td>Heap
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log(n)}</annotation>
+</semantics>
+</math></span><img alt="n\log(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/aca080dee55ba2825a2d955bd6ca43c0e7ed04db" style="vertical-align: -0.838ex; width:7.958ex; height:2.843ex;"/></span>
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log(n)}</annotation>
+</semantics>
+</math></span><img alt="n\log(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/aca080dee55ba2825a2d955bd6ca43c0e7ed04db" style="vertical-align: -0.838ex; width:7.958ex; height:2.843ex;"/></span>
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log(n)}</annotation>
+</semantics>
+</math></span><img alt="n\log(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/aca080dee55ba2825a2d955bd6ca43c0e7ed04db" style="vertical-align: -0.838ex; width:7.958ex; height:2.843ex;"/></span>
+</td></tr>
+<tr align="center">
+<td>Smoothsort
+</td>
+<td>Leonardo Heap
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span>
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log(n)}</annotation>
+</semantics>
+</math></span><img alt="n\log(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/aca080dee55ba2825a2d955bd6ca43c0e7ed04db" style="vertical-align: -0.838ex; width:7.958ex; height:2.843ex;"/></span>
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log(n)}</annotation>
+</semantics>
+</math></span><img alt="n\log(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/aca080dee55ba2825a2d955bd6ca43c0e7ed04db" style="vertical-align: -0.838ex; width:7.958ex; height:2.843ex;"/></span>
+</td></tr>
+<tr align="center">
+<td>Selection sort
+</td>
+<td>Unordered Array
+</td>
+<td style="background:#fdd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span>
+</td>
+<td style="background:#fdd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span>
+</td>
+<td style="background:#fdd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span>
+</td></tr>
+<tr align="center">
+<td>Insertion sort
+</td>
+<td>Ordered Array
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span>
+</td>
+<td style="background:#fdd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^2 " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span>
+</td>
+<td style="background:#fdd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^2 " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span>
+</td></tr>
+<tr align="center">
+<td>Tree sort
+</td>
+<td>Self-balancing binary search tree
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log(n)}</annotation>
+</semantics>
+</math></span><img alt="n\log(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/aca080dee55ba2825a2d955bd6ca43c0e7ed04db" style="vertical-align: -0.838ex; width:7.958ex; height:2.843ex;"/></span>
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log(n)}</annotation>
+</semantics>
+</math></span><img alt="n\log(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/aca080dee55ba2825a2d955bd6ca43c0e7ed04db" style="vertical-align: -0.838ex; width:7.958ex; height:2.843ex;"/></span>
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log(n)}</annotation>
+</semantics>
+</math></span><img alt="n\log(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/aca080dee55ba2825a2d955bd6ca43c0e7ed04db" style="vertical-align: -0.838ex; width:7.958ex; height:2.843ex;"/></span>
+</td></tr></tbody></table>
+<h3><span class="mw-headline" id="Using_a_sorting_algorithm_to_make_a_priority_queue">Using a sorting algorithm to make a priority queue</span><span class="mw-editsection"></span></h3>
+<p>A sorting algorithm can also be used to implement a priority queue. Specifically, Thorup says:<sup class="reference" id="cite_ref-20">[16]</sup>
+</p>
+<blockquote>
+<p>We present a general deterministic linear space reduction from priority queues to sorting implying that if we can sort up to <i>n</i> keys in <i>S</i>(<i>n</i>) time per key, then there is a priority queue supporting <i>delete</i> and <i>insert</i> in <i>O</i>(<i>S</i>(<i>n</i>)) time and <i>find-min</i> in constant time.
+</p>
+</blockquote>
+<p>That is, if there is a sorting algorithm which can sort in <i>O</i>(<i>S</i>) time per key, where <i>S</i> is some function of <i>n</i> and word size,<sup class="reference" id="cite_ref-21">[17]</sup> then one can use the given procedure to create a priority queue where pulling the highest-priority element is <i>O</i>(1) time, and inserting new elements (and deleting elements) is <i>O</i>(<i>S</i>) time. For example, if one has an <i>O</i>(<i>n</i> log <i>n</i>) sort algorithm, one can create a priority queue with <i>O</i>(1) pulling and <i>O</i>( log <i>n</i>) insertion.
+</p>
+<h2><span class="mw-headline" id="Libraries">Libraries</span><span class="mw-editsection"></span></h2>
+<p>A priority queue is often considered to be a "container data structure".
+</p><p>The Standard Template Library (STL), and the C++ 1998 standard, specifies std::priority_queue as one of the STL container adaptor class templates. However, it does not specify how two elements with same priority should be served, and indeed, common implementations will not return them according to their order in the queue. It implements a max-priority-queue, and has three parameters: a comparison object for sorting such as a function object (defaults to less&lt;T&gt; if unspecified), the underlying container for storing the data structures (defaults to std::vector&lt;T&gt;), and two iterators to the beginning and end of a sequence. Unlike actual STL containers, it does not allow iteration of its elements (it strictly adheres to its abstract data type definition). STL also has utility functions for manipulating another random-access container as a binary max-heap. The Boost libraries also have an implementation in the library heap.
+</p><p>Python's heapq module implements a binary min-heap on top of a list.
+</p><p>Java's library contains a <code>PriorityQueue</code> class, which implements a min-priority-queue.
+</p><p>.NET's library contains a PriorityQueue class, which implements an array-backed, quaternary min-heap.
+</p><p>Scala's library contains a PriorityQueue class, which implements a max-priority-queue.
+</p><p>Go's library contains a container/heap module, which implements a min-heap on top of any compatible data structure.
+</p><p>The Standard PHP Library extension contains the class SplPriorityQueue.
+</p><p>Apple's Core Foundation framework contains a CFBinaryHeap structure, which implements a min-heap.
+</p>
+<h2><span class="mw-headline" id="Applications">Applications</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Bandwidth_management">Bandwidth management</span><span class="mw-editsection"></span></h3>
+<p>Priority queuing can be used to manage limited resources such as bandwidth on a transmission line from a network router. In the event of outgoing traffic queuing due to insufficient bandwidth, all other queues can be halted to send the traffic from the highest priority queue upon arrival. This ensures that the prioritized traffic (such as real-time traffic, e.g. an RTP stream of a VoIP connection) is forwarded with the least delay and the least likelihood of being rejected due to a queue reaching its maximum capacity. All other traffic can be handled when the highest priority queue is empty. Another approach used is to send disproportionately more traffic from higher priority queues.
+</p><p>Many modern protocols for local area networks also include the concept of priority queues at the media access control (MAC) sub-layer to ensure that high-priority applications (such as VoIP or IPTV) experience lower latency than other applications which can be served with best-effort service. Examples include IEEE 802.11e (an amendment to IEEE 802.11 which provides quality of service) and ITU-T G.hn (a standard for high-speed local area network using existing home wiring (power lines, phone lines and coaxial cables).
+</p><p>Usually a limitation (policer) is set to limit the bandwidth that traffic from the highest priority queue can take, in order to prevent high priority packets from choking off all other traffic. This limit is usually never reached due to high level control instances such as the Cisco Callmanager, which can be programmed to inhibit calls which would exceed the programmed bandwidth limit.
+</p>
+<h3><span class="mw-headline" id="Discrete_event_simulation">Discrete event simulation</span><span class="mw-editsection"></span></h3>
+<p>Another use of a priority queue is to manage the events in a discrete event simulation. The events are added to the queue with their simulation time used as the priority. The execution of the simulation proceeds by repeatedly pulling the top of the queue and executing the event thereon.
+</p><p><i>See also</i>: Scheduling (computing), queueing theory
+</p>
+<h3><span id="Dijkstra.27s_algorithm"></span><span class="mw-headline" id="Dijkstra's_algorithm">Dijkstra's algorithm</span><span class="mw-editsection"></span></h3>
+<p>When the graph is stored in the form of adjacency list or matrix, priority queue can be used to extract minimum efficiently when implementing Dijkstra's algorithm, although one also needs the ability to alter the priority of a particular vertex in the priority queue efficiently.
+</p><p>If instead, a graph is stored as node objects, and priority-node pairs are inserted into a heap, altering the priority of a particular vertex is not necessary if one tracks visited nodes. Once a node is visited, if it comes up in the heap again (having had a lower priority number associated with it earlier), it is popped-off and ignored.
+</p>
+<h3><span class="mw-headline" id="Huffman_coding">Huffman coding</span><span class="mw-editsection"></span></h3>
+<p>Huffman coding requires one to repeatedly obtain the two lowest-frequency trees. A priority queue is one method of doing this.
+</p>
+<h3><span class="mw-headline" id="Best-first_search_algorithms">Best-first search algorithms</span><span class="mw-editsection"></span></h3>
+<p>Best-first search algorithms, like the A* search algorithm, find the shortest path between two vertices or nodes of a weighted graph, trying out the most promising routes first. A priority queue (also known as the <i>fringe</i>) is used to keep track of unexplored routes; the one for which the estimate (a lower bound in the case of A*) of the total path length is smallest is given highest priority. If memory limitations make best-first search impractical, variants like the SMA* algorithm can be used instead, with a double-ended priority queue to allow removal of low-priority items.
+</p>
+<h3><span class="mw-headline" id="ROAM_triangulation_algorithm">ROAM triangulation algorithm</span><span class="mw-editsection"></span></h3>
+<p>The Real-time Optimally Adapting Meshes (ROAM) algorithm computes a dynamically changing triangulation of a terrain. It works by splitting triangles where more detail is needed and merging them where less detail is needed. The algorithm assigns each triangle in the terrain a priority, usually related to the error decrease if that triangle would be split. The algorithm uses two priority queues, one for triangles that can be split and another for triangles that can be merged. In each step the triangle from the split queue with the highest priority is split, or the triangle from the merge queue with the lowest priority is merged with its neighbours.
+</p>
+<h3><span id="Prim.27s_algorithm_for_minimum_spanning_tree"></span><span class="mw-headline" id="Prim's_algorithm_for_minimum_spanning_tree">Prim's algorithm for minimum spanning tree</span><span class="mw-editsection"></span></h3>
+<p>Using min heap priority queue in Prim's algorithm to find the minimum spanning tree of a connected and undirected graph, one can achieve a good running time. This min heap priority queue uses the min heap data structure which supports operations such as <i>insert</i>, <i>minimum</i>, <i>extract-min</i>, <i>decrease-key</i>.<sup class="reference" id="cite_ref-CLR_22-0">[18]</sup> In this implementation, the weight of the edges is used to decide the priority of the vertices. Lower the weight, higher the priority and higher the weight, lower the priority.<sup class="reference" id="cite_ref-GEEKS_23-0">[19]</sup>
+</p>
+<h2><span class="mw-headline" id="Parallel_priority_queue">Parallel priority queue</span><span class="mw-editsection"></span></h2>
+<p>Parallelization can be used to speed up priority queues, but requires some changes to the priority queue interface. The reason for such changes is that a sequential update usually only has <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O(1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O(1)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O(1)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/55a2cd47ca6554fafc21bbef3331256c7e1631ad" style="vertical-align: -0.838ex; width:4.745ex; height:2.843ex;"/></span> or <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O(\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O(\log n)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O(\log n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/652bcc1f7bfa43527824017e3948b78c4ef942c4" style="vertical-align: -0.838ex; width:8.336ex; height:2.843ex;"/></span> cost, and there is no practical gain to parallelize such an operation. One possible change is to allow the concurrent access of multiple processors to the same priority queue. The second possible change is to allow batch operations that work on <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle k}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle k}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0d5595fc0c47452f8fc2aa6e29c3611f047714b0" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> elements, instead of just one element. For example, <i>extractMin</i> will remove the first <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle k}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle k}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0d5595fc0c47452f8fc2aa6e29c3611f047714b0" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> elements with the highest priority.
+</p>
+<h3><span class="mw-headline" id="Concurrent_parallel_access">Concurrent parallel access</span><span class="mw-editsection"></span></h3>
+<p>If the priority queue allows concurrent access, multiple processes can perform operations concurrently on that priority queue. However, this raises two issues. First of all, the definition of the semantics of the individual operations is no longer obvious. For example, if two processes want to extract the element with the highest priority, should they get the same element or different ones? This restricts parallelism on the level of the program using the priority queue. In addition, because multiple processes have access to the same element, this leads to contention.
+</p>
+
+<p>The concurrent access to a priority queue can be implemented on a Concurrent Read, Concurrent Write (CRCW) PRAM model. In the following the priority queue is implemented as a skip list.<sup class="reference" id="cite_ref-skiplist_24-0">[20]</sup><sup class="reference" id="cite_ref-25">[21]</sup> In addition, an atomic synchronization primitive, CAS, is used to make the skip list lock-free. The nodes of the skip list consists of a unique key, a priority, an array of pointers, for each level, to the next nodes and a <i>delete</i> mark. The <i>delete</i> mark marks if the node is about to be deleted by a process. This ensures that other processes can react to the deletion appropriately.
+</p>
+<ul><li><i>insert(e)</i>: First, a new node with a key and a priority is created. In addition, the node is assigned a number of levels, which dictates the size of the array of pointers. Then a search is performed to find the correct position where to insert the new node. The search starts from the first node and from the highest level. Then the skip list is traversed down to the lowest level until the correct position is found. During the search, for every level the last traversed node will be saved as parent node for the new node at that level. In addition, the node to which the pointer, at that level, of the parent node points towards, will be saved as the successor node of the new node at that level. Afterwards, for every level of the new node, the pointers of the parent node will be set to the new node. Finally, the pointers, for every level, of the new node will be set to the corresponding successor nodes.</li>
+<li><i>extract-min</i>: First, the skip list is traversed until a node is reached whose <i>delete</i> mark is not set. This <i>delete</i> mark is than set to true for that node. Finally the pointers of the parent nodes of the deleted node are updated.</li></ul>
+<p>If the concurrent access to a priority queue is allowed, conflicts may arise between two processes. For example, a conflict arises if one process is trying to insert a new node, but at the same time another process is about to delete the predecessor of that node.<sup class="reference" id="cite_ref-skiplist_24-1">[20]</sup> There is a risk that the new node is added to the skip list, yet it is not longer reachable. (See image)
+</p>
+<h3><span class="mw-headline" id="K-element_operations">K-element operations</span><span class="mw-editsection"></span></h3>
+<p>In this setting, operations on a priority queue is generalized to a batch of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle k}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle k}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0d5595fc0c47452f8fc2aa6e29c3611f047714b0" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> elements.
+For instance, <i>k_extract-min</i> deletes the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle k}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle k}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0d5595fc0c47452f8fc2aa6e29c3611f047714b0" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> smallest elements of the priority queue and returns those. 
+</p><p>In a shared-memory setting, the parallel priority queue can be easily implemented using parallel binary search trees and join-based tree algorithms.  In particular, <i>k_extract-min</i> corresponds to a <i>split</i> on the binary search tree that has <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O(\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O(\log n)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O(\log n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/652bcc1f7bfa43527824017e3948b78c4ef942c4" style="vertical-align: -0.838ex; width:8.336ex; height:2.843ex;"/></span> cost and yields a tree that contains the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle k}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle k}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0d5595fc0c47452f8fc2aa6e29c3611f047714b0" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> smallest elements.  <i>k_insert</i> can be applied by a <i>union</i> of the original priority queue and the batch of insertions.  If the batch is already sorted by the key, <i>k_insert</i> has <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O(k\log(1+{\frac {n}{k}}))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>n</mi>
+<mi>k</mi>
+</mfrac>
+</mrow>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O(k\log(1+{\frac {n}{k}}))}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O(k\log(1+{\frac {n}{k}}))}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/42eca403362de73c25092dc6e2490d9a4093a6df" style="vertical-align: -1.338ex; width:15.787ex; height:3.343ex;"/></span> cost.  Otherwise, we need to first sort the batch, so the cost will be <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O(k\log(1+{\frac {n}{k}})+k\log k)=O(k\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>n</mi>
+<mi>k</mi>
+</mfrac>
+</mrow>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>k</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O(k\log(1+{\frac {n}{k}})+k\log k)=O(k\log n)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O(k\log(1+{\frac {n}{k}})+k\log k)=O(k\log n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6f0d8bf3311158494389bd208eb0e252d3be601c" style="vertical-align: -1.338ex; width:37.829ex; height:3.343ex;"/></span>.  Other operations for priority queue can be applied similarly.  For instance, <i>k_decrease-key</i> can be done by first applying <i>difference</i> and then <i>union</i>, which first deletes the elements and then inserts them back with the updated keys.  All these operations are highly parallel, and the theoretical and practical efficiency can be found in related research papers.<sup class="reference" id="cite_ref-join-based_26-0">[22]</sup><sup class="reference" id="cite_ref-pam_27-0">[23]</sup>
+</p><p>The rest of this section discusses a queue-based algorithm on distributed memory. We assume each processor has its own local memory and a local (sequential) priority queue. The elements of the global (parallel) priority queue are distributed across all processors.
+</p>
+
+<p>A <i>k_insert</i> operation assigns the elements uniformly random to the processors which insert the elements into their local queues. Note that single elements can still be inserted into the queue. Using this strategy the global smallest elements are in the union of the local smallest elements of every processor with high probability. Thus each processor holds a representative part of the global priority queue.
+</p><p>This property is used when <i>k_extract-min</i> is executed, as the smallest <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle m}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle m}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3296968aacae7d971a6d649f6b32b5969ed6d4d6" style="vertical-align: -0.338ex; width:2.04ex; height:1.676ex;"/></span> elements of each local queue are removed and collected in a result set. The elements in the result set are still associated with their original processor. The number of elements <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle m}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle m}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3296968aacae7d971a6d649f6b32b5969ed6d4d6" style="vertical-align: -0.338ex; width:2.04ex; height:1.676ex;"/></span> that is removed from each local queue depends on <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle k}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle k}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0d5595fc0c47452f8fc2aa6e29c3611f047714b0" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> and the number of processors <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle p}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>p</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle p}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle p}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ad87bd7009e2a5c52bd0fb5a9bda9d8c1c23a79b" style="vertical-align: -0.671ex; margin-left: -0.089ex; width:1.259ex; height:2.009ex;"/></span>. 
+<sup class="reference" id="cite_ref-AlgToolbox_28-0">[24]</sup>
+By parallel selection the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle k}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle k}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0d5595fc0c47452f8fc2aa6e29c3611f047714b0" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> smallest elements of the result set are determined. With high probability these are the global <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle k}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle k}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0d5595fc0c47452f8fc2aa6e29c3611f047714b0" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> smallest elements. If not, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle m}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle m}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3296968aacae7d971a6d649f6b32b5969ed6d4d6" style="vertical-align: -0.338ex; width:2.04ex; height:1.676ex;"/></span> elements are again removed from each local queue and put into the result set. This is done until the global <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle k}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle k}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0d5595fc0c47452f8fc2aa6e29c3611f047714b0" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> smallest elements are in the result set. Now these <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle k}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle k}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0d5595fc0c47452f8fc2aa6e29c3611f047714b0" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> elements can be returned. All other elements of the result set are inserted back into their local queues. The running time of <i>k_extract-min</i> is expected <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle O({\frac {k}{p}}\log(n))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>k</mi>
+<mi>p</mi>
+</mfrac>
+</mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle O({\frac {k}{p}}\log(n))}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle O({\frac {k}{p}}\log(n))}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1786f666f72262d9af94c2c4f7ae7bd0995fcdb4" style="vertical-align: -1.338ex; width:11.838ex; height:3.843ex;"/></span>, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle k=\Omega (p\cdot \log(p))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>k</mi>
+<mo>=</mo>
+<mi mathvariant="normal">Ω<!-- Ω --></mi>
+<mo stretchy="false">(</mo>
+<mi>p</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>p</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle k=\Omega (p\cdot \log(p))}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle k=\Omega (p\cdot \log(p))}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b19aef38a319fcd6726a682195492469dd6214a3" style="vertical-align: -0.838ex; width:16.596ex; height:2.843ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle n}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cc6e1f880981346a604257ebcacdef24c0aca2d6" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span> is the size of the priority queue.<sup class="reference" id="cite_ref-AlgToolbox_28-1">[24]</sup>
+</p><p>The priority queue can be further improved by not moving the remaining elements of the result set directly back into the local queues after a <i>k_extract-min</i> operation. This saves moving elements back and forth all the time between the result set and the local queues.
+</p><p>By removing several elements at once a considerable speedup can be reached. But not all algorithms can use this kind of priority queue. Dijkstra's algorithm for example can not work on several nodes at once. The algorithm takes the node with the smallest distance from the priority queue and calculates new distances for all its neighbor nodes. If you would take out <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle k}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle k}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0d5595fc0c47452f8fc2aa6e29c3611f047714b0" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> nodes, working at one node could change the distance of another one of the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle k}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle k}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0d5595fc0c47452f8fc2aa6e29c3611f047714b0" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> nodes. So using k-element operations destroys the label setting property of Dijkstra's algorithm.
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Batch queue</li>
+<li>Command queue</li>
+<li>Job scheduler</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1011085734" rel="mw-deduplicated-inline-style"/>
+<h2><span class="mw-headline" id="Further_reading">Further reading</span><span class="mw-editsection"></span></h2>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFCormenLeisersonRivestStein2001">Cormen, Thomas H.; Leiserson, Charles E.; Rivest, Ronald L.; Stein, Clifford (2001) [1990]. "Section 6.5: Priority queues". <i>Introduction to Algorithms</i> (2nd ed.). MIT Press and McGraw-Hill. pp. 138–142. ISBN <bdi>0-262-03293-7</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Section+6.5%3A+Priority+queues&amp;rft.btitle=Introduction+to+Algorithms&amp;rft.pages=138-142&amp;rft.edition=2nd&amp;rft.pub=MIT+Press+and+McGraw-Hill&amp;rft.date=2001&amp;rft.isbn=0-262-03293-7&amp;rft.aulast=Cormen&amp;rft.aufirst=Thomas+H.&amp;rft.au=Leiserson%2C+Charles+E.&amp;rft.au=Rivest%2C+Ronald+L.&amp;rft.au=Stein%2C+Clifford&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3APriority+queue"></span></li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>C++ reference for <code>std::priority_queue</code></li>
+<li>Descriptions by Lee Killough</li>
+<li>PQlib - Open source Priority Queue library for C</li>
+<li>libpqueue is a generic priority queue (heap) implementation (in C) used by the Apache HTTP Server project.</li>
+<li>Survey of known priority queue structures by Stefan Xenos</li>
+<li>UC Berkeley - Computer Science 61B - Lecture 24: Priority Queues (video) - introduction to priority queues using binary heap</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2327
+Cached time: 20221220211837
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.387 seconds
+Real time usage: 0.566 seconds
+Preprocessor visited node count: 3028/1000000
+Post‐expand include size: 71143/2097152 bytes
+Template argument size: 1974/2097152 bytes
+Highest expansion depth: 16/100
+Expensive parser function count: 0/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 82542/5000000 bytes
+Lua time usage: 0.186/10.000 seconds
+Lua memory usage: 6841235/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  367.083      1 -total
+ 58.53%  214.864      2 Template:Reflist
+ 30.77%  112.967      7 Template:Cite_book
+ 27.64%  101.453      4 Template:Introduction_to_Algorithms
+ 14.41%   52.899      1 Template:Short_description
+ 10.81%   39.684      1 Template:Data_structures
+ 10.20%   37.452      1 Template:Navbox
+  8.52%   31.265      1 Template:Heap_Running_Times
+  8.51%   31.242      2 Template:Pagetype
+  7.81%   28.669      6 Template:Citation
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:24485-0!canonical and timestamp 20221220211836 and revision id 1123776684.
+ -->
+</div></body>
+</html>

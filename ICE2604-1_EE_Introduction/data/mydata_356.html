@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>extendible_hashing</title>
+</head>
+<body>
+<div class="mw-parser-output"><p><b>Extendible hashing</b> is a type of hash system which treats a hash as a bit string and uses a trie for bucket lookup.<sup class="reference" id="cite_ref-FOOTNOTEFaginNievergeltPippengerStrong1979_1-0">[1]</sup> Because of the hierarchical nature of the system, re-hashing is an incremental operation (done one bucket at a time, as needed).  This means that time-sensitive applications are less affected by table growth than by standard full-table rehashes.
+</p><p>Extendible hashing was described by Ronald Fagin in 1979. Practically all modern filesystems use either extendible hashing or B-trees. In particular, the Global File System, ZFS, and the SpadFS filesystem use extendible hashing.<sup class="reference" id="cite_ref-2">[2]</sup>
+</p>
+
+<h2><span class="mw-headline" id="Example">Example</span><span class="mw-editsection"></span></h2>
+<p>Assume that the hash function <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h(k)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h(k)}</annotation>
+</semantics>
+</math></span><img alt="h(k)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3b2a0d0f0ceb795a0eac940780dcf6be46c961dd" style="vertical-align: -0.838ex; width:4.359ex; height:2.843ex;"/></span> returns a string of bits. The first i bits of each string will be used as indices to figure out where they will go in the "directory" (hash table). Additionally, i is the smallest number such that the index of every item in the table is unique.
+</p><p>Keys to be used:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{aligned}h(k_{1})=100100\\h(k_{2})=010110\\h(k_{3})=110110\end{aligned}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="right left right left right left right left right left right left" columnspacing="0em 2em 0em 2em 0em 2em 0em 2em 0em 2em 0em" displaystyle="true" rowspacing="3pt">
+<mtr>
+<mtd>
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>100100</mn>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>010110</mn>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>110110</mn>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{aligned}h(k_{1})=100100\\h(k_{2})=010110\\h(k_{3})=110110\end{aligned}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\begin{aligned}h(k_{1})=100100\\h(k_{2})=010110\\h(k_{3})=110110\end{aligned}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/086ca40d7d235fdc94bbf8ca40d6351a47ccd39a" style="vertical-align: -4.005ex; width:16.238ex; height:9.176ex;"/></span></dd></dl>
+<p>Let's assume that for this particular example, the bucket size is 1. The first two keys to be inserted, k<sub>1</sub> and k<sub>2</sub>, can be distinguished by the most significant bit, and would be inserted into the table as follows:
+</p>
+<dl><dd><img alt="Extendible hashing 1.svg" data-file-height="195" data-file-width="695" decoding="async" height="56" src="//upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Extendible_hashing_1.svg/200px-Extendible_hashing_1.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Extendible_hashing_1.svg/300px-Extendible_hashing_1.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Extendible_hashing_1.svg/400px-Extendible_hashing_1.svg.png 2x" width="200"/></dd></dl>
+<p>Now, if k<sub>3</sub> were to be hashed to the table, it wouldn't be enough to distinguish all three keys by one bit (because both k<sub>3</sub> and k<sub>1</sub> have 1 as their leftmost bit). Also, because the bucket size is one, the table would overflow. Because comparing the first two most significant bits would give each key a unique location, the directory size is doubled as follows:
+</p>
+<dl><dd><img alt="Extendible hashing 2.svg" data-file-height="385" data-file-width="695" decoding="async" height="111" src="//upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Extendible_hashing_2.svg/200px-Extendible_hashing_2.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Extendible_hashing_2.svg/300px-Extendible_hashing_2.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Extendible_hashing_2.svg/400px-Extendible_hashing_2.svg.png 2x" width="200"/></dd></dl>
+<p>And so now k<sub>1</sub> and k<sub>3</sub> have a unique location, being distinguished by the first two leftmost bits. Because k<sub>2</sub> is in the top half of the table, both 00 and 01 point to it because there is no other key to compare to that begins with a 0.
+</p><p>The above example is from Fagin et al. (1979).
+</p>
+<h3><span class="mw-headline" id="Further_detail">Further detail</span><span class="mw-editsection"></span></h3>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h(k_{4})=011110}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>4</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>011110</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h(k_{4})=011110}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h(k_{4})=011110}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/92dae49849fdc20f1d33648c015306423f85b3c4" style="vertical-align: -0.838ex; width:15.487ex; height:2.843ex;"/></span></dd></dl>
+<p>Now, k<sub>4</sub> needs to be inserted, and it has the first two bits as 01..(1110), and using a 2 bit depth in the directory, this maps from 01 to Bucket A. Bucket A is full (max size 1), so it must be split; because there is more than one pointer to Bucket A, there is no need to increase the directory size.
+</p><p>What is needed is information about:
+</p>
+<ol><li>The key size that maps the directory (the global depth), and</li>
+<li>The key size that has previously mapped the bucket (the local depth)</li></ol>
+<p>In order to distinguish the two action cases:
+</p>
+<ol><li>Doubling the directory when a bucket becomes full</li>
+<li>Creating a new bucket, and re-distributing the entries between the old and the new bucket</li></ol>
+<p>Examining the initial case of an extendible hash structure, if each directory entry points to one bucket, then the local depth should be equal to the global depth.
+</p><p>The number of directory entries is equal to 2<sup>global depth</sup>, and the initial number of buckets
+is equal to 2<sup>local depth</sup>.
+</p><p>Thus if global depth = local depth = 0, then 2<sup>0</sup> = 1, so an initial directory of one pointer to one bucket.
+</p><p>Back to the two action cases; if the bucket is full:
+</p>
+<ol><li>If the local depth is equal to the global depth, then there is only one pointer to the bucket, and there is no other directory pointers that can map to the bucket, so the directory must be doubled.</li>
+<li>If the local depth is less than the global depth, then there exists more than one pointer from the directory to the bucket, and the bucket can be split.</li></ol>
+<dl><dd><img alt="Extendible hashing 3.svg" data-file-height="682" data-file-width="695" decoding="async" height="196" src="//upload.wikimedia.org/wikipedia/commons/thumb/7/71/Extendible_hashing_3.svg/200px-Extendible_hashing_3.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/7/71/Extendible_hashing_3.svg/300px-Extendible_hashing_3.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/7/71/Extendible_hashing_3.svg/400px-Extendible_hashing_3.svg.png 2x" width="200"/></dd></dl>
+<p>Key 01  points to Bucket A, and Bucket A's local depth of 1 is less than the directory's global depth of 2, which means keys hashed to Bucket A have only used a 1 bit prefix (i.e. 0), and the bucket needs to have its contents split using keys 1 + 1 = 2 bits in length; in general, for any local depth d where d is less than D, the global depth, then d must be incremented after a bucket split, and the new d used as the number of bits of each entry's key to redistribute the entries of the former bucket into the new buckets.
+</p>
+<dl><dd><img alt="Extendible hashing 4.svg" data-file-height="882" data-file-width="695" decoding="async" height="254" src="//upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Extendible_hashing_4.svg/200px-Extendible_hashing_4.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Extendible_hashing_4.svg/300px-Extendible_hashing_4.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Extendible_hashing_4.svg/400px-Extendible_hashing_4.svg.png 2x" width="200"/></dd></dl>
+<p>Now, 
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h(k_{4})=011110}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>4</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>011110</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h(k_{4})=011110}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h(k_{4})=011110}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/92dae49849fdc20f1d33648c015306423f85b3c4" style="vertical-align: -0.838ex; width:15.487ex; height:2.843ex;"/></span></dd></dl>
+<p>is tried again, with 2 bits  01.., and now key 01 points to a new bucket but there is still <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k_{2}}</annotation>
+</semantics>
+</math></span><img alt="k_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c51b4ba57ee596d8435fc4ed76703ca3a2fc444a" style="vertical-align: -0.671ex; width:2.265ex; height:2.509ex;"/></span> in it (<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h(k_{2})=010110}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>010110</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h(k_{2})=010110}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h(k_{2})=010110}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/779482dd1d105b03bc42fb763e726bc63670ddec" style="vertical-align: -0.838ex; width:15.487ex; height:2.843ex;"/></span> and also begins with 01).
+</p><p>If <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k_{2}}</annotation>
+</semantics>
+</math></span><img alt="k_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c51b4ba57ee596d8435fc4ed76703ca3a2fc444a" style="vertical-align: -0.671ex; width:2.265ex; height:2.509ex;"/></span> had been 000110, with key 00, there would have been no problem, because <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k_{2}}</annotation>
+</semantics>
+</math></span><img alt="k_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c51b4ba57ee596d8435fc4ed76703ca3a2fc444a" style="vertical-align: -0.671ex; width:2.265ex; height:2.509ex;"/></span> would have remained in the new bucket A' and bucket D would have been empty.
+</p><p>(This would have been the most likely case by far when buckets are of greater size than 1 and the newly split buckets would be exceedingly unlikely to overflow, unless all the entries were all rehashed to one bucket again. But just to emphasize the role of the depth information, the example will be pursued logically to the end.)
+</p><p>So Bucket D needs to be split, but a check of its local depth, which is 2, is the same as the global depth, which is 2, so the directory must be split again, in order to hold keys of sufficient detail, e.g. 3 bits.
+</p>
+<dl><dd><img alt="Extendible hashing 5.svg" data-file-height="862" data-file-width="695" decoding="async" height="248" src="//upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Extendible_hashing_5.svg/200px-Extendible_hashing_5.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Extendible_hashing_5.svg/300px-Extendible_hashing_5.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Extendible_hashing_5.svg/400px-Extendible_hashing_5.svg.png 2x" width="200"/></dd></dl>
+<ol><li>Bucket D needs to split due to being full.</li>
+<li>As D's local depth = the global depth, the directory must double to increase bit detail of keys.</li>
+<li>Global depth has incremented after directory split to 3.</li>
+<li>The new entry <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k_{4}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>4</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k_{4}}</annotation>
+</semantics>
+</math></span><img alt="k_{4}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cc27eb9313ff47331edc6b7c20b35e138eaa2ef8" style="vertical-align: -0.671ex; width:2.265ex; height:2.509ex;"/></span> is rekeyed with global depth 3 bits and ends up in D which has local depth 2, which can now be incremented to 3 and D can be split to D' and E.</li>
+<li>The contents of the split bucket D, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k_{2}}</annotation>
+</semantics>
+</math></span><img alt="k_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c51b4ba57ee596d8435fc4ed76703ca3a2fc444a" style="vertical-align: -0.671ex; width:2.265ex; height:2.509ex;"/></span>, has been re-keyed with 3 bits, and it ends up in D'.</li>
+<li>K4 is retried and it ends up in E which has a spare slot.</li></ol>
+<dl><dd><img alt="Extendible hashing 6.svg" data-file-height="1262" data-file-width="695" decoding="async" height="363" src="//upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Extendible_hashing_6.svg/200px-Extendible_hashing_6.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Extendible_hashing_6.svg/300px-Extendible_hashing_6.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Extendible_hashing_6.svg/400px-Extendible_hashing_6.svg.png 2x" width="200"/></dd></dl>
+<p>Now, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h(k_{2})=010110}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>010110</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h(k_{2})=010110}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h(k_{2})=010110}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/779482dd1d105b03bc42fb763e726bc63670ddec" style="vertical-align: -0.838ex; width:15.487ex; height:2.843ex;"/></span> is in D and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h(k_{4})=011110}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>4</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>011110</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h(k_{4})=011110}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h(k_{4})=011110}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/92dae49849fdc20f1d33648c015306423f85b3c4" style="vertical-align: -0.838ex; width:15.487ex; height:2.843ex;"/></span> is tried again, with 3 bits 011..,  and it points to bucket D which already contains <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k_{2}}</annotation>
+</semantics>
+</math></span><img alt="k_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c51b4ba57ee596d8435fc4ed76703ca3a2fc444a" style="vertical-align: -0.671ex; width:2.265ex; height:2.509ex;"/></span> so is full; D's local depth is 2 but now the global depth is 3 after the directory doubling, so now D can be split into bucket's D' and E, the contents of D, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k_{2}}</annotation>
+</semantics>
+</math></span><img alt="k_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c51b4ba57ee596d8435fc4ed76703ca3a2fc444a" style="vertical-align: -0.671ex; width:2.265ex; height:2.509ex;"/></span> has its  <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h(k_{2})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h(k_{2})}</annotation>
+</semantics>
+</math></span><img alt="h(k_{2})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2d562841d0582bf01d7e196fe23c7d6ddc6ec316" style="vertical-align: -0.838ex; width:5.414ex; height:2.843ex;"/></span> retried with a new global depth bitmask of 3 and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k_{2}}</annotation>
+</semantics>
+</math></span><img alt="k_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c51b4ba57ee596d8435fc4ed76703ca3a2fc444a" style="vertical-align: -0.671ex; width:2.265ex; height:2.509ex;"/></span> ends up in D', then the new entry <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k_{4}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>4</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k_{4}}</annotation>
+</semantics>
+</math></span><img alt="k_{4}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cc27eb9313ff47331edc6b7c20b35e138eaa2ef8" style="vertical-align: -0.671ex; width:2.265ex; height:2.509ex;"/></span> is retried with <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h(k_{4})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>4</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h(k_{4})}</annotation>
+</semantics>
+</math></span><img alt="h(k_{4})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6188d916dd6ca7d812d08e9aff07ea0c8bc1b5ef" style="vertical-align: -0.838ex; width:5.414ex; height:2.843ex;"/></span> bitmasked using the new global depth bit count of 3 and this gives 011 which now points to a new bucket E which is empty. So <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k_{4}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>4</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k_{4}}</annotation>
+</semantics>
+</math></span><img alt="k_{4}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cc27eb9313ff47331edc6b7c20b35e138eaa2ef8" style="vertical-align: -0.671ex; width:2.265ex; height:2.509ex;"/></span> goes in Bucket E.
+</p>
+<h2><span class="mw-headline" id="Example_implementation">Example implementation</span><span class="mw-editsection"></span></h2>
+<p>Below is the extendible hashing algorithm in Python, with the disc block / memory page association, caching and consistency issues removed. Note a problem exists if the depth exceeds the bit size of an integer, because then doubling of the directory or splitting of a bucket won't allow entries to be rehashed to different buckets.
+</p><p>The code uses the <i>least significant bits</i>, which makes it more efficient to expand the table, as the entire directory can be copied as one block (Ramakrishnan &amp; Gehrke (2003)).
+</p>
+<h3><span class="mw-headline" id="Python_example">Python example</span><span class="mw-editsection"></span></h3>
+
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Trie</li>
+<li>Hash table</li>
+<li>Stable hashing</li>
+<li>Consistent hashing</li>
+<li>Linear hashing</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFFaginNievergeltPippengerStrong1979">Fagin, R.; Nievergelt, J.; Pippenger, N.; Strong, H. R. (September 1979), "Extendible Hashing - A Fast Access Method for Dynamic Files", <i>ACM Transactions on Database Systems</i>, <b>4</b> (3): 315–344, doi:10.1145/320083.320092, S2CID 2723596</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=ACM+Transactions+on+Database+Systems&amp;rft.atitle=Extendible+Hashing+-+A+Fast+Access+Method+for+Dynamic+Files&amp;rft.volume=4&amp;rft.issue=3&amp;rft.pages=315-344&amp;rft.date=1979-09&amp;rft_id=info%3Adoi%2F10.1145%2F320083.320092&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A2723596%23id-name%3DS2CID&amp;rft.aulast=Fagin&amp;rft.aufirst=R.&amp;rft.au=Nievergelt%2C+J.&amp;rft.au=Pippenger%2C+N.&amp;rft.au=Strong%2C+H.+R.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AExtendible+hashing"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFRamakrishnanGehrke2003">Ramakrishnan, R.; Gehrke, J. (2003), <i>Database Management Systems, 3rd Edition: Chapter 11, Hash-Based Indexing</i>, pp. 373–378</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Database+Management+Systems%2C+3rd+Edition%3A+Chapter+11%2C+Hash-Based+Indexing&amp;rft.pages=373-378&amp;rft.date=2003&amp;rft.aulast=Ramakrishnan&amp;rft.aufirst=R.&amp;rft.au=Gehrke%2C+J.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AExtendible+hashing"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFSilberschatzKorthSudarshan">Silberschatz, Abraham; Korth, Henry; Sudarshan, S., <i>Database System Concepts, Sixth Edition: Chapter 11.7, Dynamic Hashing</i></cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Database+System+Concepts%2C+Sixth+Edition%3A+Chapter+11.7%2C+Dynamic+Hashing&amp;rft.aulast=Silberschatz&amp;rft.aufirst=Abraham&amp;rft.au=Korth%2C+Henry&amp;rft.au=Sudarshan%2C+S.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AExtendible+hashing"></span></li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li><img alt="Public Domain" class="noviewer" data-file-height="196" data-file-width="196" decoding="async" height="12" src="//upload.wikimedia.org/wikipedia/en/thumb/6/62/PD-icon.svg/12px-PD-icon.svg.png" srcset="//upload.wikimedia.org/wikipedia/en/thumb/6/62/PD-icon.svg/18px-PD-icon.svg.png 1.5x, //upload.wikimedia.org/wikipedia/en/thumb/6/62/PD-icon.svg/24px-PD-icon.svg.png 2x" width="12"/> This article incorporates public domain material from <link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs1" id="CITEREFPaul_E._Black">Paul E. Black. "Extendible hashing". <i>Dictionary of Algorithms and Data Structures</i>. NIST.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Dictionary+of+Algorithms+and+Data+Structures&amp;rft.atitle=Extendible+hashing&amp;rft.au=Paul+E.+Black&amp;rft_id=https%3A%2F%2Fxlinux.nist.gov%2Fdads%2FHTML%2FextendibleHashing.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AExtendible+hashing"></span></li>
+<li>Extendible Hashing notes at Arkansas State University</li>
+<li>Extendible hashing notes</li>
+<li>Slides from the database System Concepts book on  extendible hashing for hash based dynamic indices</li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw1453
+Cached time: 20221214143257
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.184 seconds
+Real time usage: 0.504 seconds
+Preprocessor visited node count: 660/1000000
+Post‐expand include size: 13167/2097152 bytes
+Template argument size: 368/2097152 bytes
+Highest expansion depth: 17/100
+Expensive parser function count: 2/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 23655/5000000 bytes
+Lua time usage: 0.094/10.000 seconds
+Lua memory usage: 4496643/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  409.609      1 -total
+ 17.92%   73.391      1 Template:Reflist
+ 14.97%   61.319      1 Template:Cite_thesis
+  9.53%   39.024      1 Template:Sfnp
+  6.09%   24.935      3 Template:If_empty
+  5.85%   23.966      1 Template:DADS
+  3.55%   14.524      3 Template:Citation
+  1.12%    4.594      2 Template:Harvtxt
+  1.07%    4.389      1 Template:Delink
+  0.75%    3.063      1 Template:Link_if_exists
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:8019200-0!canonical and timestamp 20221214143256 and revision id 1083809004.
+ -->
+</div></body>
+</html>

@@ -9,16 +9,16 @@
 
 ## CS1602 计算导论
 HW 1-HW 3 小作业
-> HW 1: Tower of Hanoi & The Josephus Problem ~~具体的题目已经记不清了~~
-> HW 2: 计算n以内的质数和判断大质数
-> HW 3: 高精度运算 ~~是的即使Python支持也要重写~~
+> HW 1: Tower of Hanoi & The Josephus Problem ~~具体的题目已经记不清了~~  
+> HW 2: 计算n以内的质数和判断大质数  
+> HW 3: 高精度运算 ~~是的即使Python支持也要重写~~  
 
 minimatrix 大作业
 > 运用numpy库实现了一个自己的矩阵类
 
 其他
-> leetcode300 & LC300Holiday: 关于LeetCode300题的部分解答，仍未全部完成
-> leetcode300题及答案也一并附上
+> leetcode300 & LC300Holiday: 关于LeetCode300题的部分解答，仍未全部完成  
+> leetcode300题及答案也一并附上  
 
 ## CS1604 程序设计原理与方法
 
@@ -34,6 +34,8 @@ Final Project 是大作业
 
 cs1604_lib 是课程用到的库
 > StanfordCppLib
+
+详情请见各作业里的说明文档
 
 ---
 
@@ -52,12 +54,37 @@ pets_battle 尚未完成 ~~绝不是因为是其他班的作业才没写呢！~~
 ## CS2602 数据结构
 
 myclasses 是自建数据结构，包括：
-> seqlist: 线性表
-> linklist/dlinklist: 链表/双向链表
-> btree: 二叉树
-> bsearchtree: 二叉查找树
-> sort: 排序函数
+> seqlist: 线性表  
+> linklist/dlinklist: 链表/双向链表  
+> btree: 二叉树  
+> bsearchtree: 二叉查找树  
+> sort: 排序函数  
 
 奇怪的地方：main是空的、random1是 ~~打随机肉鸽用的~~ 随机整数生成器
 
-homework 是5次作业，题目详见que_intro
+homework 是5次作业，题目详见 ***que_intro.md***
+
+---
+
+## ICE2604-1 电类工程导论（B类）
+
+只有小组作业部分，具体来说：
+> 1. 爬取了维基百科上关于CS的所有页面并整合成数据库。  
+> 2. 搭建了HTML页面，完成了配套的js、css文件以供展示。 ~~丁真页面是测试用页面~~  
+> 3. HTML端实现了登录、收藏、数据检索功能，以及一张根本看不清的关系图。  
+> 4. 还留了很多其他页面的接口，但是因时间有限并未完成。  
+
+~~不要问我tool.py为什么是空的，因为本以为能整合出工具模块但是实际上并没有~~
+
+---
+
+## CS1108-01 数据科学引论——Python之道
+
+**选修课**
+只有小组作业部分，具体来说：
+> 1. 沿用了电类工程导论作业的思路，即爬虫+HTML展示。  
+> 2. 数据是萌娘百科上的明日方舟干员数据，ArkOperators.py 和 new.py 是爬虫文件。  
+> 3. HTML页面较简陋，主要是作为用echarts进行数据可视化的载体。 ~~但是这真的很酷~~  
+> 4. 分职业页面仅仅改了后端数据，前端的可视化是一致的。  
+
+希望这份明日方舟页面在今后能够被逐渐完善 ~~但是应该不可能了，悲~~

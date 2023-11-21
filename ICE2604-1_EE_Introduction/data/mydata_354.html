@@ -1,0 +1,3356 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>extended_Euclid's_algorithm</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p>In arithmetic and computer programming, the <b>extended Euclidean algorithm</b> is an extension to the Euclidean algorithm, and computes, in addition to the greatest common divisor (gcd) of integers <i>a</i> and <i>b</i>, also  the coefficients of Bézout's identity, which are integers <i>x</i> and <i>y</i> such that
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle ax+by=\gcd(a,b).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+<mi>x</mi>
+<mo>+</mo>
+<mi>b</mi>
+<mi>y</mi>
+<mo>=</mo>
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle ax+by=\gcd(a,b).}</annotation>
+</semantics>
+</math></span><img alt="ax+by=\gcd(a,b)." aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/72fe07a990a7ce59a499626f59b1ce588c8f6cda" style="vertical-align: -0.838ex; width:19.856ex; height:2.843ex;"/></span></dd></dl>
+<p>This is a certifying algorithm, because the gcd is the only number that can simultaneously satisfy this equation and divide the inputs.
+It allows one to compute also, with almost no extra cost, the quotients of <i>a</i> and <i>b</i> by their greatest common divisor.
+</p><p><em>Extended Euclidean algorithm</em> also refers to a very similar algorithm for computing the polynomial greatest common divisor and the coefficients of Bézout's identity of two univariate polynomials.
+</p><p>The extended Euclidean algorithm is particularly useful when <i>a</i> and <i>b</i> are coprime. With that provision, <i>x</i> is the modular multiplicative inverse of <i>a</i> modulo <i>b</i>, and <i>y</i> is the modular multiplicative inverse of <i>b</i> modulo <i>a</i>. Similarly, the polynomial extended Euclidean algorithm allows one to compute the multiplicative inverse in algebraic field extensions and, in particular in finite fields of non prime order. It follows that both extended Euclidean algorithms are widely used in cryptography. In particular, the computation of the modular multiplicative inverse is an essential step in the derivation of key-pairs in the RSA public-key encryption method.
+</p>
+
+<h2><span class="mw-headline" id="Description">Description</span><span class="mw-editsection"></span></h2>
+<p>The standard Euclidean algorithm proceeds by a succession of Euclidean divisions whose quotients are not used. Only the <i>remainders</i> are kept. For the extended algorithm, the successive quotients are used. More precisely, the standard Euclidean algorithm with <i>a</i> and <i>b</i> as input, consists of computing a sequence <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q_{1},\ldots ,q_{k}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q_{1},\ldots ,q_{k}}</annotation>
+</semantics>
+</math></span><img alt="q_{1},\ldots ,q_{k}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/aa3b2c3fbe1aebd94cd754c1cbace1bebf4d9ddf" style="vertical-align: -0.671ex; width:9.395ex; height:2.009ex;"/></span> of quotients and a sequence <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r_{0},\ldots ,r_{k+1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r_{0},\ldots ,r_{k+1}}</annotation>
+</semantics>
+</math></span><img alt="r_{0},\ldots ,r_{{k+1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/75c596c7785fedb6eab81dee5178534924e36974" style="vertical-align: -0.671ex; width:11.519ex; height:2.009ex;"/></span> of remainders such that 
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{aligned}r_{0}&amp;=a\\r_{1}&amp;=b\\&amp;\,\,\,\vdots \\r_{i+1}&amp;=r_{i-1}-q_{i}r_{i}\quad {\text{and}}\quad 0\leq r_{i+1}&lt;|r_{i}|\quad {\text{(this defines }}q_{i})\\&amp;\,\,\,\vdots \end{aligned}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="right left right left right left right left right left right left" columnspacing="0em 2em 0em 2em 0em 2em 0em 2em 0em 2em 0em" displaystyle="true" rowspacing="3pt">
+<mtr>
+<mtd>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mi>a</mi>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mi>b</mi>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mspace width="thinmathspace"></mspace>
+<mspace width="thinmathspace"></mspace>
+<mspace width="thinmathspace"></mspace>
+<mo>⋮<!-- ⋮ --></mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mspace width="1em"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>and</mtext>
+</mrow>
+<mspace width="1em"></mspace>
+<mn>0</mn>
+<mo>≤<!-- ≤ --></mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>&lt;</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mspace width="1em"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>(this defines </mtext>
+</mrow>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mspace width="thinmathspace"></mspace>
+<mspace width="thinmathspace"></mspace>
+<mspace width="thinmathspace"></mspace>
+<mo>⋮<!-- ⋮ --></mo>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{aligned}r_{0}&amp;=a\\r_{1}&amp;=b\\&amp;\,\,\,\vdots \\r_{i+1}&amp;=r_{i-1}-q_{i}r_{i}\quad {\text{and}}\quad 0\leq r_{i+1}&lt;|r_{i}|\quad {\text{(this defines }}q_{i})\\&amp;\,\,\,\vdots \end{aligned}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\begin{aligned}r_{0}&amp;=a\\r_{1}&amp;=b\\&amp;\,\,\,\vdots \\r_{i+1}&amp;=r_{i-1}-q_{i}r_{i}\quad {\text{and}}\quad 0\leq r_{i+1}&lt;|r_{i}|\quad {\text{(this defines }}q_{i})\\&amp;\,\,\,\vdots \end{aligned}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8465c501347cf4cb62d5ca96943b431a7f60bbbc" style="vertical-align: -8.171ex; width:58.931ex; height:17.509ex;"/></span></dd></dl>
+<p>It is the main property of Euclidean division that the inequalities on the right define uniquely <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q_{i}}</annotation>
+</semantics>
+</math></span><img alt="q_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2752dcbff884354069fe332b8e51eb0a70a531b6" style="vertical-align: -0.671ex; width:1.837ex; height:2.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r_{i+1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r_{i+1}}</annotation>
+</semantics>
+</math></span><img alt="r_{{i+1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a861ee678c4a2af49e1040175ab639096e0c2648" style="vertical-align: -0.671ex; width:3.949ex; height:2.009ex;"/></span> from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r_{i-1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r_{i-1}}</annotation>
+</semantics>
+</math></span><img alt="r_{{i-1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2f554e738258e20980ed094ddf6ffe1de6d17bf7" style="vertical-align: -0.671ex; width:3.949ex; height:2.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r_{i}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r_{i}.}</annotation>
+</semantics>
+</math></span><img alt="r_{{i}}." aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/19fffb8f2f64839b26aeca3bf085400e0a3a232a" style="vertical-align: -0.671ex; width:2.495ex; height:2.009ex;"/></span>
+</p><p>The computation stops when one reaches a remainder <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r_{k+1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r_{k+1}}</annotation>
+</semantics>
+</math></span><img alt="r_{{k+1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/36750cc31ce4de4a6f65e7c16830fc2543b06b10" style="vertical-align: -0.671ex; width:4.238ex; height:2.009ex;"/></span> which is zero; the greatest common divisor is then the last non zero remainder <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r_{k}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r_{k}.}</annotation>
+</semantics>
+</math></span><img alt="r_{{k}}." aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/99fd4b9d71af0ad957e1b74da55a249cb10f8580" style="vertical-align: -0.671ex; width:2.784ex; height:2.009ex;"/></span>
+</p><p>The extended Euclidean algorithm proceeds similarly, but adds two other sequences, as follows
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{aligned}r_{0}&amp;=a&amp;r_{1}&amp;=b\\s_{0}&amp;=1&amp;s_{1}&amp;=0\\t_{0}&amp;=0&amp;t_{1}&amp;=1\\&amp;\,\,\,\vdots &amp;&amp;\,\,\,\vdots \\r_{i+1}&amp;=r_{i-1}-q_{i}r_{i}&amp;{\text{and }}0&amp;\leq r_{i+1}&lt;|r_{i}|&amp;{\text{(this defines }}q_{i}{\text{)}}\\s_{i+1}&amp;=s_{i-1}-q_{i}s_{i}\\t_{i+1}&amp;=t_{i-1}-q_{i}t_{i}\\&amp;\,\,\,\vdots \end{aligned}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="right left right left right left right left right left right left" columnspacing="0em 2em 0em 2em 0em 2em 0em 2em 0em 2em 0em" displaystyle="true" rowspacing="3pt">
+<mtr>
+<mtd>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mi>a</mi>
+</mtd>
+<mtd>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mi>b</mi>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mn>1</mn>
+</mtd>
+<mtd>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mn>0</mn>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mn>0</mn>
+</mtd>
+<mtd>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mn>1</mn>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mspace width="thinmathspace"></mspace>
+<mspace width="thinmathspace"></mspace>
+<mspace width="thinmathspace"></mspace>
+<mo>⋮<!-- ⋮ --></mo>
+</mtd>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mspace width="thinmathspace"></mspace>
+<mspace width="thinmathspace"></mspace>
+<mspace width="thinmathspace"></mspace>
+<mo>⋮<!-- ⋮ --></mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mtd>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>and </mtext>
+</mrow>
+<mn>0</mn>
+</mtd>
+<mtd>
+<mi></mi>
+<mo>≤<!-- ≤ --></mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>&lt;</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mtd>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>(this defines </mtext>
+</mrow>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>)</mtext>
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mspace width="thinmathspace"></mspace>
+<mspace width="thinmathspace"></mspace>
+<mspace width="thinmathspace"></mspace>
+<mo>⋮<!-- ⋮ --></mo>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{aligned}r_{0}&amp;=a&amp;r_{1}&amp;=b\\s_{0}&amp;=1&amp;s_{1}&amp;=0\\t_{0}&amp;=0&amp;t_{1}&amp;=1\\&amp;\,\,\,\vdots &amp;&amp;\,\,\,\vdots \\r_{i+1}&amp;=r_{i-1}-q_{i}r_{i}&amp;{\text{and }}0&amp;\leq r_{i+1}&lt;|r_{i}|&amp;{\text{(this defines }}q_{i}{\text{)}}\\s_{i+1}&amp;=s_{i-1}-q_{i}s_{i}\\t_{i+1}&amp;=t_{i-1}-q_{i}t_{i}\\&amp;\,\,\,\vdots \end{aligned}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\begin{aligned}r_{0}&amp;=a&amp;r_{1}&amp;=b\\s_{0}&amp;=1&amp;s_{1}&amp;=0\\t_{0}&amp;=0&amp;t_{1}&amp;=1\\&amp;\,\,\,\vdots &amp;&amp;\,\,\,\vdots \\r_{i+1}&amp;=r_{i-1}-q_{i}r_{i}&amp;{\text{and }}0&amp;\leq r_{i+1}&lt;|r_{i}|&amp;{\text{(this defines }}q_{i}{\text{)}}\\s_{i+1}&amp;=s_{i-1}-q_{i}s_{i}\\t_{i+1}&amp;=t_{i-1}-q_{i}t_{i}\\&amp;\,\,\,\vdots \end{aligned}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d70b150233b9b611ce7220495b5348cd228c83f4" style="vertical-align: -12.671ex; width:61.96ex; height:26.509ex;"/></span></dd></dl>
+<p>The computation also stops when <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r_{k+1}=0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r_{k+1}=0}</annotation>
+</semantics>
+</math></span><img alt="r_{{k+1}}=0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ca51218f4d232afe3c3b8d80c1a2672807a534ed" style="vertical-align: -0.671ex; width:8.499ex; height:2.509ex;"/></span> and gives 
+</p>
+<ul><li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r_{k}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r_{k}}</annotation>
+</semantics>
+</math></span><img alt="r_{k}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9b28e0e640d099f3676330bd4f604ae15c37bb4f" style="vertical-align: -0.671ex; width:2.137ex; height:2.009ex;"/></span> is the greatest common divisor of the input <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a=r_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+<mo>=</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a=r_{0}}</annotation>
+</semantics>
+</math></span><img alt="a=r_{0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b0d4cb7cb5e4d64a1e4e9845d75ae81a7f74981e" style="vertical-align: -0.671ex; width:6.431ex; height:2.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle b=r_{1}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>b</mi>
+<mo>=</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle b=r_{1}.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle b=r_{1}.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/22a9061c2ce6b67541189347ad0572823a145f3c" style="vertical-align: -0.671ex; width:6.846ex; height:2.509ex;"/></span></li>
+<li>The Bézout coefficients are <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{k}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{k}}</annotation>
+</semantics>
+</math></span><img alt="s_{k}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/04f159343172781e7666dbc88280c91f34117c30" style="vertical-align: -0.671ex; width:2.179ex; height:2.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle t_{k},}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle t_{k},}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle t_{k},}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a83ad905f1a7d98a943026acde8cae5d485f825e" style="vertical-align: -0.671ex; width:2.575ex; height:2.343ex;"/></span> that is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \gcd(a,b)=r_{k}=as_{k}+bt_{k}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mi>a</mi>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<mi>b</mi>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \gcd(a,b)=r_{k}=as_{k}+bt_{k}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \gcd(a,b)=r_{k}=as_{k}+bt_{k}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a2388df7ef379b29fa6801acb3e7f9c56b59ad4f" style="vertical-align: -0.838ex; width:26.068ex; height:2.843ex;"/></span></li>
+<li>The quotients of <i>a</i> and <i>b</i> by their greatest common divisor are given  by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{k+1}=\pm {\frac {b}{\gcd(a,b)}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mo>±<!-- ± --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>b</mi>
+<mrow>
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{k+1}=\pm {\frac {b}{\gcd(a,b)}}}</annotation>
+</semantics>
+</math></span><img alt="s_{{k+1}}=\pm {\frac  {b}{\gcd(a,b)}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d8c93c3fca1764ec802b57d24063c19c44286136" style="vertical-align: -2.671ex; width:18.58ex; height:6.176ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle t_{k+1}=\pm {\frac {a}{\gcd(a,b)}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mo>±<!-- ± --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>a</mi>
+<mrow>
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle t_{k+1}=\pm {\frac {a}{\gcd(a,b)}}}</annotation>
+</semantics>
+</math></span><img alt="t_{{k+1}}=\pm {\frac  {a}{\gcd(a,b)}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d4186c0224614c3d3dd5508e81a770a6449a9245" style="vertical-align: -2.671ex; width:18.33ex; height:5.509ex;"/></span></li></ul>
+<p>Moreover, if <i>a</i> and <i>b</i> are both positive and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \gcd(a,b)\neq \min(a,b)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+<mo>≠<!-- ≠ --></mo>
+<mo form="prefix" movablelimits="true">min</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \gcd(a,b)\neq \min(a,b)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \gcd(a,b)\neq \min(a,b)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/13a4e48c796c556ee0c6b747f027da2b66775d64" style="vertical-align: -0.838ex; width:20.602ex; height:2.843ex;"/></span>, then 
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |s_{i}|\leq \left\lfloor {\frac {b}{2\gcd(a,b)}}\right\rfloor \quad {\text{and}}\quad |t_{i}|\leq \left\lfloor {\frac {a}{2\gcd(a,b)}}\right\rfloor }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>≤<!-- ≤ --></mo>
+<mrow>
+<mo>⌊</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>b</mi>
+<mrow>
+<mn>2</mn>
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</mfrac>
+</mrow>
+<mo>⌋</mo>
+</mrow>
+<mspace width="1em"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>and</mtext>
+</mrow>
+<mspace width="1em"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>≤<!-- ≤ --></mo>
+<mrow>
+<mo>⌊</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>a</mi>
+<mrow>
+<mn>2</mn>
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</mfrac>
+</mrow>
+<mo>⌋</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |s_{i}|\leq \left\lfloor {\frac {b}{2\gcd(a,b)}}\right\rfloor \quad {\text{and}}\quad |t_{i}|\leq \left\lfloor {\frac {a}{2\gcd(a,b)}}\right\rfloor }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle |s_{i}|\leq \left\lfloor {\frac {b}{2\gcd(a,b)}}\right\rfloor \quad {\text{and}}\quad |t_{i}|\leq \left\lfloor {\frac {a}{2\gcd(a,b)}}\right\rfloor }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ff779deeb743a39fe69aed4e0bcc7b5394316065" style="vertical-align: -2.671ex; width:48.402ex; height:6.343ex;"/></span></dd></dl>
+<p>for <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 0\leq i\leq k,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>0</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>i</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>k</mi>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 0\leq i\leq k,}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 0\leq i\leq k,}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ccd4a596f48cf9ab93cbafda011dfb52cfbbe245" style="vertical-align: -0.671ex; width:10.02ex; height:2.509ex;"/></span> where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \lfloor x\rfloor }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">⌊<!-- ⌊ --></mo>
+<mi>x</mi>
+<mo fence="false" stretchy="false">⌋<!-- ⌋ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \lfloor x\rfloor }</annotation>
+</semantics>
+</math></span><img alt="\lfloor x\rfloor " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/738c94c88678dd08a289f90a47a609ce44eedf14" style="vertical-align: -0.838ex; width:3.394ex; height:2.843ex;"/></span> denotes the integral part of <span class="texhtml mvar" style="font-style:italic;">x</span>, that is the greatest integer not greater than <span class="texhtml mvar" style="font-style:italic;">x</span>.
+</p><p>This implies that the pair of Bézout's coefficients provided by the extended Euclidean algorithm is the <i>minimal pair</i> of Bézout coefficients, as being the unique pair satisfying both above inequalities .
+</p><p>Also it means that the algorithm can be done without integer overflow by a computer program using integers of a fixed size that is larger than that of <i>a</i> and <i>b</i>.
+</p>
+<h3><span class="mw-headline" id="Example">Example</span><span class="mw-editsection"></span></h3>
+<p>The following table shows how the extended Euclidean algorithm proceeds with input <span class="nowrap"><span style="color:green;">240</span></span> and <span class="nowrap"><span style="color:green;">46</span></span>. The greatest common divisor is the last non zero entry, <span class="nowrap"><span style="color: red;">2</span></span> in the column "remainder". The computation stops at row 6, because the remainder in it is <span class="nowrap"><span style="color: red;">0</span></span>. Bézout coefficients appear in the last two entries of the second-to-last row. In fact, it is easy to verify that <span class="nowrap"><span style="color:#FF0090">−9</span> × <span style="color:green;">240</span> + <span style="color:#FF0090">47</span> × <span style="color:green;">46</span> = <span style="color: red;">2</span></span>. Finally the last two entries  <span class="nowrap"><span style="color:#00cccc">23</span></span> and <span class="nowrap"><span style="color:#00cccc">−120</span></span> of the last row are, up to the sign, the quotients of the input <span class="nowrap"><span style="color:green;">46</span></span> and <span class="nowrap"><span style="color:green;">240</span></span> by the greatest common divisor <span class="nowrap"><span style="color: red;">2</span></span>.
+</p>
+<table class="wikitable" style="text-align:right;">
+<tbody><tr>
+<th>index <i>i</i></th>
+<th><span style="color:blue">quotient <i>q</i><sub><i>i</i>−1</sub> </span></th>
+<th><span style="color:olive">Remainder <i>r</i><sub><i>i</i></sub></span></th>
+<th><span style="color:#964B00"><i>s</i><sub><i>i</i></sub> </span></th>
+<th><i>t</i><sub><i>i</i></sub>
+</th></tr>
+<tr>
+<td>0</td>
+<td></td>
+<td><span style="color:green;">240</span></td>
+<td><span style="color:#964B00">1</span></td>
+<td>0
+</td></tr>
+<tr>
+<td>1</td>
+<td></td>
+<td><span style="color:green;">46</span></td>
+<td><span style="color:#964B00">0</span></td>
+<td>1
+</td></tr>
+<tr>
+<td>2</td>
+<td><span style="color:green;">240</span> ÷ <span style="color:green;">46</span> = <span style="color:blue">5</span>
+</td>
+<td><span style="color:green;">240</span> − <span style="color:blue">5</span> × <span style="color:green;">46</span> = <span style="color:olive">10</span>
+</td>
+<td><span style="color:#964B00">1</span> − <span style="color:blue">5</span> × <span style="color:#964B00">0</span> = <span style="color:#964B00">1</span>
+</td>
+<td>0 − <span style="color:blue">5</span> × 1 = −5
+</td></tr>
+<tr>
+<td>3</td>
+<td><span style="color:green;">46</span> ÷ <span style="color:olive">10</span> = <span style="color:blue">4</span>
+</td>
+<td><span style="color:green;">46</span> − <span style="color:blue">4</span> × <span style="color:olive">10</span> = <span style="color:olive">6</span>
+</td>
+<td><span style="color:#964B00">0</span> − <span style="color:blue">4</span> × <span style="color:#964B00">1</span> = <span style="color:#964B00">−4</span>
+</td>
+<td>1 − <span style="color:blue">4</span> × −5 = 21
+</td></tr>
+<tr>
+<td>4</td>
+<td><span style="color:olive">10</span> ÷ <span style="color:olive">6</span> = <span style="color:blue">1</span>
+</td>
+<td><span style="color:olive">10</span> − <span style="color:blue">1</span> × <span style="color:olive">6</span> = <span style="color:olive">4</span>
+</td>
+<td><span style="color:#964B00">1</span> − <span style="color:blue">1</span> × <span style="color:#964B00">−4</span> = <span style="color:#964B00">5</span>
+</td>
+<td>−5 − <span style="color:blue">1</span> × 21 = −26
+</td></tr>
+<tr>
+<td>5</td>
+<td><span style="color:olive">6</span> ÷ <span style="color:olive">4</span> = <span style="color:blue">1</span>
+</td>
+<td><span style="color:olive">6</span> − <span style="color:blue">1</span> × <span style="color:olive">4</span> = <span style="color: red;">2</span>
+</td>
+<td><span style="color:#964B00">−4</span> − <span style="color:blue">1</span> × <span style="color:#964B00">5</span> = <span style="color:#FF0090">−9</span>
+</td>
+<td>21 − <span style="color:blue">1</span> × −26 = <span style="color:#FF0090">47</span>
+</td></tr>
+<tr>
+<td>6</td>
+<td><span style="color:olive">4</span> ÷ <span style="color:olive">2</span> = <span style="color:blue">2</span>
+</td>
+<td><span style="color:olive">4</span> − <span style="color:blue">2</span> × <span style="color:olive">2</span> = <span style="color: red;">0</span>
+</td>
+<td><span style="color:#964B00">5</span> − <span style="color:blue">2</span> × <span style="color:#964B00">−9</span> = <span style="color:#00cccc">23</span>
+</td>
+<td>−26 − <span style="color:blue">2</span> × 47 = <span style="color:#00cccc">−120</span>
+</td></tr></tbody></table>
+<h3><span class="mw-headline" id="Proof">Proof</span><span class="mw-editsection"></span></h3>
+<p>As <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 0\leq r_{i+1}&lt;|r_{i}|,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>0</mn>
+<mo>≤<!-- ≤ --></mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>&lt;</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 0\leq r_{i+1}&lt;|r_{i}|,}</annotation>
+</semantics>
+</math></span><img alt="0\leq r_{{i+1}}&lt;|r_{i}|," aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0b1ecb78754c8753087c7bfc01740054fba9aab7" style="vertical-align: -0.838ex; width:15.097ex; height:2.843ex;"/></span> the sequence of the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r_{i}}</annotation>
+</semantics>
+</math></span><img alt="r_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a0b6d651eaf432dbf1f106021c8bb499ae83fd1f" style="vertical-align: -0.671ex; width:1.848ex; height:2.009ex;"/></span> is a decreasing sequence of nonnegative integers (from <i>i</i> = 2 on). Thus it must stop with some <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r_{k+1}=0.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mn>0.</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r_{k+1}=0.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle r_{k+1}=0.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/37bd574747c56f4a8d72a56f53b89bfc82f52549" style="vertical-align: -0.671ex; width:9.146ex; height:2.509ex;"/></span> This proves that the algorithm stops eventually.
+</p><p>As <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r_{i+1}=r_{i-1}-r_{i}q_{i},}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r_{i+1}=r_{i-1}-r_{i}q_{i},}</annotation>
+</semantics>
+</math></span><img alt="r_{{i+1}}=r_{{i-1}}-r_{i}q_{i}," aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ebf997037995f1fea6f58fa2ffb9e49403c45877" style="vertical-align: -0.671ex; width:18.168ex; height:2.343ex;"/></span> the greatest common divisor is the same for <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (r_{i-1},r_{i})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (r_{i-1},r_{i})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle (r_{i-1},r_{i})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d93640e94e07f942a9fbc228a7fef0dac48217fb" style="vertical-align: -0.838ex; width:8.64ex; height:2.843ex;"/></span>  and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (r_{i},r_{i+1}).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (r_{i},r_{i+1}).}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle (r_{i},r_{i+1}).}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fce83953229d4bde887ad623ac1dc105e272342a" style="vertical-align: -0.838ex; width:9.287ex; height:2.843ex;"/></span> This shows that the greatest common divisor of the input <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a=r_{0},b=r_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+<mo>=</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>b</mi>
+<mo>=</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a=r_{0},b=r_{1}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle a=r_{0},b=r_{1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2cbdb6b9aad35cd5271ab5b7faed4684adf69a6a" style="vertical-align: -0.671ex; width:13.664ex; height:2.509ex;"/></span> is the same as that of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r_{k},r_{k+1}=0.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mn>0.</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r_{k},r_{k+1}=0.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle r_{k},r_{k+1}=0.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/06c6dbf203e139e9e7faf023b41751f71d01c4bf" style="vertical-align: -0.671ex; width:12.317ex; height:2.509ex;"/></span> This proves that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r_{k}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r_{k}}</annotation>
+</semantics>
+</math></span><img alt="r_{k}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9b28e0e640d099f3676330bd4f604ae15c37bb4f" style="vertical-align: -0.671ex; width:2.137ex; height:2.009ex;"/></span> is the greatest common divisor of <i>a</i> and <i>b</i>. (Until this point, the proof is the same as that of the classical Euclidean algorithm.)
+</p><p>As <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a=r_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+<mo>=</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a=r_{0}}</annotation>
+</semantics>
+</math></span><img alt="a=r_{0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b0d4cb7cb5e4d64a1e4e9845d75ae81a7f74981e" style="vertical-align: -0.671ex; width:6.431ex; height:2.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle b=r_{1},}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>b</mi>
+<mo>=</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle b=r_{1},}</annotation>
+</semantics>
+</math></span><img alt="b=r_{1}," aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7075397ce028edb76f7fa6348051471a5e2d40c1" style="vertical-align: -0.671ex; width:6.846ex; height:2.509ex;"/></span> we have <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle as_{i}+bt_{i}=r_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<mi>b</mi>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle as_{i}+bt_{i}=r_{i}}</annotation>
+</semantics>
+</math></span><img alt="as_{i}+bt_{i}=r_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/04ef65ed8037545ca71669dd06f99f88dfe9d020" style="vertical-align: -0.671ex; width:13.544ex; height:2.509ex;"/></span> for <i>i</i> = 0 and 1. The relation follows by induction for all <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i&gt;1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+<mo>&gt;</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i&gt;1}</annotation>
+</semantics>
+</math></span><img alt="i&gt;1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dea233301b9ca8fe5dde94824f918c0ceaf7fd5f" style="vertical-align: -0.338ex; width:5.063ex; height:2.176ex;"/></span>:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r_{i+1}=r_{i-1}-r_{i}q_{i}=(as_{i-1}+bt_{i-1})-(as_{i}+bt_{i})q_{i}=(as_{i-1}-as_{i}q_{i})+(bt_{i-1}-bt_{i}q_{i})=as_{i+1}+bt_{i+1}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mi>b</mi>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<mi>b</mi>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<mi>a</mi>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mo stretchy="false">(</mo>
+<mi>b</mi>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<mi>b</mi>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>a</mi>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mi>b</mi>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r_{i+1}=r_{i-1}-r_{i}q_{i}=(as_{i-1}+bt_{i-1})-(as_{i}+bt_{i})q_{i}=(as_{i-1}-as_{i}q_{i})+(bt_{i-1}-bt_{i}q_{i})=as_{i+1}+bt_{i+1}.}</annotation>
+</semantics>
+</math></span><img alt="r_{{i+1}}=r_{{i-1}}-r_{i}q_{i}=(as_{{i-1}}+bt_{{i-1}})-(as_{i}+bt_{i})q_{i}=(as_{{i-1}}-as_{i}q_{i})+(bt_{{i-1}}-bt_{i}q_{i})=as_{{i+1}}+bt_{{i+1}}." aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5fae0c01e916e4eacac60bf8c68966442636846b" style="vertical-align: -0.838ex; width:101.481ex; height:2.843ex;"/></span></dd></dl>
+<p>Thus <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{k}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{k}}</annotation>
+</semantics>
+</math></span><img alt="s_{k}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/04f159343172781e7666dbc88280c91f34117c30" style="vertical-align: -0.671ex; width:2.179ex; height:2.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle t_{k}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle t_{k}}</annotation>
+</semantics>
+</math></span><img alt="t_{k}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/79a3574d49db62b5bb645a1cedf19c19d342eb24" style="vertical-align: -0.671ex; width:1.928ex; height:2.343ex;"/></span> are Bézout coefficients.
+</p><p>Consider the matrix
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A_{i}={\begin{pmatrix}s_{i-1}&amp;s_{i}\\t_{i-1}&amp;t_{i}\end{pmatrix}}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>A</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>(</mo>
+<mtable columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mtd>
+<mtd>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mtd>
+<mtd>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+</mtable>
+<mo>)</mo>
+</mrow>
+</mrow>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A_{i}={\begin{pmatrix}s_{i-1}&amp;s_{i}\\t_{i-1}&amp;t_{i}\end{pmatrix}}.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle A_{i}={\begin{pmatrix}s_{i-1}&amp;s_{i}\\t_{i-1}&amp;t_{i}\end{pmatrix}}.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9c3a7d3683f2a0f556cf5e13f9519e384cef557f" style="vertical-align: -2.227ex; margin-bottom: -0.278ex; width:18.664ex; height:6.176ex;"/></span></dd></dl>
+<p>The recurrence relation may be rewritten in matrix form
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A_{i+1}=A_{i}\cdot {\begin{pmatrix}0&amp;1\\1&amp;-q_{i}\end{pmatrix}}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>A</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<msub>
+<mi>A</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>⋅<!-- ⋅ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>(</mo>
+<mtable columnspacing="1em" rowspacing="4pt">
+<mtr>
+<mtd>
+<mn>0</mn>
+</mtd>
+<mtd>
+<mn>1</mn>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mn>1</mn>
+</mtd>
+<mtd>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mtd>
+</mtr>
+</mtable>
+<mo>)</mo>
+</mrow>
+</mrow>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A_{i+1}=A_{i}\cdot {\begin{pmatrix}0&amp;1\\1&amp;-q_{i}\end{pmatrix}}.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle A_{i+1}=A_{i}\cdot {\begin{pmatrix}0&amp;1\\1&amp;-q_{i}\end{pmatrix}}.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cba04160ebeb13d2302a3d01f93a03e3daf2627a" style="vertical-align: -2.505ex; width:23.913ex; height:6.176ex;"/></span></dd></dl>
+<p>The matrix <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>A</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A_{1}}</annotation>
+</semantics>
+</math></span><img alt="A_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6bc2435b217c1a0f46f8a517ffa225c6f9440e81" style="vertical-align: -0.671ex; width:2.797ex; height:2.509ex;"/></span> is the identity matrix and its determinant is one. The determinant of the rightmost matrix in the preceding formula is −1. It follows that the determinant of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>A</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A_{i}}</annotation>
+</semantics>
+</math></span><img alt="A_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1aed3b5def921afbe6cc48aaf8f9b11c6f1c1e2d" style="vertical-align: -0.671ex; width:2.543ex; height:2.509ex;"/></span> is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (-1)^{i-1}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (-1)^{i-1}.}</annotation>
+</semantics>
+</math></span><img alt="(-1)^{{i-1}}." aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2326752d0b3e990bb68a35c3803df78cd2b0bfae" style="vertical-align: -0.838ex; width:8.327ex; height:3.176ex;"/></span> In particular, for <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i=k+1,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+<mo>=</mo>
+<mi>k</mi>
+<mo>+</mo>
+<mn>1</mn>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i=k+1,}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle i=k+1,}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7b22be0bcde414580941ca6e5c7bbd2601de771d" style="vertical-align: -0.671ex; width:9.762ex; height:2.509ex;"/></span> we have <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{k}t_{k+1}-t_{k}s_{k+1}=(-1)^{k}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msup>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{k}t_{k+1}-t_{k}s_{k+1}=(-1)^{k}.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle s_{k}t_{k+1}-t_{k}s_{k+1}=(-1)^{k}.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b20690603dfe0bedd43a989cb66f46ea2af92d61" style="vertical-align: -0.838ex; width:24.87ex; height:3.176ex;"/></span> Viewing this as a Bézout's identity, this shows that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{k+1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{k+1}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle s_{k+1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f29bd058db3a97649c5ccb6673b9623b3f943faa" style="vertical-align: -0.671ex; width:4.28ex; height:2.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle t_{k+1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle t_{k+1}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle t_{k+1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dee9a9fc05a324089651272826fb5a4ca9eb8313" style="vertical-align: -0.671ex; width:4.029ex; height:2.343ex;"/></span> are coprime. The relation <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle as_{k+1}+bt_{k+1}=0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mi>b</mi>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle as_{k+1}+bt_{k+1}=0}</annotation>
+</semantics>
+</math></span><img alt="as_{{k+1}}+bt_{{k+1}}=0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7f998f0d5ebbdec4290bf29c41e5c9102726e02f" style="vertical-align: -0.671ex; width:17.637ex; height:2.509ex;"/></span> that has been proved above and Euclid's lemma show that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{k+1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{k+1}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle s_{k+1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f29bd058db3a97649c5ccb6673b9623b3f943faa" style="vertical-align: -0.671ex; width:4.28ex; height:2.009ex;"/></span> divides <span class="texhtml mvar" style="font-style:italic;">b</span>, that is that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle b=ds_{k+1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>b</mi>
+<mo>=</mo>
+<mi>d</mi>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle b=ds_{k+1}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle b=ds_{k+1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9a72e5b664a38fc5dd464a81edcc241a879adea1" style="vertical-align: -0.671ex; width:9.592ex; height:2.509ex;"/></span> for some integer <span class="texhtml mvar" style="font-style:italic;">d</span>. Dividing by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{k+1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{k+1}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle s_{k+1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f29bd058db3a97649c5ccb6673b9623b3f943faa" style="vertical-align: -0.671ex; width:4.28ex; height:2.009ex;"/></span> the relation <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle as_{k+1}+bt_{k+1}=0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<mi>b</mi>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle as_{k+1}+bt_{k+1}=0}</annotation>
+</semantics>
+</math></span><img alt="as_{{k+1}}+bt_{{k+1}}=0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7f998f0d5ebbdec4290bf29c41e5c9102726e02f" style="vertical-align: -0.671ex; width:17.637ex; height:2.509ex;"/></span> gives <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a=-dt_{k+1}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+<mo>=</mo>
+<mo>−<!-- − --></mo>
+<mi>d</mi>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a=-dt_{k+1}.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle a=-dt_{k+1}.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d709b021a653e5378a3e7b61db953422bb72aa33" style="vertical-align: -0.671ex; width:12.028ex; height:2.509ex;"/></span> So, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{k+1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{k+1}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle s_{k+1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f29bd058db3a97649c5ccb6673b9623b3f943faa" style="vertical-align: -0.671ex; width:4.28ex; height:2.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle -t_{k+1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>−<!-- − --></mo>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle -t_{k+1}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle -t_{k+1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f91c545f025bc9db28747b2c70eb6077c69d4945" style="vertical-align: -0.671ex; width:5.837ex; height:2.343ex;"/></span> are coprime integers that are the quotients of <span class="texhtml mvar" style="font-style:italic;">a</span> and <span class="texhtml mvar" style="font-style:italic;">b</span> by a common factor, which is thus their greatest common divisor or its opposite.
+</p><p>To prove the last assertion, assume that <i>a</i> and <i>b</i> are both positive and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \gcd(a,b)\neq \min(a,b)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+<mo>≠<!-- ≠ --></mo>
+<mo form="prefix" movablelimits="true">min</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \gcd(a,b)\neq \min(a,b)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \gcd(a,b)\neq \min(a,b)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/13a4e48c796c556ee0c6b747f027da2b66775d64" style="vertical-align: -0.838ex; width:20.602ex; height:2.843ex;"/></span>. Then, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a\neq b}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+<mo>≠<!-- ≠ --></mo>
+<mi>b</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a\neq b}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle a\neq b}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3bf17ce351d08f2b7a3e54ba3aa2132f260c84f6" style="vertical-align: -0.838ex; width:5.326ex; height:2.676ex;"/></span>, and  if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a&lt;b}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+<mo>&lt;</mo>
+<mi>b</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a&lt;b}</annotation>
+</semantics>
+</math></span><img alt="a&lt;b" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/91a7698e4c7401bb321f97888b872b583a9e4642" style="vertical-align: -0.338ex; width:5.326ex; height:2.176ex;"/></span>, it can be seen that the <i>s</i> and <i>t</i> sequences for (<i>a</i>,<i>b</i>) under the EEA are, up to initial 0s and 1s, the <i>t</i> and <i>s</i> sequences for (<i>b</i>,<i>a</i>). The definitions then show that the (<i>a</i>,<i>b</i>) case reduces to the (<i>b</i>,<i>a</i>) case. So assume that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a&gt;b}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+<mo>&gt;</mo>
+<mi>b</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a&gt;b}</annotation>
+</semantics>
+</math></span><img alt="a&gt;b" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/83fc0063781fb9bf4ec7608b2fd11ed6d5b05a13" style="vertical-align: -0.338ex; width:5.326ex; height:2.176ex;"/></span> without loss of generality.
+</p><p>It can be seen that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{2}}</annotation>
+</semantics>
+</math></span><img alt="s_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d4b9a7acc0ae8f54da4b7f4eef2c777d44faecd4" style="vertical-align: -0.671ex; width:2.145ex; height:2.009ex;"/></span> is 1 and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{3}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{3}}</annotation>
+</semantics>
+</math></span><img alt="s_{3}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3bd55c668c8fec10ff916bef319c7ff9d3a7de7a" style="vertical-align: -0.671ex; width:2.145ex; height:2.009ex;"/></span> (which exists by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \gcd(a,b)\neq \min(a,b)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+<mo>≠<!-- ≠ --></mo>
+<mo form="prefix" movablelimits="true">min</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \gcd(a,b)\neq \min(a,b)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \gcd(a,b)\neq \min(a,b)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/13a4e48c796c556ee0c6b747f027da2b66775d64" style="vertical-align: -0.838ex; width:20.602ex; height:2.843ex;"/></span>) is a negative integer. Thereafter, the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{i}}</annotation>
+</semantics>
+</math></span><img alt="s_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cfda82668232cbdc0874ed28ab8b6079420d1ffe" style="vertical-align: -0.671ex; width:1.89ex; height:2.009ex;"/></span> alternate in sign and strictly increase in magnitude, which follows inductively from the definitions and the fact that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q_{i}\geq 1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q_{i}\geq 1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle q_{i}\geq 1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1aba6fbf4d792c5d9f9165028c8ab919c7039d7e" style="vertical-align: -0.671ex; width:6.098ex; height:2.509ex;"/></span> for <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1\leq i\leq k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>i</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1\leq i\leq k}</annotation>
+</semantics>
+</math></span><img alt="1\leq i\leq k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/83de74da899efbafa01ec98ebf478e9ce5679fc6" style="vertical-align: -0.505ex; width:9.373ex; height:2.343ex;"/></span>, the case <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i=1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i=1}</annotation>
+</semantics>
+</math></span><img alt="i=1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9fb857369fbc28dab4b5d76bb835e6f196b1d1cf" style="vertical-align: -0.338ex; width:5.063ex; height:2.176ex;"/></span> holds because <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a&gt;b}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+<mo>&gt;</mo>
+<mi>b</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a&gt;b}</annotation>
+</semantics>
+</math></span><img alt="a&gt;b" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/83fc0063781fb9bf4ec7608b2fd11ed6d5b05a13" style="vertical-align: -0.338ex; width:5.326ex; height:2.176ex;"/></span>. The same is true for the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle t_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle t_{i}}</annotation>
+</semantics>
+</math></span><img alt="t_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8b61e3d4d909be4a19c9a554a301684232f59e5a" style="vertical-align: -0.671ex; width:1.639ex; height:2.343ex;"/></span> after the first few terms, for the same reason. Furthermore, it is easy to see that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q_{k}\geq 2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo>≥<!-- ≥ --></mo>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q_{k}\geq 2}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle q_{k}\geq 2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8a7d342b012de7e0d410660a3ce01563fcfcfaee" style="vertical-align: -0.671ex; width:6.387ex; height:2.509ex;"/></span> (when <i>a</i> and <i>b</i> are both positive and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \gcd(a,b)\neq \min(a,b)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+<mo>≠<!-- ≠ --></mo>
+<mo form="prefix" movablelimits="true">min</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \gcd(a,b)\neq \min(a,b)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \gcd(a,b)\neq \min(a,b)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/13a4e48c796c556ee0c6b747f027da2b66775d64" style="vertical-align: -0.838ex; width:20.602ex; height:2.843ex;"/></span>). Thus,
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |s_{k+1}|=\left|{\frac {b}{\gcd(a,b)}}\right|\geq 2|s_{k}|\qquad {\text{and}}\qquad |t_{k+1}|=\left|{\frac {a}{\gcd(a,b)}}\right|\geq 2|t_{k}|.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>=</mo>
+<mrow>
+<mo>|</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>b</mi>
+<mrow>
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</mfrac>
+</mrow>
+<mo>|</mo>
+</mrow>
+<mo>≥<!-- ≥ --></mo>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mspace width="2em"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>and</mtext>
+</mrow>
+<mspace width="2em"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>=</mo>
+<mrow>
+<mo>|</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>a</mi>
+<mrow>
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</mfrac>
+</mrow>
+<mo>|</mo>
+</mrow>
+<mo>≥<!-- ≥ --></mo>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |s_{k+1}|=\left|{\frac {b}{\gcd(a,b)}}\right|\geq 2|s_{k}|\qquad {\text{and}}\qquad |t_{k+1}|=\left|{\frac {a}{\gcd(a,b)}}\right|\geq 2|t_{k}|.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle |s_{k+1}|=\left|{\frac {b}{\gcd(a,b)}}\right|\geq 2|s_{k}|\qquad {\text{and}}\qquad |t_{k+1}|=\left|{\frac {a}{\gcd(a,b)}}\right|\geq 2|t_{k}|.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bf73565932ed7971209e05d6b75695413e662363" style="vertical-align: -2.671ex; width:67.37ex; height:6.509ex;"/></span></dd></dl>
+<p>This, accompanied by the fact that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{k},t_{k}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{k},t_{k}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle s_{k},t_{k}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0fb8db7f1c60f019cedf77d94ba83a9744585653" style="vertical-align: -0.671ex; width:5.141ex; height:2.343ex;"/></span> are larger than or equal to in absolute value than any previous <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{i}}</annotation>
+</semantics>
+</math></span><img alt="s_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cfda82668232cbdc0874ed28ab8b6079420d1ffe" style="vertical-align: -0.671ex; width:1.89ex; height:2.009ex;"/></span> or <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle t_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle t_{i}}</annotation>
+</semantics>
+</math></span><img alt="t_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8b61e3d4d909be4a19c9a554a301684232f59e5a" style="vertical-align: -0.671ex; width:1.639ex; height:2.343ex;"/></span> respectively completed the proof.
+</p>
+<h2><span class="mw-headline" id="Polynomial_extended_Euclidean_algorithm">Polynomial extended Euclidean algorithm</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p>For univariate polynomials with coefficients in a field, everything works similarly, Euclidean division, Bézout's identity and extended Euclidean algorithm. The first difference is that, in the Euclidean division and the algorithm, the inequality <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 0\leq r_{i+1}&lt;|r_{i}|}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>0</mn>
+<mo>≤<!-- ≤ --></mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>&lt;</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 0\leq r_{i+1}&lt;|r_{i}|}</annotation>
+</semantics>
+</math></span><img alt="0\leq r_{{i+1}}&lt;|r_{i}|" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/24771b0fcd184283ad412ab72593f9e673749e51" style="vertical-align: -0.838ex; width:14.45ex; height:2.843ex;"/></span> has to be replaced by an inequality on the degrees <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \deg r_{i+1}&lt;\deg r_{i}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>deg</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>&lt;</mo>
+<mi>deg</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \deg r_{i+1}&lt;\deg r_{i}.}</annotation>
+</semantics>
+</math></span><img alt="\deg r_{{i+1}}&lt;\deg r_{i}." aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c9e6f3b594c4a1fc46d3092975b940125d877cb2" style="vertical-align: -0.671ex; width:17.291ex; height:2.509ex;"/></span> Otherwise, everything which precedes in this article remains the same, simply by replacing integers by polynomials.
+</p><p>A second difference lies in the bound on the size of the Bézout coefficients provided by the extended Euclidean algorithm, which is more accurate in the polynomial case, leading to the following theorem.
+</p><p><i>If a and b are two nonzero polynomials, then the extended Euclidean algorithm produces the unique pair of polynomials</i> (<i>s</i>, <i>t</i>) <i>such that</i>
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle as+bt=\gcd(a,b)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+<mi>s</mi>
+<mo>+</mo>
+<mi>b</mi>
+<mi>t</mi>
+<mo>=</mo>
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle as+bt=\gcd(a,b)}</annotation>
+</semantics>
+</math></span><img alt="as+bt=\gcd(a,b)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/41270531134fef0a42a87e6de9a4347b38abfc57" style="vertical-align: -0.838ex; width:18.654ex; height:2.843ex;"/></span></dd></dl>
+<p><i>and</i>
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \deg s&lt;\deg b-\deg(\gcd(a,b)),\quad \deg t&lt;\deg a-\deg(\gcd(a,b)).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>deg</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>s</mi>
+<mo>&lt;</mo>
+<mi>deg</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>b</mi>
+<mo>−<!-- − --></mo>
+<mi>deg</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<mspace width="1em"></mspace>
+<mi>deg</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>t</mi>
+<mo>&lt;</mo>
+<mi>deg</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>a</mi>
+<mo>−<!-- − --></mo>
+<mi>deg</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \deg s&lt;\deg b-\deg(\gcd(a,b)),\quad \deg t&lt;\deg a-\deg(\gcd(a,b)).}</annotation>
+</semantics>
+</math></span><img alt="\deg s&lt;\deg b-\deg(\gcd(a,b)),\quad \deg t&lt;\deg a-\deg(\gcd(a,b))." aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3fa1dcf6f20b548d3908ada71d4ee04920b47dd6" style="vertical-align: -0.838ex; width:63.246ex; height:2.843ex;"/></span></dd></dl>
+<p>A third difference is that, in the polynomial case, the greatest common divisor is defined only up to the multiplication by a non zero constant. There are several ways to define unambiguously a greatest common divisor.
+</p><p>In mathematics, it is common to require that the greatest common divisor be a monic polynomial. To get this, it suffices to divide every element of the output by the leading coefficient of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r_{k}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r_{k}.}</annotation>
+</semantics>
+</math></span><img alt="r_{{k}}." aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/99fd4b9d71af0ad957e1b74da55a249cb10f8580" style="vertical-align: -0.671ex; width:2.784ex; height:2.009ex;"/></span> This allows that, if <i>a</i> and <i>b</i> are coprime, one gets 1 in the right-hand side of Bézout's inequality. Otherwise, one may get any non-zero constant. In computer algebra, the polynomials commonly have integer coefficients, and this way of normalizing the greatest common divisor introduces too many fractions to be convenient.
+</p><p>The second way to normalize the greatest common divisor in the case of polynomials with integers coefficients is to divide every output by the content of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r_{k},}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r_{k},}</annotation>
+</semantics>
+</math></span><img alt="r_{{k}}," aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e8c81a0b5c40435fe297a0c4e7ff760544f707bd" style="vertical-align: -0.671ex; width:2.784ex; height:2.009ex;"/></span> to get a primitive greatest common divisor. If the input polynomials are coprime, this normalisation also provides a greatest common divisor equal to 1. The drawback of this approach is that a lot of fractions should be computed and simplified during the computation.
+</p><p>A third approach consists in extending the algorithm of subresultant pseudo-remainder sequences in a way that is similar to the extension of the Euclidean algorithm to the extended Euclidean algorithm. This allows that, when starting with polynomials with integer coefficients, all polynomials that are computed have integer coefficients. Moreover, every computed remainder <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r_{i}}</annotation>
+</semantics>
+</math></span><img alt="r_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a0b6d651eaf432dbf1f106021c8bb499ae83fd1f" style="vertical-align: -0.671ex; width:1.848ex; height:2.009ex;"/></span> is a subresultant polynomial. In particular, if the input polynomials are coprime, then the Bézout's identity becomes 
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle as+bt=\operatorname {Res} (a,b),}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+<mi>s</mi>
+<mo>+</mo>
+<mi>b</mi>
+<mi>t</mi>
+<mo>=</mo>
+<mi>Res</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle as+bt=\operatorname {Res} (a,b),}</annotation>
+</semantics>
+</math></span><img alt="as+bt=\operatorname {Res}(a,b)," aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5fb01e7d503f870ce495d851f1ed3029a64410a4" style="vertical-align: -0.838ex; width:19.473ex; height:2.843ex;"/></span></dd></dl>
+<p>where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \operatorname {Res} (a,b)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>Res</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \operatorname {Res} (a,b)}</annotation>
+</semantics>
+</math></span><img alt="\operatorname {Res}(a,b)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/db867c5491715bc21f7580a6d13f258da52f4557" style="vertical-align: -0.838ex; width:8.73ex; height:2.843ex;"/></span> denotes the resultant of <i>a</i> and <i>b</i>. In this form of Bézout's identity, there is no denominator in the formula. If one divides everything by the resultant one gets the classical Bézout's identity, with an explicit common denominator for the rational numbers that appear in it.
+</p>
+<h2><span class="mw-headline" id="Pseudocode">Pseudocode</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>To implement the algorithm that is described above, one should first remark that only the two last values of the indexed variables are needed at each step. Thus, for saving memory, each indexed variable must be replaced by just two variables.
+</p><p>For simplicity, the following algorithm (and the other algorithms in this article) uses parallel assignments. In a programming language which does not have this feature, the parallel assignments need to be simulated with an auxiliary variable. For example, the first one,
+</p>
+<pre>(old_r, r) := (r, old_r - quotient * r)
+</pre>
+<p>is equivalent to
+</p>
+<pre>prov := r;
+r := old_r - quotient × prov;
+old_r := prov;
+</pre>
+<p>and similarly for the other parallel assignments.
+This leads to the following code:
+</p>
+<pre><b>function</b> extended_gcd(a, b)
+    (old_r, r) := (a, b)
+    (old_s, s) := (1, 0)
+    (old_t, t) := (0, 1)
+    
+    <b>while</b> r ≠ 0 <b>do</b>
+        quotient := old_r <b>div</b> r
+        (old_r, r) := (r, old_r − quotient × r)
+        (old_s, s) := (s, old_s − quotient × s)
+        (old_t, t) := (t, old_t − quotient × t)
+    
+    <b>output</b> "Bézout coefficients:", (old_s, old_t)
+    <b>output</b> "greatest common divisor:", old_r
+    <b>output</b> "quotients by the gcd:", (t, s)
+</pre>
+<p>The quotients of <i>a</i> and <i>b</i> by their greatest common divisor, which is output, may have an incorrect sign. This is easy to correct at the end of the computation but has not been done here for simplifying the code. Similarly, if either <i>a</i> or <i>b</i> is zero and the other is negative, the greatest common divisor that is output is negative, and all the signs of the output must be changed.
+</p><p>Finally, notice that in Bézout's identity, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle ax+by=\gcd(a,b)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+<mi>x</mi>
+<mo>+</mo>
+<mi>b</mi>
+<mi>y</mi>
+<mo>=</mo>
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle ax+by=\gcd(a,b)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle ax+by=\gcd(a,b)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8e83afd6d9ee8bd9e5c5d9d7a144ef910e79c13f" style="vertical-align: -0.838ex; width:19.209ex; height:2.843ex;"/></span>, one can solve for <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>y</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y}</annotation>
+</semantics>
+</math></span><img alt="y" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b8a6208ec717213d4317e666f1ae872e00620a0d" style="vertical-align: -0.671ex; width:1.155ex; height:2.009ex;"/></span> given <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a,b,x,\gcd(a,b)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo>,</mo>
+<mi>x</mi>
+<mo>,</mo>
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a,b,x,\gcd(a,b)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle a,b,x,\gcd(a,b)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d65cdeaf0c4ccbb1f047681871e8344f0b03c0c5" style="vertical-align: -0.838ex; width:15.217ex; height:2.843ex;"/></span>. Thus, an optimization to the above algorithm is to compute only the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{k}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{k}}</annotation>
+</semantics>
+</math></span><img alt="s_{k}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/04f159343172781e7666dbc88280c91f34117c30" style="vertical-align: -0.671ex; width:2.179ex; height:2.009ex;"/></span> sequence (which yields the Bézout coefficient <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span>), and then compute <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>y</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y}</annotation>
+</semantics>
+</math></span><img alt="y" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b8a6208ec717213d4317e666f1ae872e00620a0d" style="vertical-align: -0.671ex; width:1.155ex; height:2.009ex;"/></span> at the end:
+</p>
+<pre><b>function</b> extended_gcd(a, b)
+    s := 0;    old_s := 1
+    r := b;    old_r := a
+         
+    <b>while</b> r ≠ 0 <b>do</b>
+        quotient := old_r <b>div</b> r
+        (old_r, r) := (r, old_r − quotient × r)
+        (old_s, s) := (s, old_s − quotient × s)
+    
+    <b>if</b> b ≠ 0 <b>then</b>
+        bezout_t := (old_r − old_s × a) <b>div</b> b
+    <b>else</b>
+        bezout_t := 0
+    
+    <b>output</b> "Bézout coefficients:", (old_s, bezout_t)
+    <b>output</b> "greatest common divisor:", old_r
+</pre>
+<p>However, in many cases this is not really an optimization: whereas the former algorithm is not susceptible to overflow when used with machine integers (that is, integers with a fixed upper bound of digits), the multiplication of <i>old_s * a</i> in computation of <i>bezout_t</i> can overflow, limiting this optimization to inputs which can be represented in less than half the maximal size. When using integers of unbounded size, the time needed for multiplication and division grows quadratically with the size of the integers. This implies that the "optimisation" replaces a sequence of multiplications/divisions of small integers by a single multiplication/division, which requires more computing time than the operations that it replaces, taken together.
+</p>
+<h2><span class="mw-headline" id="Simplification_of_fractions">Simplification of fractions</span><span class="mw-editsection"></span></h2>
+<p>A fraction <span class="texhtml"><style data-mw-deduplicate="TemplateStyles:r1050945101">.mw-parser-output .sfrac{white-space:nowrap}.mw-parser-output .sfrac.tion,.mw-parser-output .sfrac .tion{display:inline-block;vertical-align:-0.5em;font-size:85%;text-align:center}.mw-parser-output .sfrac .num,.mw-parser-output .sfrac .den{display:block;line-height:1em;margin:0 0.1em}.mw-parser-output .sfrac .den{border-top:1px solid}.mw-parser-output .sr-only{border:0;clip:rect(0,0,0,0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px}</style><span class="sfrac tion" role="math"><span class="num"><i>a</i></span><span class="sr-only">/</span><span class="den"><i>b</i></span></span></span> is in canonical simplified form if <span class="texhtml"><i>a</i></span> and <span class="texhtml"><i>b</i></span> are coprime and <span class="texhtml"><i>b</i></span> is positive. This canonical simplified form can be obtained by replacing the three output lines of the preceding pseudo code by 
+</p>
+<pre><b>if</b> <span class="texhtml"><i>s</i> = 0</span> <b>then output</b> "Division by zero"
+<b>if</b> <span class="texhtml"><i>s</i> &lt; 0</span> <b>then</b> <span class="texhtml"><i>s</i> := −<i>s</i></span>;  <span class="texhtml"><i>t</i> := −<i>t</i></span>   (<i>for avoiding negative denominators</i>)
+<b>if</b> <span class="texhtml"><i>s</i> = 1</span> <b>then output</b> <span class="texhtml">-<i>t</i></span>        (<i>for avoiding denominators equal to</i> 1)
+<b>output</b> <span class="texhtml"><link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac tion" role="math"><span class="num">-<i>t</i></span><span class="sr-only">/</span><span class="den"><i>s</i></span></span></span>
+</pre>
+<p>The proof of this algorithm relies on the fact that <span class="texhtml"><i>s</i></span> and <span class="texhtml"><i>t</i></span> are two coprime integers such that <span class="texhtml"><i>as</i> + <i>bt</i> = 0</span>, and thus <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\frac {a}{b}}=-{\frac {t}{s}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>a</mi>
+<mi>b</mi>
+</mfrac>
+</mrow>
+<mo>=</mo>
+<mo>−<!-- − --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>t</mi>
+<mi>s</mi>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\frac {a}{b}}=-{\frac {t}{s}}}</annotation>
+</semantics>
+</math></span><img alt="{\frac  {a}{b}}=-{\frac  {t}{s}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/00e08a1f7835eaf66656977caabe7cca3d49259e" style="vertical-align: -2.005ex; width:8.899ex; height:5.343ex;"/></span>. To get the canonical simplified form, it suffices to move the minus sign for having a positive denominator.
+</p><p>If <span class="texhtml"><i>b</i></span> divides <span class="texhtml"><i>a</i></span> evenly, the algorithm executes only one iteration, and we have <span class="texhtml"><i>s</i> = 1</span> at the end of the algorithm. It is the only case where the output is an integer.
+</p>
+<h2><span class="mw-headline" id="Computing_multiplicative_inverses_in_modular_structures">Computing multiplicative inverses in modular structures</span><span class="mw-editsection"></span></h2>
+<p>The extended Euclidean algorithm is the essential tool for computing multiplicative inverses in modular structures, typically the modular integers and the algebraic field extensions. A notable instance of the latter case are the finite fields of non-prime order.
+</p>
+<h3><span class="mw-headline" id="Modular_integers">Modular integers</span><span class="mw-editsection"></span></h3>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>If <span class="texhtml"><i>n</i></span> is a positive integer, the ring <span class="texhtml"><b>Z</b>/<i>n</i><b>Z</b></span> may be identified with the set <span class="texhtml">{0, 1, ..., <i>n</i>-1}</span> of the remainders of Euclidean division by <span class="texhtml"><i>n</i></span>, the addition  and the multiplication consisting in taking the remainder by <span class="texhtml"><i>n</i></span> of the result of the addition and the multiplication of integers. An element <span class="texhtml"><i>a</i></span> of <span class="texhtml"><b>Z</b>/<i>n</i><b>Z</b></span> has a multiplicative inverse (that is, it is a unit) if it is coprime to <span class="texhtml"><i>n</i></span>. In particular, if <span class="texhtml"><i>n</i></span> is prime, <span class="texhtml"><i>a</i></span> has a multiplicative inverse if it is not zero (modulo <span class="texhtml"><i>n</i></span>). Thus <span class="texhtml"><b>Z</b>/<i>n</i><b>Z</b></span> is a field if and only if <span class="texhtml"><i>n</i></span> is prime.
+</p><p>Bézout's identity asserts that <span class="texhtml"><i>a</i></span> and <span class="texhtml"><i>n</i></span> are coprime if and only if there exist integers <span class="texhtml"><i>s</i></span> and <span class="texhtml"><i>t</i></span> such that 
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle ns+at=1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>s</mi>
+<mo>+</mo>
+<mi>a</mi>
+<mi>t</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle ns+at=1}</annotation>
+</semantics>
+</math></span><img alt="ns+at=1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/12511ac520ce56751b20905e023cda43161ba7af" style="vertical-align: -0.505ex; width:11.656ex; height:2.343ex;"/></span></dd></dl>
+<p>Reducing this identity modulo <span class="texhtml"><i>n</i></span> gives 
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle at\equiv 1\mod n.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+<mi>t</mi>
+<mo>≡<!-- ≡ --></mo>
+<mn>1</mn>
+<mspace width="1em"></mspace>
+<mi>mod</mi>
+<mspace width="thinmathspace"></mspace>
+<mspace width="thinmathspace"></mspace>
+<mi>n</mi>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle at\equiv 1\mod n.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle at\equiv 1\mod n.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/97df6405e3c6769fc2ba5085efabbb24449ccc7c" style="vertical-align: -0.338ex; width:16.634ex; height:2.176ex;"/></span></dd></dl>
+<p>Thus <span class="texhtml"><i>t</i></span>, or, more exactly, the remainder of the division of <span class="texhtml"><i>t</i></span> by <span class="texhtml"><i>n</i></span>, is the multiplicative inverse of <span class="texhtml"><i>a</i></span> modulo <span class="texhtml"><i>n</i></span>.
+</p><p>To adapt the extended Euclidean algorithm to this problem, one should remark that the Bézout coefficient of <span class="texhtml"><i>n</i></span> is not needed, and thus does not need to be computed. Also, for getting a result which is positive and lower than <i>n</i>, one may use the fact that the integer <span class="texhtml"><i>t</i></span> provided by the algorithm satisfies <span class="texhtml">|<i>t</i>| &lt; <i>n</i></span>. That is, if <span class="texhtml"><i>t</i> &lt; 0</span>, one must add <span class="texhtml"><i>n</i></span> to it at the end. This results in the pseudocode, in which the input <i>n</i> is an integer larger than 1.
+</p>
+<pre><code> <b>function</b> inverse(a, n)
+    t := 0;     newt := 1
+    r := n;     newr := a
+
+    <b>while</b> newr ≠ 0 <b>do</b>
+        quotient := r <b>div</b> newr
+        (t, newt) := (newt, t − quotient × newt) 
+        (r, newr) := (newr, r − quotient × newr)
+
+    <b>if</b> r &gt; 1 <b>then</b>
+        <b>return</b> "a is not invertible"
+    <b>if</b> t &lt; 0 <b>then</b>
+        t := t + n
+
+    <b>return</b> t</code>
+</pre>
+<h3><span class="mw-headline" id="Simple_algebraic_field_extensions">Simple algebraic field extensions</span><span class="mw-editsection"></span></h3>
+<p>The extended Euclidean algorithm is also the main tool for computing multiplicative inverses in simple algebraic field extensions. An important case, widely used in cryptography and coding theory, is that of finite fields of non-prime order. In fact, if <span class="texhtml"><i>p</i></span> is a prime number, and <span class="texhtml"><i>q</i> = <i>p</i><sup><i>d</i></sup></span>, the field of order <span class="texhtml"><i>q</i></span> is a simple algebraic extension of the prime field of <span class="texhtml"><i>p</i></span> elements, generated by a root of an irreducible polynomial of degree <span class="texhtml"><i>d</i></span>.
+</p><p>A simple algebraic extension <span class="texhtml"><i>L</i></span> of a field <span class="texhtml"><i>K</i></span>, generated by the root of an irreducible polynomial <span class="texhtml"><i>p</i></span> of degree <span class="texhtml"><i>d</i></span> may be identified to the quotient ring <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle K[X]/\langle p\rangle ,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>K</mi>
+<mo stretchy="false">[</mo>
+<mi>X</mi>
+<mo stretchy="false">]</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mo fence="false" stretchy="false">⟨<!-- ⟨ --></mo>
+<mi>p</mi>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle K[X]/\langle p\rangle ,}</annotation>
+</semantics>
+</math></span><img alt="K[X]/\langle p\rangle ," aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/337bc88869134a1aeba2c8700c0b6a60aafdd362" style="vertical-align: -0.838ex; width:10.128ex; height:2.843ex;"/></span>, and its elements are in bijective correspondence with the polynomials of degree less than <span class="texhtml"><i>d</i></span>. The addition in <span class="texhtml"><i>L</i></span> is the addition of polynomials. The multiplication in <span class="texhtml"><i>L</i></span> is the remainder of the Euclidean division by <span class="texhtml"><i>p</i></span> of the product of polynomials. Thus, to complete the arithmetic in <span class="texhtml"><i>L</i></span>, it remains only to define how to compute multiplicative inverses. This is done by the extended Euclidean algorithm.
+</p><p>The algorithm is very similar to that provided above for computing the modular multiplicative inverse. There are two main differences: firstly the last but one line is not needed, because the Bézout coefficient that is provided always has a degree less than <span class="texhtml"><i>d</i></span>. Secondly, the greatest common divisor which is provided, when the input polynomials are coprime, may be any non zero elements of <span class="texhtml"><i>K</i></span>; this Bézout coefficient (a polynomial generally of positive degree) has thus to be multiplied by the inverse of this element of <span class="texhtml"><i>K</i></span>. In the pseudocode which follows, <span class="texhtml"><i>p</i></span> is a polynomial of degree greater than one, and <span class="texhtml"><i>a</i></span> is a polynomial. 
+</p>
+<pre><code><b>function</b> inverse(a, p)
+    t := 0;     newt := 1
+    r := p;     newr := a
+
+    <b>while</b> newr ≠ 0 <b>do</b>
+        quotient := r <b>div</b> newr
+        (r, newr) := (newr, r − quotient × newr)
+        (t, newt) := (newt, t − quotient × newt)
+
+    <b>if</b> degree(r) &gt; 0 <b>then</b> 
+        <b>return</b> "Either p is not irreducible or a is a multiple of p"
+
+    <b>return</b> (1/r) × t</code>
+</pre>
+<h4><span class="mw-headline" id="Example_2">Example</span><span class="mw-editsection"></span></h4>
+<p>For example, if the polynomial used to define the finite field GF(2<sup>8</sup>) is <i>p</i> = <i>x</i><sup>8</sup> + <i>x</i><sup>4</sup> + <i>x</i><sup>3</sup> + <i>x</i> + 1, and <i>a</i> = <i>x</i><sup>6</sup> + <i>x</i><sup>4</sup> + <i>x</i> + 1 is the element whose inverse is desired, then performing the algorithm results in the computation described in the following table. Let us recall that in fields of order 2<sup><i>n</i></sup>, one has -<i>z</i> = <i>z</i> and <i>z</i> + <i>z</i> = 0 for every element <i>z</i> in the field). Since 1 is the only nonzero element of GF(2), the adjustment in the last line of the pseudocode is not needed.
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>step
+</th>
+<th> quotient 
+</th>
+<th>r, newr
+</th>
+<th>s, news
+</th>
+<th>t, newt
+</th></tr>
+<tr>
+<td>
+</td>
+<td> 
+</td>
+<td> <i>p</i> = <i>x</i><sup>8</sup> + <i>x</i><sup>4</sup> + <i>x</i><sup>3</sup> + <i>x</i> + 1 
+</td>
+<td>1
+</td>
+<td> 0
+</td></tr>
+<tr>
+<td align="center">
+</td>
+<td> 
+</td>
+<td> <i>a</i> = <i>x</i><sup>6</sup> + <i>x</i><sup>4</sup> + <i>x</i> + 1
+</td>
+<td>0
+</td>
+<td> 1
+</td></tr>
+<tr>
+<td align="center">1
+</td>
+<td> <i>x</i><sup>2</sup> + 1
+</td>
+<td> <i>x</i><sup>2</sup> = <i>p</i> - <i>a</i> (<i>x</i><sup>2</sup> + 1)
+</td>
+<td>1
+</td>
+<td> <i>x</i><sup>2</sup> + 1 = 0 - 1 × (<i>x</i><sup>2</sup> + 1)
+</td></tr>
+<tr>
+<td align="center">2
+</td>
+<td> <i>x</i><sup>4</sup> + <i>x</i><sup>2</sup>
+</td>
+<td> <i>x</i> + 1 = <i>a</i> - <i>x</i><sup>2</sup> (<i>x</i><sup>4</sup> + <i>x</i><sup>2</sup>)
+</td>
+<td>x<sup>4</sup>+x<sup>2</sup> = 0 - 1(x<sup>4</sup>+x<sup>2</sup>)
+</td>
+<td> <i>x</i><sup>6</sup>  + <i>x</i><sup>2</sup> + 1 = 1 - (<i>x</i><sup>4</sup> + <i>x</i><sup>2</sup>) (<i>x</i><sup>2</sup> + 1)
+</td></tr>
+<tr>
+<td align="center">3
+</td>
+<td> <i>x</i> + 1
+</td>
+<td> 1 = <i>x</i><sup>2</sup> - (<i>x</i> + 1) (<i>x</i> + 1)
+</td>
+<td>x<sup>5</sup>+x<sup>4</sup>+x<sup>3</sup>+x<sup>2</sup>+1 = 1 - (x +1)(x<sup>4</sup> + x<sup>2</sup>)
+</td>
+<td> <i>x</i><sup>7</sup> + <i>x</i><sup>6</sup> + <i>x</i><sup>3</sup> +  <i>x</i> = (<i>x</i><sup>2</sup> + 1) - (<i>x</i> + 1) (<i>x</i><sup>6</sup>  + <i>x</i><sup>2</sup> + 1)
+</td></tr>
+<tr>
+<td align="center">4
+</td>
+<td> <i>x</i> + 1
+</td>
+<td> 0 = (<i>x</i> + 1) - 1 × (<i>x</i> + 1)
+</td>
+<td>x<sup>6</sup> + x<sup>4</sup> + x + 1 = (x<sup>4</sup>+x<sup>2</sup>) - (x+1)(x<sup>5</sup>+x<sup>4</sup>+x<sup>3</sup>+x<sup>2</sup>+1)
+</td>
+<td> 
+</td></tr></tbody></table>
+<p>Thus, the inverse is <i>x</i><sup>7</sup> + <i>x</i><sup>6</sup> + <i>x</i><sup>3</sup> + <i>x</i>, as can be confirmed by multiplying the two elements together, and taking the remainder by <span class="texhtml"><i>p</i></span> of the result.
+</p>
+<h2><span class="mw-headline" id="The_case_of_more_than_two_numbers">The case of more than two numbers</span><span class="mw-editsection"></span></h2>
+<p>One can handle the case of more than two numbers iteratively.  First we show that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \gcd(a,b,c)=\gcd(\gcd(a,b),c)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo>,</mo>
+<mi>c</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<mi>c</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \gcd(a,b,c)=\gcd(\gcd(a,b),c)}</annotation>
+</semantics>
+</math></span><img alt="\gcd(a,b,c)=\gcd(\gcd(a,b),c)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4655e77548c490e8733a3d94bd2b71ce34d56381" style="vertical-align: -0.838ex; width:29.593ex; height:2.843ex;"/></span>.  To prove this let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d=\gcd(a,b,c)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+<mo>=</mo>
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo>,</mo>
+<mi>c</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d=\gcd(a,b,c)}</annotation>
+</semantics>
+</math></span><img alt="d=\gcd(a,b,c)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/97ae34d193a77da3fae94d3603b3f9718ab17e45" style="vertical-align: -0.838ex; width:14.913ex; height:2.843ex;"/></span>. By definition of gcd <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d}</annotation>
+</semantics>
+</math></span><img alt="d" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e85ff03cbe0c7341af6b982e47e9f90d235c66ab" style="vertical-align: -0.338ex; width:1.216ex; height:2.176ex;"/></span> is a divisor of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a}</annotation>
+</semantics>
+</math></span><img alt="a" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ffd2487510aa438433a2579450ab2b3d557e5edc" style="vertical-align: -0.338ex; width:1.23ex; height:1.676ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle b}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>b</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle b}</annotation>
+</semantics>
+</math></span><img alt="b" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f11423fbb2e967f986e36804a8ae4271734917c3" style="vertical-align: -0.338ex; width:0.998ex; height:2.176ex;"/></span>.  Thus <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \gcd(a,b)=kd}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>k</mi>
+<mi>d</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \gcd(a,b)=kd}</annotation>
+</semantics>
+</math></span><img alt="\gcd(a,b)=kd" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/db669b9d42e907d82c2427cbcec081aedaa8ae14" style="vertical-align: -0.838ex; width:14.084ex; height:2.843ex;"/></span> for some <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k}</annotation>
+</semantics>
+</math></span><img alt="k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3c9a2c7b599b37105512c5d570edc034056dd40" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span>.  Similarly <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d}</annotation>
+</semantics>
+</math></span><img alt="d" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e85ff03cbe0c7341af6b982e47e9f90d235c66ab" style="vertical-align: -0.338ex; width:1.216ex; height:2.176ex;"/></span> is a divisor of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c}</annotation>
+</semantics>
+</math></span><img alt="c" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/86a67b81c2de995bd608d5b2df50cd8cd7d92455" style="vertical-align: -0.338ex; width:1.007ex; height:1.676ex;"/></span> so <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c=jd}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+<mo>=</mo>
+<mi>j</mi>
+<mi>d</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c=jd}</annotation>
+</semantics>
+</math></span><img alt="c=jd" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/aced6e21c2c724393d486eb048cd2f5ef502d634" style="vertical-align: -0.671ex; width:6.279ex; height:2.509ex;"/></span> for some <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle j}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>j</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle j}</annotation>
+</semantics>
+</math></span><img alt="j" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2f461e54f5c093e92a55547b9764291390f0b5d0" style="vertical-align: -0.671ex; margin-left: -0.027ex; width:0.985ex; height:2.509ex;"/></span>.  Let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u=\gcd(k,j)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>u</mi>
+<mo>=</mo>
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo>,</mo>
+<mi>j</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u=\gcd(k,j)}</annotation>
+</semantics>
+</math></span><img alt="u=\gcd(k,j)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/11d9c6591aa5cbf5f9f6acd3d0e346e5b5c5830b" style="vertical-align: -0.838ex; width:12.928ex; height:2.843ex;"/></span>. By our construction of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>u</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u}</annotation>
+</semantics>
+</math></span><img alt="u" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3e6bb763d22c20916ed4f0bb6bd49d7470cffd8" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle ud|a,b,c}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>u</mi>
+<mi>d</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo>,</mo>
+<mi>c</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle ud|a,b,c}</annotation>
+</semantics>
+</math></span><img alt="ud|a,b,c" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6bf251ae51bab70614a753d61c6c9b1f2e0f4452" style="vertical-align: -0.838ex; width:8.494ex; height:2.843ex;"/></span> but since <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d}</annotation>
+</semantics>
+</math></span><img alt="d" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e85ff03cbe0c7341af6b982e47e9f90d235c66ab" style="vertical-align: -0.338ex; width:1.216ex; height:2.176ex;"/></span> is the greatest divisor <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>u</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u}</annotation>
+</semantics>
+</math></span><img alt="u" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3e6bb763d22c20916ed4f0bb6bd49d7470cffd8" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> is a unit.  And since <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle ud=\gcd(\gcd(a,b),c)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>u</mi>
+<mi>d</mi>
+<mo>=</mo>
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<mi>c</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle ud=\gcd(\gcd(a,b),c)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle ud=\gcd(\gcd(a,b),c)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f9586e4006bb65475a0d4c5bacba95a7ca637b79" style="vertical-align: -0.838ex; width:21.539ex; height:2.843ex;"/></span> the result is proven.
+</p><p>So if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle na+mb=\gcd(a,b)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>a</mi>
+<mo>+</mo>
+<mi>m</mi>
+<mi>b</mi>
+<mo>=</mo>
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle na+mb=\gcd(a,b)}</annotation>
+</semantics>
+</math></span><img alt="na+mb=\gcd(a,b)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8a9690558bac661cd5baab70b203d671c0aa59d8" style="vertical-align: -0.838ex; width:20.159ex; height:2.843ex;"/></span>  then there are <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>y</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y}</annotation>
+</semantics>
+</math></span><img alt="y" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b8a6208ec717213d4317e666f1ae872e00620a0d" style="vertical-align: -0.671ex; width:1.155ex; height:2.009ex;"/></span> such that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x\gcd(a,b)+yc=\gcd(a,b,c)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>y</mi>
+<mi>c</mi>
+<mo>=</mo>
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo>,</mo>
+<mi>c</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x\gcd(a,b)+yc=\gcd(a,b,c)}</annotation>
+</semantics>
+</math></span><img alt="x\gcd(a,b)+yc=\gcd(a,b,c)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/69d9adced91604cbba59320148ce43555562addd" style="vertical-align: -0.838ex; width:28.975ex; height:2.843ex;"/></span> so the final equation will be
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x(na+mb)+yc=(xn)a+(xm)b+yc=\gcd(a,b,c).\,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mi>a</mi>
+<mo>+</mo>
+<mi>m</mi>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>y</mi>
+<mi>c</mi>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mi>a</mi>
+<mo>+</mo>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mi>m</mi>
+<mo stretchy="false">)</mo>
+<mi>b</mi>
+<mo>+</mo>
+<mi>y</mi>
+<mi>c</mi>
+<mo>=</mo>
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo>,</mo>
+<mi>c</mi>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+<mspace width="thinmathspace"></mspace>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x(na+mb)+yc=(xn)a+(xm)b+yc=\gcd(a,b,c).\,}</annotation>
+</semantics>
+</math></span><img alt="x(na+mb)+yc=(xn)a+(xm)b+yc=\gcd(a,b,c).\," aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fdbac49324ec721e89e8e27e034baf2e2db693ea" style="vertical-align: -0.838ex; width:54.258ex; height:2.843ex;"/></span></dd></dl>
+<p>So then to apply to <i>n</i> numbers we use induction
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \gcd(a_{1},a_{2},\dots ,a_{n})=\gcd(a_{1},\,\gcd(a_{2},\,\gcd(a_{3},\dots ,\gcd(a_{n-1}\,,a_{n}))),\dots ),}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mspace width="thinmathspace"></mspace>
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mspace width="thinmathspace"></mspace>
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<mo form="prefix" movablelimits="true">gcd</mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mspace width="thinmathspace"></mspace>
+<mo>,</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \gcd(a_{1},a_{2},\dots ,a_{n})=\gcd(a_{1},\,\gcd(a_{2},\,\gcd(a_{3},\dots ,\gcd(a_{n-1}\,,a_{n}))),\dots ),}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \gcd(a_{1},a_{2},\dots ,a_{n})=\gcd(a_{1},\,\gcd(a_{2},\,\gcd(a_{3},\dots ,\gcd(a_{n-1}\,,a_{n}))),\dots ),}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1023b3fa439ea788f3e2f5613c5b4f844d2c8235" style="vertical-align: -0.838ex; width:70.505ex; height:2.843ex;"/></span></dd></dl>
+<p>with the equations following directly.
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Euclidean domain</li>
+<li>Linear congruence theorem</li>
+<li>Kuṭṭaka</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<ul><li><style data-mw-deduplicate="TemplateStyles:r1067248974">.mw-parser-output cite.citation{font-style:inherit;word-wrap:break-word}.mw-parser-output .citation q{quotes:"\"""\"""'""'"}.mw-parser-output .citation:target{background-color:rgba(0,127,255,0.133)}.mw-parser-output .id-lock-free a,.mw-parser-output .citation .cs1-lock-free a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/6/65/Lock-green.svg")right 0.1em center/9px no-repeat}.mw-parser-output .id-lock-limited a,.mw-parser-output .id-lock-registration a,.mw-parser-output .citation .cs1-lock-limited a,.mw-parser-output .citation .cs1-lock-registration a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/d/d6/Lock-gray-alt-2.svg")right 0.1em center/9px no-repeat}.mw-parser-output .id-lock-subscription a,.mw-parser-output .citation .cs1-lock-subscription a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/a/aa/Lock-red-alt-2.svg")right 0.1em center/9px no-repeat}.mw-parser-output .cs1-ws-icon a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/4/4c/Wikisource-logo.svg")right 0.1em center/12px no-repeat}.mw-parser-output .cs1-code{color:inherit;background:inherit;border:none;padding:inherit}.mw-parser-output .cs1-hidden-error{display:none;color:#d33}.mw-parser-output .cs1-visible-error{color:#d33}.mw-parser-output .cs1-maint{display:none;color:#3a3;margin-left:0.3em}.mw-parser-output .cs1-format{font-size:95%}.mw-parser-output .cs1-kern-left{padding-left:0.2em}.mw-parser-output .cs1-kern-right{padding-right:0.2em}.mw-parser-output .citation .mw-selflink{font-weight:inherit}</style><cite class="citation book cs1" id="CITEREFKnuth">Knuth, Donald. <i>The Art of Computer Programming</i>. Addison-Wesley.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=The+Art+of+Computer+Programming&amp;rft.pub=Addison-Wesley&amp;rft.aulast=Knuth&amp;rft.aufirst=Donald&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AExtended+Euclidean+algorithm"></span> Volume 2, Chapter 4.</li>
+<li>Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, and Clifford Stein. <i>Introduction to Algorithms</i>, Second Edition. MIT Press and McGraw-Hill, 2001. <link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/>ISBN 0-262-03293-7. Pages 859–861 of section 31.2: Greatest common divisor.</li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097025294">.mw-parser-output .side-box{margin:4px 0;box-sizing:border-box;border:1px solid #aaa;font-size:88%;line-height:1.25em;background-color:#f9f9f9}.mw-parser-output .side-box-abovebelow,.mw-parser-output .side-box-text{padding:0.25em 0.9em}.mw-parser-output .side-box-image{padding:2px 0 2px 0.9em;text-align:center}.mw-parser-output .side-box-imageright{padding:2px 0.9em 2px 0;text-align:center}@media(min-width:500px){.mw-parser-output .side-box-flex{display:flex;align-items:center}.mw-parser-output .side-box-text{flex:1}}@media(min-width:720px){.mw-parser-output .side-box{width:238px}.mw-parser-output .side-box-right{clear:right;float:right;margin-left:1em}.mw-parser-output .side-box-left{margin-right:1em}}</style>
+<ul><li>Source for the form of the algorithm used to determine the multiplicative inverse in GF(2^8)</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2377
+Cached time: 20221223230841
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.455 seconds
+Real time usage: 0.684 seconds
+Preprocessor visited node count: 5072/1000000
+Post‐expand include size: 43355/2097152 bytes
+Template argument size: 7293/2097152 bytes
+Highest expansion depth: 14/100
+Expensive parser function count: 2/500
+Unstrip recursion depth: 0/20
+Unstrip post‐expand size: 13994/5000000 bytes
+Lua time usage: 0.157/10.000 seconds
+Lua memory usage: 3618728/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  344.281      1 -total
+ 21.02%   72.379     65 Template:Math
+ 18.86%   64.946      1 Template:Cite_book
+ 17.41%   59.941      1 Template:Short_description
+ 16.18%   55.700      1 Template:Number_theoretic_algorithms
+ 15.30%   52.684      1 Template:Navbox
+  8.79%   30.274      2 Template:Pagetype
+  7.97%   27.429     68 Template:Main_other
+  5.88%   20.249      1 Template:Wikibooks
+  5.45%   18.762      1 Template:See_also
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:99438-0!canonical and timestamp 20221223230841 and revision id 1113184203.
+ -->
+</div></body>
+</html>

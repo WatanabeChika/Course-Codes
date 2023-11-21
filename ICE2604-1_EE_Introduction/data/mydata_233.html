@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>confluently_persistent_data_structure</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p>In computing, a <b>persistent data structure</b> or <b>not ephemeral data structure</b> is a data structure that always preserves the previous version of itself when it is modified. Such data structures are effectively immutable, as their operations do not (visibly) update the structure in-place, but instead always yield a new updated structure. The term was introduced in Driscoll, Sarnak, Sleator, and Tarjans' 1986 article.<sup class="reference" id="cite_ref-Driscoll_1-0">[1]</sup>
+</p><p>A data structure is <b>partially persistent</b> if all versions can be accessed but only the newest version can be modified. The data structure is <b>fully persistent</b> if every version can be both accessed and modified. If there is also a meld or merge operation that can create a new version from two previous versions, the data structure is called <b>confluently persistent</b>. Structures that are not persistent are called <i>ephemeral</i>.<sup class="reference" id="cite_ref-kaplan2_2-0">[2]</sup>
+</p><p>These types of data structures are particularly common in logical and functional programming,<sup class="reference" id="cite_ref-kaplan2_2-1">[2]</sup> as languages in those paradigms discourage (or fully forbid) the use of mutable data.
+</p>
+
+<h2><span class="mw-headline" id="Partial_versus_full_persistence">Partial versus full persistence</span><span class="mw-editsection"></span></h2>
+<p>In the partial persistence model, a programmer may query any previous version of a data structure, but may only update the latest version. This implies a linear ordering among each version of the data structure.<sup class="reference" id="cite_ref-3">[3]</sup> In the fully persistent model, both updates and queries are allowed on any version of the data structure. In some cases the performance characteristics of querying or updating older versions of a data structure may be allowed to degrade, as is true with the Rope data structure.<sup class="reference" id="cite_ref-4">[4]</sup> In addition, a data structure can be referred to as confluently persistent if, in addition to being fully persistent, two versions of the same data structure can be combined to form a new version which is still fully persistent.<sup class="reference" id="cite_ref-5">[5]</sup>
+</p>
+<h2><span class="mw-headline" id="Techniques_for_preserving_previous_versions">Techniques for preserving previous versions</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Copy-on-write">Copy-on-write</span><span class="mw-editsection"></span></h3>
+<p>One method for creating a persistent data structure is to use a platform provided ephemeral data structure such as an array to store the data in the data structure and copy the entirety of that data structure using copy-on-write semantics for any updates to the data structure. This is an inefficient technique because the entire backing data structure must be copied for each write, leading to worst case O(n·m) performance characteristics for m modifications of an array of size n.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (May 2019)">citation needed</span></i>]</sup>
+</p>
+<h3><span class="mw-headline" id="Fat_node">Fat node</span><span class="mw-editsection"></span></h3>
+<p>The fat node method is to record all changes made to node fields in the nodes themselves, without erasing old values of the fields. This requires that nodes be allowed to become arbitrarily “fat”. In other words, each fat node contains the same information and pointer fields as an ephemeral node, along with space for an arbitrary number of extra field values. Each extra field value has an associated field name and a version stamp which indicates the version in which the named field was changed to have the specified value. Besides, each fat node has its own version stamp, indicating the version in which the node was created. The only purpose of nodes having version stamps is to make sure that each node only contains one value per field name per version. In order to navigate through the structure, each original field value in a node has a version stamp of zero.
+</p>
+<h4><span class="mw-headline" id="Complexity_of_fat_node">Complexity of fat node</span><span class="mw-editsection"></span></h4>
+<p>With using fat node method, it requires O(1) space for every modification: just store the new data. Each modification takes O(1) additional time to store the modification at the end of the modification history. This is an amortized time bound, assuming modification history is stored in a growable array. At access time, the right version at each node must be found as the structure is traversed. If "m" modifications were to be made, then each access operation would have O(log m) slowdown resulting from the cost of finding the nearest modification in the array.
+</p>
+<h3><span class="mw-headline" id="Path_copying">Path copying</span><span class="mw-editsection"></span></h3>
+<p>With the path copying method a copy of all nodes is made on the path to any node which is about to be modified. These changes must then be cascaded back through the data structure: all nodes that pointed to the old node must be modified to point to the new node instead. These modifications cause more cascading changes, and so on, until the root node is reached.
+</p>
+<h4><span class="mw-headline" id="Complexity_of_path_copying">Complexity of path copying</span><span class="mw-editsection"></span></h4>
+<p>With m modifications, this costs O(log m) additive lookup time. Modification time and space are bounded by the size of the longest path in the data structure and the cost of the update in the ephemeral data structure.  In a Balanced Binary Search Tree without parent pointers the worst case modification time complexity is O(log n + update cost). However, in a linked list the worst case modification time complexity is O(n + update cost).
+</p>
+<h3><span class="mw-headline" id="A_combination">A combination</span><span class="mw-editsection"></span></h3>
+<p>Driscoll, Sarnak, Sleator, Tarjan came up<sup class="reference" id="cite_ref-Driscoll_1-1">[1]</sup> with a way to combine the techniques of fat nodes and path copying, achieving O(1) access slowdown and O(1) modification space and time complexity.
+</p><p>In each node, one modification box is stored. This box can hold one modification to the node—either a modification to one of the pointers, or to the node's key, or to some other piece of node-specific data—and a timestamp for when that modification was applied. Initially, every node's modification box is empty.
+</p><p>Whenever a node is accessed, the modification box is checked, and its timestamp is compared against the access time. (The access time specifies the version of the data structure being considered.) If the modification box is empty, or the access time is before the modification time, then the modification box is ignored and only the normal part of the node is considered. On the other hand, if the access time is after the modification time, then the value in the modification box is used, overriding that value in the node.
+</p><p>Modifying a node works like this. (It is assumed that each modification touches one pointer or similar field.) If the node's modification box is empty, then it is filled with the modification. Otherwise, the modification box is full. A copy of the node is made, but using only the latest values. The modification is performed directly on the new node, without using the modification box. (One of the new node's fields overwritten and its modification box stays empty.) Finally, this change is cascaded to the node's parent, just like path copying. (This may involve filling the parent's modification box, or making a copy of the parent recursively. If the node has no parent—it's the root—it is added the new root to a sorted array of roots.)
+</p><p>With this algorithm, given any time t, at most one modification box exists in the data structure with time t. Thus, a modification at time t splits the tree into three parts: one part contains the data from before time t, one part contains the data from after time t, and one part was unaffected by the modification.
+</p>
+<h4><span class="mw-headline" id="Complexity_of_the_combination">Complexity of the combination</span><span class="mw-editsection"></span></h4>
+<p>Time and space for modifications require amortized analysis. A modification takes O(1) amortized space, and O(1) amortized time. To see why, use a potential function ϕ, where ϕ(T) is the number of full live nodes in T . The live nodes of T are just the nodes that are reachable from the current root at the current time (that is, after the last modification). The full live nodes are the live nodes whose modification boxes are full.
+</p><p>Each modification involves some number of copies, say k, followed by 1 change to a modification box. Consider each of the k copies. Each costs O(1) space and time, but decreases the potential function by one. (First, the node to be copied must be full and live, so it contributes to the potential function. The potential function will only drop, however, if the old node isn't reachable in the new tree. But it is known that it isn't reachable in the new tree—the next step in the algorithm will be to modify the node's parent to point at the copy. Finally, it is known that the copy's modification box is empty. Thus, replaced a full live node has been replaced with an empty live node, and ϕ goes down by one.) The final step fills a modification box, which costs O(1) time and increases ϕ by one.
+</p><p>Putting it  all together, the change in ϕ is Δϕ =1− k. Thus, the algorithm takes O(k +Δϕ)= O(1) space and O(k +Δϕ +1) = O(1) time
+</p>
+<h2><span class="mw-headline" id="Generalized_form_of_persistence">Generalized form of persistence</span><span class="mw-editsection"></span></h2>
+<p>Path copying is one of the simple methods to achieve persistency in a certain data structure such as binary search trees. It is nice to have a general strategy for implementing persistence that works with any given data structure. In order to achieve that, we consider a directed graph <span class="texhtml mvar" style="font-style:italic;">G</span>. We assume that each vertex <span class="texhtml mvar" style="font-style:italic;">v</span> in <span class="texhtml mvar" style="font-style:italic;">G</span> has a constant number <span class="texhtml mvar" style="font-style:italic;">c</span> of outgoing edges that are represented by pointers. Each vertex has a label representing the data. We consider that a vertex has a bounded number <span class="texhtml mvar" style="font-style:italic;">d</span> of edges leading into it which we define as inedges(<span class="texhtml mvar" style="font-style:italic;">v</span>). We allow the following different operations on <span class="texhtml mvar" style="font-style:italic;">G</span>. 
+</p>
+<ul><li>CREATE-NODE(): Creates a new vertex with no incoming or outgoing edges.</li>
+<li>CHANGE-EDGE(<span class="texhtml mvar" style="font-style:italic;">v</span>, <span class="texhtml mvar" style="font-style:italic;">i</span>, <span class="texhtml mvar" style="font-style:italic;">u</span>): Changes the <span class="texhtml mvar" style="font-style:italic;">i</span><sup>th</sup> edge of <span class="texhtml mvar" style="font-style:italic;">v</span> to point to <span class="texhtml mvar" style="font-style:italic;">u</span></li>
+<li>CHANGE-LABEL(<span class="texhtml mvar" style="font-style:italic;">v</span>, <span class="texhtml mvar" style="font-style:italic;">x</span>): Changes the value of the data stored at <span class="texhtml mvar" style="font-style:italic;">v</span> to <span class="texhtml mvar" style="font-style:italic;">x</span></li></ul>
+<p>Any of the above operations is performed at a specific time and the purpose of the persistent graph representation is to be able to access any version of <span class="texhtml mvar" style="font-style:italic;">G</span> at any given time. For this purpose we define a table for each vertex <span class="texhtml mvar" style="font-style:italic;">v</span> in <span class="texhtml mvar" style="font-style:italic;">G</span>. The table contains <span class="texhtml mvar" style="font-style:italic;">c</span> columns and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d+1}</annotation>
+</semantics>
+</math></span><img alt="d+1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/056e0c06c828dbe71a0f9021b2828ff176a3d337" style="vertical-align: -0.505ex; width:5.219ex; height:2.343ex;"/></span> rows. Each row contains in addition to the pointers for the outgoing edges, a label which represents the data at the vertex and a time <span class="texhtml mvar" style="font-style:italic;">t</span> at which the operation was performed. In addition to that there is an array inedges(<span class="texhtml mvar" style="font-style:italic;">v</span>) that keeps track of all the incoming edges to <span class="texhtml mvar" style="font-style:italic;">v</span>. When a table is full, a new table with <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d+1}</annotation>
+</semantics>
+</math></span><img alt="d+1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/056e0c06c828dbe71a0f9021b2828ff176a3d337" style="vertical-align: -0.505ex; width:5.219ex; height:2.343ex;"/></span> rows can be created. The old table becomes inactive and the new table becomes the active table.
+</p>
+<h3><span class="mw-headline" id="CREATE-NODE">CREATE-NODE</span><span class="mw-editsection"></span></h3>
+<p>A call to CREATE-NODE creates a new table and set all the references to null
+</p>
+<h3><span class="mw-headline" id="CHANGE-EDGE">CHANGE-EDGE</span><span class="mw-editsection"></span></h3>
+<p>If we assume that CHANGE-EDGE(<span class="texhtml mvar" style="font-style:italic;">v</span>, <span class="texhtml mvar" style="font-style:italic;">i</span>, <span class="texhtml mvar" style="font-style:italic;">u</span>) is called, then there are two cases to consider. 
+</p>
+<ul><li>There is an empty row in the table of the vertex <span class="texhtml mvar" style="font-style:italic;">v</span>: In this case we copy the last row in the table and we change the <span class="texhtml mvar" style="font-style:italic;">i</span>th edge of vertex <span class="texhtml mvar" style="font-style:italic;">v</span> to point to the new vertex <span class="texhtml mvar" style="font-style:italic;">u</span></li>
+<li>Table of the vertex <span class="texhtml mvar" style="font-style:italic;">v</span> is full: In this case we need to create a new table. We copy the last row of the old table into the new table. We need to loop in the array inedges(<span class="texhtml mvar" style="font-style:italic;">v</span>) in order to let each vertex in the array point to the new table created. In addition to that, we need to change the entry <span class="texhtml mvar" style="font-style:italic;">v</span> in the inedges(w) for every vertex <span class="texhtml mvar" style="font-style:italic;">w</span> such that edge <span class="texhtml mvar" style="font-style:italic;">v,w</span> exists in the graph <span class="texhtml mvar" style="font-style:italic;">G</span>.</li></ul>
+<h3><span class="mw-headline" id="CHANGE-LABEL">CHANGE-LABEL</span><span class="mw-editsection"></span></h3>
+<p>It works exactly the same as CHANGE-EDGE except that instead of changing the <span class="texhtml mvar" style="font-style:italic;">i</span><sup>th</sup> edge of the vertex, we change the <span class="texhtml mvar" style="font-style:italic;">i</span><sup>th</sup> label.
+</p>
+<h3><span class="mw-headline" id="Efficiency_of_the_generalized_persistent_data_structure">Efficiency of the generalized persistent data structure</span><span class="mw-editsection"></span></h3>
+<p>In order to find the efficiency of the scheme proposed above, we use an argument defined as a credit scheme. The credit represents a currency. For example the credit can be used to pay for a table. The argument states the following:
+</p>
+<ul><li>The creation of one table requires one credit</li>
+<li>Each call to CREATE-NODE comes with two credits</li>
+<li>Each call to CHANGE-EDGE comes with one credit</li></ul>
+<p>The credit scheme should always satisfy the following invariant: Each row of each active table stores one credit and the table has the same number of credits as the number of rows. Let us confirm that the invariant applies to all the three operations CREATE-NODE, CHANGE-EDGE and CHANGE-LABEL.
+</p>
+<ul><li>CREATE-NODE: It acquires two credits, one is used to create the table and the other is given to the one row that is added to the table. Thus the invariant is maintained.</li>
+<li>CHANGE-EDGE: There are two cases to consider. The first case occurs when there is still at least one empty row in the table. In this case one credit is used to the newly inserted row. The second case occurs when the table is full. In this case the old table becomes inactive and the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d+1}</annotation>
+</semantics>
+</math></span><img alt="d+1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/056e0c06c828dbe71a0f9021b2828ff176a3d337" style="vertical-align: -0.505ex; width:5.219ex; height:2.343ex;"/></span> credits are transformed to the new table in addition to the one credit acquired from calling the CHANGE-EDGE. So in total we have <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d+2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+<mo>+</mo>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d+2}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle d+2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5a97b684f2aa0314e9054c56d6fd016b3ae25c3d" style="vertical-align: -0.505ex; width:5.219ex; height:2.343ex;"/></span> credits. One credit will be used for the creation of the new table. Another credit will be used for the new row added to the table and the <span class="texhtml mvar" style="font-style:italic;">d</span> credits left are used for updating the tables of the other vertices that need to point to the new table. We conclude that the invariant is maintained.</li>
+<li>CHANGE-LABEL: It works exactly the same as CHANGE-EDGE.</li></ul>
+<p>As a summary, we conclude that having <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n_{1}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n_{1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ee784b70e772f55ede5e6e0bdc929994bff63413" style="vertical-align: -0.671ex; width:2.449ex; height:2.009ex;"/></span> calls to CREATE_NODE and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n_{2}}</annotation>
+</semantics>
+</math></span><img alt="n_{{2}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/840e456e3058bc0be28e5cf653b170cdbfcc3be4" style="vertical-align: -0.671ex; width:2.449ex; height:2.009ex;"/></span> calls to CHANGE_EDGE will result in the creation of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2\cdot n_{1}+n_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>2</mn>
+<mo>⋅<!-- ⋅ --></mo>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>+</mo>
+<msub>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2\cdot n_{1}+n_{2}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 2\cdot n_{1}+n_{2}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cff0704d4f3e7b117b6bb7be528593b08559881b" style="vertical-align: -0.671ex; width:10.58ex; height:2.509ex;"/></span> tables. Since each table has size <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(d)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>d</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(d)}</annotation>
+</semantics>
+</math></span><img alt="O(d)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6e323ee705f0664132bf796619cf0e2b36a1c396" style="vertical-align: -0.838ex; width:4.798ex; height:2.843ex;"/></span> without taking into account the recursive calls, then filling in a table requires <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(d^{2})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>d</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(d^{2})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(d^{2})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b184eaa03aff77b01bc4c0681501df7505dd4292" style="vertical-align: -0.838ex; width:5.855ex; height:3.176ex;"/></span> where the additional d factor comes from updating the inedges at other nodes. Therefore the amount of work required to complete a sequence of operations is bounded by the number of tables created multiplied by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(d^{2})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>d</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(d^{2})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(d^{2})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b184eaa03aff77b01bc4c0681501df7505dd4292" style="vertical-align: -0.838ex; width:5.855ex; height:3.176ex;"/></span>. Each access operation can be done in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(Log(d))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>L</mi>
+<mi>o</mi>
+<mi>g</mi>
+<mo stretchy="false">(</mo>
+<mi>d</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(Log(d))}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(Log(d))}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/eec4b32ca38ebd3db6ab1bc6446cfe0d522b59b3" style="vertical-align: -0.838ex; width:10.434ex; height:2.843ex;"/></span> and there are <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle m}</annotation>
+</semantics>
+</math></span><img alt="m" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0a07d98bb302f3856cbabc47b2b9016692e3f7bc" style="vertical-align: -0.338ex; width:2.04ex; height:1.676ex;"/></span> edge and label operations, thus it requires <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle m\cdot O(Log(d))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>m</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>L</mi>
+<mi>o</mi>
+<mi>g</mi>
+<mo stretchy="false">(</mo>
+<mi>d</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle m\cdot O(Log(d))}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle m\cdot O(Log(d))}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bb298b1225638a14336e0cf58c9db96657f79dc9" style="vertical-align: -0.838ex; width:14.154ex; height:2.843ex;"/></span>. We conclude that There exists a data structure that can complete any <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span> sequence of CREATE-NODE, CHANGE-EDGE and CHANGE-LABEL in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n\cdot d^{2})+m\cdot O(Log(d))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<msup>
+<mi>d</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>m</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>L</mi>
+<mi>o</mi>
+<mi>g</mi>
+<mo stretchy="false">(</mo>
+<mi>d</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n\cdot d^{2})+m\cdot O(Log(d))}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(n\cdot d^{2})+m\cdot O(Log(d))}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/905e156a7dba6a8491984979a9f1b3fa2259b53a" style="vertical-align: -0.838ex; width:25.923ex; height:3.176ex;"/></span>.
+</p>
+<h2><span class="mw-headline" id="Applications_of_persistent_data_structures">Applications of persistent data structures</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Next_Element_Search_or_Point_Location">Next Element Search or Point Location</span><span class="mw-editsection"></span></h3>
+<p>One of the useful applications that can be solved efficiently using persistence is the Next Element Search. Assume that there are <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span> non intersecting line segments that don't cross each other that are parallel to the x-axis. We want to build a data structure that can query a point <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>p</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p}</annotation>
+</semantics>
+</math></span><img alt="p" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/81eac1e205430d1f40810df36a0edffdc367af36" style="vertical-align: -0.671ex; margin-left: -0.089ex; width:1.259ex; height:2.009ex;"/></span> and return the segment above <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>p</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p}</annotation>
+</semantics>
+</math></span><img alt="p" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/81eac1e205430d1f40810df36a0edffdc367af36" style="vertical-align: -0.671ex; margin-left: -0.089ex; width:1.259ex; height:2.009ex;"/></span> (if any). We will start by solving the Next Element Search using the naïve method then we will show how to solve it using the persistent data structure method.
+</p>
+<h4><span id="Na.C3.AFve_Method"></span><span class="mw-headline" id="Naïve_Method">Naïve Method</span><span class="mw-editsection"></span></h4>
+<p>We start with a vertical line segment that starts off at infinity and we sweep the line segments from the left to the right. We take a pause every time we encounter an end point of these segments. The vertical lines split the plane into vertical strips. If there are <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span> line segments then we can get <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2\cdot n+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>2</mn>
+<mo>⋅<!-- ⋅ --></mo>
+<mi>n</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2\cdot n+1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 2\cdot n+1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ab780b6cb9b4ce35cf9db8cf0dab5bbf17a9775f" style="vertical-align: -0.505ex; width:8.239ex; height:2.343ex;"/></span> vertical strips since each segment has <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2}</annotation>
+</semantics>
+</math></span><img alt="2" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/901fc910c19990d0dbaaefe4726ceb1a4e217a0f" style="vertical-align: -0.338ex; width:1.162ex; height:2.176ex;"/></span> end points. No segment begins and ends in the strip. Every segment either it doesn't touch the strip or it completely crosses it. We can think of the segments as some objects that are in some sorted order from top to bottom. What we care about is where the point that we are looking at fits in this order. We sort the endpoints of the segments by their <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> coordinate. For each strip <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{i}}</annotation>
+</semantics>
+</math></span><img alt="s_{{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cfda82668232cbdc0874ed28ab8b6079420d1ffe" style="vertical-align: -0.671ex; width:1.89ex; height:2.009ex;"/></span>, we store the subset segments that cross <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{i}}</annotation>
+</semantics>
+</math></span><img alt="s_{{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cfda82668232cbdc0874ed28ab8b6079420d1ffe" style="vertical-align: -0.671ex; width:1.89ex; height:2.009ex;"/></span> in a dictionary. When the vertical line sweeps the line segments, whenever it passes over the left endpoint of a segment then we add it to the dictionary. When it passes through the right endpoint of the segment, we remove it from the dictionary. At every endpoint, we save a copy of the dictionary and we store all the copies sorted by the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> coordinates. Thus we have a data structure that can answer any query. In order to find the segment above a point <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>p</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p}</annotation>
+</semantics>
+</math></span><img alt="p" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/81eac1e205430d1f40810df36a0edffdc367af36" style="vertical-align: -0.671ex; margin-left: -0.089ex; width:1.259ex; height:2.009ex;"/></span>, we can look at the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> coordinate of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>p</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p}</annotation>
+</semantics>
+</math></span><img alt="p" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/81eac1e205430d1f40810df36a0edffdc367af36" style="vertical-align: -0.671ex; margin-left: -0.089ex; width:1.259ex; height:2.009ex;"/></span> to know which copy or strip it belongs to. Then we can look at the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>y</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y}</annotation>
+</semantics>
+</math></span><img alt="y" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b8a6208ec717213d4317e666f1ae872e00620a0d" style="vertical-align: -0.671ex; width:1.155ex; height:2.009ex;"/></span> coordinate to find the segment above it. Thus we need two binary searches, one for the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> coordinate to find the strip or the copy, and another for the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>y</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y}</annotation>
+</semantics>
+</math></span><img alt="y" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b8a6208ec717213d4317e666f1ae872e00620a0d" style="vertical-align: -0.671ex; width:1.155ex; height:2.009ex;"/></span> coordinate to find the segment above it. Thus the query time takes <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(Log(n))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>L</mi>
+<mi>o</mi>
+<mi>g</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(Log(n))}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(Log(n))}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dee59cc75efbeb07cb0a67362e16045291757a8e" style="vertical-align: -0.838ex; width:10.613ex; height:2.843ex;"/></span>. In this data structure, the space is the issue since if we assume that we have the segments structured in a way such that every segment starts before the end of any other segment, then the space required for the structure to be built using the naïve method would be <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n^{2})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n^{2})}</annotation>
+</semantics>
+</math></span><img alt="O(n^{{2}})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6cd9594a16cb898b8f2a2dff9227a385ec183392" style="vertical-align: -0.838ex; width:6.032ex; height:3.176ex;"/></span>. Let us see how we can build another persistent data structure with the same query time but with a better space.
+</p>
+<h4><span class="mw-headline" id="Persistent_Data_Structure_Method">Persistent Data Structure Method</span><span class="mw-editsection"></span></h4>
+<p>We can notice that what really takes time in the data structure used in the naïve method is that whenever we move from a strip to the next, we need to take a snap shot of whatever data structure we are using to keep things in sorted order. We can notice that once we get the segments that intersect <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{i}}</annotation>
+</semantics>
+</math></span><img alt="s_{{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cfda82668232cbdc0874ed28ab8b6079420d1ffe" style="vertical-align: -0.671ex; width:1.89ex; height:2.009ex;"/></span>, when we move to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{i+1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{i+1}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle s_{i+1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/37ed5b430ba82bf5043261011efbd054e67ae462" style="vertical-align: -0.671ex; width:3.991ex; height:2.009ex;"/></span> either one thing leaves or one thing enters. If the difference between what is in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{i}}</annotation>
+</semantics>
+</math></span><img alt="s_{{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cfda82668232cbdc0874ed28ab8b6079420d1ffe" style="vertical-align: -0.671ex; width:1.89ex; height:2.009ex;"/></span> and what is in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{i+1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{i+1}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle s_{i+1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/37ed5b430ba82bf5043261011efbd054e67ae462" style="vertical-align: -0.671ex; width:3.991ex; height:2.009ex;"/></span> is only one insertion or deletion then it is not a good idea to copy everything from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{i}}</annotation>
+</semantics>
+</math></span><img alt="s_{{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cfda82668232cbdc0874ed28ab8b6079420d1ffe" style="vertical-align: -0.671ex; width:1.89ex; height:2.009ex;"/></span> to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s_{i+1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s_{i+1}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle s_{i+1}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/37ed5b430ba82bf5043261011efbd054e67ae462" style="vertical-align: -0.671ex; width:3.991ex; height:2.009ex;"/></span>. The trick is that since each copy differs from the previous one by only one insertion or deletion, then we need to copy only the parts that change. Let us assume that we have a tree rooted at <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T}</annotation>
+</semantics>
+</math></span><img alt="T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7200acd984a1d3a3d7dc455e262fbe54f7f6e0" style="vertical-align: -0.338ex; width:1.636ex; height:2.176ex;"/></span>. When we insert a key <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k}</annotation>
+</semantics>
+</math></span><img alt="k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3c9a2c7b599b37105512c5d570edc034056dd40" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> into the tree, we create a new leaf containing <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k}</annotation>
+</semantics>
+</math></span><img alt="k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3c9a2c7b599b37105512c5d570edc034056dd40" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span>. Performing rotations to rebalance the tree will only modify the nodes of the path from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k}</annotation>
+</semantics>
+</math></span><img alt="k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3c9a2c7b599b37105512c5d570edc034056dd40" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T}</annotation>
+</semantics>
+</math></span><img alt="T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7200acd984a1d3a3d7dc455e262fbe54f7f6e0" style="vertical-align: -0.338ex; width:1.636ex; height:2.176ex;"/></span>. Before inserting the key <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k}</annotation>
+</semantics>
+</math></span><img alt="k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3c9a2c7b599b37105512c5d570edc034056dd40" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> into the tree, we copy all the nodes on the path from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k}</annotation>
+</semantics>
+</math></span><img alt="k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3c9a2c7b599b37105512c5d570edc034056dd40" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T}</annotation>
+</semantics>
+</math></span><img alt="T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7200acd984a1d3a3d7dc455e262fbe54f7f6e0" style="vertical-align: -0.338ex; width:1.636ex; height:2.176ex;"/></span>. Now we have 2 versions of the tree, the original one which doesn't contain <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k}</annotation>
+</semantics>
+</math></span><img alt="k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3c9a2c7b599b37105512c5d570edc034056dd40" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> and the new tree that contains <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k}</annotation>
+</semantics>
+</math></span><img alt="k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3c9a2c7b599b37105512c5d570edc034056dd40" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> and whose root is a copy of the root of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T}</annotation>
+</semantics>
+</math></span><img alt="T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7200acd984a1d3a3d7dc455e262fbe54f7f6e0" style="vertical-align: -0.338ex; width:1.636ex; height:2.176ex;"/></span>. Since copying the path from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k}</annotation>
+</semantics>
+</math></span><img alt="k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3c9a2c7b599b37105512c5d570edc034056dd40" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T}</annotation>
+</semantics>
+</math></span><img alt="T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7200acd984a1d3a3d7dc455e262fbe54f7f6e0" style="vertical-align: -0.338ex; width:1.636ex; height:2.176ex;"/></span> doesn't increase the insertion time by more than a constant factor then the insertion in the persistent data structure takes <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(Log(n))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>L</mi>
+<mi>o</mi>
+<mi>g</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(Log(n))}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(Log(n))}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dee59cc75efbeb07cb0a67362e16045291757a8e" style="vertical-align: -0.838ex; width:10.613ex; height:2.843ex;"/></span> time. For the deletion, we need to find which nodes will be affected by the deletion. For each node <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>v</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v}</annotation>
+</semantics>
+</math></span><img alt="v" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e07b00e7fc0847fbd16391c778d65bc25c452597" style="vertical-align: -0.338ex; width:1.128ex; height:1.676ex;"/></span> affected by the deletion, we copy the path from the root to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>v</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v}</annotation>
+</semantics>
+</math></span><img alt="v" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e07b00e7fc0847fbd16391c778d65bc25c452597" style="vertical-align: -0.338ex; width:1.128ex; height:1.676ex;"/></span>. This will provide a new tree whose root is a copy of the root of the original tree. Then we perform the deletion on the new tree. We will end up with 2 versions of the tree. The original one which contains <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k}</annotation>
+</semantics>
+</math></span><img alt="k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3c9a2c7b599b37105512c5d570edc034056dd40" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span> and the new one which doesn't contain <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k}</annotation>
+</semantics>
+</math></span><img alt="k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3c9a2c7b599b37105512c5d570edc034056dd40" style="vertical-align: -0.338ex; width:1.211ex; height:2.176ex;"/></span>. Since any deletion only modifies the path from the root to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>v</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v}</annotation>
+</semantics>
+</math></span><img alt="v" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e07b00e7fc0847fbd16391c778d65bc25c452597" style="vertical-align: -0.338ex; width:1.128ex; height:1.676ex;"/></span> and any appropriate deletion algorithm runs in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(Log(n))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>L</mi>
+<mi>o</mi>
+<mi>g</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(Log(n))}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(Log(n))}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dee59cc75efbeb07cb0a67362e16045291757a8e" style="vertical-align: -0.838ex; width:10.613ex; height:2.843ex;"/></span>, thus the deletion in the persistent data structure takes <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(Log(n))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>L</mi>
+<mi>o</mi>
+<mi>g</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(Log(n))}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(Log(n))}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dee59cc75efbeb07cb0a67362e16045291757a8e" style="vertical-align: -0.838ex; width:10.613ex; height:2.843ex;"/></span>.  Every sequence of insertion and deletion will cause the creation of a sequence of dictionaries or versions or trees <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S_{1},S_{2},\dots S_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S_{1},S_{2},\dots S_{i}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle S_{1},S_{2},\dots S_{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/aaf1a537d15eae201c652f1e5430aea390fe174d" style="vertical-align: -0.671ex; width:12.361ex; height:2.509ex;"/></span> where each <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S_{i}}</annotation>
+</semantics>
+</math></span><img alt="S_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/de6e810a93f67802ecb603ee0e3324005c6e583e" style="vertical-align: -0.671ex; width:2.225ex; height:2.509ex;"/></span> is the result of operations <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S_{1},S_{2},\dots S_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S_{1},S_{2},\dots S_{i}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle S_{1},S_{2},\dots S_{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/aaf1a537d15eae201c652f1e5430aea390fe174d" style="vertical-align: -0.671ex; width:12.361ex; height:2.509ex;"/></span>. If each <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S_{i}}</annotation>
+</semantics>
+</math></span><img alt="S_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/de6e810a93f67802ecb603ee0e3324005c6e583e" style="vertical-align: -0.671ex; width:2.225ex; height:2.509ex;"/></span> contains <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle m}</annotation>
+</semantics>
+</math></span><img alt="m" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0a07d98bb302f3856cbabc47b2b9016692e3f7bc" style="vertical-align: -0.338ex; width:2.04ex; height:1.676ex;"/></span> elements, then the search in each <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S_{i}}</annotation>
+</semantics>
+</math></span><img alt="S_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/de6e810a93f67802ecb603ee0e3324005c6e583e" style="vertical-align: -0.671ex; width:2.225ex; height:2.509ex;"/></span> takes <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(Log(m))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>L</mi>
+<mi>o</mi>
+<mi>g</mi>
+<mo stretchy="false">(</mo>
+<mi>m</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(Log(m))}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(Log(m))}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/22d2f69bed9c00faf3f62bbc08c88e9f3f18e365" style="vertical-align: -0.838ex; width:11.259ex; height:2.843ex;"/></span>. Using this persistent data structure we can solve the next element search problem in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(Log(n))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>L</mi>
+<mi>o</mi>
+<mi>g</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(Log(n))}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(Log(n))}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dee59cc75efbeb07cb0a67362e16045291757a8e" style="vertical-align: -0.838ex; width:10.613ex; height:2.843ex;"/></span> query time and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n\cdot Log(n))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<mi>L</mi>
+<mi>o</mi>
+<mi>g</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n\cdot Log(n))}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(n\cdot Log(n))}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/24ea6ea96cd1a25c5532d4912c201b96e2f925f3" style="vertical-align: -0.838ex; width:13.687ex; height:2.843ex;"/></span> space instead of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n^{2})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n^{2})}</annotation>
+</semantics>
+</math></span><img alt="O(n^{{2}})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6cd9594a16cb898b8f2a2dff9227a385ec183392" style="vertical-align: -0.838ex; width:6.032ex; height:3.176ex;"/></span>. Please find below the source code for an example related to the next search problem.
+</p>
+<h2><span class="mw-headline" id="Examples_of_persistent_data_structures">Examples of persistent data structures</span><span class="mw-editsection"></span></h2>
+<p>Perhaps the simplest persistent data structure is the singly linked list or <i>cons</i>-based list, a simple list of objects formed by each carrying a reference to the next in the list. This is persistent because the <i>tail</i> of the list can be taken, meaning the last <i>k</i> items for some <i>k</i>, and new nodes can be added in front of it. The tail will not be duplicated, instead becoming shared between both the old list and the new list.  So long as the contents of the tail are immutable, this sharing will be invisible to the program.
+</p><p>Many common reference-based data structures, such as red–black trees,<sup class="reference" id="cite_ref-sarnak2_6-0">[6]</sup> stacks,<sup class="reference" id="cite_ref-okasaki2_7-0">[7]</sup> and treaps,<sup class="reference" id="cite_ref-8">[8]</sup> can easily be adapted to create a persistent version. Some others need slightly more effort, for example: queues, dequeues, and extensions including min-deques (which have an additional <i>O</i>(1) operation <i>min</i> returning the minimal element) and random access deques (which have an additional operation of random access with sub-linear, most often logarithmic, complexity).
+</p><p>There also exist persistent data structures which use destructive<sup class="noprint Inline-Template" style="margin-left:0.1em; white-space:nowrap;">[<i><span title="The text near this tag may need clarification or removal of jargon. (June 2013)">clarification needed</span></i>]</sup> operations, making them impossible to implement efficiently in purely functional languages (like Haskell outside specialized monads like state or IO), but possible in languages like C or Java. These types of data structures can often be avoided with a different design. One primary advantage to using purely persistent data structures is that they often behave better in multi-threaded environments.
+</p>
+<h3><span class="mw-headline" id="Linked_lists">Linked lists</span><span class="mw-editsection"></span></h3>
+<p>Singly linked lists are the bread-and-butter data structure in functional languages.<sup class="reference" id="cite_ref-auto_9-0">[9]</sup> Some ML-derived languages, like Haskell, are purely functional because once a node in the list has been allocated, it cannot be modified, only copied,  referenced or destroyed by the garbage collector when nothing refers to it.  (Note that ML itself is <b>not</b> purely functional, but supports non-destructive list operations subset, that is also true in the Lisp (LISt Processing) functional language dialects like Scheme and Racket.)
+</p><p>Consider the two lists:
+</p>
+<pre>xs = [0, 1, 2]
+ys = [3, 4, 5]
+</pre>
+<p>These would be represented in memory by:
+</p><p><img alt="Purely functional list before.svg" data-file-height="325" data-file-width="168" decoding="async" height="325" src="//upload.wikimedia.org/wikipedia/commons/thumb/9/98/Purely_functional_list_before.svg/168px-Purely_functional_list_before.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/9/98/Purely_functional_list_before.svg/252px-Purely_functional_list_before.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/9/98/Purely_functional_list_before.svg/336px-Purely_functional_list_before.svg.png 2x" width="168"/>
+</p><p>where a circle indicates a node in the list (the arrow out representing the second element of the node which is a pointer to another node).
+</p><p>Now concatenating the two lists:
+</p>
+<pre>zs = xs ++ ys
+</pre>
+<p>results in the following memory structure:
+</p><p><img alt="Purely functional list after.svg" data-file-height="595" data-file-width="258" decoding="async" height="595" src="//upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Purely_functional_list_after.svg/258px-Purely_functional_list_after.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Purely_functional_list_after.svg/387px-Purely_functional_list_after.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Purely_functional_list_after.svg/516px-Purely_functional_list_after.svg.png 2x" width="258"/>
+</p><p>Notice that the nodes in list <code>xs</code> have been copied, but the nodes in <code>ys</code> are shared.  As a result, the original lists (<code>xs</code> and <code>ys</code>) persist and have not been modified.
+</p><p>The reason for the copy is that the last node in <code>xs</code> (the node containing the original value <code>2</code>) cannot be modified to point to the start of <code>ys</code>, because that would change the value of <code>xs</code>.
+</p>
+<h3><span class="mw-headline" id="Trees">Trees</span><span class="mw-editsection"></span></h3>
+<p>Consider a binary search tree,<sup class="reference" id="cite_ref-auto_9-1">[9]</sup> where every node in the tree has the recursive invariant that all subnodes contained in the left subtree have a value that is less than or equal to the value stored in the node, and subnodes contained in the right subtree have a value that is greater than the value stored in the node.
+</p><p>For instance, the set of data
+</p>
+<pre>xs = [a, b, c, d, f, g, h]
+</pre>
+<p>might be represented by the following binary search tree:
+</p><p><img alt="Purely functional tree before.svg" data-file-height="325" data-file-width="348" decoding="async" height="325" src="//upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Purely_functional_tree_before.svg/348px-Purely_functional_tree_before.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Purely_functional_tree_before.svg/522px-Purely_functional_tree_before.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Purely_functional_tree_before.svg/696px-Purely_functional_tree_before.svg.png 2x" width="348"/>
+</p><p>
+A function which inserts data into the binary tree and maintains the invariant is:</p><p>After executing
+</p><pre>ys = insert ("e", xs)
+</pre>
+<p>The following configuration is produced:
+</p><p><img alt="Purely functional tree after.svg" data-file-height="415" data-file-width="438" decoding="async" height="415" src="//upload.wikimedia.org/wikipedia/commons/thumb/5/56/Purely_functional_tree_after.svg/438px-Purely_functional_tree_after.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/5/56/Purely_functional_tree_after.svg/657px-Purely_functional_tree_after.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/5/56/Purely_functional_tree_after.svg/876px-Purely_functional_tree_after.svg.png 2x" width="438"/>
+</p><p>Notice two points: first, the original tree (<code>xs</code>) persists.  Second, many common nodes are shared between the old tree and the new tree. Such persistence and sharing is difficult to manage without some form of garbage collection (GC) to automatically free up nodes which have no live references, and this is why GC is a feature commonly found in functional programming languages.
+</p>
+<h3><span class="mw-headline" id="Persistent_hash_array_mapped_trie">Persistent hash array mapped trie</span><span class="mw-editsection"></span></h3>
+<p>A persistent hash array mapped trie is a specialized variant of a hash array mapped trie that will preserve previous versions of itself on any updates. It is often used to implement a general purpose persistent map data structure.<sup class="reference" id="cite_ref-:1_10-0">[10]</sup>
+</p><p>Hash array mapped tries were originally described in a 2001 paper by Phil Bagwell entitled "Ideal Hash Trees". This paper presented a mutable Hash table where "Insert, search and delete times are small and constant, independent of key set size, operations are O(1). Small worst-case times for insert, search and removal operations can be guaranteed and misses cost less than successful searches".<sup class="reference" id="cite_ref-11">[11]</sup> This data structure was then modified by Rich Hickey to be fully persistent for use in the Clojure programming language.<sup class="reference" id="cite_ref-12">[12]</sup>
+</p><p>Conceptually, hash array mapped tries work similar to any generic tree in that they store nodes hierarchically and retrieve them by following a path down to a particular element. The key difference is that Hash Array Mapped Tries first use a hash function to transform their lookup key into a (usually 32 or 64 bit) integer. The path down the tree is then determined by using slices of the binary representation of that integer to index into a sparse array at each level of the tree. The leaf nodes of the tree behave similar to the buckets used to construct hash tables and may or may not contain multiple candidates depending on hash collisions.<sup class="reference" id="cite_ref-:1_10-1">[10]</sup>
+</p><p>Most implementations of persistent hash array mapped tries use a branching factor of 32 in their implementation. This means that in practice while insertions, deletions, and lookups into a persistent hash array mapped trie have a computational complexity of <i>O</i>(log <i>n</i>), for most applications they are effectively constant time, as it would require an extremely large number of entries to make any operation take more than a dozen steps.<sup class="reference" id="cite_ref-13">[13]</sup>
+</p>
+<h2><span class="mw-headline" id="Usage_in_programming_languages">Usage in programming languages</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Haskell">Haskell</span><span class="mw-editsection"></span></h3>
+<p>Haskell is a pure functional language and therefore does not allow for mutation. Therefore, all data structures in the language are persistent, as it is impossible to not preserve the previous state of a data structure with functional semantics.<sup class="reference" id="cite_ref-14">[14]</sup> This is because any change to a data structure that would render previous versions of a data structure invalid would violate referential transparency.
+</p><p>In its standard library Haskell has efficient persistent implementations for linked lists,<sup class="reference" id="cite_ref-15">[15]</sup> Maps (implemented as size balanced trees),<sup class="reference" id="cite_ref-16">[16]</sup> and Sets<sup class="reference" id="cite_ref-17">[17]</sup> among others.<sup class="reference" id="cite_ref-18">[18]</sup>
+</p>
+<h3><span class="mw-headline" id="Clojure">Clojure</span><span class="mw-editsection"></span></h3>
+<p>Like many programming languages in the Lisp family, Clojure contains an implementation of a linked list, but unlike other dialects its implementation of a Linked List has enforced persistence instead of being persistent by convention.<sup class="reference" id="cite_ref-19">[19]</sup> Clojure also has efficient implementations of persistent vectors, maps, and sets based on persistent hash array mapped tries. These data structures implement the mandatory read-only parts of the Java collections framework.<sup class="reference" id="cite_ref-20">[20]</sup>
+</p><p>The designers of the Clojure language advocate the use of persistent data structures over mutable data structures because they have value semantics which gives the benefit of making them freely shareable between threads with cheap aliases, easy to fabricate, and language independent.<sup class="reference" id="cite_ref-21">[21]</sup>
+</p><p>These data structures form the basis of Clojure's support for parallel computing since they allow for easy retries of operations to sidestep data races and atomic compare and swap semantics.<sup class="reference" id="cite_ref-22">[22]</sup>
+</p>
+<h3><span class="mw-headline" id="Elm">Elm</span><span class="mw-editsection"></span></h3>
+<p>The Elm programming language is purely functional like Haskell, which makes all of its data structures persistent by necessity. It contains persistent implementations of linked lists as well as persistent arrays, dictionaries, and sets.<sup class="reference" id="cite_ref-23">[23]</sup>
+</p><p>Elm uses a custom virtual DOM implementation that takes advantage of the persistent nature of Elm data. As of 2016 it was reported by the developers of Elm that this virtual DOM allows the Elm language to render HTML faster than the popular JavaScript frameworks React, Ember, and Angular.<sup class="reference" id="cite_ref-24">[24]</sup>
+</p>
+<h3><span class="mw-headline" id="Java">Java</span><span class="mw-editsection"></span></h3>
+<p>The Java programming language is not particularly functional. Despite this, the core JDK package java.util.concurrent includes CopyOnWriteArrayList and CopyOnWriteArraySet which are persistent structures, implemented using copy-on-write techniques. The usual concurrent map implementation in Java, ConcurrentHashMap, is not persistent, however. Fully persistent collections are available in third-party libraries, or other JVM languages.
+</p>
+<h3><span class="mw-headline" id="JavaScript">JavaScript</span><span class="mw-editsection"></span></h3>
+<style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-Confusing plainlinks metadata ambox ambox-style ambox-confusing" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<p>The popular JavaScript frontend framework React is frequently used along with a state management system that implements the Flux architecture,<sup class="reference" id="cite_ref-25">[25]</sup><sup class="reference" id="cite_ref-26">[26]</sup> a popular implementation of which is the JavaScript library Redux. The Redux library is inspired by the state management pattern used in the Elm programming language, meaning that it mandates that users treat all data as persistent.<sup class="reference" id="cite_ref-27">[27]</sup> As a result, the Redux project recommends that in certain cases users make use of libraries for enforced and efficient persistent data structures. This reportedly allows for greater performance than when comparing or making copies of regular JavaScript objects.<sup class="reference" id="cite_ref-:0_28-0">[28]</sup>
+</p><p>One such library of persistent data structures Immutable.js is based on the data structures made available and popularized by Clojure and Scala.<sup class="reference" id="cite_ref-29">[29]</sup> It is mentioned by the documentation of Redux as being one of the possible libraries that can provide enforced immutability.<sup class="reference" id="cite_ref-:0_28-1">[28]</sup> Mori.js brings data structures similar to those in Clojure to JavaScript.<sup class="reference" id="cite_ref-30">[30]</sup> Immer.js brings an interesting approach where one "creates the next immutable state by mutating the current one".
+<sup class="reference" id="cite_ref-31">[31]</sup> Immer.js uses native JavaScript objects and not efficient persistent data structures and it might cause performance issues when data size is big.
+</p>
+<h3><span class="mw-headline" id="Prolog">Prolog</span><span class="mw-editsection"></span></h3>
+<p>Prolog terms are naturally immutable and therefore data structures are typically persistent data structures. Their performance depends on sharing and garbage collection offered by the Prolog system.<sup class="reference" id="cite_ref-32">[32]</sup> Extensions to non-ground Prolog terms are not always feasible because of search space explosion. Delayed goals might mitigate the problem.
+</p><p>Some Prolog systems nevertheless do provide destructive operations like setarg/3, which might come in different flavors, with/without copying and with/without backtracking of the state change. There are cases where setarg/3 is used to the good of providing a new declarative layer, like a constraint solver.<sup class="reference" id="cite_ref-33">[33]</sup>
+</p>
+<h3><span class="mw-headline" id="Scala">Scala</span><span class="mw-editsection"></span></h3>
+<p>The Scala programming language promotes the use of persistent data structures for implementing programs using "Object-Functional Style".<sup class="reference" id="cite_ref-34">[34]</sup> Scala contains implementations of many Persistent data structures including Linked Lists, Red–black trees, as well as persistent hash array mapped tries as introduced in Clojure.<sup class="reference" id="cite_ref-35">[35]</sup>
+</p>
+<h2><span class="mw-headline" id="Garbage_collection">Garbage collection</span><span class="mw-editsection"></span></h2>
+<p>Because persistent data structures are often implemented in such a way that successive versions of a data structure share underlying memory<sup class="reference" id="cite_ref-36">[36]</sup> ergonomic use of such data structures generally requires some form of automatic garbage collection system such as reference counting or mark and sweep.<sup class="reference" id="cite_ref-37">[37]</sup> In some platforms where persistent data structures are used it is an option to not use garbage collection which, while doing so can lead to memory leaks, can in some cases have a positive impact on the overall performance of an application.<sup class="reference" id="cite_ref-38">[38]</sup>
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Copy-on-write</li>
+<li>Navigational database</li>
+<li>Persistent data</li>
+<li>Retroactive data structures</li>
+<li>Purely functional data structure</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<p><br/>
+</p>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>Lightweight Java implementation of Persistent Red-Black Trees</li>
+<li>Efficient persistent structures in C#</li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw2392
+Cached time: 20221223234828
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.433 seconds
+Real time usage: 0.558 seconds
+Preprocessor visited node count: 3001/1000000
+Post‐expand include size: 72350/2097152 bytes
+Template argument size: 2649/2097152 bytes
+Highest expansion depth: 17/100
+Expensive parser function count: 6/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 114849/5000000 bytes
+Lua time usage: 0.213/10.000 seconds
+Lua memory usage: 7383281/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  390.197      1 -total
+ 57.34%  223.757      1 Template:Reflist
+ 17.51%   68.334      2 Template:Cite_book
+ 15.64%   61.030     22 Template:Cite_web
+ 12.21%   47.662      1 Template:Short_description
+  7.43%   29.009      1 Template:Confusing_section
+  7.35%   28.683      1 Template:Citation_needed
+  7.01%   27.342      2 Template:Pagetype
+  6.94%   27.082      1 Template:Confusing
+  6.94%   27.062      2 Template:Fix
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:662889-0!canonical and timestamp 20221223234828 and revision id 1129019275.
+ -->
+</div></body>
+</html>

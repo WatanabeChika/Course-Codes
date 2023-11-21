@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Aho-Corasick</title>
+</head>
+<body>
+<div class="mw-parser-output"><style data-mw-deduplicate="TemplateStyles:r1066479718">.mw-parser-output .infobox-subbox{padding:0;border:none;margin:-3px;width:auto;min-width:100%;font-size:100%;clear:none;float:none;background-color:transparent}.mw-parser-output .infobox-3cols-child{margin:auto}.mw-parser-output .infobox .navbar{font-size:100%}body.skin-minerva .mw-parser-output .infobox-header,body.skin-minerva .mw-parser-output .infobox-subheader,body.skin-minerva .mw-parser-output .infobox-above,body.skin-minerva .mw-parser-output .infobox-title,body.skin-minerva .mw-parser-output .infobox-image,body.skin-minerva .mw-parser-output .infobox-full-data,body.skin-minerva .mw-parser-output .infobox-below{text-align:center}</style><table class="infobox"><caption class="infobox-title">Aho-Corasick Algorithm</caption><tbody><tr><td class="infobox-image" colspan="2"><img alt="A diagram of the Aho-Corasick string search algorithm.svg" data-file-height="1028" data-file-width="728" decoding="async" height="311" src="//upload.wikimedia.org/wikipedia/commons/thumb/9/90/A_diagram_of_the_Aho-Corasick_string_search_algorithm.svg/220px-A_diagram_of_the_Aho-Corasick_string_search_algorithm.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/9/90/A_diagram_of_the_Aho-Corasick_string_search_algorithm.svg/330px-A_diagram_of_the_Aho-Corasick_string_search_algorithm.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/9/90/A_diagram_of_the_Aho-Corasick_string_search_algorithm.svg/440px-A_diagram_of_the_Aho-Corasick_string_search_algorithm.svg.png 2x" width="220"/></td></tr><tr><th class="infobox-label" scope="row">Class</th><td class="infobox-data">String Searching, String Matching</td></tr><tr><th class="infobox-label" scope="row">Data structure</th><td class="infobox-data">Finite-state machine of strings</td></tr></tbody></table>
+<p>In computer science, the <b>Aho–Corasick algorithm</b> is a string-searching algorithm invented by Alfred V. Aho and Margaret J. Corasick in 1975.<sup class="reference" id="cite_ref-1">[1]</sup> It is a kind of dictionary-matching algorithm that locates elements of a finite set of strings (the "dictionary") within an input text. It matches all strings simultaneously. The complexity of the algorithm is linear in the length of the strings plus the length of the searched text plus the number of output matches. Note that because all matches are found, there can be a quadratic number of matches if every substring matches (e.g. dictionary = <style data-mw-deduplicate="TemplateStyles:r886049734">.mw-parser-output .monospaced{font-family:monospace,monospace}</style><span class="monospaced">a</span>, <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">aa</span>, <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">aaa</span>, <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">aaaa</span> and input string is <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">aaaa</span>).
+</p><p>Informally, the algorithm constructs a finite-state machine that resembles a trie with additional links between the various internal nodes.  These extra internal links allow fast transitions between failed string matches (e.g. a search for <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">cat</span> in a trie that does not contain <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">cat</span>, but contains <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">cart</span>, and thus would fail at the node prefixed by <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">ca</span>), to other branches of the trie that share a common prefix (e.g., in the previous case, a branch for <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">attribute</span> might be the best lateral transition).  This allows the automaton to transition between string matches without the need for backtracking.  
+</p><p>When the string dictionary is known in advance (e.g. a computer virus database), the construction of the automaton can be performed once off-line and the compiled automaton stored for later use.  In this case, its run time is linear in the length of the input plus the number of matched entries.
+</p><p>The Aho–Corasick string-matching algorithm formed the basis of the original Unix command fgrep.
+</p>
+
+<h2><span class="mw-headline" id="Example">Example</span><span class="mw-editsection"></span></h2>
+<p>In this example, we will consider a dictionary consisting of the following words: {a, ab, bab, bc, bca, c, caa}.
+</p><p>The graph below is the Aho–Corasick data structure constructed from the specified dictionary, with each row in the table representing a node in the trie, with the column path indicating the (unique) sequence of characters from the root to the node.
+</p><p>The data structure has one node for every prefix of every string in the dictionary.  So if (bca) is in the dictionary, then there will be nodes for (bca), (bc), (b), and (). If a node is in the dictionary then it is a blue node. Otherwise it is a grey node.
+</p><p>There is a black directed "child" arc from each node to a node whose name is found by appending one character.  So there is a black arc from (bc) to (bca).
+</p><p>There is a blue directed "suffix" arc from each node to the node that is the longest possible strict suffix of it in the graph.  For example, for node (caa), its strict suffixes are (aa) and (a) and ().  The longest of these that exists in the graph is (a).  So there is a blue arc from (caa) to (a).  The blue arcs can be computed in linear time by performing a breadth-first search [potential suffix node will always be at lower level] starting from the root. The target for the blue arc of a visited node can be found by following its parent's blue arc to its longest suffix node and searching for a child of the suffix node whose character matches that of the visited node. If the character does not exist as a child, we can find the next longest suffix (following the blue arc again) and then search for the character. We can do this until we either find the character (as child of a node) or we reach the root (which will always be a suffix of every string).
+</p><p>There is a green "dictionary suffix" arc from each node to the next node in the dictionary that can be reached by following blue arcs.  For example, there is a green arc from (bca) to (a) because (a) is the first node in the dictionary (i.e. a blue node) that is reached when following the blue arcs to (ca) and then on to (a).  The green arcs can be computed in linear time by repeatedly traversing blue arcs until a blue node is found, and memoizing this information.
+</p>
+
+<table class="wikitable">
+<caption>Dictionary {a, ab, bab, bc, bca, c, caa}
+</caption>
+<tbody><tr>
+<th>Path
+</th>
+<th>In dictionary
+</th>
+<th>Suffix link
+</th>
+<th>Dict suffix link
+</th></tr>
+<tr>
+<td>()</td>
+<td>–</td>
+<td></td>
+<td>
+</td></tr>
+<tr>
+<td>(a)</td>
+<td>+</td>
+<td>()</td>
+<td>
+</td></tr>
+<tr>
+<td>(ab)</td>
+<td>+</td>
+<td>(b)</td>
+<td>
+</td></tr>
+<tr>
+<td>(b)</td>
+<td>–</td>
+<td>()</td>
+<td>
+</td></tr>
+<tr>
+<td>(ba)</td>
+<td>–</td>
+<td>(a)</td>
+<td>(a)
+</td></tr>
+<tr>
+<td>(bab)</td>
+<td>+</td>
+<td>(ab)</td>
+<td>(ab)
+</td></tr>
+<tr>
+<td>(bc)</td>
+<td>+</td>
+<td>(c)</td>
+<td>(c)
+</td></tr>
+<tr>
+<td>(bca)</td>
+<td>+</td>
+<td>(ca)</td>
+<td>(a)
+</td></tr>
+<tr>
+<td>(c)</td>
+<td>+</td>
+<td>()</td>
+<td>
+</td></tr>
+<tr>
+<td>(ca)</td>
+<td>–</td>
+<td>(a)</td>
+<td>(a)
+</td></tr>
+<tr>
+<td>(caa)</td>
+<td>+</td>
+<td>(a)</td>
+<td>(a)
+</td></tr></tbody></table>
+
+<p>At each step, the current node is extended by finding its child,
+and if that doesn't exist, finding its suffix's child, and if
+that doesn't work, finding its suffix's suffix's child, and so on, finally
+ending in the root node if nothing's seen before.
+</p><p>When the algorithm reaches a node, it outputs all the dictionary
+entries that end at the current character position in the input text.  This is done
+by printing every node reached by following the dictionary suffix links, starting
+from that node, and continuing until it reaches a node with no dictionary suffix link.
+In addition, the node itself is printed, if it is a dictionary entry.
+</p><p>Execution on input string <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">abccab</span> yields the following steps:
+</p>
+<table class="wikitable">
+<caption>Analysis of input string <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">abccab</span>
+</caption>
+<tbody><tr>
+<th>Node
+</th>
+<th>Remaining string
+</th>
+<th>Output:end position
+</th>
+<th>Transition
+</th>
+<th>Output
+</th></tr>
+<tr>
+<td>()</td>
+<td>abccab</td>
+<td> </td>
+<td>start at root</td>
+<td>
+</td></tr>
+<tr>
+<td>(a)</td>
+<td>bccab</td>
+<td>a:1</td>
+<td>() to child (a)</td>
+<td>Current node
+</td></tr>
+<tr>
+<td>(ab)</td>
+<td>ccab</td>
+<td>ab:2
+</td>
+<td>(a) to child (ab)</td>
+<td>Current node
+</td></tr>
+<tr>
+<td>(bc)</td>
+<td>cab</td>
+<td>bc:3, c:3
+</td>
+<td>(ab) to suffix (b) to child (bc)</td>
+<td>Current Node, Dict suffix node
+</td></tr>
+<tr>
+<td>(c)</td>
+<td>ab</td>
+<td>c:4
+</td>
+<td>(bc) to suffix (c) to suffix () to child (c)
+</td>
+<td>Current node
+</td></tr>
+<tr>
+<td>(ca)</td>
+<td>b</td>
+<td>a:5
+</td>
+<td>(c) to child (ca)</td>
+<td>Dict suffix node
+</td></tr>
+<tr>
+<td>(ab)</td>
+<td></td>
+<td>ab:6
+</td>
+<td>(ca) to suffix (a) to child (ab)</td>
+<td>Current node
+</td></tr></tbody></table>
+<h2><span class="mw-headline" id="Dynamic_search_list">Dynamic search list</span><span class="mw-editsection"></span></h2>
+<p>The original Aho-Corasick algorithm assumes that the set of search strings is fixed. It does not directly apply to applications in which new search strings are added during application of the algorithm. An example is an interactive indexing program, in which the user goes through the text and highlights new words or phrases to index as they see them. Bertrand Meyer introduced an incremental version of the algorithm in which the search string set can be incrementally extended during the search, retaining the algorithmic complexity of the original.<sup class="reference" id="cite_ref-2">[2]</sup>
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Commentz-Walter algorithm</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097025294">.mw-parser-output .side-box{margin:4px 0;box-sizing:border-box;border:1px solid #aaa;font-size:88%;line-height:1.25em;background-color:#f9f9f9}.mw-parser-output .side-box-abovebelow,.mw-parser-output .side-box-text{padding:0.25em 0.9em}.mw-parser-output .side-box-image{padding:2px 0 2px 0.9em;text-align:center}.mw-parser-output .side-box-imageright{padding:2px 0.9em 2px 0;text-align:center}@media(min-width:500px){.mw-parser-output .side-box-flex{display:flex;align-items:center}.mw-parser-output .side-box-text{flex:1}}@media(min-width:720px){.mw-parser-output .side-box{width:238px}.mw-parser-output .side-box-right{clear:right;float:right;margin-left:1em}.mw-parser-output .side-box-left{margin-right:1em}}</style>
+<ul><li>Aho-Corasick in NIST's Dictionary of Algorithms and Data Structures (2019-07-15)</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2335
+Cached time: 20221220211359
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.176 seconds
+Real time usage: 0.532 seconds
+Preprocessor visited node count: 860/1000000
+Post‐expand include size: 23742/2097152 bytes
+Template argument size: 1164/2097152 bytes
+Highest expansion depth: 14/100
+Expensive parser function count: 0/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 14290/5000000 bytes
+Lua time usage: 0.102/10.000 seconds
+Lua memory usage: 3799063/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  199.819      1 -total
+ 35.35%   70.630      1 Template:Reflist
+ 30.32%   60.581      2 Template:Cite_journal
+ 22.97%   45.906      1 Template:Commonscat
+ 21.26%   42.486      1 Template:Sister_project
+ 20.48%   40.932      1 Template:Side_box
+ 19.69%   39.339      1 Template:Strings
+ 18.74%   37.438      1 Template:Navbox
+ 17.02%   34.015      1 Template:Infobox_algorithm
+ 14.11%   28.204      1 Template:Infobox
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:184607-0!canonical and timestamp 20221220211358 and revision id 1126869841.
+ -->
+</div></body>
+</html>

@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>linear_congruential_generator</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p>A <b>linear congruential generator</b> (<b>LCG</b>) is an algorithm that yields a sequence of pseudo-randomized numbers calculated with a discontinuous piecewise linear equation. The method represents one of the oldest and best-known pseudorandom number generator algorithms. The theory behind them is relatively easy to understand, and they are easily implemented and fast, especially on computer hardware which can provide modular arithmetic by storage-bit truncation.
+</p><p>The generator is defined by the recurrence relation:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle X_{n+1}=\left(aX_{n}+c\right){\bmod {m}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mi>a</mi>
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<mi>c</mi>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo lspace="thickmathspace" rspace="thickmathspace">mod</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>m</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle X_{n+1}=\left(aX_{n}+c\right){\bmod {m}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle X_{n+1}=\left(aX_{n}+c\right){\bmod {m}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3a40cd0032b03626a091a5a0e1b4684b3d5eb406" style="vertical-align: -0.838ex; width:26.479ex; height:2.843ex;"/></span></dd></dl>
+<p>where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle X}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>X</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle X}</annotation>
+</semantics>
+</math></span><img alt="X" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/68baa052181f707c662844a465bfeeb135e82bab" style="vertical-align: -0.338ex; width:1.98ex; height:2.176ex;"/></span> is the sequence of pseudo-random values, and
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle m,\,0&lt;m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>m</mi>
+<mo>,</mo>
+<mspace width="thinmathspace"></mspace>
+<mn>0</mn>
+<mo>&lt;</mo>
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle m,\,0&lt;m}</annotation>
+</semantics>
+</math></span><img alt="m,\,0&lt;m" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ce4e8b8faf6481a4c2cd657a5cd52862ddfb4361" style="vertical-align: -0.671ex; width:9.763ex; height:2.509ex;"/></span> — the "modulus"</dd>
+<dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a,\,0&lt;a&lt;m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+<mo>,</mo>
+<mspace width="thinmathspace"></mspace>
+<mn>0</mn>
+<mo>&lt;</mo>
+<mi>a</mi>
+<mo>&lt;</mo>
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a,\,0&lt;a&lt;m}</annotation>
+</semantics>
+</math></span><img alt="a,\,0&lt;a&lt;m" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d4ede7bedbdf2b8a8c7a8f6bf240b04bdf71515e" style="vertical-align: -0.671ex; width:13.28ex; height:2.509ex;"/></span> — the "multiplier"</dd>
+<dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c,\,0\leq c&lt;m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+<mo>,</mo>
+<mspace width="thinmathspace"></mspace>
+<mn>0</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>c</mi>
+<mo>&lt;</mo>
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c,\,0\leq c&lt;m}</annotation>
+</semantics>
+</math></span><img alt="c,\,0\leq c&lt;m" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5054822029125050b7a7ad66c6d67237200ce199" style="vertical-align: -0.671ex; width:12.834ex; height:2.509ex;"/></span> — the "increment"</dd>
+<dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle X_{0},\,0\leq X_{0}&lt;m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mspace width="thinmathspace"></mspace>
+<mn>0</mn>
+<mo>≤<!-- ≤ --></mo>
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>&lt;</mo>
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle X_{0},\,0\leq X_{0}&lt;m}</annotation>
+</semantics>
+</math></span><img alt="X_{0},\,0\leq X_{0}&lt;m" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8cfbbbe2ead58cc66054f343ae20f4d7ab8b7bed" style="vertical-align: -0.671ex; width:16.778ex; height:2.509ex;"/></span> — the "seed" or "start value"</dd></dl>
+<p>are integer constants that specify the generator. If <i>c</i> = 0, the generator is often called a <b>multiplicative congruential generator</b> (MCG), or Lehmer RNG. If <i>c</i> ≠ 0, the method is called a <b>mixed congruential generator</b>.<sup class="reference" id="cite_ref-KnuthV2_1-0">[1]</sup><sup class="reference nowrap"><span title="Page: 4-">: 4- </span></sup>
+</p><p>When <i>c</i> ≠ 0, a mathematician would call the recurrence an affine transformation, not a linear one, but the misnomer is well-established in computer science.<sup class="reference" id="cite_ref-Steele20_2-0">[2]</sup><sup class="reference nowrap"><span title="Page / location: 1">: 1 </span></sup>
+</p>
+
+<h2><span class="mw-headline" id="History">History</span><span class="mw-editsection"></span></h2>
+<p>The Lehmer generator was published in 1951<sup class="reference" id="cite_ref-3">[3]</sup> and the Linear congruential generator was published in 1958 by W. E. Thomson and A. Rotenberg.<sup class="reference" id="cite_ref-4">[4]</sup><sup class="reference" id="cite_ref-5">[5]</sup>
+</p>
+<h2><span class="mw-headline" id="Period_length">Period length</span><span class="mw-editsection"></span></h2>
+<p>A benefit of LCGs is that an appropriate choice of parameters results in a period which is both known and long. Although not the only criterion, too short a period is a fatal flaw in a pseudorandom number generator.<sup class="reference" id="cite_ref-History_6-0">[6]</sup>
+</p><p>While LCGs are capable of producing pseudorandom numbers which can pass formal tests for randomness, the quality of the output is extremely sensitive to the choice of the parameters <i>m</i> and <i>a</i>.<sup class="reference" id="cite_ref-Marsaglia68_7-0">[7]</sup><sup class="reference" id="cite_ref-KnuthV2_1-1">[1]</sup><sup class="reference" id="cite_ref-Park88_8-0">[8]</sup><sup class="reference" id="cite_ref-Hörmann92_9-0">[9]</sup><sup class="reference" id="cite_ref-LEcuyer99_10-0">[10]</sup><sup class="reference" id="cite_ref-Steele20_2-1">[2]</sup>  For example, <i>a</i> = 1 and <i>c</i> = 1 produces a simple modulo-<i>m</i> counter, which has a long period, but is obviously non-random.
+</p><p>Historically, poor choices for <i>a</i> have led to ineffective implementations of LCGs. A particularly illustrative example of this is RANDU, which was widely used in the early 1970s and led to many results which are currently being questioned because of the use of this poor LCG.<sup class="reference" id="cite_ref-Press_11-0">[11]</sup>
+</p><p>There are three common families of parameter choice:
+</p>
+<h3><span id="m_prime.2C_c_.3D_0"></span><span class="mw-headline" id="m_prime,_c_=_0"><i>m</i> prime, <i>c</i> = 0</span><span class="mw-editsection"></span></h3>
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p>This is the original Lehmer RNG construction. The period is <i>m</i>−1 if the multiplier <i>a</i> is chosen to be a primitive element of the integers modulo <i>m</i>. The initial state must be chosen between 1 and <i>m</i>−1.
+</p><p>One disadvantage of a prime modulus is that the modular reduction requires a double-width product and an explicit reduction step. Often a prime just less than a power of 2 is used (the Mersenne primes 2<sup>31</sup>−1 and 2<sup>61</sup>−1 are popular), so that the reduction modulo <i>m</i> = 2<sup><i>e</i></sup> − <i>d</i> can be computed as (<i>ax</i> mod 2<sup><i>e</i></sup>) + <i>d</i> <span style="font-size:1em">⌊</span><i>ax</i>/2<sup><i>e</i></sup><span style="font-size:1em">⌋</span>. This must be followed by a conditional subtraction of <i>m</i> if the result is too large, but the number of subtractions is limited to <i>ad</i>/<i>m</i>, which can be easily limited to one if <i>d</i> is small.
+</p><p>If a double-width product is unavailable, and the multiplier is chosen carefully, <b>Schrage's method</b><sup class="reference" id="cite_ref-12">[12]</sup> may be used. To do this, factor <i>m</i> = <i>qa</i>+<i>r</i>, i.e. <span class="nowrap"><i>q</i> = <span style="font-size:1em">⌊</span><i>m</i>/<i>a</i><span style="font-size:1em">⌋</span></span> and <span class="nowrap"><i>r</i> = <i>m</i> mod <i>a</i></span>. Then compute <i>ax</i> mod <i>m</i> = <span class="nowrap"><i>a</i>(<i>x</i> mod <i>q</i>) − <i>r</i><span style="font-size:1em">⌊</span><i>x</i>/<i>q</i><span style="font-size:1em">⌋</span></span>. Since <i>x</i> mod <i>q</i> &lt; <i>q</i> ≤ <i>m</i>/<i>a</i>, the first term is strictly less than <i>am</i>/<i>a</i> = <i>m</i>. If <i>a</i> is chosen so that <i>r</i> ≤ <i>q</i> (and thus <i>r</i>/<i>q</i> ≤ 1), then the second term is also less than <i>m</i>: <i>r</i><span style="font-size:1em">⌊</span><i>x</i>/<i>q</i><span style="font-size:1em">⌋</span> ≤ <i>rx</i>/<i>q</i> = <i>x</i>(<i>r</i>/<i>q</i>) ≤ <i>x</i> &lt; <i>m</i>. Thus, both products can be computed with a single-width product, and the difference between them lies in the range [1−<i>m</i>, <i>m</i>−1], so can be reduced to [0, <i>m</i>−1] with a single conditional add.<sup class="reference" id="cite_ref-13">[13]</sup>
+</p><p>A second disadvantage is that it is awkward to convert the value 1 ≤ <i>x</i> &lt; <i>m</i> to uniform random bits. If a prime just less than a power of 2 is used, sometimes the missing values are simply ignored.
+</p>
+<h3><span id="m_a_power_of_2.2C_c_.3D_0"></span><span class="mw-headline" id="m_a_power_of_2,_c_=_0"><i>m</i> a power of 2, <i>c</i> = 0</span><span class="mw-editsection"></span></h3>
+<p>Choosing <i>m</i> to be a power of 2, most often <i>m</i> = 2<sup>32</sup> or <i>m</i> = 2<sup>64</sup>, produces a particularly efficient LCG, because this allows the modulus operation to be computed by simply truncating the binary representation. In fact, the most significant bits are usually not computed at all. There are, however, disadvantages.
+</p><p>This form has maximal period <i>m</i>/4, achieved if <i>a</i> ≡ 3 or <i>a</i> ≡ 5 (mod 8). The initial state <i>X</i><sub>0</sub> must be odd, and the low three bits of <i>X</i> alternate between two states and are not useful. It can be shown that this form is equivalent to a generator with a modulus a quarter the size and <i>c</i> ≠ 0.<sup class="reference" id="cite_ref-KnuthV2_1-2">[1]</sup>
+</p><p>A more serious issue with the use of a power-of-two modulus is that the low bits have a shorter period than the high bits. The lowest-order bit of <i>X</i> never changes (<i>X</i> is always odd), and the next two bits alternate between two states. (If <i>a</i> ≡ 5 (mod 8), then bit 1 never changes and bit 2 alternates. If <i>a</i> ≡ 3 (mod 8), then bit 2 never changes and bit 1 alternates.) Bit 3 repeats with a period of 4, bit 4 has a period of 8, and so on. Only the most significant bit of <i>X</i> achieves the full period.
+</p>
+<h3><span id="c_.E2.89.A0_0"></span><span class="mw-headline" id="c_≠_0"><i>c</i> ≠ 0</span><span class="mw-editsection"></span></h3>
+<p>When <i>c</i> ≠ 0, correctly chosen parameters allow a period equal to <i>m</i>, for all seed values. This will occur if and only if:<sup class="reference" id="cite_ref-KnuthV2_1-3">[1]</sup><sup class="reference nowrap"><span title="Page: 17—19">: 17—19 </span></sup>
+</p>
+<ol><li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle m}</annotation>
+</semantics>
+</math></span><img alt="m" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0a07d98bb302f3856cbabc47b2b9016692e3f7bc" style="vertical-align: -0.338ex; width:2.04ex; height:1.676ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c}</annotation>
+</semantics>
+</math></span><img alt="c" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/86a67b81c2de995bd608d5b2df50cd8cd7d92455" style="vertical-align: -0.338ex; width:1.007ex; height:1.676ex;"/></span> are relatively prime,</li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a-1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a-1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle a-1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/240dcbc0ddbf5932d0ea301ef5576b46ba12d26d" style="vertical-align: -0.505ex; width:5.233ex; height:2.343ex;"/></span> is divisible by all prime factors of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle m}</annotation>
+</semantics>
+</math></span><img alt="m" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0a07d98bb302f3856cbabc47b2b9016692e3f7bc" style="vertical-align: -0.338ex; width:2.04ex; height:1.676ex;"/></span>,</li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a-1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a-1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle a-1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/240dcbc0ddbf5932d0ea301ef5576b46ba12d26d" style="vertical-align: -0.505ex; width:5.233ex; height:2.343ex;"/></span> is divisible by 4 if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle m}</annotation>
+</semantics>
+</math></span><img alt="m" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0a07d98bb302f3856cbabc47b2b9016692e3f7bc" style="vertical-align: -0.338ex; width:2.04ex; height:1.676ex;"/></span> is divisible by 4.</li></ol>
+<p>These three requirements are referred to as the Hull–Dobell Theorem.<sup class="reference" id="cite_ref-14">[14]</sup><sup class="reference" id="cite_ref-HullDobell_15-0">[15]</sup>
+</p><p>This form may be used with any <i>m</i>, but only works well for <i>m</i> with many repeated prime factors, such as a power of 2; using a computer's word size is the most common choice.  If <i>m</i> were a square-free integer, this would only allow <i>a</i> ≡ 1 (mod <i>m</i>), which makes a very poor PRNG; a selection of possible full-period multipliers is only available when <i>m</i> has repeated prime factors.
+</p><p>Although the Hull–Dobell theorem provides maximum period, it is not sufficient to guarantee a <i>good</i> generator.  For example, it is desirable for <i>a</i> − 1 to not be any more divisible by prime factors of <i>m</i> than necessary.  Thus, if <i>m</i> is a power of 2, then <i>a</i> − 1 should be divisible by 4 but not divisible by 8, i.e. <i>a</i> ≡ 5 (mod 8).<sup class="reference" id="cite_ref-KnuthV2_1-4">[1]</sup><sup class="reference nowrap"><span title="Page: §3.2.1.3">: §3.2.1.3 </span></sup>
+</p><p>Indeed, most multipliers produce a sequence which fails one test for non-randomness or another, and finding a multiplier which is satisfactory to all applicable criteria<sup class="reference" id="cite_ref-KnuthV2_1-5">[1]</sup><sup class="reference nowrap"><span title="Page: §3.3.3">: §3.3.3 </span></sup> is quite challenging.  The spectral test is one of the most important tests.<sup class="reference" id="cite_ref-Austin2008_16-0">[16]</sup>
+</p><p>Note that a power-of-2 modulus shares the problem as described above for <i>c</i> = 0: the low <i>k</i> bits form a generator with modulus 2<sup><i>k</i></sup> and thus repeat with a period of 2<sup><i>k</i></sup>; only the most significant bit achieves the full period.  If a pseudorandom number less than <i>r</i> is desired, <span style="font-size:1em">⌊</span><i>rX</i>/<i>m</i><span style="font-size:1em">⌋</span> is a much higher-quality result than <i>X</i> mod <i>r</i>.  Unfortunately, most programming languages make the latter much easier to write (<code>X % r</code>), so it is the more commonly used form.
+</p><p>The generator is <i>not</i> sensitive to the choice of <i>c</i>, as long as it is relatively prime to the modulus (e.g. if <i>m</i> is a power of 2, then <i>c</i> must be odd), so the value <i>c</i>=1 is commonly chosen.
+</p><p>The series produced by other choices of <i>c</i> can be written as a simple function of the series when <i>c</i>=1.<sup class="reference" id="cite_ref-KnuthV2_1-6">[1]</sup><sup class="reference nowrap"><span title="Page: 11">: 11 </span></sup>  Specifically, if <i>Y</i> is the prototypical series defined by <i>Y</i><sub>0</sub> = 0 and <i>Y</i><sub><i>n</i>+1</sub> = <i>aY<sub>n</sub></i>+1 mod m, then a general series <i>X</i><sub><i>n</i>+1</sub> = <i>aX<sub>n</sub></i>+<i>c</i> mod <i>m</i> can be written as an affine function of <i>Y</i>:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle X_{n}=(X_{0}(a-1)+c)Y_{n}+X_{0}=(X_{1}-X_{0})Y_{n}+X_{0}{\pmod {m}}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>c</mi>
+<mo stretchy="false">)</mo>
+<msub>
+<mi>Y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<msub>
+<mi>Y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mspace width="1em"></mspace>
+<mo stretchy="false">(</mo>
+<mi>mod</mi>
+<mspace width="0.333em"></mspace>
+<mi>m</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle X_{n}=(X_{0}(a-1)+c)Y_{n}+X_{0}=(X_{1}-X_{0})Y_{n}+X_{0}{\pmod {m}}.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle X_{n}=(X_{0}(a-1)+c)Y_{n}+X_{0}=(X_{1}-X_{0})Y_{n}+X_{0}{\pmod {m}}.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3cb567e2cfe84e4948885bbfb5e348f96293be70" style="vertical-align: -0.838ex; width:64.771ex; height:2.843ex;"/></span></dd></dl>
+<p>More generally, any two series <i>X</i> and <i>Z</i> with the same multiplier and modulus are related by
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {X_{n}-X_{0} \over X_{1}-X_{0}}=Y_{n}={a^{n}-1 \over a-1}={Z_{n}-Z_{0} \over Z_{1}-Z_{0}}{\pmod {m}}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mrow>
+<mrow>
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mrow>
+</mfrac>
+</mrow>
+<mo>=</mo>
+<msub>
+<mi>Y</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<msup>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+<mrow>
+<mi>a</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</mfrac>
+</mrow>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<msub>
+<mi>Z</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>Z</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mrow>
+<mrow>
+<msub>
+<mi>Z</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>Z</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mrow>
+</mfrac>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mspace width="1em"></mspace>
+<mo stretchy="false">(</mo>
+<mi>mod</mi>
+<mspace width="0.333em"></mspace>
+<mi>m</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {X_{n}-X_{0} \over X_{1}-X_{0}}=Y_{n}={a^{n}-1 \over a-1}={Z_{n}-Z_{0} \over Z_{1}-Z_{0}}{\pmod {m}}.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {X_{n}-X_{0} \over X_{1}-X_{0}}=Y_{n}={a^{n}-1 \over a-1}={Z_{n}-Z_{0} \over Z_{1}-Z_{0}}{\pmod {m}}.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9fa2bc1661dea63ca58ad116344e71dd488871b6" style="vertical-align: -2.338ex; width:50.445ex; height:5.843ex;"/></span></dd></dl>
+<h2><span class="mw-headline" id="Parameters_in_common_use">Parameters in common use</span><span class="mw-editsection"></span></h2>
+<p>The following table lists the parameters of LCGs in common use, including built-in <i>rand()</i> functions in runtime libraries of various compilers.  This table is to show popularity, not examples to emulate; <i>many of these parameters are poor.</i>  Tables of good parameters are available.<sup class="reference" id="cite_ref-LEcuyer99_10-1">[10]</sup><sup class="reference" id="cite_ref-Steele20_2-2">[2]</sup>
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>Source</th>
+<th>modulus<br/><i>m</i></th>
+<th>multiplier<br/><i>a</i></th>
+<th>increment<br/><i>c</i></th>
+<th>output bits of seed in <i>rand()</i> or <i>Random(L)</i>
+</th></tr>
+<tr>
+<td><i>ZX81</i></td>
+<td>2<sup>16</sup> + 1</td>
+<td>75</td>
+<td>74</td>
+<td>
+</td></tr>
+<tr>
+<td><i>Numerical Recipes</i> from the "quick and dirty generators" list, Chapter 7.1, Eq. 7.1.6 <br/> parameters from Knuth and H. W. Lewis</td>
+<td>2<sup>32</sup></td>
+<td>1664525</td>
+<td>1013904223</td>
+<td>
+</td></tr>
+<tr>
+<td>Borland C/C++</td>
+<td>2<sup>32</sup></td>
+<td>22695477</td>
+<td>1</td>
+<td>bits 30..16 in <i>rand()</i>, 30..0 in <i>lrand()</i>
+</td></tr>
+<tr>
+<td>glibc (used by GCC)<sup class="reference" id="cite_ref-17">[17]</sup>
+</td>
+<td>2<sup>31</sup></td>
+<td>1103515245</td>
+<td>12345</td>
+<td>bits 30..0
+</td></tr>
+<tr>
+<td>ANSI C: Watcom, Digital Mars, CodeWarrior, IBM VisualAge C/C++<sup class="reference" id="cite_ref-18">[18]</sup><br/>C90, C99, C11: Suggestion in the ISO/IEC 9899,<sup class="reference" id="cite_ref-19">[19]</sup> C17</td>
+<td>2<sup>31</sup></td>
+<td>1103515245</td>
+<td>12345</td>
+<td>bits 30..16
+</td></tr>
+<tr>
+<td>Borland Delphi, Virtual Pascal</td>
+<td>2<sup>32</sup></td>
+<td>134775813</td>
+<td>1</td>
+<td>bits 63..32 of <i>(seed × L)</i>
+</td></tr>
+<tr>
+<td>Turbo Pascal</td>
+<td>2<sup>32</sup></td>
+<td>134775813 (8088405<sub>16</sub>)</td>
+<td>1</td>
+<td>
+</td></tr>
+<tr>
+<td>Microsoft Visual/Quick C/C++</td>
+<td>2<sup>32</sup></td>
+<td>214013 (343FD<sub>16</sub>)</td>
+<td>2531011 (269EC3<sub>16</sub>)</td>
+<td>bits 30..16
+</td></tr>
+<tr>
+<td>Microsoft Visual Basic (6 and earlier)<sup class="reference" id="cite_ref-20">[20]</sup></td>
+<td><span class="texhtml"><i>2</i><sup><i>24</i></sup></span></td>
+<td>1140671485 (43FD43FD<sub>16</sub>)</td>
+<td>12820163 (C39EC3<sub>16</sub>)</td>
+<td>
+</td></tr>
+<tr>
+<td>RtlUniform from Native API<sup class="reference" id="cite_ref-21">[21]</sup></td>
+<td>2<sup>31</sup> − 1
+</td>
+<td>2147483629 (7FFFFFED<sub>16</sub>)</td>
+<td>2147483587 (7FFFFFC3<sub>16</sub>)</td>
+<td>
+</td></tr>
+<tr>
+<td>Apple CarbonLib, C++11's <code>minstd_rand0</code>,<sup class="reference" id="cite_ref-cpp11_22-0">[22]</sup> MATLAB's v4 legacy generator mcg16807<sup class="reference" id="cite_ref-23">[23]</sup></td>
+<td>2<sup>31</sup> − 1</td>
+<td>16807</td>
+<td>0</td>
+<td>see MINSTD
+</td></tr>
+<tr>
+<td>C++11's <code>minstd_rand</code><sup class="reference" id="cite_ref-cpp11_22-1">[22]</sup></td>
+<td>2<sup>31</sup> − 1</td>
+<td>48271</td>
+<td>0</td>
+<td>see MINSTD
+</td></tr>
+<tr>
+<td>MMIX by Donald Knuth</td>
+<td>2<sup>64</sup></td>
+<td>6364136223846793005</td>
+<td>1442695040888963407</td>
+<td>
+</td></tr>
+<tr>
+<td>Newlib, Musl</td>
+<td>2<sup>64</sup></td>
+<td>6364136223846793005</td>
+<td>1</td>
+<td>bits 63..32
+</td></tr>
+<tr>
+<td>VMS's <b>MTH$RANDOM</b>,<sup class="reference" id="cite_ref-24">[24]</sup> old versions of glibc</td>
+<td>2<sup>32</sup></td>
+<td>69069 (10DCD<sub>16</sub>)</td>
+<td>1</td>
+<td>
+</td></tr>
+<tr>
+<td>Java's java.util.Random, POSIX [ln]rand48, glibc [ln]rand48[_r]</td>
+<td>2<sup>48</sup></td>
+<td>25214903917 (5DEECE66D<sub>16</sub>)</td>
+<td>11</td>
+<td>bits 47..16
+</td></tr>
+<tr>
+<td>
+<p><code>random0</code><sup class="reference" id="cite_ref-25">[25]</sup><sup class="reference" id="cite_ref-26">[26]</sup><sup class="reference" id="cite_ref-27">[27]</sup><sup class="reference" id="cite_ref-28">[28]</sup><sup class="reference" id="cite_ref-29">[29]</sup>
+</p>
+</td>
+<td>134456 = 2<sup>3</sup>7<sup>5</sup></td>
+<td>8121</td>
+<td>28411</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\frac {X_{n}}{134456}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<msub>
+<mi>X</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mn>134456</mn>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\frac {X_{n}}{134456}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\frac {X_{n}}{134456}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/df5b5ca4d88c121cb47b8bb8e911c1ddf4ebd89b" style="vertical-align: -2.005ex; width:7.811ex; height:5.343ex;"/></span>
+</td></tr>
+<tr>
+<td>POSIX<sup class="reference" id="cite_ref-30">[30]</sup> [jm]rand48, glibc [mj]rand48[_r]</td>
+<td>2<sup>48</sup></td>
+<td>25214903917 (5DEECE66D<sub>16</sub>)</td>
+<td>11</td>
+<td>bits 47..15
+</td></tr>
+<tr>
+<td>POSIX [de]rand48, glibc [de]rand48[_r]</td>
+<td>2<sup>48</sup></td>
+<td>25214903917 (5DEECE66D<sub>16</sub>)</td>
+<td>11</td>
+<td>bits 47..0
+</td></tr>
+<tr>
+<td>cc65<sup class="reference" id="cite_ref-31">[31]</sup></td>
+<td>2<sup>23</sup></td>
+<td>65793 (10101<sub>16</sub>)</td>
+<td>4282663 (415927<sub>16</sub>)</td>
+<td>bits 22..8
+</td></tr>
+<tr>
+<td>cc65</td>
+<td>2<sup>32</sup></td>
+<td>16843009 (1010101<sub>16</sub>)</td>
+<td>826366247 (31415927<sub>16</sub>)</td>
+<td>bits 31..16
+</td></tr>
+<tr>
+<td>cc65</td>
+<td>2<sup>32</sup></td>
+<td>16843009 (1010101<sub>16</sub>)</td>
+<td>3014898611 (B3B3B3B3<sub>16</sub>)</td>
+<td>previously bits 31..16, current bits 31..16 xor bits 14..0
+</td></tr>
+<tr style="border-top:2px solid;">
+<td><i>Formerly common:</i> <span style="font-size:92%;line-height:1.30em;">RANDU</span><sup class="reference" id="cite_ref-Press_11-1">[11]</sup></td>
+<td>2<sup>31</sup></td>
+<td>65539</td>
+<td>0</td>
+<td>
+</td></tr></tbody></table>
+<p>As shown above, LCGs do not always use all of the bits in the values they produce. For example, the Java implementation operates with 48-bit values at each iteration but returns only their 32 most significant bits. This is because the higher-order bits have longer periods than the lower-order bits (see below). LCGs that use this truncation technique produce statistically better values than those that do not. This is especially noticeable in scripts that use the mod operation to reduce range; modifying the random number mod 2 will lead to alternating 0 and 1 without truncation.
+</p>
+<h2><span class="mw-headline" id="Advantages_and_disadvantages">Advantages and disadvantages</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-More_citations_needed_section plainlinks metadata ambox ambox-content ambox-Refimprove" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<p>LCGs are fast and require minimal memory (one modulo-<i>m</i> number, often 32 or 64 bits) to retain state. This makes them valuable for simulating multiple independent streams.  LCGs are not intended, and must not be used, for cryptographic applications; use a cryptographically secure pseudorandom number generator for such applications.
+</p>
+
+<p>Although LCGs have a few specific weaknesses, many of their flaws come from having too small a state. The fact that people have been lulled for so many years into using them with such small moduli can be seen as a testament to the strength of the technique. A LCG with large enough state can pass even stringent statistical tests; a modulo-2 LCG which returns the high 32 bits passes TestU01's SmallCrush suite,<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="O'Neill stated this result somewhere, but I'm having a hard time finding it. (November 2017)">citation needed</span></i>]</sup> and a 96-bit LCG passes the most stringent BigCrush suite.<sup class="reference" id="cite_ref-32">[32]</sup>
+</p><p>For a specific example, an ideal random number generator with 32 bits of output is expected (by the Birthday theorem) to begin duplicating earlier outputs after <span class="texhtml"><span class="nowrap">√<span style="border-top:1px solid; padding:0 0.1em;"><i>m</i></span></span> ≈ 2<sup>16</sup></span> results. <i>Any</i> PRNG whose output is its full, untruncated state will not produce duplicates until its full period elapses, an easily detectable statistical flaw. For related reasons, any PRNG should have a period longer than the square of the number of outputs required. Given modern computer speeds, this means a period of 2<sup>64</sup> for all but the least demanding applications, and longer for demanding simulations.
+</p><p>One flaw specific to LCGs is that, if used to choose points in an n-dimensional space, the points will lie on, at most, <span class="texhtml"><span class="nowrap"><sup style="margin-right: -0.5em; vertical-align: 0.8em;"><i>n</i></sup>√<span style="border-top:1px solid; padding:0 0.1em;"><i>n</i>!⋅<i>m</i></span></span> </span>hyperplanes (Marsaglia's theorem, developed by George Marsaglia).<sup class="reference" id="cite_ref-Marsaglia68_7-1">[7]</sup> This is due to serial correlation between successive values of the sequence <i>X<sub>n</sub></i>. Carelessly chosen multipliers will usually have far fewer, widely spaced planes, which can lead to problems. The spectral test, which is a simple test of an LCG's quality, measures this spacing and allows a good multiplier to be chosen.
+</p><p>The plane spacing depends both on the modulus and the multiplier. A large enough modulus can reduce this distance below the resolution of double precision numbers. The choice of the multiplier becomes less important when the modulus is large. It is still necessary to calculate the spectral index and make sure that the multiplier is not a bad one, but purely probabilistically it becomes extremely unlikely to encounter a bad multiplier when the modulus is larger than about 2<sup>64</sup>.
+</p><p>Another flaw specific to LCGs is the short period of the low-order bits when <i>m</i> is chosen to be a power of 2. This can be mitigated by using a modulus larger than the required output, and using the most significant bits of the state.
+</p><p>Nevertheless, for some applications LCGs may be a good option. For instance, in an embedded system, the amount of memory available is often severely limited. Similarly, in an environment such as a video game console taking a small number of high-order bits of an LCG may well suffice.  (The low-order bits of LCGs when m is a power of 2 should never be relied on for any degree of randomness whatsoever.)  The low order bits go through very short cycles.  In particular, any full-cycle LCG, when m is a power of 2, will produce alternately odd and even results.
+</p><p>LCGs should be evaluated very carefully for suitability in non-cryptographic applications where high-quality randomness is critical. For Monte Carlo simulations, an LCG must use a modulus greater and preferably much greater than the cube of the number of random samples which are required. This means, for example, that a (good) 32-bit LCG can be used to obtain about a thousand random numbers; a 64-bit LCG is good for about 2<sup>21</sup> random samples (a little over two million), etc. For this reason, in practice LCGs are not suitable for large-scale Monte Carlo simulations.
+</p>
+<h2><span class="mw-headline" id="Sample_code">Sample code</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Python_code">Python code</span><span class="mw-editsection"></span></h3>
+<p>The following is an implementation of an LCG in Python, in the form of a generator:
+</p>
+
+<h3><span class="mw-headline" id="Free_Pascal">Free Pascal</span><span class="mw-editsection"></span></h3>
+<p>Free Pascal uses a Mersenne Twister as its default pseudo random number generator whereas Delphi uses a LCG. Here is a Delphi compatible example in Free Pascal based on the information in the table above. Given the same RandSeed value it generates the same sequence of random numbers as Delphi.
+</p>
+
+<p>Like all pseudorandom number generators, a LCG needs to store state and alter it each time it generates a new number. Multiple threads may access this state simultaneously causing a race condition. Implementations should use different state each with unique initialization for different threads to avoid equal sequences of random numbers on simultaneously executing threads.
+</p>
+<h2><span class="mw-headline" id="LCG_derivatives">LCG derivatives</span><span class="mw-editsection"></span></h2>
+<p>There are several generators which are linear congruential generators in a different form, and thus the techniques used to analyze LCGs can be applied to them.
+</p><p>One method of producing a longer period is to sum the outputs of several LCGs of different periods having a large least common multiple; the Wichmann–Hill generator is an example of this form. (We would prefer them to be completely coprime, but a prime modulus implies an even period, so there must be a common factor of 2, at least.) This can be shown to be equivalent to a single LCG with a modulus equal to the product of the component LCG moduli.
+</p><p>Marsaglia's add-with-carry and subtract-with-borrow PRNGs with a word size of <i>b</i>=2<sup><i>w</i></sup> and lags <i>r</i> and <i>s</i> (<i>r</i> &gt; <i>s</i>) are equivalent to LCGs with a modulus of <i>b<sup>r</sup></i> ± <i>b<sup>s</sup></i> ± 1.<sup class="reference" id="cite_ref-33">[33]</sup><sup class="reference" id="cite_ref-34">[34]</sup>
+</p><p>Multiply-with-carry PRNGs with a multiplier of <i>a</i> are equivalent to LCGs with a large prime modulus of <i>ab<sup>r</sup></i>−1 and a power-of-2 multiplier <i>b</i>.
+</p><p>A permuted congruential generator begins with a power-of-2-modulus LCG and applies an output transformation to eliminate the short period problem in the low-order bits.
+</p>
+<h2><span class="mw-headline" id="Comparison_with_other_PRNGs">Comparison with other PRNGs</span><span class="mw-editsection"></span></h2>
+<p>The other widely used primitive for obtaining long-period pseudorandom sequences is the linear-feedback shift register construction, which is based on arithmetic in GF(2)[<i>x</i>], the polynomial ring over GF(2).  Rather than integer addition and multiplication, the basic operations are exclusive-or and carry-less multiplication, which is usually implemented as a sequence of logical shifts.  These have the advantage that all of their bits are full-period; they do not suffer from the weakness in the low-order bits that plagues arithmetic modulo 2<sup><i>k</i></sup>.<sup class="reference" id="cite_ref-35">[35]</sup>
+</p><p>Examples of this family include xorshift generators and the Mersenne twister.  The latter provides a very long period (2<sup>19937</sup>−1) and variate uniformity, but it fails some statistical tests.<sup class="reference" id="cite_ref-36">[36]</sup> Lagged Fibonacci generators also fall into this category; although they use arithmetic addition, their period is ensured by an LFSR among the least-significant bits.
+</p><p>It is easy to detect the structure of a linear-feedback shift register with appropriate tests<sup class="reference" id="cite_ref-rfc4086_37-0">[37]</sup> such as the linear complexity test implemented in the TestU01 suite; a boolean circulant matrix initialized from consecutive bits of an LFSR will never have rank greater than the degree of the polynomial.  Adding a non-linear output mixing function (as in the xoshiro256** and permuted congruential generator constructions) can greatly improve the performance on statistical tests.
+</p><p>Another structure for a PRNG is a very simple recurrence function combined with a powerful output mixing function.  This includes counter mode block ciphers and non-cryptographic generators such as SplitMix64.
+</p><p>A structure similar to LCGs, but <i>not</i> equivalent, is the multiple-recursive generator: <i>X<sub>n</sub></i> = (<i>a</i><sub>1</sub><i>X</i><sub><i>n</i>−1</sub> + <i>a</i><sub>2</sub><i>X</i><sub><i>n</i>−2</sub> + ··· + <i>a<sub>k</sub>X</i><sub><i>n</i>−<i>k</i></sub>) mod <i>m</i> for <i>k</i> ≥ 2.  With a prime modulus, this can generate periods up to <i>m<sup>k</sup></i>−1, so is a useful extension of the LCG structure to larger periods.
+</p><p>A powerful technique for generating high-quality pseudorandom numbers is to combine two or more PRNGs of different structure; the sum of an LFSR and an LCG (as in the KISS or xorwow constructions) can do very well at some cost in speed.
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>List of random number generators – other PRNGs including some with better statistical qualitites</li>
+<li>ACORN generator – not to be confused with ACG which term appears to have been used for variants of LCG and LFSR generators</li>
+<li>Permuted congruential generator</li>
+<li>Full cycle</li>
+<li>Inversive congruential generator</li>
+<li>Multiply-with-carry</li>
+<li>Lehmer RNG (sometimes called the Park–Miller RNG)</li>
+<li>Combined linear congruential generator</li></ul>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFPressTeukolskyVetterlingFlannery2007">Press, WH; Teukolsky, SA; Vetterling, WT; Flannery, BP (2007), "Section 7.1.1. Some History", <i>Numerical Recipes: The Art of Scientific Computing</i> (3rd ed.), New York: Cambridge University Press, ISBN <bdi>978-0-521-88068-8</bdi></cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Section+7.1.1.+Some+History&amp;rft.btitle=Numerical+Recipes%3A+The+Art+of+Scientific+Computing&amp;rft.place=New+York&amp;rft.edition=3rd&amp;rft.pub=Cambridge+University+Press&amp;rft.date=2007&amp;rft.isbn=978-0-521-88068-8&amp;rft.aulast=Press&amp;rft.aufirst=WH&amp;rft.au=Teukolsky%2C+SA&amp;rft.au=Vetterling%2C+WT&amp;rft.au=Flannery%2C+BP&amp;rft_id=http%3A%2F%2Fapps.nrbook.com%2Fempanel%2Findex.html%23pg%3D343&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ALinear+congruential+generator"></span></li>
+<li>Gentle, James E., (2003). <i>Random Number Generation and Monte Carlo Methods</i>, 2nd edition, Springer, <link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/>ISBN 0-387-00178-6.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFJoan_Boyar1989">Joan Boyar (1989). "Inferring sequences produced by pseudo-random number generators" <span class="cs1-format">(PDF)</span>. <i>Journal of the ACM</i>. <b>36</b> (1): 129–141. doi:10.1145/58562.59305. S2CID 3565772.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Journal+of+the+ACM&amp;rft.atitle=Inferring+sequences+produced+by+pseudo-random+number+generators&amp;rft.volume=36&amp;rft.issue=1&amp;rft.pages=129-141&amp;rft.date=1989&amp;rft_id=info%3Adoi%2F10.1145%2F58562.59305&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A3565772%23id-name%3DS2CID&amp;rft.au=Joan+Boyar&amp;rft_id=http%3A%2F%2Fasterix.cs.gsu.edu%2Fcrypto%2Fp129-boyar.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ALinear+congruential+generator"></span> (in this paper, efficient algorithms are given for inferring sequences produced by certain pseudo-random number generators).</li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>The simulation Linear Congruential Generator visualizes the correlations between the pseudo-random numbers when manipulating the parameters.</li>
+<li>Security of Random Number Generation: An Annotated Bibliography</li>
+<li>Linear Congruential Generators post to sci.math</li>
+<li>The "Death of Art" computer art project at Goldstein Technologies LLC, uses an LCG to generate 33,554,432 images</li>
+<li>P. L'Ecuyer and R. Simard, "TestU01: A C Library for Empirical Testing of Random Number Generators", May 2006, revised November 2006, <i>ACM Transactions on Mathematical Software</i>, 33, 4, Article 22, August 2007.</li>
+<li>Article about another way of cracking LCG</li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw2313
+Cached time: 20221216152137
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.493 seconds
+Real time usage: 0.629 seconds
+Preprocessor visited node count: 6953/1000000
+Post‐expand include size: 83726/2097152 bytes
+Template argument size: 3322/2097152 bytes
+Highest expansion depth: 18/100
+Expensive parser function count: 5/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 110527/5000000 bytes
+Lua time usage: 0.234/10.000 seconds
+Lua memory usage: 7719626/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  487.173      1 -total
+ 48.75%  237.511      1 Template:Reflist
+ 18.11%   88.206      8 Template:R
+ 16.97%   82.684      5 Template:Cite_book
+ 16.66%   81.175     14 Template:R/ref
+ 14.61%   71.159      1 Template:TAOCP
+ 12.52%   61.004     15 Template:R/superscript
+  9.89%   48.172      1 Template:More_sources_needed_section
+  9.49%   46.251     10 Template:Cite_journal
+  8.79%   42.840      1 Template:More_citations_needed
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:45527-0!canonical and timestamp 20221216152136 and revision id 1126608450.
+ -->
+</div></body>
+</html>

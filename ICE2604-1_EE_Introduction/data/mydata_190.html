@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>chromatic_index</title>
+</head>
+<body>
+<div class="mw-parser-output">
+
+<p>In graph theory, an <b>edge coloring</b> of a graph is an assignment of "colors" to the edges of the graph so that no two incident edges have the same color.  For example, the figure to the right shows an edge coloring of a graph by the colors red, blue, and green. Edge colorings are one of several different types of graph coloring. The <b>edge-coloring problem</b> asks whether it is possible to color the edges of a given graph using at most <span class="texhtml mvar" style="font-style:italic;">k</span> different colors, for a given value of <span class="texhtml mvar" style="font-style:italic;">k</span>, or with the fewest possible colors.  The minimum required number of colors for the edges of a given graph is called the <b>chromatic index</b> of the graph.  For example, the edges of the graph in the illustration can be colored by three colors but cannot be colored by two colors, so the graph shown has chromatic index three.
+</p><p>By Vizing's theorem, the number of colors needed to edge color a simple graph is either its maximum degree <span class="texhtml">Δ</span> or <span class="texhtml">Δ+1</span>. For some graphs, such as bipartite graphs and high-degree planar graphs, the number of colors is always <span class="texhtml">Δ</span>, and for multigraphs, the number of colors may be as large as <span class="texhtml">3Δ/2</span>. There are polynomial time algorithms that construct optimal colorings of bipartite graphs, and colorings of non-bipartite simple graphs that use at most <span class="texhtml">Δ+1</span> colors; however, the general problem of finding an optimal edge coloring is NP-hard and the fastest known algorithms for it take exponential time. Many variations of the edge-coloring problem, in which an assignments of colors to edges must satisfy other conditions than non-adjacency, have been studied. Edge colorings have applications in scheduling problems and in frequency assignment for fiber optic networks.
+</p>
+
+<h2><span class="mw-headline" id="Examples">Examples</span><span class="mw-editsection"></span></h2>
+<p>A cycle graph may have its edges colored with two colors if the length of the cycle is even: simply alternate the two colors around the cycle. However, if the length is odd, three colors are needed.<sup class="reference" id="cite_ref-1">[1]</sup>
+</p>
+
+<p>A complete graph <span class="texhtml mvar" style="font-style:italic;">K<sub>n</sub></span> with <span class="texhtml mvar" style="font-style:italic;">n</span> vertices is edge-colorable with <span class="texhtml"><i>n</i> − 1</span> colors when <span class="texhtml mvar" style="font-style:italic;">n</span> is an even number; this is a special case of Baranyai's theorem. Soifer (2008) provides the following geometric construction of a coloring in this case: place <span class="texhtml mvar" style="font-style:italic;">n</span> points at the vertices and center of a regular <span class="texhtml">(<i>n</i> − 1)</span>-sided polygon. For each color class, include one edge from the center to one of the polygon vertices, and all of the perpendicular edges connecting pairs of polygon vertices. However, when <span class="texhtml mvar" style="font-style:italic;">n</span> is odd, <span class="texhtml mvar" style="font-style:italic;">n</span> colors are needed: each color can only be used for <span class="texhtml">(<i>n</i> − 1)/2</span> edges, a <span class="texhtml">1/<i>n</i></span> fraction of the total.<sup class="reference" id="cite_ref-2">[2]</sup>
+</p><p>Several authors have studied edge colorings of the odd graphs, <span class="texhtml mvar" style="font-style:italic;">n</span>-regular graphs in which the vertices represent teams of <span class="texhtml"><i>n</i> − 1</span> players selected from a pool of <span class="texhtml mvar" style="font-style:italic;">2<i>n</i> − 1</span> players, and in which the edges represent possible pairings of these teams (with one player left as "odd man out" to referee the game). The case that <span class="texhtml"><i>n</i> = 3</span> gives the well-known Petersen graph. As Biggs (1972) explains the problem (for <span class="texhtml"><i>n</i> = 6</span>), the players wish to find a schedule for these pairings such that each team plays each of its six games on different days of the week, with Sundays off for all teams; that is, formalizing the problem mathematically, they wish to find a 6-edge-coloring of the 6-regular odd graph <span class="texhtml"><i>O</i><sub>6</sub></span>. When <span class="texhtml mvar" style="font-style:italic;">n</span> is 3, 4, or 8, an edge coloring of <span class="texhtml"><i>O</i><sub><i>n</i></sub></span> requires <span class="texhtml"><i>n</i> + 1</span> colors, but when it is 5, 6, or 7, only <span class="texhtml mvar" style="font-style:italic;">n</span> colors are needed.<sup class="reference" id="cite_ref-3">[3]</sup>
+</p>
+<h2><span class="mw-headline" id="Definitions">Definitions</span><span class="mw-editsection"></span></h2>
+<p>As with its vertex counterpart, an <b>edge coloring</b> of a graph, when mentioned without any qualification, is always assumed to be a proper coloring of the edges, meaning no two adjacent edges are assigned the same color.  Here, two distinct edges are considered to be adjacent when they share a common vertex. An edge coloring of a graph <span class="texhtml mvar" style="font-style:italic;">G</span> may also be thought of as equivalent to a vertex coloring of the line graph <span class="texhtml"><i>L</i>(<i>G</i>)</span>, the graph that has a vertex for every edge of <span class="texhtml mvar" style="font-style:italic;">G</span> and an edge for every pair of adjacent edges in <span class="texhtml mvar" style="font-style:italic;">G</span>.
+</p><p>A proper edge coloring with <span class="texhtml mvar" style="font-style:italic;">k</span> different colors is called a (proper) <span class="texhtml mvar" style="font-style:italic;">k</span>-edge-coloring.  A graph that can be assigned a <span class="texhtml mvar" style="font-style:italic;">k</span>-edge-coloring is said to be <span class="texhtml mvar" style="font-style:italic;">k</span>-edge-colorable. The smallest number of colors needed in a (proper) edge coloring of a graph <span class="texhtml mvar" style="font-style:italic;">G</span> is the <b>chromatic index</b>, or edge chromatic number, <span class="texhtml">χ′(<i>G</i>)</span>. The chromatic index is also sometimes written using the notation <span class="texhtml">χ<sub>1</sub>(<i>G</i>)</span>; in this notation, the subscript one indicates that edges are one-dimensional objects.  A graph is <span class="texhtml mvar" style="font-style:italic;">k</span>-edge-chromatic if its chromatic index is exactly <span class="texhtml mvar" style="font-style:italic;">k</span>. The chromatic index should not be confused with the chromatic number <span class="texhtml">χ(<i>G</i>)</span> or <span class="texhtml">χ<sub>0</sub>(<i>G</i>)</span>, the minimum number of colors needed in a proper vertex coloring of <span class="texhtml mvar" style="font-style:italic;">G</span>.
+</p><p>Unless stated otherwise all graphs are assumed to be simple, in contrast to multigraphs in which two or more edges may be connecting the same pair of endpoints and in which there may be self-loops. For many problems in edge coloring, simple graphs behave differently from multigraphs, and additional care is needed to extend theorems about edge colorings of simple graphs to the multigraph case.
+</p>
+<h2><span class="mw-headline" id="Relation_to_matching">Relation to matching</span><span class="mw-editsection"></span></h2>
+
+<p>A matching in a graph <span class="texhtml mvar" style="font-style:italic;">G</span> is a set of edges, no two of which are adjacent; a perfect matching is a matching that includes edges touching all of the vertices of the graph, and a maximum matching is a matching that includes as many edges as possible. In an edge coloring, the set of edges with any one color must all be non-adjacent to each other, so they form a matching. That is, a proper edge coloring is the same thing as a partition of the graph into disjoint matchings.
+</p><p>If the size of a maximum matching in a given graph is small, then many matchings will be needed in order to cover all of the edges of the graph. Expressed more formally, this reasoning implies that if a graph has <span class="texhtml mvar" style="font-style:italic;">m</span> edges in total, and if at most <span class="texhtml">β</span> edges may belong to a maximum matching, then every edge coloring of the graph must use at least <span class="texhtml"><i>m</i>/β</span> different colors.<sup class="reference" id="cite_ref-s134_4-0">[4]</sup> For instance, the 16-vertex planar graph shown in the illustration has <span class="texhtml"><i>m</i> = 24</span> edges. In this graph, there can be no perfect matching; for, if the center vertex is matched, the remaining unmatched vertices may be grouped into three different connected components with four, five, and five vertices, and the components with an odd number of vertices cannot be perfectly matched. However, the graph has maximum matchings with seven edges, so <span class="texhtml">β = 7</span>. Therefore, the number of colors needed to edge-color the graph is at least 24/7, and since the number of colors must be an integer it is at least four.
+</p><p>For a regular graph of degree <span class="texhtml mvar" style="font-style:italic;">k</span> that does not have a perfect matching, this lower bound can be used to show that at least <span class="texhtml"><i>k</i> + 1</span> colors are needed.<sup class="reference" id="cite_ref-s134_4-1">[4]</sup> In particular, this is true for a regular graph with an odd number of vertices (such as the odd complete graphs); for such graphs, by the handshaking lemma, <span class="texhtml mvar" style="font-style:italic;">k</span> must itself be even. However, the inequality <span class="texhtml">χ′ ≥ <i>m</i>/β</span> does not fully explain the chromatic index of every regular graph, because there are regular graphs that do have perfect matchings but that are not <i>k</i>-edge-colorable. For instance, the Petersen graph is regular, with <span class="texhtml"><i>m</i> = 15</span> and with <span class="texhtml">β = 5</span> edges in its perfect matchings, but it does not have a 3-edge-coloring.
+</p>
+<h2><span class="mw-headline" id="Relation_to_degree">Relation to degree</span><span class="mw-editsection"></span></h2>
+<h3><span id="Vizing.27s_theorem"></span><span class="mw-headline" id="Vizing's_theorem">Vizing's theorem</span><span class="mw-editsection"></span></h3>
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p>The edge chromatic number of a graph <span class="texhtml mvar" style="font-style:italic;">G</span> is very closely related to the maximum degree <span class="texhtml">Δ(<i>G</i>)</span>, the largest number of edges incident to any single vertex of <span class="texhtml mvar" style="font-style:italic;">G</span>. Clearly, <span class="texhtml">χ′(<i>G</i>) ≥ Δ(<i>G</i>)</span>, for if <span class="texhtml">Δ</span> different edges all meet at the same vertex <span class="texhtml mvar" style="font-style:italic;">v</span>, then all of these edges need to be assigned different colors from each other, and that can only be possible if there are at least <span class="texhtml">Δ</span> colors available to be assigned. Vizing's theorem (named for Vadim G. Vizing who published it in 1964) states that this bound is almost tight: for any graph, the edge chromatic number is either <span class="texhtml">Δ(<i>G</i>)</span> or <span class="texhtml">Δ(<i>G</i>) + 1</span>.
+When <span class="texhtml">χ′(<i>G</i>) = Δ(<i>G</i>)</span>, <i>G</i> is said to be of class 1; otherwise, it is said to be of class 2.
+</p><p>Every bipartite graph is of class 1,<sup class="reference" id="cite_ref-5">[5]</sup> and almost all random graphs are of class 1.<sup class="reference" id="cite_ref-6">[6]</sup> However, it is NP-complete to determine whether an arbitrary graph is of class 1.<sup class="reference" id="cite_ref-7">[7]</sup>
+</p><p>Vizing (1965) proved that planar graphs of maximum degree at least eight are of class one and conjectured that the same is true for planar graphs of maximum degree seven or six. On the other hand, there exist planar graphs of maximum degree ranging from two through five that are of class two. The conjecture has since been proven for graphs of maximum degree seven.<sup class="reference" id="cite_ref-8">[8]</sup> Bridgeless planar cubic graphs are all of class 1; this is an equivalent form of the four color theorem.<sup class="reference" id="cite_ref-9">[9]</sup>
+</p>
+<h3><span class="mw-headline" id="Regular_graphs">Regular graphs</span><span class="mw-editsection"></span></h3>
+<p>A 1-factorization of a <i>k</i>-regular graph, a partition of the edges of the graph into perfect matchings, is the same thing as a <i>k</i>-edge-coloring of the graph. That is, a regular graph has a 1-factorization if and only if it is of class 1.  As a special case of this, a 3-edge-coloring of a cubic (3-regular) graph is sometimes called a <b>Tait coloring</b>.
+</p><p>Not every regular graph has a 1-factorization; for instance, the Petersen graph does not. More generally the snarks are defined as the graphs that, like the Petersen graph, are bridgeless, 3-regular, and of class 2.
+</p><p>According to the theorem of Kőnig (1916), every bipartite regular graph has a 1-factorization. The theorem was stated earlier in terms of projective configurations and was proven by Ernst Steinitz.
+</p>
+<h3><span class="mw-headline" id="Multigraphs">Multigraphs</span><span class="mw-editsection"></span></h3>
+
+<p>For multigraphs, in which multiple parallel edges may connect the same two vertices, results that are similar to but weaker than Vizing's theorem are known relating the edge chromatic number  <span class="texhtml">χ′(<i>G</i>)</span>, the maximum degree <span class="texhtml">Δ(<i>G</i>)</span>, and the multiplicity <span class="texhtml">μ(<i>G</i>)</span>, the maximum number of edges in any bundle of parallel edges. As a simple example showing that Vizing's theorem does not generalize to multigraphs, consider a Shannon multigraph, a multigraph with three vertices and three bundles of <span class="texhtml">μ(<i>G</i>)</span> parallel edges connecting each of the three pairs of vertices. In this example, <span class="texhtml">Δ(<i>G</i>) = 2μ(<i>G</i>)</span> (each vertex is incident to only two out of the three bundles of <span class="texhtml">μ(<i>G</i>)</span> parallel edges) but the edge chromatic number is <span class="texhtml">3μ(<i>G</i>)</span> (there are <span class="texhtml">3μ(<i>G</i>)</span> edges in total, and every two edges are adjacent, so all edges must be assigned different colors to each other). In a result that inspired Vizing,<sup class="reference" id="cite_ref-10">[10]</sup> Shannon (1949) showed that this is the worst case: <span class="texhtml">χ′(<i>G</i>) ≤ (3/2)Δ(<i>G</i>)</span> for any multigraph <span class="texhtml mvar" style="font-style:italic;">G</span>. Additionally, for any multigraph <span class="texhtml mvar" style="font-style:italic;">G</span>, <span class="texhtml">χ′(<i>G</i>) ≤ Δ(<i>G</i>) + μ(<i>G</i>)</span>, an inequality that reduces to Vizing's theorem in the case of simple graphs (for which <span class="texhtml">μ(<i>G</i>) = 1</span>).
+</p>
+<h2><span class="mw-headline" id="Algorithms">Algorithms</span><span class="mw-editsection"></span></h2>
+<p>Because the problem of testing whether a graph is class 1 is NP-complete, there is no known polynomial time algorithm for edge-coloring every graph with an optimal number of colors. Nevertheless, a number of algorithms have been developed that relax one or more of these criteria: they only work on a subset of graphs, or they do not always use an optimal number of colors, or they do not always run in polynomial time.
+</p>
+<h3><span class="mw-headline" id="Optimally_coloring_special_classes_of_graphs">Optimally coloring special classes of graphs</span><span class="mw-editsection"></span></h3>
+<p>In the case of bipartite graphs or multigraphs with maximum degree <span class="texhtml">Δ</span>, the optimal number of colors is exactly <span class="texhtml">Δ</span>. Cole, Ost &amp; Schirra (2001) showed that an optimal edge coloring of these graphs can be found in the near-linear time bound <span class="texhtml">O(<i>m</i> log Δ)</span>, where <span class="texhtml mvar" style="font-style:italic;">m</span> is the number of edges in the graph; simpler, but somewhat slower, algorithms are described by Cole &amp; Hopcroft (1982) and Alon (2003). The algorithm of Alon (2003) begins by making the input graph regular, without increasing its degree or significantly increasing its size, by merging pairs of vertices that belong to the same side of the bipartition and then adding a small number of additional vertices and edges. Then, if the degree is odd, Alon finds a single perfect matching in near-linear time, assigns it a color, and removes it from the graph, causing the degree to become even. Finally, Alon applies an observation of Gabow (1976), that selecting alternating subsets of edges in an Euler tour of the graph partitions it into two regular subgraphs, to split the edge coloring problem into two smaller subproblems, and his algorithm solves the two subproblems recursively. The total time for his algorithm is <span class="texhtml">O(<i>m</i> log <i>m</i>)</span>.
+</p><p>For planar graphs with maximum degree <span class="texhtml">Δ ≥ 7</span>, the optimal number of colors is again exactly <span class="texhtml">Δ</span>. With the stronger assumption that <span class="texhtml">Δ ≥ 9</span>, it is possible to find an optimal edge coloring in linear time (Cole &amp; Kowalik 2008).
+</p><p>For d-regular graphs which are pseudo-random in the sense that their adjacency matrix has second largest eigenvalue (in absolute value) at most <span class="texhtml">d<sup>1−ε</sup></span>, d is the optimal number of colors (Ferber &amp; Jain 2020).
+</p>
+<h3><span class="mw-headline" id="Algorithms_that_use_more_than_the_optimal_number_of_colors">Algorithms that use more than the optimal number of colors</span><span class="mw-editsection"></span></h3>
+<p>Misra &amp; Gries (1992) and Gabow et al. (1985) describe polynomial time algorithms for coloring any graph with <span class="texhtml">Δ + 1</span> colors, meeting the bound given by Vizing's theorem; see Misra &amp; Gries edge coloring algorithm.
+</p><p>For multigraphs, Karloff &amp; Shmoys (1987) present the following algorithm, which they attribute to Eli Upfal. Make the input multigraph <span class="texhtml mvar" style="font-style:italic;">G</span> Eulerian by adding a new vertex connected by an edge to every odd-degree vertex, find an Euler tour, and choose an orientation for the tour. Form a bipartite graph <span class="texhtml mvar" style="font-style:italic;">H</span> in which there are two copies of each vertex of <span class="texhtml mvar" style="font-style:italic;">G</span>, one on each side of the bipartition, with an edge from a vertex <span class="texhtml mvar" style="font-style:italic;">u</span> on the left side of the bipartition to a vertex <span class="texhtml mvar" style="font-style:italic;">v</span> on the right side of the bipartition whenever the oriented tour has an edge from <span class="texhtml mvar" style="font-style:italic;">u</span> to <span class="texhtml mvar" style="font-style:italic;">v</span> in <span class="texhtml mvar" style="font-style:italic;">G</span>. Apply a bipartite graph edge coloring algorithm to <span class="texhtml mvar" style="font-style:italic;">H</span>. Each color class in <span class="texhtml mvar" style="font-style:italic;">H</span> corresponds to a set of edges in <span class="texhtml mvar" style="font-style:italic;">G</span> that form a subgraph with maximum degree two; that is, a disjoint union of paths and cycles, so for each color class in <span class="texhtml mvar" style="font-style:italic;">H</span> it is possible to form three color classes in <span class="texhtml mvar" style="font-style:italic;">G</span>. The time for the algorithm is bounded by the time to edge color a bipartite graph, <span class="texhtml">O(<i>m</i> log Δ)</span> using the algorithm of Cole, Ost &amp; Schirra (2001). The number of colors this algorithm uses is at most <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 3\left\lceil {\frac {\Delta }{2}}\right\rceil }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>3</mn>
+<mrow>
+<mo>⌈</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mo>⌉</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 3\left\lceil {\frac {\Delta }{2}}\right\rceil }</annotation>
+</semantics>
+</math></span><img alt="3\left\lceil {\frac  \Delta 2}\right\rceil " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6e6955b0331d729e3eefb5a4491615d2afd35311" style="vertical-align: -2.505ex; width:7.032ex; height:6.176ex;"/></span>, close to but not quite the same as Shannon's bound of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \left\lfloor {\frac {3\Delta }{2}}\right\rfloor }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow>
+<mo>⌊</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mn>3</mn>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+</mrow>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mo>⌋</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \left\lfloor {\frac {3\Delta }{2}}\right\rfloor }</annotation>
+</semantics>
+</math></span><img alt="\left\lfloor {\frac  {3\Delta }2}\right\rfloor " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/067cd0b6a9b933a638b204cdd5a7d15e6943c092" style="vertical-align: -2.505ex; width:6.645ex; height:6.176ex;"/></span>. It may also be made into a parallel algorithm in a straightforward way. In the same paper, Karloff and Shmoys also present a linear time algorithm for coloring multigraphs of maximum degree three with four colors (matching both Shannon's and Vizing's bounds) that operates on similar principles: their algorithm adds a new vertex to make the graph Eulerian, finds an Euler tour, and then chooses alternating sets of edges on the tour to split the graph into two subgraphs of maximum degree two. The paths and even cycles of each subgraph may be colored with two colors per subgraph. After this step, each remaining odd cycle contains at least one edge that may be colored with one of the two colors belonging to the opposite subgraph. Removing this edge from the odd cycle leaves a path, which may be colored using the two colors for its subgraph.
+</p><p>A greedy coloring algorithm that considers the edges of a graph or multigraph one by one, assigning each edge the first available color, may sometimes use as many as <span class="texhtml">2Δ − 1</span> colors, which may be nearly twice as many number of colors as is necessary. However, it has the advantage that it may be used in the online algorithm setting in which the input graph is not known in advance; in this setting, its competitive ratio is two, and this is optimal: no other online algorithm can achieve a better performance.<sup class="reference" id="cite_ref-11">[11]</sup> However, if edges arrive in a random order, and the input graph has a degree that is at least logarithmic, then smaller competitive ratios can be achieved.<sup class="reference" id="cite_ref-12">[12]</sup>
+</p><p>Several authors have made conjectures that imply that the fractional chromatic index of any multigraph (a number that can be computed in polynomial time using linear programming) is within one of the chromatic index.<sup class="reference" id="cite_ref-13">[13]</sup> If these conjectures are true, it would be possible to compute a number that is never more than one off from the chromatic index in the multigraph case, matching what is known via Vizing's theorem for simple graphs. Although unproven in general, these conjectures are known to hold when the chromatic index is at least <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Delta +{\sqrt {\Delta /2}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>2</mn>
+</msqrt>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Delta +{\sqrt {\Delta /2}}}</annotation>
+</semantics>
+</math></span><img alt="\Delta +{\sqrt  {\Delta /2}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9dfd5e7bb1c041baa1d5285919c393196bdd5efc" style="vertical-align: -1.838ex; width:11.361ex; height:4.843ex;"/></span>, as can happen for multigraphs with sufficiently large multiplicity.<sup class="reference" id="cite_ref-14">[14]</sup>
+</p>
+<h3><span class="mw-headline" id="Exact_algorithms">Exact algorithms</span><span class="mw-editsection"></span></h3>
+<p>It is straightforward to test whether a graph may be edge colored with one or two colors, so the first nontrivial case of edge coloring is testing whether a graph has a 3-edge-coloring.
+As Kowalik (2009) showed, it is possible to test whether a graph has a 3-edge-coloring in time <span class="texhtml">O(1.344<sup><i>n</i></sup>)</span>, while using only polynomial space. Although this time bound is exponential, it is significantly faster than a brute force search over all possible assignments of colors to edges. Every biconnected 3-regular graph with <span class="texhtml mvar" style="font-style:italic;">n</span> vertices has <span class="texhtml">O(2<sup><i>n</i>/2</sup>)</span> 3-edge-colorings; all of which can be listed in time <span class="texhtml">O(2<sup><i>n</i>/2</sup>)</span> (somewhat slower than the time to find a single coloring); as Greg Kuperberg observed, the graph of a prism over an <span class="texhtml"><i>n</i>/2</span>-sided polygon has <span class="texhtml">Ω(2<sup><i>n</i>/2</sup>)</span> colorings (lower instead of upper bound), showing that this bound is tight.<sup class="reference" id="cite_ref-15">[15]</sup>
+</p><p>By applying exact algorithms for vertex coloring to the line graph of the input graph, it is possible to optimally edge-color any graph with <span class="texhtml mvar" style="font-style:italic;">m</span> edges, regardless of the number of colors needed, in time <span class="texhtml">2<sup><i>m</i></sup><i>m</i><sup>O(1)</sup></span> and exponential space, or in time <span class="texhtml">O(2.2461<sup><i>m</i></sup>)</span> and only polynomial space (Björklund, Husfeldt &amp; Koivisto 2009).
+</p><p>Because edge coloring is NP-complete even for three colors, it is unlikely to be fixed parameter tractable when parametrized by the number of colors. However, it is tractable for other parameters. In particular, Zhou, Nakano &amp; Nishizeki (1996) showed that for graphs of treewidth <span class="texhtml mvar" style="font-style:italic;">w</span>, an optimal edge coloring can be computed in time <span class="texhtml">O(<i>nw</i>(6<i>w</i>)<sup><i>w</i>(<i>w</i> + 1)/2</sup>)</span>, a bound that depends superexponentially on <span class="texhtml mvar" style="font-style:italic;">w</span> but only linearly on the number <span class="texhtml mvar" style="font-style:italic;">n</span> of vertices in the graph.
+</p><p>Nemhauser &amp; Park (1991) formulate the edge coloring problem as an integer program and describe their experience using an integer programming solver to edge color graphs. However, they did not perform any complexity analysis of their algorithm.
+</p>
+<h2><span class="mw-headline" id="Additional_properties">Additional properties</span><span class="mw-editsection"></span></h2>
+
+<p>A graph is uniquely <span class="texhtml mvar" style="font-style:italic;">k</span>-edge-colorable if there is only one way of partitioning the edges into <span class="texhtml mvar" style="font-style:italic;">k</span> color classes, ignoring the <span class="texhtml"><i>k</i>!</span> possible permutations of the colors. For <span class="texhtml"><i>k</i> ≠ 3</span>, the only uniquely <span class="texhtml mvar" style="font-style:italic;">k</span>-edge-colorable graphs are paths, cycles, and stars, but for <span class="texhtml"><i>k</i> = 3</span> other graphs may also be uniquely <span class="texhtml mvar" style="font-style:italic;">k</span>-edge-colorable. Every uniquely 3-edge-colorable graph has exactly three Hamiltonian cycles (formed by deleting one of the three color classes) but there exist 3-regular graphs that have three Hamiltonian cycles and are not uniquely 3-colorable, such as the generalized Petersen graphs <span class="texhtml"><i>G</i>(6<i>n</i> + 3, 2)</span> for <span class="texhtml"><i>n</i> ≥ 2</span>. The only known nonplanar uniquely 3-colorable graph is the generalized Petersen graph <span class="texhtml"><i>G</i>(9,2)</span>, and it has been conjectured that no others exist.<sup class="reference" id="cite_ref-16">[16]</sup>
+</p>
+
+<p>Folkman &amp; Fulkerson (1969) investigated the non-increasing sequences of numbers <span class="texhtml"><i>m</i><sub>1</sub>, <i>m</i><sub>2</sub>, <i>m</i><sub>3</sub>, ...</span> with the property that there exists a proper edge coloring of a given graph <span class="texhtml mvar" style="font-style:italic;">G</span> with <span class="texhtml"><i>m</i><sub>1</sub></span> edges of the first color, <span class="texhtml"><i>m</i><sub>2</sub></span> edges of the second color, etc. They observed that, if a sequence <span class="texhtml mvar" style="font-style:italic;">P</span> is feasible in this sense, and is greater in lexicographic order than a sequence <span class="texhtml mvar" style="font-style:italic;">Q</span> with the same sum, then <span class="texhtml mvar" style="font-style:italic;">Q</span> is also feasible. For, if <span class="texhtml"><i>P</i> &gt; <i>Q</i></span> in lexicographic order, then <span class="texhtml mvar" style="font-style:italic;">P</span> can be transformed into <span class="texhtml mvar" style="font-style:italic;">Q</span> by a sequence of steps, each of which reduces one of the numbers <span class="texhtml"><i>m<sub>i</sub></i></span> by one unit and increases another later number 
+<span class="texhtml"><i>m<sub>j</sub></i></span> with <span class="texhtml"><i>i</i> &lt; <i>j</i></span> by one unit. In terms of edge colorings, starting from a coloring that realizes <span class="texhtml mvar" style="font-style:italic;">P</span>, each of these same steps may be performed by swapping colors <span class="texhtml mvar" style="font-style:italic;">i</span> and <span class="texhtml mvar" style="font-style:italic;">j</span> on a Kempe chain, a maximal path of edges that alternate between the two colors. In particular, any graph has an equitable edge coloring, an edge coloring with an optimal number of colors in which every two color classes differ in size by at most one unit.
+</p><p>The De Bruijn–Erdős theorem may be used to transfer many edge coloring properties of finite graphs to infinite graphs. For instance, Shannon's and Vizing's theorems relating the degree of a graph to its chromatic index both generalize straightforwardly to infinite graphs.<sup class="reference" id="cite_ref-17">[17]</sup>
+</p><p>Richter (2011) considers the problem of finding a graph drawing of a given cubic graph with the properties that all of the edges in the drawing have one of three different slopes and that no two edges lie on the same line as each other. If such a drawing exists, then clearly the slopes of the edges may be used as colors in a 3-edge-coloring of the graph. For instance, the drawing of the utility graph <span class="texhtml"><i>K</i><sub>3,3</sub></span> as the edges and long diagonals of a regular hexagon represents a 3-edge-coloring of the graph in this way. As Richter shows, a 3-regular simple bipartite graph, with a given Tait coloring, has a drawing of this type that represents the given coloring if and only if the graph is 3-edge-connected. For a non-bipartite graph, the condition is a little more complicated: a given coloring can be represented by a drawing if the bipartite double cover of the graph is 3-edge-connected, and if deleting any monochromatic pair of edges leads to a subgraph that is still non-bipartite. These conditions may all be tested easily in polynomial time; however, the problem of testing whether a 4-edge-colored 4-regular graph has a drawing with edges of four slopes, representing the colors by slopes, is complete for the existential theory of the reals, a complexity class at least as difficult as being NP-complete.
+</p><p>As well as being related to the maximum degree and maximum matching number of a graph, the chromatic index is closely related to the linear arboricity <span class="texhtml">la(<i>G</i>)</span> of a graph <span class="texhtml mvar" style="font-style:italic;">G</span>, the minimum number of linear forests (disjoint unions of paths) into which the graph's edges may be partitioned. A matching is a special kind of linear forest, and in the other direction, any linear forest can be 2-edge-colored, so for every <span class="texhtml mvar" style="font-style:italic;">G</span> it follows that <span class="texhtml">la(<i>G</i>) ≤ χ′(<i>G</i>) ≤ 2 la(<i>G</i>)</span>. Akiyama's conjecture (named for Jin Akiyama) states that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathop {\mathrm {la} } (G)\leq \left\lceil {\frac {\Delta +1}{2}}\right\rceil }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-OP">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">l</mi>
+<mi mathvariant="normal">a</mi>
+</mrow>
+</mrow>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mrow>
+<mo>⌈</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mo>⌉</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathop {\mathrm {la} } (G)\leq \left\lceil {\frac {\Delta +1}{2}}\right\rceil }</annotation>
+</semantics>
+</math></span><img alt="{\mathop  {{\mathrm  {la}}}}(G)\leq \left\lceil {\frac  {\Delta +1}{2}}\right\rceil " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bab761f58c8b744eead0f79403fef01de7ea6f8f" style="vertical-align: -2.505ex; width:18.029ex; height:6.176ex;"/></span>, from which it would follow more strongly that <span class="texhtml">2 la(<i>G</i>) − 2 ≤ χ′(<i>G</i>) ≤ 2 la(<i>G</i>)</span>. For graphs of maximum degree three, <span class="texhtml">la(<i>G</i>)</span> is always exactly two, so in this case the bound <span class="texhtml">χ′(<i>G</i>) ≤ 2 la(<i>G</i>)</span> matches the bound given by Vizing's theorem.<sup class="reference" id="cite_ref-18">[18]</sup>
+</p>
+<h2><span class="mw-headline" id="Other_types">Other types</span><span class="mw-editsection"></span></h2>
+
+<p>The Thue number of a graph is the number of colors required in an edge coloring meeting the stronger requirement that, in every even-length path, the first and second halves of the path form different sequences of colors.
+</p><p>The arboricity of a graph is the minimum number of colors required so that the edges of each color have no cycles (rather than, in the standard edge coloring problem, having no adjacent pairs of edges). That is, it is the minimum number of forests into which the edges of the graph may be partitioned into.<sup class="reference" id="cite_ref-19">[19]</sup> Unlike the chromatic index, the arboricity of a graph may be computed in polynomial time.<sup class="reference" id="cite_ref-20">[20]</sup>
+</p><p>List edge-coloring is a problem in which one is given a graph in which each edge is associated with a list of colors, and must find a proper edge coloring in which the color of each edge is drawn from that edge's list. The list chromatic index of a graph <span class="texhtml mvar" style="font-style:italic;">G</span> is the smallest number <span class="texhtml mvar" style="font-style:italic;">k</span> with the property that, no matter how one chooses lists of colors for the edges, as long as each edge has at least <span class="texhtml mvar" style="font-style:italic;">k</span> colors in its list, then a coloring is guaranteed to be possible. Thus, the list chromatic index is always at least as large as the chromatic index. The Dinitz conjecture on the completion of partial Latin squares may be rephrased as the statement that the list edge chromatic number of the complete bipartite graph <span class="texhtml"><i>K<sub>n,n</sub></i></span> equals its edge chromatic number, <span class="texhtml mvar" style="font-style:italic;">n</span>. Galvin (1995) resolved the conjecture by proving, more generally, that in every bipartite graph the chromatic index and list chromatic index are equal. The equality between the chromatic index and the list chromatic index has been conjectured to hold, even more generally, for arbitrary multigraphs with no self-loops; this conjecture remains open.
+</p><p>Many other commonly studied variations of vertex coloring have also been extended to edge colorings. For instance, complete edge coloring is the edge-coloring variant of complete coloring, a proper edge coloring in which each pair of colors must be represented by at least one pair of adjacent edges and in which the goal is to maximize the total number of colors.<sup class="reference" id="cite_ref-FOOTNOTEBosákNešetřil1976_21-0">[21]</sup> Strong edge coloring is the edge-coloring variant of strong coloring, an edge coloring in which every two edges with adjacent endpoints must have different colors.<sup class="reference" id="cite_ref-22">[22]</sup> Strong edge coloring has applications in channel allocation schemes for wireless networks.<sup class="reference" id="cite_ref-FOOTNOTEBarrettIstrateKumarMarathe2006_23-0">[23]</sup>
+</p><p>Acyclic edge coloring is the edge-coloring variant of acyclic coloring, an edge coloring for which every two color classes form an acyclic subgraph (that is, a forest).<sup class="reference" id="cite_ref-24">[24]</sup> The acyclic chromatic index of a graph <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>G</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G}</annotation>
+</semantics>
+</math></span><img alt="G" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f5f3c8921a3b352de45446a6789b104458c9f90b" style="vertical-align: -0.338ex; width:1.827ex; height:2.176ex;"/></span>, denoted by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a'(G)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>a</mi>
+<mo>′</mo>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a'(G)}</annotation>
+</semantics>
+</math></span><img alt="a'(G)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e49dac5fdb6897c4f8ecda698434d41a87dd83eb" style="vertical-align: -0.838ex; width:5.551ex; height:3.009ex;"/></span>, is the smallest number of colors needed to have a proper acyclic edge coloring of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>G</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G}</annotation>
+</semantics>
+</math></span><img alt="G" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f5f3c8921a3b352de45446a6789b104458c9f90b" style="vertical-align: -0.338ex; width:1.827ex; height:2.176ex;"/></span>. It has been conjectured that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a'(G)\leq \Delta +2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>a</mi>
+<mo>′</mo>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mo>+</mo>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a'(G)\leq \Delta +2}</annotation>
+</semantics>
+</math></span><img alt="a'(G)\leq \Delta +2" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cc48dc4b73b7e4955d782f9dd0694502196d02b8" style="vertical-align: -0.838ex; width:14.588ex; height:3.009ex;"/></span>, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Delta }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Delta }</annotation>
+</semantics>
+</math></span><img alt="\Delta " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/32769037c408874e1890f77554c65f39c523ebe2" style="vertical-align: -0.338ex; width:1.936ex; height:2.176ex;"/></span> is the maximum degree of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>G</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G}</annotation>
+</semantics>
+</math></span><img alt="G" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f5f3c8921a3b352de45446a6789b104458c9f90b" style="vertical-align: -0.338ex; width:1.827ex; height:2.176ex;"/></span>.<sup class="reference" id="cite_ref-25">[25]</sup> Currently the best known bound is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a'(G)\leq \lceil 3.74(\Delta -1)\rceil }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>a</mi>
+<mo>′</mo>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mo fence="false" stretchy="false">⌈<!-- ⌈ --></mo>
+<mn>3.74</mn>
+<mo stretchy="false">(</mo>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo fence="false" stretchy="false">⌉<!-- ⌉ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a'(G)\leq \lceil 3.74(\Delta -1)\rceil }</annotation>
+</semantics>
+</math></span><img alt="a'(G)\leq \lceil 3.74(\Delta -1)\rceil " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ca362d77884b19d18776163f6f4c4509ccb0b206" style="vertical-align: -0.838ex; width:22.596ex; height:3.009ex;"/></span>.<sup class="reference" id="cite_ref-FOOTNOTEGiotisKirousisPsaromiligkosThilikos2015_26-0">[26]</sup> The problem becomes easier when <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>G</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G}</annotation>
+</semantics>
+</math></span><img alt="G" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f5f3c8921a3b352de45446a6789b104458c9f90b" style="vertical-align: -0.338ex; width:1.827ex; height:2.176ex;"/></span> has large girth. More specifically, there is a constant <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c}</annotation>
+</semantics>
+</math></span><img alt="c" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/86a67b81c2de995bd608d5b2df50cd8cd7d92455" style="vertical-align: -0.338ex; width:1.007ex; height:1.676ex;"/></span> such that if the girth of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>G</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G}</annotation>
+</semantics>
+</math></span><img alt="G" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f5f3c8921a3b352de45446a6789b104458c9f90b" style="vertical-align: -0.338ex; width:1.827ex; height:2.176ex;"/></span> is at least <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c\Delta \log \Delta }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c\Delta \log \Delta }</annotation>
+</semantics>
+</math></span><img alt="c\Delta \log \Delta " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c7267db34bba38ffbed69ada8248c9035ca5cbd5" style="vertical-align: -0.671ex; width:8.625ex; height:2.509ex;"/></span>, then <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a'(G)\leq \Delta +2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>a</mi>
+<mo>′</mo>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mo>+</mo>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a'(G)\leq \Delta +2}</annotation>
+</semantics>
+</math></span><img alt="a'(G)\leq \Delta +2" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cc48dc4b73b7e4955d782f9dd0694502196d02b8" style="vertical-align: -0.838ex; width:14.588ex; height:3.009ex;"/></span>.<sup class="reference" id="cite_ref-FOOTNOTEAlonSudakovZaks2001_27-0">[27]</sup> A similar result is that for all <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \epsilon &gt;0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>ϵ<!-- ϵ --></mi>
+<mo>&gt;</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \epsilon &gt;0}</annotation>
+</semantics>
+</math></span><img alt="\epsilon &gt;0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/568095ad3924314374a5ab68fae17343661f2a71" style="vertical-align: -0.338ex; width:5.205ex; height:2.176ex;"/></span> there exists an <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle g}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>g</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle g}</annotation>
+</semantics>
+</math></span><img alt="g" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d3556280e66fe2c0d0140df20935a6f057381d77" style="vertical-align: -0.671ex; width:1.116ex; height:2.009ex;"/></span> such that if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>G</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G}</annotation>
+</semantics>
+</math></span><img alt="G" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f5f3c8921a3b352de45446a6789b104458c9f90b" style="vertical-align: -0.338ex; width:1.827ex; height:2.176ex;"/></span> has girth at least <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle g}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>g</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle g}</annotation>
+</semantics>
+</math></span><img alt="g" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d3556280e66fe2c0d0140df20935a6f057381d77" style="vertical-align: -0.671ex; width:1.116ex; height:2.009ex;"/></span>, then <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a'(G)\leq (1+\epsilon )\Delta }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>a</mi>
+<mo>′</mo>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo>+</mo>
+<mi>ϵ<!-- ϵ --></mi>
+<mo stretchy="false">)</mo>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a'(G)\leq (1+\epsilon )\Delta }</annotation>
+</semantics>
+</math></span><img alt="a'(G)\leq (1+\epsilon )\Delta " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9e30119a7810ce7908bae7c3906599444962e4a3" style="vertical-align: -0.838ex; width:17.341ex; height:3.009ex;"/></span>.<sup class="reference" id="cite_ref-FOOTNOTECaiPerarnauReedWatts2014_28-0">[28]</sup>
+</p><p>Eppstein (2013) studied 3-edge-colorings of cubic graphs with the additional property that no two bichromatic cycles share more than a single edge with each other. He showed that the existence of such a coloring is equivalent to the existence of a drawing of the graph on a three-dimensional integer grid, with edges parallel to the coordinate axes and each axis-parallel line containing at most two vertices. However, like the standard 3-edge-coloring problem, finding a coloring of this type is NP-complete.
+</p><p>Total coloring is a form of coloring that combines vertex and edge coloring, by requiring both the vertices and edges to be colored. Any incident pair of a vertex and an edge, or an edge and an edge, must have distinct colors, as must any two adjacent vertices. It has been conjectured (combining Vizing's theorem and Brooks' theorem) that any graph has a total coloring in which the number of colors is at most the maximum degree plus two, but this remains unproven.
+</p><p>If a 3-regular graph on a surface is 3-edge-colored, its dual graph forms a triangulation of the surface which is also edge colored (although not, in general, properly edge colored) in such a way that every triangle has one edge of each color. Other colorings and orientations of triangulations, with other local constraints on how the colors are arranged at the vertices or faces of the triangulation, may be used to encode several types of geometric object. For instance, rectangular subdivisions (partitions of a rectangular subdivision into smaller rectangles, with three rectangles meeting at every vertex) may be described combinatorially by a "regular labeling", a two-coloring of the edges of a triangulation dual to the subdivision, with the constraint that the edges incident to each vertex form four contiguous subsequences, within each of which the colors are the same. This labeling is dual to a coloring of the rectangular subdivision itself in which the vertical edges have one color and the horizontal edges have the other color. Similar local constraints on the order in which colored edges may appear around a vertex may also be used to encode straight-line grid embeddings of planar graphs and three-dimensional polyhedra with axis-parallel sides. For each of these three types of regular labelings, the set of regular labelings of a fixed graph forms a distributive lattice that may be used to quickly list all geometric structures based on the same graph (such as all axis-parallel polyhedra having the same skeleton) or to find structures satisfying additional constraints.<sup class="reference" id="cite_ref-29">[29]</sup>
+</p><p>A deterministic finite automaton may be interpreted as a directed graph in which each vertex has the same out-degree <span class="texhtml mvar" style="font-style:italic;">d</span>, and in which the edges are <span class="texhtml mvar" style="font-style:italic;">d</span>-colored in such a way that every two edges with the same source vertex have distinct colors. The road coloring problem is the problem of edge-coloring a directed graph with uniform out-degrees, in such a way that the resulting automaton has a synchronizing word. Trahtman (2009) solved the road coloring problem by proving that such a coloring can be found whenever the given graph is strongly connected and aperiodic.
+</p><p>Ramsey's theorem concerns the problem of <span class="texhtml mvar" style="font-style:italic;">k</span>-coloring the edges of a large complete graph <span class="texhtml"><i>K<sub>n</sub></i></span> in order to avoid creating monochromatic complete subgraphs <span class="texhtml"><i>K<sub>s</sub></i></span> of some given size <span class="texhtml mvar" style="font-style:italic;">s</span>. According to the theorem, there exists a number <span class="texhtml"><i>R</i><sub><i>k</i></sub>(<i>s</i>)</span> such that, whenever <span class="texhtml"><i>n</i> ≥ <i>R</i>(<i>s</i>)</span>, such a coloring is not possible. For instance, <span class="texhtml"><i>R</i><sub>2</sub>(3) = 6</span>, that is, if the edges of the graph <span class="texhtml"><i>K</i><sub>6</sub></span> are 2-colored, there will always be a monochromatic triangle.
+</p><p>A path in an edge-colored graph is said to be a rainbow path if no color repeats on it. A graph is said to be rainbow colored if there is a rainbow path between any two pairs of vertices.
+An edge-colouring of a graph G with colours 1. . . t is an interval t coloring if all colours are used, and the colours of edges incident to each vertex of G are distinct and form an interval of integers.
+</p>
+<h2><span class="mw-headline" id="Applications">Applications</span><span class="mw-editsection"></span></h2>
+<p>Edge colorings of complete graphs may be used to schedule a round-robin tournament into as few rounds as possible so that each pair of competitors plays each other in one of the rounds; in this application, the vertices of the graph correspond to the competitors in the tournament, the edges correspond to games, and the edge colors correspond to the rounds in which the games are played.<sup class="reference" id="cite_ref-30">[30]</sup> Similar coloring techniques may also be used to schedule other sports pairings that are not all-play-all; for instance, in the National Football League, the pairs of teams that will play each other in a given year are determined, based on the teams' records from the previous year, and then an edge coloring algorithm is applied to the graph formed by the set of pairings in order to assign games to the weekends on which they are played.<sup class="reference" id="cite_ref-31">[31]</sup> For this application, Vizing's theorem implies that no matter what set of pairings is chosen (as long as no teams play each other twice in the same season), it is always possible to find a schedule that uses at most one more weekend than there are games per team.
+</p><p>Open shop scheduling is a problem of scheduling production processes, in which there are a set of objects to be manufactured, each object has a set of tasks to be performed on it (in any order), and each task must be performed on a specific machine, preventing any other task that requires the same machine from being performed at the same time. If all tasks have the same length, then this problem may be formalized as one of edge coloring a bipartite multigraph, in which the vertices on one side of the bipartition represent the objects to be manufactured, the vertices on the other side of the bipartition represent the manufacturing machines, the edges represent tasks that must be performed, and the colors represent time steps in which each task may be performed. Since bipartite edge coloring may be performed in polynomial time, the same is true for this restricted case of open shop scheduling.<sup class="reference" id="cite_ref-32">[32]</sup>
+</p><p>Gandham, Dawande &amp; Prakash (2005) study the problem of link scheduling for time-division multiple access network communications protocols on sensor networks as a variant of edge coloring. In this problem, one must choose time slots for the edges of a wireless communications network so that each node of the network can communicate with each neighboring node without interference. Using a strong edge coloring (and using two time slots for each edge color, one for each direction) would solve the problem but might use more time slots than necessary. Instead, they seek a coloring of the directed graph formed by doubling each undirected edge of the network, with the property that each directed edge <span class="texhtml mvar" style="font-style:italic;">uv</span> has a different color from the edges that go out from <span class="texhtml mvar" style="font-style:italic;">v</span> and from the neighbors of <span class="texhtml mvar" style="font-style:italic;">v</span>. They propose a heuristic for this problem based on a distributed algorithm for <span class="texhtml">(Δ + 1)</span>-edge-coloring together with a postprocessing phase that reschedules edges that might interfere with each other.
+</p><p>In fiber-optic communication, the path coloring problem is the problem of assigning colors (frequencies of light) to pairs of nodes that wish to communicate with each other, and paths through a fiber-optic communications network for each pair, subject to the restriction that no two paths that share a segment of fiber use the same frequency as each other. Paths that pass through the same communication switch but not through any segment of fiber are allowed to use the same frequency. When the communications network is arranged as a star network, with a single central switch connected by separate fibers to each of the nodes, the path coloring problem may be modeled exactly as a problem of edge coloring a graph or multigraph, in which the communicating nodes form the graph vertices, pairs of nodes that wish to communicate form the graph edges, and the frequencies that may be used for each pair form the colors of the edge coloring problem. For communications networks with a more general tree topology, local path coloring solutions for the star networks defined by each switch in the network may be patched together to form a single global solution.<sup class="reference" id="cite_ref-33">[33]</sup>
+</p>
+<h2><span class="mw-headline" id="Open_problems">Open problems</span><span class="mw-editsection"></span></h2>
+<p>Jensen &amp; Toft (1995) list 23 open problems concerning edge coloring. They include:
+</p>
+<ul><li>The conjecture of Goldberg (1973) that the chromatic index and fractional index are within one of each other, which would allow the chromatic index to be approximated within one color in polynomial time.</li>
+<li>Several conjectures of Jakobsen and others on the structure of critical graphs for edge coloring, graphs of class 2 such that any subgraph either has smaller maximum degree or is of class 1. Jakobsen originally conjectured that all critical graphs have an odd number of vertices, but this was eventually disproved. Several other conjectures weakening this one, or bounding the numbers of vertices of critical graphs and critical multigraphs, remain open.</li>
+<li>Vizing's problem of classifying the maximum degrees that are possible for class 2 planar graphs.</li>
+<li>The overfull subgraph conjecture of A. J. W. Hilton, stating that graphs with degree at least <span class="texhtml"><i>n</i>/3</span> are either of class 1 or contain a subgraph with the same degree <span class="texhtml">Δ</span> as the original graph, and with an odd number <span class="texhtml mvar" style="font-style:italic;">k</span> of vertices, such that the number of edges in the subgraph is greater than <span class="texhtml">Δ(<i>k</i> − 1)/2</span>, and a similar conjecture by Herbert Grötzsch and Paul Seymour concerning planar graphs in place of high-degree graphs.</li>
+<li>A conjecture of Amanda Chetwynd and Anthony Hilton (possibly going back earlier to the work of Gabriel Andrew Dirac) that regular graphs with an even number <span class="texhtml mvar" style="font-style:italic;">n</span> of vertices and with degree at least <span class="texhtml"><i>n</i>/2</span> are of class 1.</li>
+<li>A conjecture of Claude Berge and D. R. Fulkerson that the 6-regular multigraphs formed by doubling every edge of a bridgeless 3-regular simple graph may be edge-colored with six colors.</li>
+<li>A conjecture of Fiorini and Wilson that every triangle-free planar graph, other than the claw <i>K</i><sub>1,3</sub>, is not uniquely 3-edge-colorable.</li>
+<li>A 2012 conjecture that if <span class="texhtml"><i>G</i></span> is a <span class="texhtml"><i>d</i></span>-regular planar multigraph, then <span class="texhtml"><i>G</i></span> is <span class="texhtml"><i>d</i></span>-edge-colorable if and only if <span class="texhtml"><i>G</i></span> is oddly <span class="texhtml"><i>d</i></span>-edge-connected. This conjecture is a generalization of the four color theorem, which arises at <span class="texhtml"><i>d</i></span>=3. Maria Chudnovsky, Katherine Edwards, and Paul Seymour proved that an 8-regular planar multigraph has an edge chromatic number of 8.<sup class="reference" id="cite_ref-FOOTNOTEChudnovskyEdwardsSeymour2015_34-0">[34]</sup></li></ul>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1054258005">.mw-parser-output .refbegin{font-size:90%;margin-bottom:0.5em}.mw-parser-output .refbegin-hanging-indents>ul{margin-left:0}.mw-parser-output .refbegin-hanging-indents>ul>li{margin-left:0;padding-left:3.2em;text-indent:-3.2em}.mw-parser-output .refbegin-hanging-indents ul,.mw-parser-output .refbegin-hanging-indents ul li{list-style:none}@media(max-width:720px){.mw-parser-output .refbegin-hanging-indents>ul>li{padding-left:1.6em;text-indent:-1.6em}}.mw-parser-output .refbegin-columns{margin-top:0.3em}.mw-parser-output .refbegin-columns ul{margin-top:0}.mw-parser-output .refbegin-columns li{page-break-inside:avoid;break-inside:avoid-column}</style>
+<!-- 
+NewPP limit report
+Parsed by mw2367
+Cached time: 20221224000615
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.788 seconds
+Real time usage: 0.915 seconds
+Preprocessor visited node count: 11214/1000000
+Post‐expand include size: 165347/2097152 bytes
+Template argument size: 9554/2097152 bytes
+Highest expansion depth: 10/100
+Expensive parser function count: 1/500
+Unstrip recursion depth: 0/20
+Unstrip post‐expand size: 129379/5000000 bytes
+Lua time usage: 0.478/10.000 seconds
+Lua memory usage: 8210923/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  712.117      1 -total
+ 46.88%  333.805     63 Template:Citation
+ 17.53%  124.853     67 Template:Harvtxt
+ 13.25%   94.363    107 Template:Math
+  8.66%   61.695      1 Template:Reflist
+  7.47%   53.229      1 Template:Short_description
+  4.45%   31.709    116 Template:Main_other
+  3.69%   26.288      2 Template:Pagetype
+  2.44%   17.367      1 Template:Main
+  2.12%   15.120      6 Template:Sfnp
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:690647-0!canonical and timestamp 20221224000614 and revision id 1116639262.
+ -->
+</div></body>
+</html>

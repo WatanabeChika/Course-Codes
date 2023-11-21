@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>finite_state_machine_minimization</title>
+</head>
+<body>
+<div class="mw-parser-output">
+
+<p>In automata theory (a branch of theoretical computer science), <b>DFA minimization</b> is the task of transforming a given deterministic finite automaton (DFA) into an equivalent DFA that has a minimum number of states. Here, two DFAs are called equivalent if they recognize the same regular language. Several different algorithms accomplishing this task are known and described in standard textbooks on automata theory.<sup class="reference" id="cite_ref-1">[1]</sup>
+</p>
+
+<h2><span class="mw-headline" id="Minimal_DFA">Minimal DFA</span><span class="mw-editsection"></span></h2>
+<p>For each regular language, there also exists a <b>minimal automaton</b> that accepts it, that is, a DFA with a minimum number of states and this DFA is unique (except that states can be given different names).<sup class="reference" id="cite_ref-2">[2]</sup><sup class="reference" id="cite_ref-3">[3]</sup> The minimal DFA ensures minimal computational cost for tasks such as pattern matching.
+</p><p>There are two classes of states that can be removed or merged from the original DFA without affecting the language it accepts.
+</p>
+<ul><li><b>Unreachable states</b> are the states that are not reachable from the initial state of the DFA, for any input string. These states can be removed.</li>
+<li><b>Dead states</b> are the states from which no final state is reachable. These states can be removed unless the automaton is required to be complete.</li>
+<li><b>Nondistinguishable states</b> are those that cannot be distinguished from one another for any input string. These states can be merged.</li></ul>
+<p>DFA minimization is usually done in three steps:
+</p>
+<ol><li>remove dead and unreachable states (this will accelerate the following step),</li>
+<li>merge nondistinguishable states,</li>
+<li>optionally, re-create a single dead state ("sink" state) if the resulting DFA is required to be complete.</li></ol>
+<h2><span class="mw-headline" id="Unreachable_states">Unreachable states</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-Unreferenced_section plainlinks metadata ambox ambox-content ambox-Unreferenced" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<p>The state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>p</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p}</annotation>
+</semantics>
+</math></span><img alt="p" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/81eac1e205430d1f40810df36a0edffdc367af36" style="vertical-align: -0.671ex; margin-left: -0.089ex; width:1.259ex; height:2.009ex;"/></span> of a deterministic finite automaton <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M=(Q,\Sigma ,\delta ,q_{0},F)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<mi>Q</mi>
+<mo>,</mo>
+<mi mathvariant="normal">Σ<!-- Σ --></mi>
+<mo>,</mo>
+<mi>δ<!-- δ --></mi>
+<mo>,</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>F</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M=(Q,\Sigma ,\delta ,q_{0},F)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle M=(Q,\Sigma ,\delta ,q_{0},F)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fbd4a0841c154d4f448f8001ce4ea0c33f1816cb" style="vertical-align: -0.838ex; width:19.883ex; height:2.843ex;"/></span> is unreachable if no string <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w}</annotation>
+</semantics>
+</math></span><img alt="w" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/88b1e0c8e1be5ebe69d18a8010676fa42d7961e6" style="vertical-align: -0.338ex; width:1.664ex; height:1.676ex;"/></span> in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Sigma ^{*}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi mathvariant="normal">Σ<!-- Σ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Sigma ^{*}}</annotation>
+</semantics>
+</math></span><img alt="\Sigma ^{*}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/807344600a40f1de7136f8b54576e12e9428bef4" style="vertical-align: -0.338ex; width:2.732ex; height:2.343ex;"/></span> exists for which <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p=\delta ^{*}(q_{0},w)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>p</mi>
+<mo>=</mo>
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>w</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p=\delta ^{*}(q_{0},w)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle p=\delta ^{*}(q_{0},w)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0399fd666872a79c214a8806ac34d99d237c64f5" style="vertical-align: -0.838ex; margin-left: -0.089ex; width:13.064ex; height:2.843ex;"/></span>.  In this definition, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>Q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Q}</annotation>
+</semantics>
+</math></span><img alt="Q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8752c7023b4b3286800fe3238271bbca681219ed" style="vertical-align: -0.671ex; width:1.838ex; height:2.509ex;"/></span> is the set of states, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Sigma }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Σ<!-- Σ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Sigma }</annotation>
+</semantics>
+</math></span><img alt="\Sigma " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9e1f558f53cda207614abdf90162266c70bc5c1e" style="vertical-align: -0.338ex; width:1.678ex; height:2.176ex;"/></span> is the set of input symbols, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>δ<!-- δ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta }</annotation>
+</semantics>
+</math></span><img alt="\delta " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c5321cfa797202b3e1f8620663ff43c4660ea03a" style="vertical-align: -0.338ex; width:1.049ex; height:2.343ex;"/></span> is the transition function (mapping a state and an input symbol to a set of states), <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta ^{*}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>δ<!-- δ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta ^{*}}</annotation>
+</semantics>
+</math></span><img alt="\delta^*" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/565529ce5877b69cc83c07882dcbadc01102b05c" style="vertical-align: -0.338ex; width:2.108ex; height:2.343ex;"/></span>is its extension to strings (also known as extended transition function), <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>q</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q_{0}}</annotation>
+</semantics>
+</math></span><img alt="q_0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9d68d37de188ac61f0c0e3f31d5322d1c486f2f4" style="vertical-align: -0.671ex; width:2.091ex; height:2.009ex;"/></span> is the initial state, and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle F}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>F</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle F}</annotation>
+</semantics>
+</math></span><img alt="F" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/545fd099af8541605f7ee55f08225526be88ce57" style="vertical-align: -0.338ex; width:1.741ex; height:2.176ex;"/></span> is the set of accepting (also known as final) states. Reachable states can be obtained with the following algorithm:
+</p>
+
+<p>Assuming an efficient implementation of the state sets (e.g. <code>new_states</code>) and operations on them (such as adding a state or checking whether it is present), this algorithm can be implemented with time complexity <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n+m)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>+</mo>
+<mi>m</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n+m)}</annotation>
+</semantics>
+</math></span><img alt="O(n+m)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5d103b38ce2abfde793118c89cd4fac5c956b89d" style="vertical-align: -0.838ex; width:9.858ex; height:2.843ex;"/></span>, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span> is the number of states and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle m}</annotation>
+</semantics>
+</math></span><img alt="m" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0a07d98bb302f3856cbabc47b2b9016692e3f7bc" style="vertical-align: -0.338ex; width:2.04ex; height:1.676ex;"/></span> is the number of transitions of the input automaton.
+</p><p>Unreachable states can be removed from the DFA without affecting the language that it accepts.
+</p>
+<h2><span class="mw-headline" id="Nondistinguishable_states">Nondistinguishable states</span><span class="mw-editsection"></span></h2>
+<p>The following algorithms present various approaches to merging nondistinguishable states.
+</p>
+<h3><span id="Hopcroft.27s_algorithm"></span><span class="mw-headline" id="Hopcroft's_algorithm">Hopcroft's algorithm</span><span class="mw-editsection"></span></h3>
+<p>One algorithm for merging the nondistinguishable states of a DFA, due to Hopcroft (1971), is based on partition refinement, partitioning the DFA states into groups by their behavior. These groups represent equivalence classes of the Nerode congruence, whereby every two states are equivalent if they have the same behavior for every input sequence. That is, for every two states <span class="texhtml"><i>p</i><sub>1</sub></span> and <span class="texhtml"><i>p</i><sub>2</sub></span> that belong to the same block of the partition <span class="texhtml mvar" style="font-style:italic;">P</span>, and every input word <span class="texhtml mvar" style="font-style:italic;">w</span>, the transitions determined by <span class="texhtml mvar" style="font-style:italic;">w</span> should always take states <span class="texhtml"><i>p</i><sub>1</sub></span> and <span class="texhtml"><i>p</i><sub>2</sub></span> to either states that both accept or states that both reject. It should not be possible for <span class="texhtml mvar" style="font-style:italic;">w</span> to take <span class="texhtml"><i>p</i><sub>1</sub></span> to an accepting state and <span class="texhtml"><i>p</i><sub>2</sub></span> to a rejecting state or vice versa.
+</p><p>The following pseudocode describes the form of the algorithm as given by Xu.<sup class="reference" id="cite_ref-4">[4]</sup>  Alternative forms have also been presented.<sup class="reference" id="cite_ref-5">[5]</sup><sup class="reference" id="cite_ref-bbcf_6-0">[6]</sup>
+</p>
+
+<p>The algorithm starts with a partition that is too coarse: every pair of states that are equivalent according to the Nerode congruence belong to the same set in the partition, but pairs that are inequivalent might also belong to the same set. It gradually refines the partition into a larger number of smaller sets, at each step splitting sets of states into pairs of subsets that are necessarily inequivalent.
+The initial partition is a separation of the states into two subsets of states that clearly do not have the same behavior as each other: the accepting states and the rejecting states. The algorithm then repeatedly chooses a set <span class="texhtml mvar" style="font-style:italic;">A</span> from the current partition and an input symbol <span class="texhtml mvar" style="font-style:italic;">c</span>, and splits each of the sets of the partition into two (possibly empty) subsets: the subset of states that lead to <span class="texhtml mvar" style="font-style:italic;">A</span> on input symbol <span class="texhtml mvar" style="font-style:italic;">c</span>, and the subset of states that do not lead to <span class="texhtml mvar" style="font-style:italic;">A</span>. Since <span class="texhtml mvar" style="font-style:italic;">A</span> is already known to have different behavior than the other sets of the partition, the subsets that lead to <span class="texhtml mvar" style="font-style:italic;">A</span> also have different behavior than the subsets that do not lead to <span class="texhtml mvar" style="font-style:italic;">A</span>. When no more splits of this type can be found, the algorithm terminates.
+</p><p><b>Lemma</b>. Given a fixed character <i>c</i> and an equivalence class <i>Y</i> that splits into equivalence classes <i>B</i> and <i>C</i>, only one of <i>B</i> or <i>C</i> is necessary to refine the whole partition.<sup class="reference" id="cite_ref-7">[7]</sup>
+</p><p>Example: Suppose we have an equivalence class <i>Y</i> that splits into equivalence classes <i>B</i> and <i>C</i>. Suppose we also have classes <i>D</i>, <i>E</i>, and <i>F</i>; <i>D</i> and <i>E</i> have states with transitions into <i>B</i> on character <i>c</i>, while <i>F</i> has transitions into <i>C</i> on character <i>c</i>. By the Lemma, we can choose either <i>B</i> or <i>C</i> as the distinguisher, let's say <i>B</i>. Then the states of <i>D</i> and <i>E</i> are split by their transitions into <i>B</i>. But <i>F</i>, which doesn't point into <i>B</i>, simply doesn't split during the current iteration of the algorithm; it will be refined by other distinguisher(s).
+</p><p><b>Observation</b>. All of <i>B</i> or <i>C</i> is necessary to split referring classes like <i>D</i>, <i>E</i>, and <i>F</i> correctly—subsets won't do.
+</p><p>The purpose of the outermost <code>if</code> statement (<code>if Y is in W</code>) is to patch up <i>W</i>, the set of distinguishers. We see in the previous statement in the algorithm that <i>Y</i> has just been split. If <i>Y</i> is in <i>W</i>, it has just become obsolete as a means to split classes in future iterations. So <i>Y</i> must be replaced by both splits because of the Observation above. If <i>Y</i> is not in <i>W</i>, however, only one of the two splits, not both, needs to be added to <i>W</i> because of the Lemma above. Choosing the smaller of the two splits guarantees that the new addition to <i>W</i> is no more than half the size of <i>Y</i>; this is the core of the Hopcroft algorithm: how it gets its speed, as explained in the next paragraph.
+</p><p>The worst case running time of this algorithm is <span class="texhtml"><i>O</i>(<i>ns</i> log <i>n</i>)</span>, where <span class="texhtml mvar" style="font-style:italic;">n</span> is the number of states and <span class="texhtml mvar" style="font-style:italic;">s</span> is the size of the alphabet. This bound follows from the fact that, for each of the <span class="texhtml"><i>ns</i></span> transitions of the automaton, the sets drawn from <span class="texhtml mvar" style="font-style:italic;">Q</span> that contain the target state of the transition have sizes that decrease relative to each other by a factor of two or more, so each transition participates in <span class="texhtml"><i>O</i>(log <i>n</i>)</span> of the splitting steps in the algorithm. The partition refinement data structure allows each splitting step to be performed in time proportional to the number of transitions that participate in it.<sup class="reference" id="cite_ref-8">[8]</sup> This remains the most efficient algorithm known for solving the problem, and for certain distributions of inputs its average-case complexity is even better, <span class="texhtml"><i>O</i>(<i>n</i> log log <i>n</i>)</span>.<sup class="reference" id="cite_ref-bbcf_6-1">[6]</sup>
+</p><p>Once Hopcroft's algorithm has been used to group the states of the input DFA into equivalence classes, the minimum DFA can be constructed by forming one state for each equivalence class. If <span class="texhtml mvar" style="font-style:italic;">S</span> is a set of states in <span class="texhtml mvar" style="font-style:italic;">P</span>, <span class="texhtml mvar" style="font-style:italic;">s</span> is a state in <span class="texhtml mvar" style="font-style:italic;">S</span>, and <span class="texhtml mvar" style="font-style:italic;">c</span> is an input character, then the transition in the minimum DFA from the state for <span class="texhtml mvar" style="font-style:italic;">S</span>, on input  <span class="texhtml mvar" style="font-style:italic;">c</span>, goes to the set containing the state that the input automaton would go to from state <span class="texhtml mvar" style="font-style:italic;">s</span> on input <span class="texhtml mvar" style="font-style:italic;">c</span>. The initial state of the minimum DFA is the one containing the initial state of the input DFA, and the accepting states of the minimum DFA are the ones whose members are accepting states of the input DFA.
+</p>
+<h3><span id="Moore.27s_algorithm"></span><span class="mw-headline" id="Moore's_algorithm">Moore's algorithm</span><span class="mw-editsection"></span></h3>
+<p>Moore's algorithm for DFA minimization is due to Edward F. Moore (1956). Like Hopcroft's algorithm, it maintains a partition that starts off separating the accepting from the rejecting states, and repeatedly refines the partition until no more refinements can be made. At each step, it replaces the current partition with the coarsest common refinement of <span class="texhtml"><i>s</i> + 1</span> partitions, one of which is the current one and the rest of which are the preimages of the current partition under the transition functions for each of the input symbols. The algorithm terminates when this replacement does not change the current partition. Its worst-case time complexity is <span class="texhtml"><i>O</i>(<i>n</i><sup>2</sup><i>s</i>)</span>: each step of the algorithm may be performed in time <span class="texhtml"><i>O</i>(<i>ns</i>)</span> using a variant of radix sort to reorder the states so that states in the same set of the new partition are consecutive in the ordering, and there are at most <span class="texhtml mvar" style="font-style:italic;">n</span> steps since each one but the last increases the number of sets in the partition. The instances of the DFA minimization problem that cause the worst-case behavior are the same as for Hopcroft's algorithm. The number of steps that the algorithm performs can be much smaller than <span class="texhtml mvar" style="font-style:italic;">n</span>, so on average (for constant <span class="texhtml mvar" style="font-style:italic;">s</span>) its performance is <span class="texhtml"><i>O</i>(<i>n</i> log <i>n</i>)</span> or even <span class="texhtml"><i>O</i>(<i>n</i> log log <i>n</i>)</span> depending on the random distribution on automata chosen to model the algorithm's average-case behavior.<sup class="reference" id="cite_ref-bbcf_6-2">[6]</sup><sup class="reference" id="cite_ref-FOOTNOTEDavid2012_9-0">[9]</sup>
+</p>
+<h3><span id="Brzozowski.27s_algorithm"></span><span class="mw-headline" id="Brzozowski's_algorithm">Brzozowski's algorithm</span><span class="mw-editsection"></span></h3>
+<p>Reversing the transitions of a non-deterministic finite automaton (NFA) <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span> and switching initial and final states<sup class="reference" id="cite_ref-10">[note 1]</sup> produces an NFA <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M^{R}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>M</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>R</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M^{R}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle M^{R}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1129ffe9ca6393188fdb2733ca97ebe32cf52f2e" style="vertical-align: -0.338ex; width:3.978ex; height:2.676ex;"/></span> for the reversal of the original language. Converting this NFA to a DFA using the standard powerset construction (keeping only the reachable states of the converted DFA) leads to a DFA <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M_{D}^{R}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msubsup>
+<mi>M</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>D</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>R</mi>
+</mrow>
+</msubsup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M_{D}^{R}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle M_{D}^{R}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/19c93590e5641ef1104bb6e09d97c2fe2f521afa" style="vertical-align: -1.005ex; width:3.978ex; height:3.176ex;"/></span> for the same reversed language. As Brzozowski (1963) observed, repeating this reversal and determinization a second time, again keeping only reachable states, produces the minimal DFA for the original language.
+</p><p>The intuition behind the algorithm is this: determinizing the reverse automaton merges states that are nondistinguishable in the original automaton, but may merge also states that should <i>not</i> be merged (i.e., are not merged in the minimal DFA). In such case, after we reverse the automaton for the second time, it may not be deterministic. That is why we need to determinize it again, obtaining the minimal DFA.
+</p>
+<h4><span class="mw-headline" id="Proof_of_correctness">Proof of correctness</span><span class="mw-editsection"></span></h4>
+<p>After we determinize <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M^{R}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>M</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>R</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M^{R}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle M^{R}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1129ffe9ca6393188fdb2733ca97ebe32cf52f2e" style="vertical-align: -0.338ex; width:3.978ex; height:2.676ex;"/></span> to obtain <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M_{D}^{R}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msubsup>
+<mi>M</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>D</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>R</mi>
+</mrow>
+</msubsup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M_{D}^{R}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle M_{D}^{R}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/19c93590e5641ef1104bb6e09d97c2fe2f521afa" style="vertical-align: -1.005ex; width:3.978ex; height:3.176ex;"/></span>, we reverse this <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M_{D}^{R}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msubsup>
+<mi>M</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>D</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>R</mi>
+</mrow>
+</msubsup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M_{D}^{R}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle M_{D}^{R}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/19c93590e5641ef1104bb6e09d97c2fe2f521afa" style="vertical-align: -1.005ex; width:3.978ex; height:3.176ex;"/></span> to obtain <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (M_{D}^{R})^{R}=M'}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<msubsup>
+<mi>M</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>D</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>R</mi>
+</mrow>
+</msubsup>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>R</mi>
+</mrow>
+</msup>
+<mo>=</mo>
+<msup>
+<mi>M</mi>
+<mo>′</mo>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (M_{D}^{R})^{R}=M'}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle (M_{D}^{R})^{R}=M'}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0927b11578e9922844c2f89993eda8bb5258e2ed" style="vertical-align: -1.005ex; width:13.549ex; height:3.343ex;"/></span>. Now <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M'}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>M</mi>
+<mo>′</mo>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M'}</annotation>
+</semantics>
+</math></span><img alt="M'" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5a3b2ef3304c46b5e7859eec0b1bc057c8eb3f75" style="vertical-align: -0.338ex; width:3.183ex; height:2.509ex;"/></span> recognises the same language as <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span>, but there's one important difference: there are no two states in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M'}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>M</mi>
+<mo>′</mo>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M'}</annotation>
+</semantics>
+</math></span><img alt="M'" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5a3b2ef3304c46b5e7859eec0b1bc057c8eb3f75" style="vertical-align: -0.338ex; width:3.183ex; height:2.509ex;"/></span> from which we can accept the same word. This follows from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M_{D}^{R}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msubsup>
+<mi>M</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>D</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>R</mi>
+</mrow>
+</msubsup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M_{D}^{R}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle M_{D}^{R}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/19c93590e5641ef1104bb6e09d97c2fe2f521afa" style="vertical-align: -1.005ex; width:3.978ex; height:3.176ex;"/></span> being deterministic, viz. there are no two states in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M_{D}^{R}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msubsup>
+<mi>M</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>D</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>R</mi>
+</mrow>
+</msubsup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M_{D}^{R}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle M_{D}^{R}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/19c93590e5641ef1104bb6e09d97c2fe2f521afa" style="vertical-align: -1.005ex; width:3.978ex; height:3.176ex;"/></span> that we can reach from the initial state through the same word. The determinization of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M'}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>M</mi>
+<mo>′</mo>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M'}</annotation>
+</semantics>
+</math></span><img alt="M'" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5a3b2ef3304c46b5e7859eec0b1bc057c8eb3f75" style="vertical-align: -0.338ex; width:3.183ex; height:2.509ex;"/></span> then creates powerstates (sets of states of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M'}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>M</mi>
+<mo>′</mo>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M'}</annotation>
+</semantics>
+</math></span><img alt="M'" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5a3b2ef3304c46b5e7859eec0b1bc057c8eb3f75" style="vertical-align: -0.338ex; width:3.183ex; height:2.509ex;"/></span>), where every two powerstates <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {R}},{\mathcal {S}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">R</mi>
+</mrow>
+</mrow>
+<mo>,</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">S</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {R}},{\mathcal {S}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\mathcal {R}},{\mathcal {S}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1c119596ab23473075877987e3296022ea894a46" style="vertical-align: -0.671ex; width:4.497ex; height:2.509ex;"/></span> differ ‒ naturally ‒ in at least one state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q}</annotation>
+</semantics>
+</math></span><img alt="q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/06809d64fa7c817ffc7e323f85997f783dbdf71d" style="vertical-align: -0.671ex; width:1.07ex; height:2.009ex;"/></span> of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M'}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>M</mi>
+<mo>′</mo>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M'}</annotation>
+</semantics>
+</math></span><img alt="M'" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5a3b2ef3304c46b5e7859eec0b1bc057c8eb3f75" style="vertical-align: -0.338ex; width:3.183ex; height:2.509ex;"/></span>. Assume <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q\in {\mathcal {R}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>q</mi>
+<mo>∈<!-- ∈ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">R</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q\in {\mathcal {R}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle q\in {\mathcal {R}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/971a3235c62c0a8dc58e118f0f140198d1d9203c" style="vertical-align: -0.671ex; width:5.881ex; height:2.509ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q\not \in {\mathcal {S}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>q</mi>
+<mo>∉</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">S</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q\not \in {\mathcal {S}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle q\not \in {\mathcal {S}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/eaa2d028ab431f538df89f6487bfc25e43c8e995" style="vertical-align: -0.838ex; width:5.402ex; height:2.676ex;"/></span>; then <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q}</annotation>
+</semantics>
+</math></span><img alt="q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/06809d64fa7c817ffc7e323f85997f783dbdf71d" style="vertical-align: -0.671ex; width:1.07ex; height:2.009ex;"/></span> contributes at least one word<sup class="reference" id="cite_ref-11">[note 2]</sup> to the language of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {R}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">R</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {R}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathcal {R}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/74532dc308c806964b832df0d0d73352195c2f2f" style="vertical-align: -0.338ex; width:1.971ex; height:2.176ex;"/></span>,<sup class="reference" id="cite_ref-12">[note 3]</sup> which couldn't possibly be present in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {S}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">S</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {S}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathcal {S}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2302a18e269dbecc43c57c0c2aced3bfae15278d" style="vertical-align: -0.338ex; width:1.492ex; height:2.176ex;"/></span>, since this word is unique to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle q}</annotation>
+</semantics>
+</math></span><img alt="q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/06809d64fa7c817ffc7e323f85997f783dbdf71d" style="vertical-align: -0.671ex; width:1.07ex; height:2.009ex;"/></span> (no other state accepts it). We see that this holds for each pair of powerstates, and thus each powerstate is distinguishable from every other powerstate. Therefore, after determinization of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M'}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>M</mi>
+<mo>′</mo>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M'}</annotation>
+</semantics>
+</math></span><img alt="M'" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5a3b2ef3304c46b5e7859eec0b1bc057c8eb3f75" style="vertical-align: -0.338ex; width:3.183ex; height:2.509ex;"/></span>, we have a DFA with no indistinguishable or unreachable states; hence, the minimal DFA <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\overline {M}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>M</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\overline {M}}}</annotation>
+</semantics>
+</math></span><img alt="{\overline {M}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c0e2d2cef85c7247cc507120eb8980b6f2714591" style="vertical-align: -0.338ex; width:2.68ex; height:3.009ex;"/></span> for the original <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span>.
+</p><p>If <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span> is already deterministic, then it suffices to trim it,<sup class="reference" id="cite_ref-13">[note 4]</sup> reverse it, determinize it, and then reverse it again. This could be thought of as starting with <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M_{D}^{R}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msubsup>
+<mi>M</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>D</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>R</mi>
+</mrow>
+</msubsup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M_{D}^{R}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle M_{D}^{R}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/19c93590e5641ef1104bb6e09d97c2fe2f521afa" style="vertical-align: -1.005ex; width:3.978ex; height:3.176ex;"/></span> in the process above (assuming it has already been trimmed), since the input FA is already deterministic (but keep in mind it's actually not a reversal). We reverse and determinize <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M_{D}^{R}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msubsup>
+<mi>M</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>D</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>R</mi>
+</mrow>
+</msubsup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M_{D}^{R}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle M_{D}^{R}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/19c93590e5641ef1104bb6e09d97c2fe2f521afa" style="vertical-align: -1.005ex; width:3.978ex; height:3.176ex;"/></span> to obtain <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\overline {M}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>M</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\overline {M}}}</annotation>
+</semantics>
+</math></span><img alt="{\overline {M}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c0e2d2cef85c7247cc507120eb8980b6f2714591" style="vertical-align: -0.338ex; width:2.68ex; height:3.009ex;"/></span>, which is the minimal DFA for the <i>reversal</i> of the language of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span> (since we did only one reversal so far). Now all that's left to do is to reverse <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\overline {M}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>M</mi>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\overline {M}}}</annotation>
+</semantics>
+</math></span><img alt="{\overline {M}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c0e2d2cef85c7247cc507120eb8980b6f2714591" style="vertical-align: -0.338ex; width:2.68ex; height:3.009ex;"/></span> to obtain the minimal DFA for the original language.
+</p>
+<h4><span class="mw-headline" id="Complexity">Complexity</span><span class="mw-editsection"></span></h4>
+<p>The worst-case complexity of Brzozowski's algorithm is exponential in the number of states of the input automaton. This holds regardless of whether the input is a NFA or a DFA. In the case of DFA, the exponential explosion can happen during determinization of the reversal of the input automaton;<sup class="reference" id="cite_ref-14">[note 5]</sup> in the case of NFA, it can also happen during the initial determinization of the input automaton.<sup class="reference" id="cite_ref-15">[note 6]</sup> However, the algorithm frequently performs better than this worst case would suggest.<sup class="reference" id="cite_ref-bbcf_6-3">[6]</sup>
+</p>
+<h2><span class="mw-headline" id="NFA_minimization">NFA minimization</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p>While the above procedures work for DFAs, the method of partitioning does not work for non-deterministic finite automata (NFAs).<sup class="reference" id="cite_ref-16">[10]</sup> While an exhaustive search may minimize an NFA, there is no polynomial-time algorithm to minimize general NFAs unless P=PSPACE, an unsolved conjecture in computational complexity theory that is widely believed to be false. However, there are methods of NFA minimization that may be more efficient than brute force search.<sup class="reference" id="cite_ref-FOOTNOTEKamedaWeiner1970_17-0">[11]</sup>
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>State encoding for low power</li></ul>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<link href="mw-data:TemplateStyles:r1011085734" rel="mw-deduplicated-inline-style"/>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFAhoHopcroftUllman1974">Aho, Alfred V.; Hopcroft, John E.; Ullman, Jeffrey D. (1974), "4.13 Partitioning", <i>The Design and Analysis of Computer Algorithms</i>, Addison-Wesley, pp. 157–162</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=4.13+Partitioning&amp;rft.btitle=The+Design+and+Analysis+of+Computer+Algorithms&amp;rft.pages=157-162&amp;rft.pub=Addison-Wesley&amp;rft.date=1974&amp;rft.aulast=Aho&amp;rft.aufirst=Alfred+V.&amp;rft.au=Hopcroft%2C+John+E.&amp;rft.au=Ullman%2C+Jeffrey+D.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ADFA+minimization"></span>.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFBerstelBoassonCartonFagnot2010">Berstel, Jean; Boasson, Luc; Carton, Olivier; Fagnot, Isabelle (2010), "Minimization of Automata", <i>Automata: from Mathematics to Applications</i>, European Mathematical Society, arXiv:<span class="cs1-lock-free" title="Freely accessible">1010.5318</span>, Bibcode:2010arXiv1010.5318B</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Minimization+of+Automata&amp;rft.btitle=Automata%3A+from+Mathematics+to+Applications&amp;rft.pub=European+Mathematical+Society&amp;rft.date=2010&amp;rft_id=info%3Aarxiv%2F1010.5318&amp;rft_id=info%3Abibcode%2F2010arXiv1010.5318B&amp;rft.aulast=Berstel&amp;rft.aufirst=Jean&amp;rft.au=Boasson%2C+Luc&amp;rft.au=Carton%2C+Olivier&amp;rft.au=Fagnot%2C+Isabelle&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ADFA+minimization"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFBrzozowski1963">Brzozowski, J. A. (1963), "Canonical regular expressions and minimal state graphs for definite events", <i>Proc. Sympos. Math. Theory of Automata (New York, 1962)</i>, Polytechnic Press of Polytechnic Inst. of Brooklyn, Brooklyn, N.Y., pp. 529–561, MR 0175719</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Canonical+regular+expressions+and+minimal+state+graphs+for+definite+events&amp;rft.btitle=Proc.+Sympos.+Math.+Theory+of+Automata+%28New+York%2C+1962%29&amp;rft.pages=529-561&amp;rft.pub=Polytechnic+Press+of+Polytechnic+Inst.+of+Brooklyn%2C+Brooklyn%2C+N.Y.&amp;rft.date=1963&amp;rft_id=%2F%2Fmathscinet.ams.org%2Fmathscinet-getitem%3Fmr%3D0175719%23id-name%3DMR&amp;rft.aulast=Brzozowski&amp;rft.aufirst=J.+A.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ADFA+minimization"></span>.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFCâmpeanuCulikSalomaaYu2001">Câmpeanu, Cezar; Culik, Karel, II; Salomaa, Kai; Yu, Sheng (2001), "State Complexity of Basic Operations on Finite Languages", <i>4th International Workshop on Automata Implementation (WIA '99)</i>, Lecture Notes in Computer Science, vol. 2214, Springer-Verlag, pp. 60–70, doi:10.1007/3-540-45526-4_6, ISBN <bdi>978-3-540-42812-1</bdi></cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=State+Complexity+of+Basic+Operations+on+Finite+Languages&amp;rft.btitle=4th+International+Workshop+on+Automata+Implementation+%28WIA+%2799%29&amp;rft.series=Lecture+Notes+in+Computer+Science&amp;rft.pages=60-70&amp;rft.pub=Springer-Verlag&amp;rft.date=2001&amp;rft_id=info%3Adoi%2F10.1007%2F3-540-45526-4_6&amp;rft.isbn=978-3-540-42812-1&amp;rft.aulast=C%C3%A2mpeanu&amp;rft.aufirst=Cezar&amp;rft.au=Culik%2C+Karel%2C+II&amp;rft.au=Salomaa%2C+Kai&amp;rft.au=Yu%2C+Sheng&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ADFA+minimization"></span>.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFDavid2012">David, Julien (2012), "Average complexity of Moore's and Hopcroft's algorithms", <i>Theoretical Computer Science</i>, <b>417</b>: 50–65, doi:<span class="cs1-lock-free" title="Freely accessible">10.1016/j.tcs.2011.10.011</span></cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Theoretical+Computer+Science&amp;rft.atitle=Average+complexity+of+Moore%27s+and+Hopcroft%27s+algorithms&amp;rft.volume=417&amp;rft.pages=50-65&amp;rft.date=2012&amp;rft_id=info%3Adoi%2F10.1016%2Fj.tcs.2011.10.011&amp;rft.aulast=David&amp;rft.aufirst=Julien&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ADFA+minimization"></span>.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFHopcroft1971">Hopcroft, John (1971), "An <span class="texhtml"><i>n</i> log <i>n</i></span> algorithm for minimizing states in a finite automaton", <i>Theory of machines and computations (Proc. Internat. Sympos., Technion, Haifa, 1971)</i>, New York: Academic Press, pp. 189–196, MR 0403320</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=An+%3Cspan+class%3D%22texhtml+%22+%3En+log+n%3C%2Fspan%3E+algorithm+for+minimizing+states+in+a+finite+automaton&amp;rft.btitle=Theory+of+machines+and+computations+%28Proc.+Internat.+Sympos.%2C+Technion%2C+Haifa%2C+1971%29&amp;rft.place=New+York&amp;rft.pages=189-196&amp;rft.pub=Academic+Press&amp;rft.date=1971&amp;rft_id=%2F%2Fmathscinet.ams.org%2Fmathscinet-getitem%3Fmr%3D0403320%23id-name%3DMR&amp;rft.aulast=Hopcroft&amp;rft.aufirst=John&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ADFA+minimization"></span>. See also preliminary version, Technical Report STAN-CS-71-190, Stanford University, Computer Science Department, January 1971.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFHopcroftUllman1979">Hopcroft, John E.; Ullman, Jeffrey D. (1979), <span class="cs1-lock-registration" title="Free registration required"><i>Introduction to Automata Theory, Languages, and Computation</i></span>, Reading/MA: Addison-Wesley, ISBN <bdi>978-0-201-02988-8</bdi></cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Introduction+to+Automata+Theory%2C+Languages%2C+and+Computation&amp;rft.place=Reading%2FMA&amp;rft.pub=Addison-Wesley&amp;rft.date=1979&amp;rft.isbn=978-0-201-02988-8&amp;rft.aulast=Hopcroft&amp;rft.aufirst=John+E.&amp;rft.au=Ullman%2C+Jeffrey+D.&amp;rft_id=https%3A%2F%2Farchive.org%2Fdetails%2Fintroductiontoau00hopc&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ADFA+minimization"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFHopcroftMotwaniUllman2001">Hopcroft, John E.; Motwani, Rajeev; Ullman, Jeffrey D. (2001), <i>Introduction to Automata Theory, Languages, and Computation</i> (2nd ed.), Addison-Wesley</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Introduction+to+Automata+Theory%2C+Languages%2C+and+Computation&amp;rft.edition=2nd&amp;rft.pub=Addison-Wesley&amp;rft.date=2001&amp;rft.aulast=Hopcroft&amp;rft.aufirst=John+E.&amp;rft.au=Motwani%2C+Rajeev&amp;rft.au=Ullman%2C+Jeffrey+D.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ADFA+minimization"></span>.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFKamedaWeiner1970">Kameda, Tsunehiko; Weiner, Peter (1970), "On the state minimization of nondeterministic finite automata", <i>IEEE Transactions on Computers</i>, <b>100</b> (7): 617–627, doi:10.1109/T-C.1970.222994, S2CID 31188224</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=IEEE+Transactions+on+Computers&amp;rft.atitle=On+the+state+minimization+of+nondeterministic+finite+automata&amp;rft.volume=100&amp;rft.issue=7&amp;rft.pages=617-627&amp;rft.date=1970&amp;rft_id=info%3Adoi%2F10.1109%2FT-C.1970.222994&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A31188224%23id-name%3DS2CID&amp;rft.aulast=Kameda&amp;rft.aufirst=Tsunehiko&amp;rft.au=Weiner%2C+Peter&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ADFA+minimization"></span>.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFKnuutila2001">Knuutila, Timo (2001), "Re-describing an algorithm by Hopcroft", <i>Theoretical Computer Science</i>, <b>250</b> (1–2): 333–363, doi:<span class="cs1-lock-free" title="Freely accessible">10.1016/S0304-3975(99)00150-4</span>, MR 1795249</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Theoretical+Computer+Science&amp;rft.atitle=Re-describing+an+algorithm+by+Hopcroft&amp;rft.volume=250&amp;rft.issue=1%E2%80%932&amp;rft.pages=333-363&amp;rft.date=2001&amp;rft_id=info%3Adoi%2F10.1016%2FS0304-3975%2899%2900150-4&amp;rft_id=%2F%2Fmathscinet.ams.org%2Fmathscinet-getitem%3Fmr%3D1795249%23id-name%3DMR&amp;rft.aulast=Knuutila&amp;rft.aufirst=Timo&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ADFA+minimization"></span>.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFLeiss1981">Leiss, Ernst (1981), "Succinct representation of regular languages by Boolean automata", <i>Theoretical Computer Science</i>, <b>13</b> (3): 323–330, doi:<span class="cs1-lock-free" title="Freely accessible">10.1016/S0304-3975(81)80005-9</span>, MR 0603263</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Theoretical+Computer+Science&amp;rft.atitle=Succinct+representation+of+regular+languages+by+Boolean+automata&amp;rft.volume=13&amp;rft.issue=3&amp;rft.pages=323-330&amp;rft.date=1981&amp;rft_id=info%3Adoi%2F10.1016%2FS0304-3975%2881%2980005-9&amp;rft_id=%2F%2Fmathscinet.ams.org%2Fmathscinet-getitem%3Fmr%3D603263%23id-name%3DMR&amp;rft.aulast=Leiss&amp;rft.aufirst=Ernst&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ADFA+minimization"></span>.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFLeiss1985">Leiss, Ernst (1985), "Succinct representation of regular languages by Boolean automata II", <i>Theoretical Computer Science</i>, <b>38</b>: 133–136, doi:<span class="cs1-lock-free" title="Freely accessible">10.1016/0304-3975(85)90215-4</span></cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Theoretical+Computer+Science&amp;rft.atitle=Succinct+representation+of+regular+languages+by+Boolean+automata+II&amp;rft.volume=38&amp;rft.pages=133-136&amp;rft.date=1985&amp;rft_id=info%3Adoi%2F10.1016%2F0304-3975%2885%2990215-4&amp;rft.aulast=Leiss&amp;rft.aufirst=Ernst&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ADFA+minimization"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFMoore1956">Moore, Edward F. (1956), "Gedanken-experiments on sequential machines", <i>Automata studies</i>, Annals of mathematics studies, no. 34, Princeton, N. J.: Princeton University Press, pp. 129–153, MR 0078059</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Gedanken-experiments+on+sequential+machines&amp;rft.btitle=Automata+studies&amp;rft.place=Princeton%2C+N.+J.&amp;rft.series=Annals+of+mathematics+studies%2C+no.+34&amp;rft.pages=129-153&amp;rft.pub=Princeton+University+Press&amp;rft.date=1956&amp;rft_id=%2F%2Fmathscinet.ams.org%2Fmathscinet-getitem%3Fmr%3D0078059%23id-name%3DMR&amp;rft.aulast=Moore&amp;rft.aufirst=Edward+F.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ADFA+minimization"></span>.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFSakarovitch2009">Sakarovitch, Jacques (2009), <i>Elements of automata theory</i>, Translated from French by Reuben Thomas, Cambridge University Press, ISBN <bdi>978-0-521-84425-3</bdi>, Zbl 1188.68177</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Elements+of+automata+theory&amp;rft.pub=Cambridge+University+Press&amp;rft.date=2009&amp;rft_id=%2F%2Fzbmath.org%2F%3Fformat%3Dcomplete%26q%3Dan%3A1188.68177%23id-name%3DZbl&amp;rft.isbn=978-0-521-84425-3&amp;rft.aulast=Sakarovitch&amp;rft.aufirst=Jacques&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ADFA+minimization"></span></li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>DFA minimization using the Myhill–Nerode theorem</li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw2329
+Cached time: 20221222183641
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.430 seconds
+Real time usage: 0.782 seconds
+Preprocessor visited node count: 3094/1000000
+Post‐expand include size: 44009/2097152 bytes
+Template argument size: 2043/2097152 bytes
+Highest expansion depth: 12/100
+Expensive parser function count: 4/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 46629/5000000 bytes
+Lua time usage: 0.235/10.000 seconds
+Lua memory usage: 7716728/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  606.098      1 -total
+ 21.90%  132.708      2 Template:Reflist
+ 14.79%   89.613      1 Template:Cite_web
+ 14.78%   89.557     14 Template:Citation
+  9.93%   60.178      1 Template:Unsourced_section
+  7.71%   46.740      1 Template:Unreferenced
+  7.41%   44.896     13 Template:Harvtxt
+  7.32%   44.337      1 Template:Ambox
+  4.36%   26.407     19 Template:Math
+  3.00%   18.170      1 Template:Main
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:17447039-0!canonical and timestamp 20221222183640 and revision id 1128926848.
+ -->
+</div></body>
+</html>

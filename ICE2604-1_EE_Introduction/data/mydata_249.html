@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>cuckoo_hashing</title>
+</head>
+<body>
+<div class="mw-parser-output">
+
+<p><b>Cuckoo hashing</b> is a scheme in computer programming for resolving hash collisions of values of hash functions in a table, with worst-case constant lookup time. The name derives from the behavior of some species of cuckoo, where the cuckoo chick pushes the other eggs or young out of the nest when it hatches in a variation of the behavior referred to as brood parasitism; analogously, inserting a new key into a cuckoo hashing table may push an older key to a different location in the table.
+</p>
+
+<h2><span class="mw-headline" id="History">History</span><span class="mw-editsection"></span></h2>
+<p>Cuckoo hashing was first described by Rasmus Pagh and Flemming Friche Rodler in a 2001 conference paper.<sup class="reference" id="cite_ref-Cuckoo_1-0">[1]</sup> The paper was awarded the European Symposium on Algorithms Test-of-Time award in 2020.<sup class="reference" id="cite_ref-2">[2]</sup><sup class="reference nowrap"><span title="Page: 122">: 122 </span></sup>
+</p>
+<h2><span class="mw-headline" id="Operations">Operations</span><span class="mw-editsection"></span></h2>
+<p>Cuckoo hashing is a form of open addressing in which each non-empty cell of a hash table contains a key or key–value pair. A hash function is used to determine the location for each key, and its presence in the table (or the value associated with it) can be found by examining that cell of the table. However, open addressing suffers from collisions, which happens when more than one key is mapped to the same cell.
+The basic idea of cuckoo hashing is to resolve collisions by using two hash functions instead of only one. This provides two possible locations in the hash table for each key. In one of the commonly used variants of the algorithm, the hash table is split into two smaller tables of equal size, and each hash function provides an index into one of these two tables. It is also possible for both hash functions to provide indexes into a single table.<sup class="reference" id="cite_ref-Cuckoo_1-1">[1]</sup><sup class="reference nowrap"><span title="Page: 121-122">: 121-122 </span></sup>
+</p>
+<h3><span class="mw-headline" id="Lookup">Lookup</span><span class="mw-editsection"></span></h3>
+<p>Cuckoo hashing uses two hash tables, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T_{1}}</annotation>
+</semantics>
+</math></span><img alt="T_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2f304724948a3ef606c4a92459e22b87a954d993" style="vertical-align: -0.671ex; width:2.412ex; height:2.509ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T_{2}}</annotation>
+</semantics>
+</math></span><img alt="T_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d1ba5f12fbb0ff766aec6e22148b429373608555" style="vertical-align: -0.671ex; width:2.412ex; height:2.509ex;"/></span> and assuming <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>r</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r}</annotation>
+</semantics>
+</math></span><img alt="r" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0d1ecb613aa2984f0576f70f86650b7c2a132538" style="vertical-align: -0.338ex; width:1.049ex; height:1.676ex;"/></span> be the length of each tables, the hash functions for the two tables is defined as, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{1},\ h_{2}\ :\ \cup \rightarrow \{0,...,r-1\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mtext> </mtext>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mtext> </mtext>
+<mo>:</mo>
+<mtext> </mtext>
+<mo>∪<!-- ∪ --></mo>
+<mo stretchy="false">→<!-- → --></mo>
+<mo fence="false" stretchy="false">{</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>,</mo>
+<mi>r</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{1},\ h_{2}\ :\ \cup \rightarrow \{0,...,r-1\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h_{1},\ h_{2}\ :\ \cup \rightarrow \{0,...,r-1\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1c34ecf396241123090ec4905c67760eea3c18ff" style="vertical-align: -0.838ex; width:28.372ex; height:2.843ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \forall x\in S}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">∀<!-- ∀ --></mi>
+<mi>x</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>S</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \forall x\in S}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \forall x\in S}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8c7a6f5ecde7bf56b3f6c2005516d119139cabde" style="vertical-align: -0.338ex; width:6.962ex; height:2.176ex;"/></span> where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> be the key and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>S</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S}</annotation>
+</semantics>
+</math></span><img alt="S" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4611d85173cd3b508e67077d4a1252c9c05abca2" style="vertical-align: -0.338ex; width:1.499ex; height:2.176ex;"/></span> be the set whose keys are stored in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{1}(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{1}(x)}</annotation>
+</semantics>
+</math></span><img alt="h_{1}(x)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5a54192749baa8ca6069d3c58b30722fd7eae55d" style="vertical-align: -0.838ex; width:5.532ex; height:2.843ex;"/></span> of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T_{1}}</annotation>
+</semantics>
+</math></span><img alt="T_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2f304724948a3ef606c4a92459e22b87a954d993" style="vertical-align: -0.671ex; width:2.412ex; height:2.509ex;"/></span> or <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{2}(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{2}(x)}</annotation>
+</semantics>
+</math></span><img alt="h_{2}(x)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d4960c74f885bc90838e4ed3abc4ae97ae838948" style="vertical-align: -0.838ex; width:5.532ex; height:2.843ex;"/></span> of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T_{2}}</annotation>
+</semantics>
+</math></span><img alt="T_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d1ba5f12fbb0ff766aec6e22148b429373608555" style="vertical-align: -0.671ex; width:2.412ex; height:2.509ex;"/></span>. The lookup operation is as follows:<sup class="reference" id="cite_ref-Cuckoo_1-2">[1]</sup><sup class="reference nowrap"><span title="Page: 124">: 124 </span></sup>
+</p>
+<table>
+<tbody><tr style="vertical-align:top">
+<td>
+<pre> <b>function</b> lookup(x) <b>is</b>
+   <b>return</b> <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{1}[h_{1}(x)]\ =\ x\vee T_{2}[h_{2}(x)]=x}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>T</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mn>1</mn>
+          </mrow>
+        </msub>
+        <mo stretchy="false">[</mo>
+        <msub>
+          <mi>h</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mn>1</mn>
+          </mrow>
+        </msub>
+        <mo stretchy="false">(</mo>
+        <mi>x</mi>
+        <mo stretchy="false">)</mo>
+        <mo stretchy="false">]</mo>
+        <mtext> </mtext>
+        <mo>=</mo>
+        <mtext> </mtext>
+        <mi>x</mi>
+        <mo>∨<!-- ∨ --></mo>
+        <msub>
+          <mi>T</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mn>2</mn>
+          </mrow>
+        </msub>
+        <mo stretchy="false">[</mo>
+        <msub>
+          <mi>h</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mn>2</mn>
+          </mrow>
+        </msub>
+        <mo stretchy="false">(</mo>
+        <mi>x</mi>
+        <mo stretchy="false">)</mo>
+        <mo stretchy="false">]</mo>
+        <mo>=</mo>
+        <mi>x</mi>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle T_{1}[h_{1}(x)]\ =\ x\vee T_{2}[h_{2}(x)]=x}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle T_{1}[h_{1}(x)]\ =\ x\vee T_{2}[h_{2}(x)]=x}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5c3b43be54e4ee9771ec1b5fabf45c578155f8ef" style="vertical-align: -0.838ex; width:31.076ex; height:2.843ex;"/></span>
+ <b>end function</b>
+</pre>
+</td></tr></tbody></table>
+<p>The logical or (<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \vee }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>∨<!-- ∨ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \vee }</annotation>
+</semantics>
+</math></span><img alt="\vee " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7b76220c6805c9b465d6efbc7686c624f49f3023" style="vertical-align: -0.338ex; width:1.55ex; height:2.009ex;"/></span>) denotes that, the value of the key <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> is found in either <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T_{1}}</annotation>
+</semantics>
+</math></span><img alt="T_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2f304724948a3ef606c4a92459e22b87a954d993" style="vertical-align: -0.671ex; width:2.412ex; height:2.509ex;"/></span> or <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T_{2}}</annotation>
+</semantics>
+</math></span><img alt="T_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d1ba5f12fbb0ff766aec6e22148b429373608555" style="vertical-align: -0.671ex; width:2.412ex; height:2.509ex;"/></span>, which is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(1)}</annotation>
+</semantics>
+</math></span><img alt="O(1)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e66384bc40452c5452f33563fe0e27e803b0cc21" style="vertical-align: -0.838ex; width:4.745ex; height:2.843ex;"/></span> in worst case.<sup class="reference" id="cite_ref-Cuckoo_1-3">[1]</sup><sup class="reference nowrap"><span title="Page: 123">: 123 </span></sup>
+</p>
+<h3><span class="mw-headline" id="Deletion">Deletion</span><span class="mw-editsection"></span></h3>
+<p>Deletion is performed in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(1)}</annotation>
+</semantics>
+</math></span><img alt="O(1)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e66384bc40452c5452f33563fe0e27e803b0cc21" style="vertical-align: -0.838ex; width:4.745ex; height:2.843ex;"/></span> since there isn't involvement of probing—not considering the cost of shrinking operation if table is too sparse.<sup class="reference" id="cite_ref-Cuckoo_1-4">[1]</sup><sup class="reference nowrap"><span title="Page: 124-125">: 124-125 </span></sup>
+</p>
+<h3><span class="mw-headline" id="Insertion">Insertion</span><span class="mw-editsection"></span></h3>
+<p>Insertion of a new item, the first step involves examining if the slot <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{1}(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{1}(x)}</annotation>
+</semantics>
+</math></span><img alt="h_{1}(x)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5a54192749baa8ca6069d3c58b30722fd7eae55d" style="vertical-align: -0.838ex; width:5.532ex; height:2.843ex;"/></span> of the table <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T_{1}}</annotation>
+</semantics>
+</math></span><img alt="T_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2f304724948a3ef606c4a92459e22b87a954d993" style="vertical-align: -0.671ex; width:2.412ex; height:2.509ex;"/></span> is occupied; if it is not, the item is inserted at that cell. However, if the slot is occupied, the preoccupied item gets removed—let it be <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x'}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>x</mi>
+<mo>′</mo>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x'}</annotation>
+</semantics>
+</math></span><img alt="x'" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0ac74959896052e160a5953102e4bc3850fe93b2" style="vertical-align: -0.338ex; width:2.014ex; height:2.509ex;"/></span>—and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> is inserted at <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{1}[h_{1}(x)]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">[</mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T_{1}[h_{1}(x)]}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle T_{1}[h_{1}(x)]}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/85722402e15bb15a86be0b3e1a5957f13a97009a" style="vertical-align: -0.838ex; width:9.238ex; height:2.843ex;"/></span>. The removed item <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x'}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>x</mi>
+<mo>′</mo>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x'}</annotation>
+</semantics>
+</math></span><img alt="x'" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0ac74959896052e160a5953102e4bc3850fe93b2" style="vertical-align: -0.338ex; width:2.014ex; height:2.509ex;"/></span> is inserted into the table <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T_{2}}</annotation>
+</semantics>
+</math></span><img alt="T_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d1ba5f12fbb0ff766aec6e22148b429373608555" style="vertical-align: -0.671ex; width:2.412ex; height:2.509ex;"/></span> by following the same procedure; the process continues until an empty position is found to insert the key.<sup class="reference" id="cite_ref-Cuckoo_1-5">[1]</sup><sup class="reference nowrap"><span title="Page: 124-125">: 124-125 </span></sup> To avoid the possible infinite iteration in the process loop, a <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\text{Max-Loop}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>Max-Loop</mtext>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\text{Max-Loop}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\text{Max-Loop}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fd4c10138080d32636128d0cfb122ef18ffbb9ff" style="vertical-align: -0.671ex; width:10.366ex; height:2.509ex;"/></span> is specified such that if the iterations exceeds the fixed threshold, the hash tables—both <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T_{1}}</annotation>
+</semantics>
+</math></span><img alt="T_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2f304724948a3ef606c4a92459e22b87a954d993" style="vertical-align: -0.671ex; width:2.412ex; height:2.509ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T_{2}}</annotation>
+</semantics>
+</math></span><img alt="T_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d1ba5f12fbb0ff766aec6e22148b429373608555" style="vertical-align: -0.671ex; width:2.412ex; height:2.509ex;"/></span>—are rehashed with newer hash functions and the insertion procedure repeats. Following is a pseudocode for insertion:<sup class="reference" id="cite_ref-Cuckoo_1-6">[1]</sup><sup class="reference nowrap"><span title="Page: 125">: 125 </span></sup>
+</p>
+<table>
+<tbody><tr style="vertical-align:top">
+<td>
+<pre>1    <b>function</b> insert(x) <b>is</b>
+2      <b>if</b> lookup(x) <b>then</b>
+3        <b>return</b>
+4      <b>end if</b>
+5      <b>loop</b> Max-Loop <b>times</b>
+6        <b>if</b> <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{1}[h_{1}(x)]}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>T</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mn>1</mn>
+          </mrow>
+        </msub>
+        <mo stretchy="false">[</mo>
+        <msub>
+          <mi>h</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mn>1</mn>
+          </mrow>
+        </msub>
+        <mo stretchy="false">(</mo>
+        <mi>x</mi>
+        <mo stretchy="false">)</mo>
+        <mo stretchy="false">]</mo>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle T_{1}[h_{1}(x)]}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle T_{1}[h_{1}(x)]}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/85722402e15bb15a86be0b3e1a5957f13a97009a" style="vertical-align: -0.838ex; width:9.238ex; height:2.843ex;"/></span> = <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \bot }" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <mi mathvariant="normal">⊥<!-- ⊥ --></mi>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle \bot }</annotation>
+  </semantics>
+</math></span><img alt="\bot " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f282c7bc331cc3bfcf1c57f1452cc23c022f58de" style="vertical-align: -0.338ex; width:1.808ex; height:2.176ex;"/></span> <b>then</b>
+7          <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{1}[h_{1}(x)]}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>T</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mn>1</mn>
+          </mrow>
+        </msub>
+        <mo stretchy="false">[</mo>
+        <msub>
+          <mi>h</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mn>1</mn>
+          </mrow>
+        </msub>
+        <mo stretchy="false">(</mo>
+        <mi>x</mi>
+        <mo stretchy="false">)</mo>
+        <mo stretchy="false">]</mo>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle T_{1}[h_{1}(x)]}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle T_{1}[h_{1}(x)]}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/85722402e15bb15a86be0b3e1a5957f13a97009a" style="vertical-align: -0.838ex; width:9.238ex; height:2.843ex;"/></span> := x
+8          <b>return</b>
+9        <b>end if</b>
+10       x <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \leftrightarrow T_{1}[h_{1}(x)]}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <mo stretchy="false">↔<!-- ↔ --></mo>
+        <msub>
+          <mi>T</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mn>1</mn>
+          </mrow>
+        </msub>
+        <mo stretchy="false">[</mo>
+        <msub>
+          <mi>h</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mn>1</mn>
+          </mrow>
+        </msub>
+        <mo stretchy="false">(</mo>
+        <mi>x</mi>
+        <mo stretchy="false">)</mo>
+        <mo stretchy="false">]</mo>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle \leftrightarrow T_{1}[h_{1}(x)]}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle \leftrightarrow T_{1}[h_{1}(x)]}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bb72b60388ec5880a88565d459ff7e83d23bb633" style="vertical-align: -0.838ex; width:12.207ex; height:2.843ex;"/></span>
+11       <b>if</b> <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{2}[h_{2}(x)]}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>T</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mn>2</mn>
+          </mrow>
+        </msub>
+        <mo stretchy="false">[</mo>
+        <msub>
+          <mi>h</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mn>2</mn>
+          </mrow>
+        </msub>
+        <mo stretchy="false">(</mo>
+        <mi>x</mi>
+        <mo stretchy="false">)</mo>
+        <mo stretchy="false">]</mo>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle T_{2}[h_{2}(x)]}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle T_{2}[h_{2}(x)]}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/94a273c9c8b31f830e7b6ca486d89ee9e22aa303" style="vertical-align: -0.838ex; width:9.238ex; height:2.843ex;"/></span> = <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \bot }" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <mi mathvariant="normal">⊥<!-- ⊥ --></mi>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle \bot }</annotation>
+  </semantics>
+</math></span><img alt="\bot " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f282c7bc331cc3bfcf1c57f1452cc23c022f58de" style="vertical-align: -0.338ex; width:1.808ex; height:2.176ex;"/></span> <b>then</b>
+12         <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{2}[h_{2}(x)]}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <msub>
+          <mi>T</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mn>2</mn>
+          </mrow>
+        </msub>
+        <mo stretchy="false">[</mo>
+        <msub>
+          <mi>h</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mn>2</mn>
+          </mrow>
+        </msub>
+        <mo stretchy="false">(</mo>
+        <mi>x</mi>
+        <mo stretchy="false">)</mo>
+        <mo stretchy="false">]</mo>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle T_{2}[h_{2}(x)]}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle T_{2}[h_{2}(x)]}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/94a273c9c8b31f830e7b6ca486d89ee9e22aa303" style="vertical-align: -0.838ex; width:9.238ex; height:2.843ex;"/></span> := x
+13         <b>return</b>
+14       <b>end if</b>
+15       x <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \leftrightarrow T_{2}[h_{2}(x)]}" xmlns="http://www.w3.org/1998/Math/MathML">
+  <semantics>
+    <mrow class="MJX-TeXAtom-ORD">
+      <mstyle displaystyle="true" scriptlevel="0">
+        <mo stretchy="false">↔<!-- ↔ --></mo>
+        <msub>
+          <mi>T</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mn>2</mn>
+          </mrow>
+        </msub>
+        <mo stretchy="false">[</mo>
+        <msub>
+          <mi>h</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mn>2</mn>
+          </mrow>
+        </msub>
+        <mo stretchy="false">(</mo>
+        <mi>x</mi>
+        <mo stretchy="false">)</mo>
+        <mo stretchy="false">]</mo>
+      </mstyle>
+    </mrow>
+    <annotation encoding="application/x-tex">{\displaystyle \leftrightarrow T_{2}[h_{2}(x)]}</annotation>
+  </semantics>
+</math></span><img alt="{\displaystyle \leftrightarrow T_{2}[h_{2}(x)]}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/061e988b530481bc166568f818da6d73a64f2c6f" style="vertical-align: -0.838ex; width:12.207ex; height:2.843ex;"/></span>
+16     <b>end loop</b>
+17     rehash()
+18     insert(x)
+19   <b>end function</b>
+</pre>
+</td></tr></tbody></table>
+<p>On lines 10 and 15, the "cuckoo approach" of kicking other keys—which was preoccupied at <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{1,2}[h_{1,2}(x)]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+<mo>,</mo>
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">[</mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+<mo>,</mo>
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T_{1,2}[h_{1,2}(x)]}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle T_{1,2}[h_{1,2}(x)]}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/661f865b2c715193643d3039accce4501855aaa5" style="vertical-align: -1.005ex; width:11.796ex; height:3.009ex;"/></span>—takes place until every key has its own "nest" i.e. the item <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> is inserted into a spot on either one of the two tables; the notation <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \leftrightarrow }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">↔<!-- ↔ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \leftrightarrow }</annotation>
+</semantics>
+</math></span><img alt="\leftrightarrow " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/046b918c43e05caf6624fe9b676c69ec9cd6b892" style="vertical-align: -0.338ex; width:2.324ex; height:1.843ex;"/></span> expresses the process of swapping.<sup class="reference" id="cite_ref-Cuckoo_1-7">[1]</sup><sup class="reference nowrap"><span title="Page: 124-125">: 124-125 </span></sup>
+</p>
+<h2><span class="mw-headline" id="Theory">Theory</span><span class="mw-editsection"></span></h2>
+<p>Insertions succeed in expected constant time,<sup class="reference" id="cite_ref-Cuckoo_1-8">[1]</sup> even considering the possibility of having to rebuild the table, as long as the number of keys is kept below half of the capacity of the hash table, i.e., the load factor is below 50%.
+</p><p>One method of proving this uses the theory of random graphs: one may form an undirected graph called the "cuckoo graph" that has a vertex for each hash table location, and an edge for each hashed value, with the endpoints of the edge being the two possible locations of the value. Then, the greedy insertion algorithm for adding a set of values to a cuckoo hash table succeeds if and only if the cuckoo graph for this set of values is a pseudoforest, a graph with at most one cycle in each of its connected components. Any vertex-induced subgraph with more edges than vertices corresponds to a set of keys for which there are an insufficient number of slots in the hash table. When the hash function is chosen randomly, the cuckoo graph is a random graph in the Erdős–Rényi model. With high probability, for load factor less than 1/2 (corresponding to a random graph in which the ratio of the number of edges to the number of vertices is bounded below 1/2), the graph is a pseudoforest and the cuckoo hashing algorithm succeeds in placing all keys. The same theory also proves that the expected size of a connected component of the cuckoo graph is small, ensuring that each insertion takes constant expected time. However, also with high probability, a load factor greater than 1/2 will lead to a giant component with two or more cycles, causing the data structure to fail and need to be resized.<sup class="reference" id="cite_ref-3">[3]</sup>
+</p><p>Since a theoretical random hash function requires too much space for practical usage, an important theoretical question is which practical hash functions suffice for Cuckoo hashing. One approach is to use k-independent hashing. In 2009 it was shown<sup class="reference" id="cite_ref-4">[4]</sup> that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(\log n)}</annotation>
+</semantics>
+</math></span><img alt="O(\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/aae0f22048ba6b7c05dbae17b056bfa16e21807d" style="vertical-align: -0.838ex; width:8.336ex; height:2.843ex;"/></span>-independence suffices, and at least 6-independence is needed. Another approach is to use Tabulation hashing, which is not 6-independent, but was shown in 2012<sup class="reference" id="cite_ref-5">[5]</sup> to have other properties sufficient for Cuckoo hashing.
+A third approach from 2014<sup class="reference" id="cite_ref-6">[6]</sup> is to slightly modify the cuckoo hashtable with a so-called stash, which makes it possible to use nothing more than 2-independent hash functions.
+</p>
+<h2><span class="mw-headline" id="Practice">Practice</span><span class="mw-editsection"></span></h2>
+<p>In practice, cuckoo hashing is about 20–30% slower than linear probing, which is the fastest of the common approaches.<sup class="reference" id="cite_ref-Cuckoo_1-9">[1]</sup>
+The reason is that cuckoo hashing often causes two cache misses per search, to check the two locations where a key might be stored, while linear probing usually causes only one cache miss per search.
+However, because of its worst case guarantees on search time, cuckoo hashing can still be valuable when real-time response rates are required. One advantage of cuckoo hashing is its link-list free property, which fits GPU processing well.
+</p>
+<h2><span class="mw-headline" id="Example">Example</span><span class="mw-editsection"></span></h2>
+<p>The following hash functions are given:
+</p><p><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h\left(k\right)=k{\bmod {1}}1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+<mrow>
+<mo>(</mo>
+<mi>k</mi>
+<mo>)</mo>
+</mrow>
+<mo>=</mo>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo lspace="thickmathspace" rspace="thickmathspace">mod</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</mrow>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h\left(k\right)=k{\bmod {1}}1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h\left(k\right)=k{\bmod {1}}1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/417f1fa7a0dde89d3bc671f19f8fbe369eefcb87" style="vertical-align: -0.838ex; width:17.062ex; height:2.843ex;"/></span><br/>
+<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h'\left(k\right)=\left\lfloor {\frac {k}{11}}\right\rfloor {\bmod {1}}1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>h</mi>
+<mo>′</mo>
+</msup>
+<mrow>
+<mo>(</mo>
+<mi>k</mi>
+<mo>)</mo>
+</mrow>
+<mo>=</mo>
+<mrow>
+<mo>⌊</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>k</mi>
+<mn>11</mn>
+</mfrac>
+</mrow>
+<mo>⌋</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo lspace="thickmathspace" rspace="thickmathspace">mod</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</mrow>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h'\left(k\right)=\left\lfloor {\frac {k}{11}}\right\rfloor {\bmod {1}}1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h'\left(k\right)=\left\lfloor {\frac {k}{11}}\right\rfloor {\bmod {1}}1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6af808c5e6b7c58bc7e77b68e5c0f7f70bc24e72" style="vertical-align: -2.505ex; width:22.794ex; height:6.176ex;"/></span>
+</p><p>The following two tables show the insertion of some example elements.  Each column corresponds to the state of the two hash tables over time.  The possible insertion locations for each new value are highlighted.
+</p>
+
+
+
+<h3><span class="mw-headline" id="Cycle">Cycle</span><span class="mw-editsection"></span></h3>
+<p>If you now attempt to insert the element 6, then you get into a cycle, and fail. In the last row of the table we find the same initial situation as at the beginning again.
+</p><p><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h\left(6\right)=6{\bmod {1}}1=6}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+<mrow>
+<mo>(</mo>
+<mn>6</mn>
+<mo>)</mo>
+</mrow>
+<mo>=</mo>
+<mn>6</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo lspace="thickmathspace" rspace="thickmathspace">mod</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</mrow>
+<mn>1</mn>
+<mo>=</mo>
+<mn>6</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h\left(6\right)=6{\bmod {1}}1=6}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h\left(6\right)=6{\bmod {1}}1=6}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/12f3fff9c8d4462f091e35eea7c44e1eb5c0be09" style="vertical-align: -0.838ex; width:21.226ex; height:2.843ex;"/></span><br/>
+<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h'\left(6\right)=\left\lfloor {\frac {6}{11}}\right\rfloor {\bmod {1}}1=0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>h</mi>
+<mo>′</mo>
+</msup>
+<mrow>
+<mo>(</mo>
+<mn>6</mn>
+<mo>)</mo>
+</mrow>
+<mo>=</mo>
+<mrow>
+<mo>⌊</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>6</mn>
+<mn>11</mn>
+</mfrac>
+</mrow>
+<mo>⌋</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo lspace="thickmathspace" rspace="thickmathspace">mod</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</mrow>
+<mn>1</mn>
+<mo>=</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h'\left(6\right)=\left\lfloor {\frac {6}{11}}\right\rfloor {\bmod {1}}1=0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h'\left(6\right)=\left\lfloor {\frac {6}{11}}\right\rfloor {\bmod {1}}1=0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/efd810f32e68bdbafb01e5bea0d19fc67fbf651e" style="vertical-align: -2.505ex; width:27.007ex; height:6.176ex;"/></span><br/>
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>table 1
+</th>
+<th>table 2
+</th></tr>
+<tr>
+<td>6 replaces 50 in cell 6</td>
+<td>50 replaces 53 in cell 4
+</td></tr>
+<tr>
+<td>53 replaces 75 in cell 9</td>
+<td>75 replaces 67 in cell 6
+</td></tr>
+<tr>
+<td>67 replaces 100 in cell 1</td>
+<td>100 replaces 105 in cell 9
+</td></tr>
+<tr>
+<td>105 replaces 6 in cell 6</td>
+<td>6 replaces 3 in cell 0
+</td></tr>
+<tr>
+<td>3 replaces 36 in cell 3</td>
+<td>36 replaces 39 in cell 3
+</td></tr>
+<tr>
+<td>39 replaces 105 in cell 6</td>
+<td>105 replaces 100 in cell 9
+</td></tr>
+<tr>
+<td>100 replaces 67 in cell 1</td>
+<td>67 replaces 75 in cell 6
+</td></tr>
+<tr>
+<td>75 replaces 53 in cell 9</td>
+<td>53 replaces 50 in cell 4
+</td></tr>
+<tr>
+<td>50 replaces 39 in cell 6</td>
+<td>39 replaces 36 in cell 3
+</td></tr>
+<tr>
+<td>36 replaces 3 in cell 3</td>
+<td>3 replaces 6 in cell 0
+</td></tr>
+<tr>
+<td>6 replaces 50 in cell 6</td>
+<td>50 replaces 53 in cell 4
+</td></tr></tbody></table>
+<h2><span class="mw-headline" id="Variations">Variations</span><span class="mw-editsection"></span></h2>
+<p>Several variations of cuckoo hashing have been studied, primarily with the aim of improving its space usage by increasing the load factor that it can tolerate to a number greater than the 50% threshold of the basic algorithm. Some of these methods can also be used to reduce the failure rate of cuckoo hashing, causing rebuilds of the data structure to be much less frequent.
+</p><p>Generalizations of cuckoo hashing that use more than two alternative hash functions can be expected to utilize a larger part of the capacity of the hash table efficiently while sacrificing some lookup and insertion speed. Using just three hash functions increases the load to 91%.<sup class="reference" id="cite_ref-mitzenmacher2009survey_7-0">[7]</sup>
+Another generalization of cuckoo hashing, called <i>blocked cuckoo hashing</i> consists in using more than one key per bucket. Using just 2 keys per bucket permits a load factor above 80%.<sup class="reference" id="cite_ref-8">[8]</sup>
+</p><p>Another variation of cuckoo hashing that has been studied is <i>cuckoo hashing with a stash</i>. The stash, in this data structure, is an array of a constant number of keys, used to store keys that cannot successfully be inserted into the main hash table of the structure. This modification reduces the failure rate of cuckoo hashing to an inverse-polynomial function with an exponent that can be made arbitrarily large by increasing the stash size. However, larger stashes also mean slower searches for keys that are not present or are in the stash. A stash can be used in combination with more than two hash functions or with blocked cuckoo hashing to achieve both high load factors and small failure rates.<sup class="reference" id="cite_ref-9">[9]</sup> The analysis of cuckoo hashing with a stash extends to practical hash functions, not just to the random hash function model commonly used in theoretical analysis of hashing.<sup class="reference" id="cite_ref-10">[10]</sup>
+</p><p>Some people recommend a simplified generalization of cuckoo hashing called skewed-associative cache in some CPU caches.<sup class="reference" id="cite_ref-11">[11]</sup>
+</p><p>Another variation of a cuckoo hash table, called a cuckoo filter, replaces the stored keys of a cuckoo hash table with much shorter fingerprints, computed by applying another hash function to the keys. In order to allow these fingerprints to be moved around within the cuckoo filter, without knowing the keys that they came from, the two locations of each fingerprint may be computed from each other by a bitwise exclusive or operation with the fingerprint, or with a hash of the fingerprint. This data structure forms an approximate set membership data structure with much the same properties as a Bloom filter: it can store the members of a set of keys, and test whether a query key is a member, with some chance of false positives (queries that are incorrectly reported as being part of the set) but no false negatives. However, it improves on a Bloom filter in multiple respects: its memory usage is smaller by a constant factor, it has better locality of reference, and (unlike Bloom filters) it allows for fast deletion of set elements with no additional storage penalty.<sup class="reference" id="cite_ref-12">[12]</sup>
+</p>
+<h2><span class="mw-headline" id="Comparison_with_related_structures">Comparison with related structures</span><span class="mw-editsection"></span></h2>
+<p>A study by Zukowski et al.<sup class="reference" id="cite_ref-13">[13]</sup> has shown that cuckoo hashing is much faster than chained hashing for small, cache-resident hash tables on modern processors. Kenneth Ross<sup class="reference" id="cite_ref-14">[14]</sup> has shown bucketized versions of cuckoo hashing (variants that use buckets that contain more than one key) to be faster than conventional methods also for large hash tables, when space utilization is high. The performance of the bucketized cuckoo hash table was investigated further by Askitis,<sup class="reference" id="cite_ref-15">[15]</sup>
+with its performance compared against alternative hashing schemes.
+</p><p>A survey by Mitzenmacher<sup class="reference" id="cite_ref-mitzenmacher2009survey_7-1">[7]</sup> presents open problems related to cuckoo hashing as of 2009.
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Perfect hashing</li>
+<li>Double hashing</li>
+<li>Quadratic probing</li>
+<li>Hopscotch hashing</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>A cool and practical alternative to traditional hash tables, U. Erlingsson, M. Manasse, F. Mcsherry, 2006.</li>
+<li>Cuckoo Hashing for Undergraduates, 2006, R. Pagh, 2006.</li>
+<li>Cuckoo Hashing, Theory and Practice (Part 1, Part 2 and Part 3), Michael Mitzenmacher, 2007.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation conference cs1" id="CITEREFNaorSegev,_GilWieder,_Udi2008">Naor, Moni; Segev, Gil; Wieder, Udi (2008). "History-Independent Cuckoo Hashing". <i>International Colloquium on Automata, Languages and Programming (ICALP)</i>. Reykjavik, Iceland<span class="reference-accessdate">. Retrieved <span class="nowrap">2008-07-21</span></span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=conference&amp;rft.atitle=History-Independent+Cuckoo+Hashing&amp;rft.btitle=International+Colloquium+on+Automata%2C+Languages+and+Programming+%28ICALP%29&amp;rft.place=Reykjavik%2C+Iceland&amp;rft.date=2008&amp;rft.aulast=Naor&amp;rft.aufirst=Moni&amp;rft.au=Segev%2C+Gil&amp;rft.au=Wieder%2C+Udi&amp;rft_id=http%3A%2F%2Fwww.wisdom.weizmann.ac.il%2F~naor%2FPAPERS%2Fcuckoo_hi_abs.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ACuckoo+hashing"></span></li>
+<li>Algorithmic Improvements for Fast Concurrent Cuckoo Hashing, X. Li, D. Andersen, M. Kaminsky, M. Freedman. EuroSys 2014.</li></ul>
+<h3><span class="mw-headline" id="Examples">Examples</span><span class="mw-editsection"></span></h3>
+<ul><li>Concurrent high-performance Cuckoo hashtable written in C++</li>
+<li>Cuckoo hash map written in C++</li>
+<li>Static cuckoo hashtable generator for C/C++</li>
+<li>Cuckoo hash table written in Haskell</li>
+<li>Cuckoo hashing for Go</li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw2387
+Cached time: 20221224010721
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.305 seconds
+Real time usage: 0.484 seconds
+Preprocessor visited node count: 4203/1000000
+Post‐expand include size: 35670/2097152 bytes
+Template argument size: 1182/2097152 bytes
+Highest expansion depth: 15/100
+Expensive parser function count: 0/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 43599/5000000 bytes
+Lua time usage: 0.118/10.000 seconds
+Lua memory usage: 5895586/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  265.800      1 -total
+ 48.79%  129.691      1 Template:Reflist
+ 24.98%   66.410      2 Template:Cite_book
+ 19.20%   51.036      1 Template:Short_description
+ 17.77%   47.232      7 Template:R
+ 15.98%   42.477      8 Template:R/superscript
+ 15.50%   41.187      7 Template:R/ref
+  9.58%   25.464      2 Template:Pagetype
+  7.79%   20.714     24 Template:R/where
+  7.30%   19.393      4 Template:Citation
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:4015872-0!canonical and timestamp 20221224010720 and revision id 1110927416.
+ -->
+</div></body>
+</html>

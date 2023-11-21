@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>B*-tree</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<style data-mw-deduplicate="TemplateStyles:r1066479718">.mw-parser-output .infobox-subbox{padding:0;border:none;margin:-3px;width:auto;min-width:100%;font-size:100%;clear:none;float:none;background-color:transparent}.mw-parser-output .infobox-3cols-child{margin:auto}.mw-parser-output .infobox .navbar{font-size:100%}body.skin-minerva .mw-parser-output .infobox-header,body.skin-minerva .mw-parser-output .infobox-subheader,body.skin-minerva .mw-parser-output .infobox-above,body.skin-minerva .mw-parser-output .infobox-title,body.skin-minerva .mw-parser-output .infobox-image,body.skin-minerva .mw-parser-output .infobox-full-data,body.skin-minerva .mw-parser-output .infobox-below{text-align:center}</style><table class="infobox"><tbody><tr><th class="infobox-above" colspan="2">B-tree</th></tr><tr><th class="infobox-label" scope="row">Type</th><td class="infobox-data">Tree (data structure)</td></tr><tr><th class="infobox-label" scope="row">Invented</th><td class="infobox-data">1970<sup class="reference" id="cite_ref-bayer-mccreight-1970_1-0">[1]</sup></td></tr><tr><th class="infobox-label" scope="row">Invented by</th><td class="infobox-data">Rudolf Bayer, Edward M. McCreight</td></tr><tr><th class="infobox-header" colspan="2">Time complexity in big O notation</th></tr><tr><td class="infobox-full-data" colspan="2"><link href="mw-data:TemplateStyles:r1066479718" rel="mw-deduplicated-inline-style"/><table class="infobox-subbox infobox-3cols-child"><tbody><tr><th class="infobox-label" scope="row" style="white-space:nowrap;">Algorithm</th><td class="infobox-data infobox-data-a">
+<b>Average</b></td><td class="infobox-data infobox-data-b">
+<b>Worst case</b></td></tr><tr><th class="infobox-label" scope="row" style="white-space:nowrap;">Space</th><td class="infobox-data infobox-data-a">
+O(<i>n</i>)</td><td class="infobox-data infobox-data-b">
+O(<i>n</i>)</td></tr><tr><th class="infobox-label" scope="row" style="white-space:nowrap;">Search</th><td class="infobox-data infobox-data-a">
+O(log <i>n</i>)</td><td class="infobox-data infobox-data-b">
+O(log <i>n</i>)</td></tr><tr><th class="infobox-label" scope="row" style="white-space:nowrap;">Insert</th><td class="infobox-data infobox-data-a">
+O(log <i>n</i>)</td><td class="infobox-data infobox-data-b">
+O(log <i>n</i>)</td></tr><tr><th class="infobox-label" scope="row" style="white-space:nowrap;">Delete</th><td class="infobox-data infobox-data-a">
+O(log <i>n</i>)</td><td class="infobox-data infobox-data-b">
+O(log <i>n</i>)</td></tr></tbody></table></td></tr></tbody></table>
+<p>In computer science, a <b>B-tree</b> is a self-balancing tree data structure that maintains sorted data and allows searches, sequential access, insertions, and deletions in logarithmic time. The B-tree generalizes the binary search tree, allowing for nodes with more than two children.<sup class="reference" id="cite_ref-FOOTNOTEComer1979_2-0">[2]</sup> Unlike other self-balancing binary search trees, the B-tree is well suited for storage systems that read and write relatively large blocks of data, such as databases and file systems.
+</p>
+
+<h2><span class="mw-headline" id="Origin">Origin</span><span class="mw-editsection"></span></h2>
+<p>B-trees were invented by Rudolf Bayer and Edward M. McCreight while working at Boeing Research Labs, for the purpose of efficiently managing index pages for large random-access files. The basic assumption was that indices would be so voluminous that only small chunks of the tree could fit in main memory. Bayer and McCreight's paper, <i>Organization and maintenance of large ordered indices</i>,<sup class="reference" id="cite_ref-bayer-mccreight-1970_1-1">[1]</sup> was first circulated in July 1970 and later published in <i>Acta Informatica</i>.<sup class="reference" id="cite_ref-FOOTNOTEBayerMcCreight1972_3-0">[3]</sup>
+</p><p>Bayer and McCreight never explained what, if anything, the <i>B</i> stands for: <i>Boeing</i>, <i>balanced</i>, <i>broad</i>, <i>bushy</i>, and <i>Bayer</i> have been suggested.<sup class="reference" id="cite_ref-FOOTNOTEComer1979123_footnote_1_4-0">[4]</sup><sup class="reference" id="cite_ref-herrenalb_5-0">[5]</sup><sup class="reference" id="cite_ref-6">[6]</sup> McCreight has said that "the more you think about what the B in B-trees means, the better you understand B-trees."<sup class="reference" id="cite_ref-herrenalb_5-1">[5]</sup>
+</p>
+<h2><span class="mw-headline" id="Definition">Definition</span><span class="mw-editsection"></span></h2>
+<p>According to Knuth's definition, a B-tree of order <i>m</i> is a tree which satisfies the following properties:<sup class="reference" id="cite_ref-FOOTNOTEKnuth1998483_7-0">[7]</sup>
+</p>
+<ol><li>Every node has at most <i>m</i> children.</li>
+<li>Every internal node has at least ⌈<i>m</i>/2⌉ children.</li>
+<li>Every non-leaf node has at least two children.</li>
+<li>All leaves appear on the same level.</li>
+<li>A non-leaf node with <i>k</i> children contains <i>k</i>−1 keys.</li></ol>
+<p>Each internal node's keys act as separation values which divide its subtrees. For example, if an internal node has 3 child nodes (or subtrees) then it must have 2 keys: <i>a</i><sub>1</sub> and <i>a</i><sub>2</sub>. All values in the leftmost subtree will be less than <i>a</i><sub>1</sub>, all values in the middle subtree will be between <i>a</i><sub>1</sub> and <i>a</i><sub>2</sub>, and all values in the rightmost subtree will be greater than <i>a</i><sub>2</sub>.
+</p>
+<dl><dt>Internal nodes</dt>
+<dd>Internal nodes (also known as inner nodes) are all nodes except for leaf nodes and the root node. They are usually represented as an ordered set of elements and child pointers. Every internal node contains a <b>maximum</b> of <i>U</i> children and a <b>minimum</b> of <i>L</i> children. Thus, the number of elements is always 1 less than the number of child pointers (the number of elements is between <i>L</i>−1 and <i>U</i>−1). <i>U</i> must be either 2<i>L</i> or 2<i>L</i>−1; therefore each internal node is at least half full. The relationship between <i>U</i> and <i>L</i> implies that two half-full nodes can be joined to make a legal node, and one full node can be split into two legal nodes (if there's room to push one element up into the parent). These properties make it possible to delete and insert new values into a B-tree and adjust the tree to preserve the B-tree properties.</dd>
+<dt>The root node</dt>
+<dd>The root node's number of children has the same upper limit as internal nodes, but has no lower limit. For example, when there are fewer than <i>L</i>−1 elements in the entire tree, the root will be the only node in the tree with no children at all.</dd></dl>
+<dl><dt>Leaf nodes</dt>
+<dd>In Knuth's terminology, the "leaf" nodes are the actual data objects / chunks. The internal nodes that are one level above these leaves are what would be called the "leaves" by other authors: these nodes only store keys (at most <i>m</i>-1, and at least <i>m</i>/2-1 if they are not the root) and pointers (one for each key) to nodes carrying the data objects / chunks.</dd></dl>
+<p>A B-tree of depth <i>n</i>+1 can hold about <i>U</i> times as many items as a B-tree of depth <i>n</i>, but the cost of search, insert, and delete operations grows with the depth of the tree. As with any balanced tree, the cost grows much more slowly than the number of elements.
+</p><p>Some balanced trees store values only at leaf nodes, and use different kinds of nodes for leaf nodes and internal nodes. B-trees keep values in every node in the tree except leaf nodes.
+</p>
+<h3><span class="mw-headline" id="Differences_in_terminology">Differences in terminology</span><span class="mw-editsection"></span></h3>
+<p>The literature on B-trees is not uniform in its terminology.<sup class="reference" id="cite_ref-FOOTNOTEFolkZoellick1992362_8-0">[8]</sup>
+</p><p>Bayer and McCreight (1972),<sup class="reference" id="cite_ref-FOOTNOTEBayerMcCreight1972_3-1">[3]</sup> Comer (1979),<sup class="reference" id="cite_ref-FOOTNOTEComer1979_2-1">[2]</sup> and others define the <b>order</b> of B-tree as the minimum number of keys in a non-root node.<sup class="reference" id="cite_ref-FOOTNOTEFolkZoellick1992_9-0">[9]</sup> points out that terminology is ambiguous because the maximum number of keys is not clear. An order 3 B-tree might hold a maximum of 6 keys or a maximum of 7 keys. Knuth (1998) avoids the problem by defining the <b>order</b> to be the maximum number of children (which is one more than the maximum number of keys).<sup class="reference" id="cite_ref-FOOTNOTEKnuth1998483_7-1">[7]</sup>
+</p><p>The term <b>leaf</b> is also inconsistent. Bayer and McCreight (1972)<sup class="reference" id="cite_ref-FOOTNOTEBayerMcCreight1972_3-2">[3]</sup> considered the leaf level to be the lowest level of keys, but Knuth considered the leaf level to be one level below the lowest keys.<sup class="reference" id="cite_ref-FOOTNOTEFolkZoellick1992363_10-0">[10]</sup> There are many possible implementation choices. In some designs, the leaves may hold the entire data record; in other designs, the leaves may only hold pointers to the data record. Those choices are not fundamental to the idea of a B-tree.<sup class="reference" id="cite_ref-11">[11]</sup>
+</p><p>For simplicity, most authors assume there are a fixed number of keys that fit in a node. The basic assumption is the key size is fixed and the node size is fixed. In practice, variable length keys may be employed.<sup class="reference" id="cite_ref-FOOTNOTEFolkZoellick1992379_12-0">[12]</sup>
+</p>
+<h2><span class="mw-headline" id="Informal_description">Informal description</span><span class="mw-editsection"></span></h2>
+
+<p>In B-trees, internal (non-leaf) nodes can have a variable number of child nodes within some pre-defined range. When data is inserted or removed from a node, its number of child nodes changes. In order to maintain the pre-defined range, internal nodes may be joined or split. Because a range of child nodes is permitted, B-trees do not need re-balancing as frequently as other self-balancing search trees, but may waste some space, since nodes are not entirely full. The lower and upper bounds on the number of child nodes are typically fixed for a particular implementation. For example, in a 2–3 tree (sometimes referred to as a <b>2–3 B-tree</b>), each internal node may have only 2 or 3 child nodes.
+</p><p>Each internal node of a B-tree contains a number of keys. The keys act as separation values which divide its subtrees. For example, if an internal node has 3 child nodes (or subtrees) then it must have 2 keys: <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a_{1}}</annotation>
+</semantics>
+</math></span><img alt="a_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bbf42ecda092975c9c69dae84e16182ba5fe2e07" style="vertical-align: -0.671ex; width:2.284ex; height:2.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a_{2}}</annotation>
+</semantics>
+</math></span><img alt="a_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/270580da7333505d9b73697417d0543c43c98b9f" style="vertical-align: -0.671ex; width:2.284ex; height:2.009ex;"/></span>. All values in the leftmost subtree will be less than <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a_{1}}</annotation>
+</semantics>
+</math></span><img alt="a_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bbf42ecda092975c9c69dae84e16182ba5fe2e07" style="vertical-align: -0.671ex; width:2.284ex; height:2.009ex;"/></span>, all values in the middle subtree will be between <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a_{1}}</annotation>
+</semantics>
+</math></span><img alt="a_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bbf42ecda092975c9c69dae84e16182ba5fe2e07" style="vertical-align: -0.671ex; width:2.284ex; height:2.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a_{2}}</annotation>
+</semantics>
+</math></span><img alt="a_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/270580da7333505d9b73697417d0543c43c98b9f" style="vertical-align: -0.671ex; width:2.284ex; height:2.009ex;"/></span>, and all values in the rightmost subtree will be greater than <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a_{2}}</annotation>
+</semantics>
+</math></span><img alt="a_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/270580da7333505d9b73697417d0543c43c98b9f" style="vertical-align: -0.671ex; width:2.284ex; height:2.009ex;"/></span>.
+</p><p>Usually, the number of keys is chosen to vary between <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d}</annotation>
+</semantics>
+</math></span><img alt="d" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e85ff03cbe0c7341af6b982e47e9f90d235c66ab" style="vertical-align: -0.338ex; width:1.216ex; height:2.176ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2d}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>2</mn>
+<mi>d</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2d}</annotation>
+</semantics>
+</math></span><img alt="2d" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d8106478cb4da6af49992eeb3a3b8690d27797ad" style="vertical-align: -0.338ex; width:2.378ex; height:2.176ex;"/></span>, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d}</annotation>
+</semantics>
+</math></span><img alt="d" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e85ff03cbe0c7341af6b982e47e9f90d235c66ab" style="vertical-align: -0.338ex; width:1.216ex; height:2.176ex;"/></span> is the minimum number of keys, and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d+1}</annotation>
+</semantics>
+</math></span><img alt="d+1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/056e0c06c828dbe71a0f9021b2828ff176a3d337" style="vertical-align: -0.505ex; width:5.219ex; height:2.343ex;"/></span> is the minimum degree or branching factor of the tree. In practice, the keys take up the most space in a node. The factor of 2 will guarantee that nodes can be split or combined. If an internal node has <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2d}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>2</mn>
+<mi>d</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2d}</annotation>
+</semantics>
+</math></span><img alt="2d" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d8106478cb4da6af49992eeb3a3b8690d27797ad" style="vertical-align: -0.338ex; width:2.378ex; height:2.176ex;"/></span> keys, then adding a key to that node can be accomplished by splitting the hypothetical <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2d+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>2</mn>
+<mi>d</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2d+1}</annotation>
+</semantics>
+</math></span><img alt="2d+1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d68ab692c5c4a44b63f3bd320249b8cb8d035191" style="vertical-align: -0.505ex; width:6.381ex; height:2.343ex;"/></span> key node into two <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d}</annotation>
+</semantics>
+</math></span><img alt="d" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e85ff03cbe0c7341af6b982e47e9f90d235c66ab" style="vertical-align: -0.338ex; width:1.216ex; height:2.176ex;"/></span> key nodes and moving the key that would have been in the middle to the parent node. Each split node has the required minimum number of keys. Similarly, if an internal node and its neighbor each have <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d}</annotation>
+</semantics>
+</math></span><img alt="d" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e85ff03cbe0c7341af6b982e47e9f90d235c66ab" style="vertical-align: -0.338ex; width:1.216ex; height:2.176ex;"/></span> keys, then a key may be deleted from the internal node by combining it with its neighbor. Deleting the key would make the internal node have <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d-1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d-1}</annotation>
+</semantics>
+</math></span><img alt="d-1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0195b64ba44bcc80b4c98e9d34256b4043fe519e" style="vertical-align: -0.505ex; width:5.219ex; height:2.343ex;"/></span> keys; joining the neighbor would add <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d}</annotation>
+</semantics>
+</math></span><img alt="d" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e85ff03cbe0c7341af6b982e47e9f90d235c66ab" style="vertical-align: -0.338ex; width:1.216ex; height:2.176ex;"/></span> keys plus one more key brought down from the neighbor's parent. The result is an entirely full node of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2d}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>2</mn>
+<mi>d</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2d}</annotation>
+</semantics>
+</math></span><img alt="2d" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d8106478cb4da6af49992eeb3a3b8690d27797ad" style="vertical-align: -0.338ex; width:2.378ex; height:2.176ex;"/></span> keys.
+</p><p>The number of branches (or child nodes) from a node will be one more than the number of keys stored in the node. In a 2–3 B-tree, the internal nodes will store either one key (with two child nodes) or two keys (with three child nodes). A B-tree is sometimes described with the parameters <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (d+1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mi>d</mi>
+<mo>+</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (d+1)}</annotation>
+</semantics>
+</math></span><img alt="(d+1)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2b9d3f776a044a5e306ab0963e31247e9f3a7560" style="vertical-align: -0.838ex; width:7.028ex; height:2.843ex;"/></span>—<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (2d+1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mn>2</mn>
+<mi>d</mi>
+<mo>+</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (2d+1)}</annotation>
+</semantics>
+</math></span><img alt="(2d+1)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ea9b0766f21b39b81e5c194adfb11e6dd51ed50b" style="vertical-align: -0.838ex; width:8.19ex; height:2.843ex;"/></span> or simply with the highest branching order, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (2d+1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mn>2</mn>
+<mi>d</mi>
+<mo>+</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (2d+1)}</annotation>
+</semantics>
+</math></span><img alt="(2d+1)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ea9b0766f21b39b81e5c194adfb11e6dd51ed50b" style="vertical-align: -0.838ex; width:8.19ex; height:2.843ex;"/></span>.
+</p><p>A B-tree is kept balanced after insertion by splitting a would-be overfilled node, of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2d+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>2</mn>
+<mi>d</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2d+1}</annotation>
+</semantics>
+</math></span><img alt="2d+1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d68ab692c5c4a44b63f3bd320249b8cb8d035191" style="vertical-align: -0.505ex; width:6.381ex; height:2.343ex;"/></span> keys, into two <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d}</annotation>
+</semantics>
+</math></span><img alt="d" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e85ff03cbe0c7341af6b982e47e9f90d235c66ab" style="vertical-align: -0.338ex; width:1.216ex; height:2.176ex;"/></span>-key siblings and inserting the mid-value key into the parent. Depth only increases when the root is split, maintaining balance. Similarly, a B-tree is kept balanced after deletion by merging or redistributing keys among siblings to maintain the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d}</annotation>
+</semantics>
+</math></span><img alt="d" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e85ff03cbe0c7341af6b982e47e9f90d235c66ab" style="vertical-align: -0.338ex; width:1.216ex; height:2.176ex;"/></span>-key minimum for non-root nodes. A merger reduces the number of keys in the parent potentially forcing it to merge or redistribute keys with its siblings, and so on. The only change in depth occurs when the root has two children, of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d}</annotation>
+</semantics>
+</math></span><img alt="d" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e85ff03cbe0c7341af6b982e47e9f90d235c66ab" style="vertical-align: -0.338ex; width:1.216ex; height:2.176ex;"/></span> and (transitionally) <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d-1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d-1}</annotation>
+</semantics>
+</math></span><img alt="d-1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0195b64ba44bcc80b4c98e9d34256b4043fe519e" style="vertical-align: -0.505ex; width:5.219ex; height:2.343ex;"/></span> keys, in which case the two siblings and parent are merged, reducing the depth by one.
+</p><p>This depth will increase slowly as elements are added to the tree, but an increase in the overall depth is infrequent, and results in all leaf nodes being one more node farther away from the root.
+</p><p>B-trees have substantial advantages over alternative implementations when the time to access the data of a node greatly exceeds the time spent processing that data, because then the cost of accessing the node may be amortized over multiple operations within the node. This usually occurs when the node data are in secondary storage such as disk drives. By maximizing the number of keys within each internal node, the height of the tree decreases and the number of expensive node accesses is reduced. In addition, rebalancing of the tree occurs less often. The maximum number of child nodes depends on the information that must be stored for each child node and the size of a full disk block or an analogous size in secondary storage. While 2–3 B-trees are easier to explain, practical B-trees using secondary storage need a large number of child nodes to improve performance.
+</p>
+<h3><span class="mw-headline" id="Variants">Variants</span><span class="mw-editsection"></span></h3>
+<p>The term <b>B-tree</b> may refer to a specific design or it may refer to a general class of designs. In the narrow sense, a B-tree stores keys in its internal nodes but need not store those keys in the records at the leaves. The general class includes variations such as the B+ tree, the B<sup>*</sup> tree and the B<sup>*+</sup> tree.
+</p>
+<ul><li>In the B+ tree, copies of the keys are stored in the internal nodes; the keys and records are stored in leaves; in addition, a leaf node may include a pointer to the next leaf node to speed sequential access.<sup class="reference" id="cite_ref-FOOTNOTEComer1979_2-2">[2]</sup></li>
+<li>The B<sup>*</sup> tree balances more neighboring internal nodes to keep the internal nodes more densely packed.<sup class="reference" id="cite_ref-FOOTNOTEComer1979_2-3">[2]</sup> This variant ensures non-root nodes are at least 2/3 full instead of 1/2.<sup class="reference" id="cite_ref-FOOTNOTEKnuth1998488_13-0">[13]</sup> As the most costly part of operation of inserting the node in B-tree is splitting the node, B<sup>*</sup>-trees are created to postpone splitting operation as long as they can.<sup class="reference" id="cite_ref-Milo_14-0">[14]</sup> To maintain this, instead of immediately splitting up a node when it gets full, its keys are shared with a node next to it. This spill operation is less costly to do than split, because it requires only shifting the keys between existing nodes, not allocating memory for a new one.<sup class="reference" id="cite_ref-Milo_14-1">[14]</sup> For inserting, first it is checked whether the node has some free space in it, and if so, the new key is just inserted in the node. However, if the node is full (it has <span class="texhtml"><i>m</i> − 1 </span> keys, where <span class="texhtml mvar" style="font-style:italic;"> m</span> is the order of the tree as maximum number of pointers to subtrees from one node), it needs to be checked whether the right sibling exists and has some free space. If the right sibling has <span class="texhtml"><i>j</i> &lt; <i>m</i> − 1 </span> keys, then keys are redistributed between the two sibling nodes as evenly as possible. For this purpose, <span class="texhtml mvar" style="font-style:italic;"><i>m</i> - 1 </span> keys from the current node, the new key inserted, one key from the parent node and <span class="texhtml mvar" style="font-style:italic;">j</span> keys from the sibling node are seen as an ordered array of <span class="texhtml"><i>m</i> + <i>j</i> + 1</span> keys. The array becomes split by half, so that <span class="texhtml"><span style="font-size:1em">⌊</span>(<i>m</i> + <i>j</i> + 1)/2<span style="font-size:1em">⌋</span></span> lowest keys stay in the current node, the next (middle) key is inserted in the parent and the rest go to the right sibling.<sup class="reference" id="cite_ref-Milo_14-2">[14]</sup> (The newly inserted key might end up in any of the three places.) The situation when right sibling is full, and left isn't is analogous.<sup class="reference" id="cite_ref-Milo_14-3">[14]</sup> When both the sibling nodes are full, then the two nodes (current node and a sibling) are split into three and one more key is shifted up the tree, to the parent node.<sup class="reference" id="cite_ref-Milo_14-4">[14]</sup> If the parent is full, then spill/split operation propagates towards the root node.<sup class="reference" id="cite_ref-Milo_14-5">[14]</sup> Deleting nodes is somewhat more complex than inserting however.</li>
+<li>The B<sup>*+</sup> tree combines the main B+ tree and B<sup>*</sup> tree features together.<sup class="reference" id="cite_ref-15">[15]</sup></li>
+<li>B-trees can be turned into order statistic trees to allow rapid searches for the Nth record in key order, or counting the number of records between any two records, and various other related operations.<sup class="reference" id="cite_ref-16">[16]</sup></li></ul>
+<h2><span class="mw-headline" id="B-tree_usage_in_databases">B-tree usage in databases</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-Tone plainlinks metadata ambox ambox-style ambox-Tone" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<h3><span class="mw-headline" id="Time_to_search_a_sorted_file">Time to search a sorted file</span><span class="mw-editsection"></span></h3>
+<p>Usually, sorting and searching algorithms have been characterized by the number of comparison operations that must be performed using order notation. A binary search of a sorted table with <span class="texhtml mvar" style="font-style:italic;">N</span> records, for example, can be done in roughly <span class="texhtml">⌈ log<sub>2</sub> <i>N</i> ⌉</span> comparisons. If the table had 1,000,000 records, then a specific record could be located with at most 20 comparisons: <span class="texhtml">⌈ log<sub>2</sub> (1,000,000) ⌉ = 20</span>.
+</p><p>Large databases have historically been kept on disk drives. The time to read a record on a disk drive far exceeds the time needed to compare keys once the record is available. The time to read a record from a disk drive involves a seek time and a rotational delay. The seek time may be 0 to 20 or more milliseconds, and the rotational delay averages about half the rotation period. For a 7200 RPM drive, the rotation period is 8.33 milliseconds. For a drive such as the Seagate ST3500320NS, the track-to-track seek time is 0.8 milliseconds and the average reading seek time is 8.5 milliseconds.<sup class="reference" id="cite_ref-17">[17]</sup> For simplicity, assume reading from disk takes about 10 milliseconds.
+</p><p>Naively, then, the time to locate one record out of a million would take 20 disk reads times 10 milliseconds per disk read, which is 0.2 seconds.
+</p><p>The time won't be that bad because individual records are grouped together in a disk <b>block</b>. A disk block might be 16 kilobytes. If each record is 160 bytes, then 100 records could be stored in each block. The disk read time above was actually for an entire block. Once the disk head is in position, one or more disk blocks can be read with little delay. With 100 records per block, the last 6 or so comparisons don't need to do any disk reads—the comparisons are all within the last disk block read.
+</p><p>To speed the search further, the first 13 to 14 comparisons (which each required a disk access) must be sped up.
+</p>
+<h3><span class="mw-headline" id="An_index_speeds_the_search">An index speeds the search</span><span class="mw-editsection"></span></h3>
+<p>A B-tree index creates a multi-level tree structure that breaks a database down into fixed-size blocks or pages. Each level of this tree can be used to link those pages via an address location, allowing one page (known as a node, or internal page) to refer to another with leaf pages at the lowest level. One page is typically the starting point of the tree, or the "root". This is where the search for a particular key would begin, traversing a path that terminates in a leaf. Most pages in this structure will be leaf pages which ultimately refer to specific table rows. 
+</p><p>A significant improvement in performance can be made with a B-tree index. Because each node (or internal page) can have more than two children, a B-tree index will usually have a shorter height (the distance from the root to the farthest leaf) than a Binary Search Tree. In the example above, initial disk reads narrowed the search range by a factor of two. That can be improved substantially by creating an auxiliary index that contains the first record in each disk block (sometimes called a sparse index). This auxiliary index would be 1% of the size of the original database, but it can be searched more quickly. Finding an entry in the auxiliary index would tell us which block to search in the main database; after searching the auxiliary index, we would have to search only that one block of the main database—at a cost of one more disk read. The index would hold 10,000 entries, so it would take at most 14 comparisons. Like the main database, the last six or so comparisons in the auxiliary index would be on the same disk block. The index could be searched in about eight disk reads, and the desired record could be accessed in 9 disk reads.
+</p><p>The trick of creating an auxiliary index can be repeated to make an auxiliary index to the auxiliary index. That would make an aux-aux index that would need only 100 entries and would fit in one disk block.
+</p><p>Instead of reading 14 disk blocks to find the desired record, we only need to read 3 blocks. This blocking is the core idea behind the creation of the B-tree, where the disk blocks fill-out a hierarchy of levels to make up the index. Reading and searching the first (and only) block of the aux-aux index which is the root of the tree identifies the relevant block in aux-index in the level below. Reading and searching that aux-index block identifies the relevant block to read, until the final level, known as the leaf level, identifies a record in the main database. Instead of 150 milliseconds, we need only 30 milliseconds to get the record.
+</p><p>The auxiliary indices have turned the search problem from a binary search requiring roughly <span class="texhtml">log<sub>2</sub> <i>N</i></span> disk reads to one requiring only <span class="texhtml">log<sub><i>b</i></sub> <i>N</i></span> disk reads where <span class="texhtml mvar" style="font-style:italic;">b</span> is the blocking factor (the number of entries per block: <span class="texhtml"><i>b</i> = 100</span> entries per block in our example; <span class="texhtml">log<sub>100</sub> 1,000,000 = 3</span> reads).
+</p><p>In practice, if the main database is being frequently searched, the aux-aux index and much of the aux index may reside in a disk cache, so they would not incur a disk read. The B-tree remains the standard index implementation in almost all relational databases, and many nonrelational databases use them too.<sup class="reference" id="cite_ref-kleppmann_2017_18-0">[18]</sup>
+</p>
+<h3><span class="mw-headline" id="Insertions_and_deletions">Insertions and deletions</span><span class="mw-editsection"></span></h3>
+<p>If the database does not change, then compiling the index is simple to do, and the index need never be changed. If there are changes, then managing the database and its index becomes more complicated.
+</p><p>Deleting records from a database is relatively easy. The index can stay the same, and the record can just be marked as deleted. The database remains in sorted order. If there are a large number of lazy deletions, then searching and storage become less efficient.<sup class="reference" id="cite_ref-19">[19]</sup>
+</p><p>Insertions can be very slow in a sorted sequential file because room for the inserted record must be made. Inserting a record before the first record requires shifting all of the records down one. Such an operation is just too expensive to be practical. One solution is to leave some spaces. Instead of densely packing all the records in a block, the block can have some free space to allow for subsequent insertions. Those spaces would be marked as if they were "deleted" records.
+</p><p>Both insertions and deletions are fast as long as space is available on a block. If an insertion won't fit on the block, then some free space on some nearby block must be found and the auxiliary indices adjusted. The hope is that enough space is available nearby, such that a lot of blocks do not need to be reorganized. Alternatively, some out-of-sequence disk blocks may be used.<sup class="reference" id="cite_ref-kleppmann_2017_18-1">[18]</sup>
+</p>
+<h3><span class="mw-headline" id="Advantages_of_B-tree_usage_for_databases">Advantages of B-tree usage for databases</span><span class="mw-editsection"></span></h3>
+<p>The B-tree uses all of the ideas described above. In particular, a B-tree:
+</p>
+<ul><li>keeps keys in sorted order for sequential traversing</li>
+<li>uses a hierarchical index to minimize the number of disk reads</li>
+<li>uses partially full blocks to speed up insertions and deletions</li>
+<li>keeps the index balanced with a recursive algorithm</li></ul>
+<p>In addition, a B-tree minimizes waste by making sure the interior nodes are at least half full. A B-tree can handle an arbitrary number of insertions and deletions.<sup class="reference" id="cite_ref-kleppmann_2017_18-2">[18]</sup>
+</p>
+<h2><span class="mw-headline" id="Best_case_and_worst_case_heights">Best case and worst case heights</span><span class="mw-editsection"></span></h2>
+<p>Let <span class="nowrap"><i>h</i> ≥ –1</span> be the height of the classic B-tree (see Tree (data structure) § Terminology for the tree height definition). Let <span class="nowrap"><i>n</i> ≥ 0</span> be the number of entries in the tree. Let <i>m</i> be the maximum number of children a node can have. Each node can have at most <span class="nowrap"><i>m</i>−1</span> keys.
+</p><p>It can be shown (by induction for example) that a B-tree of height <i>h</i> with all its nodes completely filled has <span class="nowrap"><i>n</i> = <i>m</i><sup><i>h</i>+1</sup>–1</span> entries. Hence, the best case height (i.e. the minimum height) of a B-tree is:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{\mathrm {min} }=\lceil \log _{m}(n+1)\rceil -1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">m</mi>
+<mi mathvariant="normal">i</mi>
+<mi mathvariant="normal">n</mi>
+</mrow>
+</mrow>
+</msub>
+<mo>=</mo>
+<mo fence="false" stretchy="false">⌈<!-- ⌈ --></mo>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>m</mi>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>+</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo fence="false" stretchy="false">⌉<!-- ⌉ --></mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{\mathrm {min} }=\lceil \log _{m}(n+1)\rceil -1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h_{\mathrm {min} }=\lceil \log _{m}(n+1)\rceil -1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/51f6c5fef28784ce50bfed9817aa26c6d6b95a81" style="vertical-align: -0.838ex; width:25.331ex; height:2.843ex;"/></span></dd></dl>
+<p>Let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d}</annotation>
+</semantics>
+</math></span><img alt="d" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e85ff03cbe0c7341af6b982e47e9f90d235c66ab" style="vertical-align: -0.338ex; width:1.216ex; height:2.176ex;"/></span> be the minimum number of children an internal (non-root) node must have. For an ordinary B-tree, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d=\left\lceil m/2\right\rceil .}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+<mo>=</mo>
+<mrow>
+<mo>⌈</mo>
+<mrow>
+<mi>m</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>2</mn>
+</mrow>
+<mo>⌉</mo>
+</mrow>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d=\left\lceil m/2\right\rceil .}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle d=\left\lceil m/2\right\rceil .}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6e5b8e6ed38798e4293201ecab0d846b3f93e6ee" style="vertical-align: -0.838ex; width:11.778ex; height:2.843ex;"/></span>
+</p><p>Comer (1979) and Cormen et al. (2001) give the worst case height (the maximum height) of a B-tree as<sup class="reference" id="cite_ref-20">[20]</sup>
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{\mathrm {max} }=\left\lfloor \log _{d}{\frac {n+1}{2}}\right\rfloor .}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">m</mi>
+<mi mathvariant="normal">a</mi>
+<mi mathvariant="normal">x</mi>
+</mrow>
+</mrow>
+</msub>
+<mo>=</mo>
+<mrow>
+<mo>⌊</mo>
+<mrow>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mi>n</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+<mn>2</mn>
+</mfrac>
+</mrow>
+</mrow>
+<mo>⌋</mo>
+</mrow>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{\mathrm {max} }=\left\lfloor \log _{d}{\frac {n+1}{2}}\right\rfloor .}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h_{\mathrm {max} }=\left\lfloor \log _{d}{\frac {n+1}{2}}\right\rfloor .}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/75b85818571b143cfecc08e70ccabeed6fee337e" style="vertical-align: -2.505ex; width:22.157ex; height:6.176ex;"/></span></dd></dl>
+<h2><span class="mw-headline" id="Algorithms">Algorithms</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1097763485" rel="mw-deduplicated-inline-style"/><table class="box-Confusing plainlinks metadata ambox ambox-style ambox-confusing" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<h3><span class="mw-headline" id="Search">Search</span><span class="mw-editsection"></span></h3>
+<p>Searching is similar to searching a binary search tree. Starting at the root, the tree is recursively traversed from top to bottom. At each level, the search reduces its field of view to the child pointer (subtree) whose range includes the search value. A subtree's range is defined by the values, or keys, contained in its parent node. These limiting values are also known as separation values.
+</p><p>Binary search is typically (but not necessarily) used within nodes to find the separation values and child tree of interest.
+</p>
+<h3><span class="mw-headline" id="Insertion">Insertion</span><span class="mw-editsection"></span></h3>
+
+<p>All insertions start at a leaf node. To insert a new element, search the tree to find the leaf node where the new element should be added. Insert the new element into that node with the following steps:
+</p>
+<ol><li>If the node contains fewer than the maximum allowed number of elements, then there is room for the new element. Insert the new element in the node, keeping the node's elements ordered.</li>
+<li>Otherwise the node is full, evenly split it into two nodes so:
+<ol><li>A single median is chosen from among the leaf's elements and the new element that is being inserted.</li>
+<li>Values less than the median are put in the new left node and values greater than the median are put in the new right node, with the median acting as a separation value.</li>
+<li>The separation value is inserted in the node's parent, which may cause it to be split, and so on. If the node has no parent (i.e., the node was the root), create a new root above this node (increasing the height of the tree).</li></ol></li></ol>
+<p>If the splitting goes all the way up to the root, it creates a new root with a single separator value and two children, which is why the lower bound on the size of internal nodes does not apply to the root. The maximum number of elements per node is <i>U</i>−1. When a node is split, one element moves to the parent, but one element is added. So, it must be possible to divide the maximum number <i>U</i>−1 of elements into two legal nodes. If this number is odd, then <i>U</i>=2<i>L</i> and one of the new nodes contains (<i>U</i>−2)/2 = <i>L</i>−1 elements, and hence is a legal node, and the other contains one more element, and hence it is legal too. If <i>U</i>−1 is even, then <i>U</i>=2<i>L</i>−1, so there are 2<i>L</i>−2 elements in the node. Half of this number is <i>L</i>−1, which is the minimum number of elements allowed per node.
+</p><p>An alternative algorithm supports a single pass down the tree from the root to the node where the insertion will take place, splitting any full nodes encountered on the way preemptively. This prevents the need to recall the parent nodes into memory, which may be expensive if the nodes are on secondary storage. However, to use this algorithm, we must be able to send one element to the parent and split the remaining <i>U</i>−2 elements into two legal nodes, without adding a new element. This requires <i>U</i> = 2<i>L</i> rather than <i>U</i> = 2<i>L</i>−1, which accounts for why some<sup class="noprint Inline-Template" style="white-space:nowrap;">[<i><span title="The material near this tag possibly uses too vague attribution or weasel words. (September 2019)">which?</span></i>]</sup> textbooks impose this requirement in defining B-trees.
+</p>
+<h3><span class="mw-headline" id="Deletion">Deletion</span><span class="mw-editsection"></span></h3>
+<p>There are two popular strategies for deletion from a B-tree.
+</p>
+<ol><li>Locate and delete the item, then restructure the tree to retain its invariants, <b>OR</b></li>
+<li>Do a single pass down the tree, but before entering (visiting) a node, restructure the tree so that once the key to be deleted is encountered, it can be deleted without triggering the need for any further restructuring</li></ol>
+<p>The algorithm below uses the former strategy.
+</p><p>There are two special cases to consider when deleting an element:
+</p>
+<ol><li>The element in an internal node is a separator for its child nodes</li>
+<li>Deleting an element may put its node under the minimum number of elements and children</li></ol>
+<p>The procedures for these cases are in order below.
+</p>
+<h4><span class="mw-headline" id="Deletion_from_a_leaf_node">Deletion from a leaf node</span><span class="mw-editsection"></span></h4>
+<ol><li>Search for the value to delete.</li>
+<li>If the value is in a leaf node, simply delete it from the node.</li>
+<li>If underflow happens, rebalance the tree as described in section "Rebalancing after deletion" below.</li></ol>
+<h4><span class="mw-headline" id="Deletion_from_an_internal_node">Deletion from an internal node</span><span class="mw-editsection"></span></h4>
+<p>Each element in an internal node acts as a separation value for two subtrees, therefore we need to find a replacement for separation. Note that the largest element in the left subtree is still less than the separator. Likewise, the smallest element in the right subtree is still greater than the separator. Both of those elements are in leaf nodes, and either one can be the new separator for the two subtrees. Algorithmically described below:
+</p>
+<ol><li>Choose a new separator (either the largest element in the left subtree or the smallest element in the right subtree), remove it from the leaf node it is in, and replace the element to be deleted with the new separator.</li>
+<li>The previous step deleted an element (the new separator) from a leaf node. If that leaf node is now deficient (has fewer than the required number of nodes), then rebalance the tree starting from the leaf node.</li></ol>
+<h4><span class="mw-headline" id="Rebalancing_after_deletion">Rebalancing after deletion</span><span class="mw-editsection"></span></h4>
+<p>Rebalancing starts from a leaf and proceeds toward the root until the tree is balanced. If deleting an element from a node has brought it under the minimum size, then some elements must be redistributed to bring all nodes up to the minimum. Usually, the redistribution involves moving an element from a sibling node that has more than the minimum number of nodes. That redistribution operation is called a <b>rotation</b>. If no sibling can spare an element, then the deficient node must be <b>merged</b> with a sibling. The merge causes the parent to lose a separator element, so the parent may become deficient and need rebalancing. The merging and rebalancing may continue all the way to the root. Since the minimum element count doesn't apply to the root, making the root be the only deficient node is not a problem. The algorithm to rebalance the tree is as follows:
+</p>
+<ul><li>If the deficient node's right sibling exists and has more than the minimum number of elements, then rotate left
+<ol><li>Copy the separator from the parent to the end of the deficient node (the separator moves down; the deficient node now has the minimum number of elements)</li>
+<li>Replace the separator in the parent with the first element of the right sibling (right sibling loses one node but still has at least the minimum number of elements)</li>
+<li>The tree is now balanced</li></ol></li>
+<li>Otherwise, if the deficient node's left sibling exists and has more than the minimum number of elements, then rotate right
+<ol><li>Copy the separator from the parent to the start of the deficient node (the separator moves down; deficient node now has the minimum number of elements)</li>
+<li>Replace the separator in the parent with the last element of the left sibling (left sibling loses one node but still has at least the minimum number of elements)</li>
+<li>The tree is now balanced</li></ol></li>
+<li>Otherwise, if both immediate siblings have only the minimum number of elements, then merge with a sibling sandwiching their separator taken off from their parent
+<ol><li>Copy the separator to the end of the left node (the left node may be the deficient node or it may be the sibling with the minimum number of elements)</li>
+<li>Move all elements from the right node to the left node (the left node now has the maximum number of elements, and the right node – empty)</li>
+<li>Remove the separator from the parent along with its empty right child (the parent loses an element)
+<ul><li>If the parent is the root and now has no elements, then free it and make the merged node the new root (tree becomes shallower)</li>
+<li>Otherwise, if the parent has fewer than the required number of elements, then rebalance the parent<sup class="reference" id="cite_ref-21">[21]</sup></li></ul></li></ol></li></ul>
+<dl><dd><small><b>Note</b>: The rebalancing operations are different for B+ trees (e.g., rotation is different because parent has copy of the key) and B<sup>*</sup>-tree (e.g., three siblings are merged into two siblings).</small></dd></dl>
+<h3><span class="mw-headline" id="Sequential_access">Sequential access</span><span class="mw-editsection"></span></h3>
+<p>While freshly loaded databases tend to have good sequential behavior, this behavior becomes increasingly difficult to maintain as a database grows, resulting in more random I/O and performance challenges.<sup class="reference" id="cite_ref-22">[22]</sup>
+</p>
+<h3><span class="mw-headline" id="Initial_construction">Initial construction</span><span class="mw-editsection"></span></h3>
+<link href="mw-data:TemplateStyles:r1097763485" rel="mw-deduplicated-inline-style"/><table class="box-Unreferenced_section plainlinks metadata ambox ambox-content ambox-Unreferenced" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<p>A common special case is adding a large amount of <i>pre-sorted</i> data into an initially empty B-tree. While it is quite possible to simply perform a series of successive inserts, inserting sorted data results in a tree composed almost entirely of half-full nodes. Instead, a special "bulk loading" algorithm can be used to produce a more efficient tree with a higher branching factor.
+</p><p>When the input is sorted, all insertions are at the rightmost edge of the tree, and in particular any time a node is split, we are guaranteed that no more insertions will take place in the left half. When bulk loading, we take advantage of this, and instead of splitting overfull nodes evenly, split them as <i>unevenly</i> as possible: leave the left node completely full and create a right node with zero keys and one child (in violation of the usual B-tree rules).
+</p><p>At the end of bulk loading, the tree is composed almost entirely of completely full nodes; only the rightmost node on each level may be less than full. Because those nodes may also be less than <i>half</i> full, to re-establish the normal B-tree rules, combine such nodes with their (guaranteed full) left siblings and divide the keys to produce two nodes at least half full. The only node which lacks a full left sibling is the root, which is permitted to be less than half full.
+</p>
+<h2><span class="mw-headline" id="In_filesystems">In filesystems</span><span class="mw-editsection"></span></h2>
+<p>In addition to its use in databases, the B-tree (or § Variants) is also used in filesystems to allow quick random access to an arbitrary block in a particular file. The basic problem is turning the file block <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span> address into a disk block (or perhaps to a cylinder-head-sector) address.
+</p><p>Some operating systems require the user to allocate the maximum size of the file when the file is created. The file can then be allocated as contiguous disk blocks. In that case, to convert the file block address <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span> into a disk block address, the operating system simply adds the file block address <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span> to the address of the first disk block constituting the file. The scheme is simple, but the file cannot exceed its created size.
+</p><p>Other operating systems allow a file to grow. The resulting disk blocks may not be contiguous, so mapping logical blocks to physical blocks is more involved.
+</p><p>MS-DOS, for example, used a simple File Allocation Table (FAT). The FAT has an entry for each disk block,<sup class="reference" id="cite_ref-23">[note 1]</sup> and that entry identifies whether its block is used by a file and if so, which block (if any) is the next disk block of the same file. So, the allocation of each file is represented as a linked list in the table. In order to find the disk address of file block <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span>, the operating system (or disk utility) must sequentially follow the file's linked list in the FAT. Worse, to find a free disk block, it must sequentially scan the FAT. For MS-DOS, that was not a huge penalty because the disks and files were small and the FAT had few entries and relatively short file chains. In the FAT12 filesystem (used on floppy disks and early hard disks), there were no more than 4,080 <sup class="reference" id="cite_ref-24">[note 2]</sup> entries, and the FAT would usually be resident in memory. As disks got bigger, the FAT architecture began to confront penalties. On a large disk using FAT, it may be necessary to perform disk reads to learn the disk location of a file block to be read or written.
+</p><p>TOPS-20 (and possibly TENEX) used a 0 to 2 level tree that has similarities to a B-tree<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (October 2009)">citation needed</span></i>]</sup>. A disk block was 512 36-bit words. If the file fit in a 512 (2<sup>9</sup>) word block, then the file directory would point to that physical disk block. If the file fit in 2<sup>18</sup> words, then the directory would point to an aux index; the 512 words of that index would either be NULL (the block isn't allocated) or point to the physical address of the block. If the file fit in 2<sup>27</sup> words, then the directory would point to a block holding an aux-aux index; each entry would either be NULL or point to an aux index. Consequently, the physical disk block for a 2<sup>27</sup> word file could be located in two disk reads and read on the third.
+</p><p>Apple's filesystem HFS+ and APFS, Microsoft's NTFS,<sup class="reference" id="cite_ref-insidewin2kntfs_25-0">[23]</sup> AIX (jfs2) and some Linux filesystems, such as btrfs and Ext4, use B-trees.
+</p><p>B<sup>*</sup>-trees are used in the HFS and Reiser4 file systems.
+</p><p>DragonFly BSD's HAMMER file system uses a modified B+-tree.<sup class="reference" id="cite_ref-26">[24]</sup>
+</p>
+<h2><span class="mw-headline" id="Performance">Performance</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1097763485" rel="mw-deduplicated-inline-style"/><table class="box-Unreferenced_section plainlinks metadata ambox ambox-content ambox-Unreferenced" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<p>A B-tree grows slower with growing data amount, than the linearity of a linked list. Compared to a skip list, both structures have the same performance, but the B-tree scales better for growing <i>n</i>. A T-tree, for main memory database systems, is similar but more compact.
+</p>
+<h2><span class="mw-headline" id="Variations">Variations</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Access_concurrency">Access concurrency</span><span class="mw-editsection"></span></h3>
+<p>Lehman and Yao<sup class="reference" id="cite_ref-27">[25]</sup> showed that all the read locks could be avoided (and thus concurrent access greatly improved) by linking the tree blocks at each level together with a "next" pointer. This results in a tree structure where both insertion and search operations descend from the root to the leaf. Write locks are only required as a tree block is modified. This maximizes access concurrency by multiple users, an important consideration for databases and/or other B-tree-based ISAM storage methods. The cost associated with this improvement is that empty pages cannot be removed from the btree during normal operations. (However, see <sup class="reference" id="cite_ref-28">[26]</sup> for various strategies to implement node merging, and source code at.<sup class="reference" id="cite_ref-29">[27]</sup>)
+</p><p>United States Patent 5283894, granted in 1994, appears to show a way to use a 'Meta Access Method' <sup class="reference" id="cite_ref-30">[28]</sup> to allow concurrent B+ tree access and modification without locks. The technique accesses the tree 'upwards' for both searches and updates by means of additional in-memory indexes that point at the blocks in each level in the block cache. No reorganization for deletes is needed and there are no 'next' pointers in each block as in Lehman and Yao.
+</p>
+<h3><span class="mw-headline" id="Parallel_algorithms">Parallel algorithms</span><span class="mw-editsection"></span></h3>
+<p>Since B-trees are similar in structure to red-black trees, parallel algorithms for red-black trees can be applied to B-trees as well.
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>B+ tree</li>
+<li>R-tree</li>
+<li>Red–black tree</li>
+<li>2–3 tree</li>
+<li>2–3–4 tree</li></ul>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1011085734" rel="mw-deduplicated-inline-style"/>
+<dl><dt>General</dt></dl>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFBayerMcCreight1972">Bayer, R.; McCreight, E. (1972), "Organization and Maintenance of Large Ordered Indexes" <span class="cs1-format">(PDF)</span>, <i>Acta Informatica</i>, <b>1</b> (3): 173–189, doi:10.1007/bf00288683, S2CID 29859053</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Acta+Informatica&amp;rft.atitle=Organization+and+Maintenance+of+Large+Ordered+Indexes&amp;rft.volume=1&amp;rft.issue=3&amp;rft.pages=173-189&amp;rft.date=1972&amp;rft_id=info%3Adoi%2F10.1007%2Fbf00288683&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A29859053%23id-name%3DS2CID&amp;rft.aulast=Bayer&amp;rft.aufirst=R.&amp;rft.au=McCreight%2C+E.&amp;rft_id=https%3A%2F%2Finfolab.usc.edu%2Fcsci585%2FSpring2010%2Fden_ar%2Findexing.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AB-tree"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFComer1979">Comer, Douglas (June 1979), "The Ubiquitous B-Tree", <i>Computing Surveys</i>, <b>11</b> (2): 123–137, doi:10.1145/356770.356776, ISSN 0360-0300, S2CID 101673</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Computing+Surveys&amp;rft.atitle=The+Ubiquitous+B-Tree&amp;rft.volume=11&amp;rft.issue=2&amp;rft.pages=123-137&amp;rft.date=1979-06&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A101673%23id-name%3DS2CID&amp;rft.issn=0360-0300&amp;rft_id=info%3Adoi%2F10.1145%2F356770.356776&amp;rft.aulast=Comer&amp;rft.aufirst=Douglas&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AB-tree"></span>.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFCormenLeisersonRivestStein2001">Cormen, Thomas; Leiserson, Charles; Rivest, Ronald; Stein, Clifford (2001), <i>Introduction to Algorithms</i> (Second ed.), MIT Press and McGraw-Hill, pp. 434–454, ISBN <bdi>0-262-03293-7</bdi></cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Introduction+to+Algorithms&amp;rft.pages=434-454&amp;rft.edition=Second&amp;rft.pub=MIT+Press+and+McGraw-Hill&amp;rft.date=2001&amp;rft.isbn=0-262-03293-7&amp;rft.aulast=Cormen&amp;rft.aufirst=Thomas&amp;rft.au=Leiserson%2C+Charles&amp;rft.au=Rivest%2C+Ronald&amp;rft.au=Stein%2C+Clifford&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AB-tree"></span>. Chapter 18: B-Trees.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFFolkZoellick1992">Folk, Michael J.; Zoellick, Bill (1992), <span class="cs1-lock-registration" title="Free registration required"><i>File Structures</i></span> (2nd ed.), Addison-Wesley, ISBN <bdi>0-201-55713-4</bdi></cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=File+Structures&amp;rft.edition=2nd&amp;rft.pub=Addison-Wesley&amp;rft.date=1992&amp;rft.isbn=0-201-55713-4&amp;rft.aulast=Folk&amp;rft.aufirst=Michael+J.&amp;rft.au=Zoellick%2C+Bill&amp;rft_id=https%3A%2F%2Farchive.org%2Fdetails%2Ffilestructures00folk&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AB-tree"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFKnuth1998">Knuth, Donald (1998), <i>Sorting and Searching</i>, The Art of Computer Programming, vol. 3 (Second ed.), Addison-Wesley, ISBN <bdi>0-201-89685-0</bdi></cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Sorting+and+Searching&amp;rft.series=The+Art+of+Computer+Programming&amp;rft.edition=Second&amp;rft.pub=Addison-Wesley&amp;rft.date=1998&amp;rft.isbn=0-201-89685-0&amp;rft.aulast=Knuth&amp;rft.aufirst=Donald&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AB-tree"></span>. Section 6.2.4: Multiway Trees, pp. 481–491. Also, pp. 476–477 of section 6.2.3 (Balanced Trees) discusses 2–3 trees.</li></ul>
+<h3><span class="mw-headline" id="Original_papers">Original papers</span><span class="mw-editsection"></span></h3>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2 cs1-prop-long-vol" id="CITEREFBayerMcCreight1970">Bayer, Rudolf; McCreight, E. (July 1970), <i>Organization and Maintenance of Large Ordered Indices</i>, vol. Mathematical and Information Sciences Report No. 20, Boeing Scientific Research Laboratories</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Organization+and+Maintenance+of+Large+Ordered+Indices&amp;rft.pub=Boeing+Scientific+Research+Laboratories&amp;rft.date=1970-07&amp;rft.aulast=Bayer&amp;rft.aufirst=Rudolf&amp;rft.au=McCreight%2C+E.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AB-tree"></span>.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFBayer1971">Bayer, Rudolf (1971), <i>Binary B-Trees for Virtual Memory</i>, Proceedings of 1971 ACM-SIGFIDET Workshop on Data Description, Access and Control, San Diego, California</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Binary+B-Trees+for+Virtual+Memory&amp;rft.place=San+Diego%2C+California&amp;rft.series=Proceedings+of+1971+ACM-SIGFIDET+Workshop+on+Data+Description%2C+Access+and+Control&amp;rft.date=1971&amp;rft.aulast=Bayer&amp;rft.aufirst=Rudolf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AB-tree"></span>.</li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097025294">.mw-parser-output .side-box{margin:4px 0;box-sizing:border-box;border:1px solid #aaa;font-size:88%;line-height:1.25em;background-color:#f9f9f9}.mw-parser-output .side-box-abovebelow,.mw-parser-output .side-box-text{padding:0.25em 0.9em}.mw-parser-output .side-box-image{padding:2px 0 2px 0.9em;text-align:center}.mw-parser-output .side-box-imageright{padding:2px 0.9em 2px 0;text-align:center}@media(min-width:500px){.mw-parser-output .side-box-flex{display:flex;align-items:center}.mw-parser-output .side-box-text{flex:1}}@media(min-width:720px){.mw-parser-output .side-box{width:238px}.mw-parser-output .side-box-right{clear:right;float:right;margin-left:1em}.mw-parser-output .side-box-left{margin-right:1em}}</style>
+<ul><li>B-tree lecture by David Scot Taylor, SJSU</li>
+<li>B-Tree visualisation (click "init")</li>
+<li>Animated B-Tree visualization</li>
+<li>B-tree and UB-tree on Scholarpedia Curator: Dr Rudolf Bayer</li>
+<li>B-Trees: Balanced Tree Data Structures</li>
+<li>NIST's Dictionary of Algorithms and Data Structures: B-tree</li>
+<li>B-Tree Tutorial</li>
+<li>The InfinityDB BTree implementation</li>
+<li>Cache Oblivious B(+)-trees</li>
+<li>Dictionary of Algorithms and Data Structures entry for B*-tree</li>
+<li>Open Data Structures - Section 14.2 - B-Trees, Pat Morin</li>
+<li>Counted B-Trees</li>
+<li>B-Tree .Net, a modern, virtualized RAM &amp; Disk implementation</li></ul>
+<p><b>Bulk loading</b>
+</p>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation thesis cs1" id="CITEREFShetty2010">Shetty, Soumya B. (2010). <i>A user configurable implementation of B-trees</i> (Thesis). Iowa State University.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Adissertation&amp;rft.title=A+user+configurable+implementation+of+B-trees&amp;rft.inst=Iowa+State+University&amp;rft.date=2010&amp;rft.aulast=Shetty&amp;rft.aufirst=Soumya+B.&amp;rft_id=https%3A%2F%2Flib.dr.iastate.edu%2Fcgi%2Fviewcontent.cgi%3Farticle%3D2336%26context%3Detd&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AB-tree"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation web cs1" id="CITEREFKaldırım2015">Kaldırım, Semih (28 April 2015). "File Organization, ISAM, B+ Tree and Bulk Loading" <span class="cs1-format">(PDF)</span>. Ankara, Turkey: Bilkent University. pp. 4–6. Archived <span class="cs1-format">(PDF)</span> from the original on 2022-10-09.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=File+Organization%2C+ISAM%2C+B%2B+Tree+and+Bulk+Loading&amp;rft.place=Ankara%2C+Turkey&amp;rft.pages=4-6&amp;rft.pub=Bilkent+University&amp;rft.date=2015-04-28&amp;rft.aulast=Kald%C4%B1r%C4%B1m&amp;rft.aufirst=Semih&amp;rft_id=http%3A%2F%2Fwww.cs.bilkent.edu.tr%2F~canf%2FCS281Spring15LectureNotesFeb13%2FWeek13.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AB-tree"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation web cs1">"ECS 165B: Database System Implementation: Lecture 6" <span class="cs1-format">(PDF)</span>. University of California, Davis. 9 April 2010. p. 23. Archived <span class="cs1-format">(PDF)</span> from the original on 2022-10-09.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=ECS+165B%3A+Database+System+Implementation%3A+Lecture+6&amp;rft.pages=23&amp;rft.pub=University+of+California%2C+Davis&amp;rft.date=2010-04-09&amp;rft_id=http%3A%2F%2Fweb.cs.ucdavis.edu%2F~green%2Fcourses%2Fecs165b-s10%2FLecture6.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AB-tree"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation web cs1">"BULK INSERT (Transact-SQL) in SQL Server 2017". Microsoft Docs. 6 September 2018.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=BULK+INSERT+%28Transact-SQL%29+in+SQL+Server+2017&amp;rft.pub=Microsoft+Docs&amp;rft.date=2018-09-06&amp;rft_id=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Fsql%2Ft-sql%2Fstatements%2Fbulk-insert-transact-sql%3Fview%3Dsql-server-2017&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AB-tree"></span></li></ul>
+
+
+<!-- 
+NewPP limit report
+Parsed by mw2413
+Cached time: 20221223230545
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.573 seconds
+Real time usage: 0.804 seconds
+Preprocessor visited node count: 5648/1000000
+Post‐expand include size: 113679/2097152 bytes
+Template argument size: 5659/2097152 bytes
+Highest expansion depth: 13/100
+Expensive parser function count: 8/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 89958/5000000 bytes
+Lua time usage: 0.310/10.000 seconds
+Lua memory usage: 9782571/52428800 bytes
+Number of Wikibase entities loaded: 1/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  610.743      1 -total
+ 24.41%  149.094      2 Template:Reflist
+ 11.66%   71.199      2 Template:Cite_book
+ 10.71%   65.425     15 Template:Sfn
+  8.26%   50.468      1 Template:Short_description
+  7.09%   43.288      1 Template:Commons_category
+  6.81%   41.610      4 Template:Ambox
+  6.77%   41.344      1 Template:CS-Trees
+  6.72%   41.047      1 Template:Sister_project
+  6.57%   40.118      2 Template:Navbox
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:4674-0!canonical and timestamp 20221223230544 and revision id 1123980396.
+ -->
+</div></body>
+</html>

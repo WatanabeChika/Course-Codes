@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>concurrent_read,_exclusive_write</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-More_footnotes plainlinks metadata ambox ambox-style ambox-More_footnotes" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<p>In computer science, a <b>parallel random-access machine</b> (<b>parallel RAM</b> or <b>PRAM</b>) is a shared-memory abstract machine. As its name indicates, the PRAM is intended as the parallel-computing analogy to the random-access machine (RAM) (not to be confused with random-access memory). In the same way that the RAM is used by sequential-algorithm designers to model algorithmic performance (such as time complexity), the PRAM is used by parallel-algorithm designers to model parallel algorithmic performance (such as time complexity, where the number of processors assumed is typically also stated). Similar to the way in which the RAM model neglects practical issues, such as access time to cache memory versus main memory, the PRAM model neglects such issues as synchronization and communication, but provides any (problem-size-dependent) number of processors. Algorithm cost, for instance, is estimated using two parameters O(time) and O(time × processor_number).
+</p>
+
+<h2><span id="Read.2Fwrite_conflicts"></span><span class="mw-headline" id="Read/write_conflicts">Read/write conflicts</span><span class="mw-editsection"></span></h2>
+<p>Read/write conflicts, commonly termed interlocking in accessing the same shared memory location simultaneously are resolved by one of the following strategies:
+</p>
+<ol><li>Exclusive read exclusive write (EREW)—every memory cell can be read or written to by only one processor at a time</li>
+<li>Concurrent read exclusive write (CREW)—multiple processors can read a memory cell but only one can write at a time</li>
+<li>Exclusive read concurrent write (ERCW)—never considered</li>
+<li>Concurrent read concurrent write (CRCW)—multiple processors can read and write. A CRCW PRAM is sometimes called a <b>concurrent random-access machine</b>.<sup class="reference" id="cite_ref-1">[1]</sup></li></ol>
+<p>Here, E and C stand for 'exclusive' and 'concurrent' respectively. The read causes no discrepancies while the concurrent write is further defined as:
+</p>
+<dl><dd><dl><dd><i>Common</i>—all processors write the same value; otherwise is illegal</dd>
+<dd><i>Arbitrary</i>—only one arbitrary attempt is successful, others retire</dd>
+<dd><i>Priority</i>—processor rank indicates who gets to write</dd>
+<dd>Another kind of <i>array reduction</i> operation like SUM, Logical AND or MAX.</dd></dl></dd></dl>
+<p>Several simplifying assumptions are made while considering the development of algorithms for PRAM. They are:
+</p>
+<ol><li>There is no limit on the number of processors in the machine.</li>
+<li>Any memory location is uniformly accessible from any processor.</li>
+<li>There is no limit on the amount of shared memory in the system.</li>
+<li>Resource contention is absent.</li>
+<li>The programs written on these machines are, in general, of type SIMD.</li></ol>
+<p>These kinds of algorithms are useful for understanding the exploitation of concurrency, dividing the original problem into similar sub-problems and solving them in parallel. The introduction of the formal 'P-RAM' model in Wyllie's 1979 thesis<sup class="reference" id="cite_ref-2">[2]</sup> had the aim of quantifying analysis of parallel algorithms in a way analogous to the Turing Machine. The analysis focused on a MIMD model of programming using a CREW model but showed that many variants, including implementing a CRCW model and implementing on an SIMD machine, were possible with only constant overhead.
+</p>
+<h2><span class="mw-headline" id="Implementation">Implementation</span><span class="mw-editsection"></span></h2>
+<p>PRAM algorithms cannot be parallelized with the combination of CPU and dynamic random-access memory (DRAM) because DRAM does not allow concurrent access to a single bank (not even different addresses in the bank); but they can be implemented in hardware or read/write to the internal static random-access memory (SRAM) blocks of a field-programmable gate array (FPGA), it can be done using a CRCW algorithm.
+</p><p>However, the test for practical relevance of PRAM (or RAM) algorithms depends on whether their cost model provides an effective abstraction of some computer; the structure of that computer can be quite different than the abstract model. The knowledge of the layers of software and hardware that need to be inserted is beyond the scope of this article. But, articles such as Vishkin (2011) demonstrate how a PRAM-like abstraction can be supported by the explicit multi-threading (XMT) paradigm and articles such as Caragea &amp; Vishkin (2011) demonstrate that a PRAM algorithm for the maximum flow problem can provide strong speedups relative to the fastest serial program for the same problem. The article Ghanim, Vishkin &amp; Barua (2018) demonstrated that PRAM algorithms as-is can achieve competitive performance even without any additional effort to cast them as multi-threaded programs on XMT.
+</p>
+<h2><span class="mw-headline" id="Example_code">Example code</span><span class="mw-editsection"></span></h2>
+<p>This is an example of SystemVerilog code which finds the maximum value in the array in only 2 clock cycles. It compares all the combinations of the elements in the array at the first clock, and merges the result at the second clock. It uses CRCW memory; <code>m[i] &lt;= 1</code> and <code>maxNo &lt;= data[i]</code> are written concurrently. The concurrency causes no conflicts because the algorithm guarantees that the same value is written to the same memory. This code can be run on FPGA hardware.
+</p>
+
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Analysis of PRAM algorithms</li>
+<li>Flynn's taxonomy</li>
+<li>Lock-free and wait-free algorithms</li>
+<li>Random-access machine</li>
+<li>Parallel programming model</li>
+<li>XMTC</li>
+<li>Parallel external memory (Model)</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<ul><li><style data-mw-deduplicate="TemplateStyles:r1067248974">.mw-parser-output cite.citation{font-style:inherit;word-wrap:break-word}.mw-parser-output .citation q{quotes:"\"""\"""'""'"}.mw-parser-output .citation:target{background-color:rgba(0,127,255,0.133)}.mw-parser-output .id-lock-free a,.mw-parser-output .citation .cs1-lock-free a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/6/65/Lock-green.svg")right 0.1em center/9px no-repeat}.mw-parser-output .id-lock-limited a,.mw-parser-output .id-lock-registration a,.mw-parser-output .citation .cs1-lock-limited a,.mw-parser-output .citation .cs1-lock-registration a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/d/d6/Lock-gray-alt-2.svg")right 0.1em center/9px no-repeat}.mw-parser-output .id-lock-subscription a,.mw-parser-output .citation .cs1-lock-subscription a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/a/aa/Lock-red-alt-2.svg")right 0.1em center/9px no-repeat}.mw-parser-output .cs1-ws-icon a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/4/4c/Wikisource-logo.svg")right 0.1em center/12px no-repeat}.mw-parser-output .cs1-code{color:inherit;background:inherit;border:none;padding:inherit}.mw-parser-output .cs1-hidden-error{display:none;color:#d33}.mw-parser-output .cs1-visible-error{color:#d33}.mw-parser-output .cs1-maint{display:none;color:#3a3;margin-left:0.3em}.mw-parser-output .cs1-format{font-size:95%}.mw-parser-output .cs1-kern-left{padding-left:0.2em}.mw-parser-output .cs1-kern-right{padding-right:0.2em}.mw-parser-output .citation .mw-selflink{font-weight:inherit}</style><cite class="citation cs2" id="CITEREFEppsteinGalil1988">Eppstein, David; Galil, Zvi (1988), "Parallel algorithmic techniques for combinatorial computation", <i>Annu. Rev. Comput. Sci.</i>, <b>3</b>: 233–283, doi:10.1146/annurev.cs.03.060188.001313</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Annu.+Rev.+Comput.+Sci.&amp;rft.atitle=Parallel+algorithmic+techniques+for+combinatorial+computation&amp;rft.volume=3&amp;rft.pages=233-283&amp;rft.date=1988&amp;rft_id=info%3Adoi%2F10.1146%2Fannurev.cs.03.060188.001313&amp;rft.aulast=Eppstein&amp;rft.aufirst=David&amp;rft.au=Galil%2C+Zvi&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AParallel+RAM"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFJaJa1992">JaJa, Joseph (1992), <i>An Introduction to Parallel Algorithms</i>, Addison-Wesley, ISBN <bdi>0-201-54856-9</bdi></cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=An+Introduction+to+Parallel+Algorithms&amp;rft.pub=Addison-Wesley&amp;rft.date=1992&amp;rft.isbn=0-201-54856-9&amp;rft.aulast=JaJa&amp;rft.aufirst=Joseph&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AParallel+RAM"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFKarpRamachandran1988">Karp, Richard M.; Ramachandran, Vijaya (1988), <i>A Survey of Parallel Algorithms for Shared-Memory Machines</i>, University of California, Berkeley, Department of EECS, Tech. Rep. UCB/CSD-88-408</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=A+Survey+of+Parallel+Algorithms+for+Shared-Memory+Machines&amp;rft.pub=University+of+California%2C+Berkeley%2C+Department+of+EECS&amp;rft.date=1988&amp;rft.aulast=Karp&amp;rft.aufirst=Richard+M.&amp;rft.au=Ramachandran%2C+Vijaya&amp;rft_id=https%3A%2F%2Fdl.acm.org%2Fcitation.cfm%3Fid%3D894803&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AParallel+RAM"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFKellerChristoph_KeßlerJesper_Träff2001">Keller, Jörg; Christoph Keßler; Jesper Träff (2001). <i>Practical PRAM Programming</i>. John Wiley and Sons. ISBN <bdi>0-471-35351-5</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Practical+PRAM+Programming&amp;rft.pub=John+Wiley+and+Sons&amp;rft.date=2001&amp;rft.isbn=0-471-35351-5&amp;rft.aulast=Keller&amp;rft.aufirst=J%C3%B6rg&amp;rft.au=Christoph+Ke%C3%9Fler&amp;rft.au=Jesper+Tr%C3%A4ff&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AParallel+RAM"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFVishkin2009">Vishkin, Uzi (2009), <i>Thinking in Parallel: Some Basic Data-Parallel Algorithms and Techniques, 104 pages</i> <span class="cs1-format">(PDF)</span>, Class notes of courses on parallel algorithms taught since 1992 at the University of Maryland, College Park, Tel Aviv University and the Technion</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Thinking+in+Parallel%3A+Some+Basic+Data-Parallel+Algorithms+and+Techniques%2C+104+pages&amp;rft.pub=Class+notes+of+courses+on+parallel+algorithms+taught+since+1992+at+the+University+of+Maryland%2C+College+Park%2C+Tel+Aviv+University+and+the+Technion&amp;rft.date=2009&amp;rft.aulast=Vishkin&amp;rft.aufirst=Uzi&amp;rft_id=http%3A%2F%2Fwww.umiacs.umd.edu%2Fusers%2Fvishkin%2FPUBLICATIONS%2Fclassnotes.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AParallel+RAM"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFVishkin2011">Vishkin, Uzi (2011), "Using simple abstraction to reinvent computing for parallelism", <i>Communications of the ACM</i>, <b>54</b>: 75–85, doi:<span class="cs1-lock-free" title="Freely accessible">10.1145/1866739.1866757</span></cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Communications+of+the+ACM&amp;rft.atitle=Using+simple+abstraction+to+reinvent+computing+for+parallelism&amp;rft.volume=54&amp;rft.pages=75-85&amp;rft.date=2011&amp;rft_id=info%3Adoi%2F10.1145%2F1866739.1866757&amp;rft.aulast=Vishkin&amp;rft.aufirst=Uzi&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AParallel+RAM"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFCarageaVishkin2011">Caragea, George Constantin; Vishkin, Uzi (2011), "Brief announcement: Better speedups for parallel max-flow", <i>Proceedings of the 23rd ACM symposium on Parallelism in algorithms and architectures - SPAA '11</i>, p. 131, doi:10.1145/1989493.1989511, ISBN <bdi>9781450307437</bdi>, S2CID 5511743</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Brief+announcement%3A+Better+speedups+for+parallel+max-flow&amp;rft.btitle=Proceedings+of+the+23rd+ACM+symposium+on+Parallelism+in+algorithms+and+architectures+-+SPAA+%2711&amp;rft.pages=131&amp;rft.date=2011&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A5511743%23id-name%3DS2CID&amp;rft_id=info%3Adoi%2F10.1145%2F1989493.1989511&amp;rft.isbn=9781450307437&amp;rft.aulast=Caragea&amp;rft.aufirst=George+Constantin&amp;rft.au=Vishkin%2C+Uzi&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AParallel+RAM"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2" id="CITEREFGhanimVishkinBarua2018">Ghanim, Fady; Vishkin, Uzi; Barua, Rajeev (2018), "Easy PRAM-based High-performance Parallel Programming with ICE", <i>IEEE Transactions on Parallel and Distributed Systems</i>, <b>29</b> (2): 377–390, doi:<span class="cs1-lock-free" title="Freely accessible">10.1109/TPDS.2017.2754376</span>, hdl:1903/18521</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=IEEE+Transactions+on+Parallel+and+Distributed+Systems&amp;rft.atitle=Easy+PRAM-based+High-performance+Parallel+Programming+with+ICE&amp;rft.volume=29&amp;rft.issue=2&amp;rft.pages=377-390&amp;rft.date=2018&amp;rft_id=info%3Ahdl%2F1903%2F18521&amp;rft_id=info%3Adoi%2F10.1109%2FTPDS.2017.2754376&amp;rft.aulast=Ghanim&amp;rft.aufirst=Fady&amp;rft.au=Vishkin%2C+Uzi&amp;rft.au=Barua%2C+Rajeev&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AParallel+RAM"></span></li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>Saarland University's prototype PRAM</li>
+<li>University Of Maryland's PRAM-On-Chip prototype. This prototype seeks to put many parallel processors and the fabric for inter-connecting them on a single chip</li>
+<li>XMTC: PRAM-like Programming - Software release</li></ul>
+
+
+<!-- 
+NewPP limit report
+Parsed by mw2336
+Cached time: 20221224024101
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.261 seconds
+Real time usage: 0.355 seconds
+Preprocessor visited node count: 944/1000000
+Post‐expand include size: 43670/2097152 bytes
+Template argument size: 750/2097152 bytes
+Highest expansion depth: 13/100
+Expensive parser function count: 3/500
+Unstrip recursion depth: 0/20
+Unstrip post‐expand size: 32341/5000000 bytes
+Lua time usage: 0.167/10.000 seconds
+Lua memory usage: 6795130/52428800 bytes
+Number of Wikibase entities loaded: 1/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  300.405      1 -total
+ 27.76%   83.385      7 Template:Citation
+ 17.08%   51.302      1 Template:Parallel_Computing
+ 16.05%   48.207      1 Template:Short_description
+ 15.90%   47.754      1 Template:Navbox
+ 15.49%   46.527      1 Template:More_footnotes
+ 13.38%   40.206      1 Template:Ambox
+  8.89%   26.699      2 Template:Pagetype
+  8.77%   26.347      3 Template:Harvtxt
+  8.11%   24.366      1 Template:Authority_control
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:956675-0!canonical and timestamp 20221224024101 and revision id 1121166782.
+ -->
+</div></body>
+</html>

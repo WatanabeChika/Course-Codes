@@ -1,0 +1,2407 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Ford-Fulkerson_method</title>
+</head>
+<body>
+<div class="mw-parser-output"><p class="mw-empty-elt">
+</p>
+
+<p>The <b>Ford–Fulkerson method</b> or <b>Ford–Fulkerson algorithm</b> (<b>FFA</b>) is a greedy algorithm that computes the maximum flow in a flow network. It is sometimes called a "method" instead of an "algorithm" as the approach to finding augmenting paths in a residual graph is not fully specified<sup class="reference" id="cite_ref-1">[1]</sup> or it is specified in several implementations with different running times.<sup class="reference" id="cite_ref-2">[2]</sup> It was published in 1956 by L. R. Ford Jr. and D. R. Fulkerson.<sup class="reference" id="cite_ref-3">[3]</sup> The name "Ford–Fulkerson" is often also used for the Edmonds–Karp algorithm, which is a fully defined implementation of the Ford–Fulkerson method.
+</p><p>The idea behind the algorithm is as follows: as long as there is a path from the source (start node) to the sink (end node), with available capacity on all edges in the path, we send flow along one of the paths. Then we find another path, and so on. A path with available capacity is called an augmenting path.
+</p>
+
+<h2><span class="mw-headline" id="Algorithm">Algorithm</span><span class="mw-editsection"></span></h2>
+<p>Let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G(V,E)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>G</mi>
+<mo stretchy="false">(</mo>
+<mi>V</mi>
+<mo>,</mo>
+<mi>E</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G(V,E)}</annotation>
+</semantics>
+</math></span><img alt="G(V,E)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7dc43221ee885a10b87c89373b12b8c1110e7ca5" style="vertical-align: -0.838ex; width:8.233ex; height:2.843ex;"/></span> be a graph, and for each edge from <span class="texhtml mvar" style="font-style:italic;">u</span> to <span class="texhtml mvar" style="font-style:italic;">v</span>, let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c(u,v)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+<mo stretchy="false">(</mo>
+<mi>u</mi>
+<mo>,</mo>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c(u,v)}</annotation>
+</semantics>
+</math></span><img alt="c(u,v)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3af127906713b7741d8b0562429672f686b449b0" style="vertical-align: -0.838ex; width:6.307ex; height:2.843ex;"/></span> be the capacity and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(u,v)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>u</mi>
+<mo>,</mo>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(u,v)}</annotation>
+</semantics>
+</math></span><img alt="f(u,v)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8f6a108a1020838e47fa6d73a3b9e00d38197ebb" style="vertical-align: -0.838ex; width:6.579ex; height:2.843ex;"/></span> be the flow. We want to find the maximum flow from the source <span class="texhtml mvar" style="font-style:italic;">s</span> to the sink <span class="texhtml mvar" style="font-style:italic;">t</span>. After every step in the algorithm the following is maintained:
+</p>
+<dl><dd><table class="wikitable">
+<tbody><tr>
+<th class="table-rh" style="background: #ececec; color: black; font-weight: bold; vertical-align: middle; text-align: left;">Capacity constraints
+</th>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \forall (u,v)\in E:\ f(u,v)\leq c(u,v)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">∀<!-- ∀ --></mi>
+<mo stretchy="false">(</mo>
+<mi>u</mi>
+<mo>,</mo>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+<mo>∈<!-- ∈ --></mo>
+<mi>E</mi>
+<mo>:</mo>
+<mtext> </mtext>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>u</mi>
+<mo>,</mo>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mi>c</mi>
+<mo stretchy="false">(</mo>
+<mi>u</mi>
+<mo>,</mo>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \forall (u,v)\in E:\ f(u,v)\leq c(u,v)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \forall (u,v)\in E:\ f(u,v)\leq c(u,v)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cb5a967d919743a24112502057b700aff0608e30" style="vertical-align: -0.838ex; width:29.712ex; height:2.843ex;"/></span></td>
+<td>The flow along an edge cannot exceed its capacity.
+</td></tr>
+<tr>
+<th class="table-rh" style="background: #ececec; color: black; font-weight: bold; vertical-align: middle; text-align: left;">Skew symmetry
+</th>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \forall (u,v)\in E:\ f(u,v)=-f(v,u)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">∀<!-- ∀ --></mi>
+<mo stretchy="false">(</mo>
+<mi>u</mi>
+<mo>,</mo>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+<mo>∈<!-- ∈ --></mo>
+<mi>E</mi>
+<mo>:</mo>
+<mtext> </mtext>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>u</mi>
+<mo>,</mo>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mo>−<!-- − --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>v</mi>
+<mo>,</mo>
+<mi>u</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \forall (u,v)\in E:\ f(u,v)=-f(v,u)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \forall (u,v)\in E:\ f(u,v)=-f(v,u)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/662bdc5a184075c960dab8a0eabf1ab3643ccc65" style="vertical-align: -0.838ex; width:31.792ex; height:2.843ex;"/></span></td>
+<td>The net flow from <span class="texhtml mvar" style="font-style:italic;">u</span> to <span class="texhtml mvar" style="font-style:italic;">v</span> must be the opposite of the net flow from <span class="texhtml mvar" style="font-style:italic;">v</span> to <span class="texhtml mvar" style="font-style:italic;">u</span> (see example).
+</td></tr>
+<tr>
+<th class="table-rh" style="background: #ececec; color: black; font-weight: bold; vertical-align: middle; text-align: left;">Flow conservation
+</th>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \forall u\in V:u\neq s{\text{ and }}u\neq t\Rightarrow \sum _{w\in V}f(u,w)=0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">∀<!-- ∀ --></mi>
+<mi>u</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>V</mi>
+<mo>:</mo>
+<mi>u</mi>
+<mo>≠<!-- ≠ --></mo>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext> and </mtext>
+</mrow>
+<mi>u</mi>
+<mo>≠<!-- ≠ --></mo>
+<mi>t</mi>
+<mo stretchy="false">⇒<!-- ⇒ --></mo>
+<munder>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>w</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>V</mi>
+</mrow>
+</munder>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>u</mi>
+<mo>,</mo>
+<mi>w</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \forall u\in V:u\neq s{\text{ and }}u\neq t\Rightarrow \sum _{w\in V}f(u,w)=0}</annotation>
+</semantics>
+</math></span><img alt="\forall u\in V:u\neq s{\text{ and }}u\neq t\Rightarrow \sum _{w\in V}f(u,w)=0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fecd1414781830a837c3ca6b6d5dbf3c4926c723" style="vertical-align: -3.171ex; width:43.797ex; height:5.676ex;"/></span></td>
+<td>The net flow to a node is zero, except for the source, which "produces" flow, and the sink, which "consumes" flow.
+</td></tr>
+<tr>
+<th class="table-rh" style="background: #ececec; color: black; font-weight: bold; vertical-align: middle; text-align: left;">Value(f)
+</th>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sum _{(s,u)\in E}f(s,u)=\sum _{(v,t)\in E}f(v,t)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<munder>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">(</mo>
+<mi>s</mi>
+<mo>,</mo>
+<mi>u</mi>
+<mo stretchy="false">)</mo>
+<mo>∈<!-- ∈ --></mo>
+<mi>E</mi>
+</mrow>
+</munder>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>s</mi>
+<mo>,</mo>
+<mi>u</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<munder>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">(</mo>
+<mi>v</mi>
+<mo>,</mo>
+<mi>t</mi>
+<mo stretchy="false">)</mo>
+<mo>∈<!-- ∈ --></mo>
+<mi>E</mi>
+</mrow>
+</munder>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>v</mi>
+<mo>,</mo>
+<mi>t</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sum _{(s,u)\in E}f(s,u)=\sum _{(v,t)\in E}f(v,t)}</annotation>
+</semantics>
+</math></span><img alt="\sum _{(s,u)\in E}f(s,u)=\sum _{(v,t)\in E}f(v,t)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/aebce0634aca90380812fa83a64bb08f202d3808" style="vertical-align: -3.505ex; width:27.783ex; height:6.009ex;"/></span></td>
+<td>The flow leaving from <span class="texhtml mvar" style="font-style:italic;">s</span> must be equal to the flow arriving at <span class="texhtml mvar" style="font-style:italic;">t</span>.
+</td></tr>
+</tbody></table></dd></dl>
+<p>This means that the flow through the network is a <i>legal flow</i> after each round in the algorithm. We define the <b>residual network</b> <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G_{f}(V,E_{f})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>G</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>V</mi>
+<mo>,</mo>
+<msub>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G_{f}(V,E_{f})}</annotation>
+</semantics>
+</math></span><img alt="G_{f}(V,E_{f})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a89fe286f1b6fc889c04dc4c45ecc7932afbd7bc" style="vertical-align: -1.005ex; width:10.445ex; height:3.009ex;"/></span> to be the network with capacity <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c_{f}(u,v)=c(u,v)-f(u,v)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>u</mi>
+<mo>,</mo>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>c</mi>
+<mo stretchy="false">(</mo>
+<mi>u</mi>
+<mo>,</mo>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>u</mi>
+<mo>,</mo>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c_{f}(u,v)=c(u,v)-f(u,v)}</annotation>
+</semantics>
+</math></span><img alt="c_{f}(u,v)=c(u,v)-f(u,v)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e2756fd42d49a52b35b33bfe377a74dcbdf1f4b5" style="vertical-align: -1.005ex; width:26.269ex; height:3.009ex;"/></span> and no flow. Notice that it can happen that a flow from <span class="texhtml mvar" style="font-style:italic;">v</span> to <span class="texhtml mvar" style="font-style:italic;">u</span> is allowed in the residual
+network, though disallowed in the original network: if <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(u,v)&gt;0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>u</mi>
+<mo>,</mo>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+<mo>&gt;</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(u,v)&gt;0}</annotation>
+</semantics>
+</math></span><img alt="f(u,v)&gt;0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dae14fe5525cb06c97321588ea0cc15415f296f1" style="vertical-align: -0.838ex; width:10.84ex; height:2.843ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c(v,u)=0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+<mo stretchy="false">(</mo>
+<mi>v</mi>
+<mo>,</mo>
+<mi>u</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c(v,u)=0}</annotation>
+</semantics>
+</math></span><img alt="c(v,u)=0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c6286187b3ce2a46e502166a53c7a4dd954af7ad" style="vertical-align: -0.838ex; width:10.568ex; height:2.843ex;"/></span> then <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c_{f}(v,u)=c(v,u)-f(v,u)=f(u,v)&gt;0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>v</mi>
+<mo>,</mo>
+<mi>u</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>c</mi>
+<mo stretchy="false">(</mo>
+<mi>v</mi>
+<mo>,</mo>
+<mi>u</mi>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>v</mi>
+<mo>,</mo>
+<mi>u</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>u</mi>
+<mo>,</mo>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+<mo>&gt;</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c_{f}(v,u)=c(v,u)-f(v,u)=f(u,v)&gt;0}</annotation>
+</semantics>
+</math></span><img alt="c_{f}(v,u)=c(v,u)-f(v,u)=f(u,v)&gt;0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9f57f50a9829b1ad78a9db1a6e9ec7805233f16c" style="vertical-align: -1.005ex; width:40.208ex; height:3.009ex;"/></span>.
+</p>
+
+<p>The path in step 2 can be found with, for example, a breadth-first search (BFS) or a depth-first search in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G_{f}(V,E_{f})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>G</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>V</mi>
+<mo>,</mo>
+<msub>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G_{f}(V,E_{f})}</annotation>
+</semantics>
+</math></span><img alt="G_{f}(V,E_{f})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a89fe286f1b6fc889c04dc4c45ecc7932afbd7bc" style="vertical-align: -1.005ex; width:10.445ex; height:3.009ex;"/></span>. If you use the former, the algorithm is called Edmonds–Karp.
+</p><p>When no more paths in step 2 can be found, <span class="texhtml mvar" style="font-style:italic;">s</span> will not be able to reach <span class="texhtml mvar" style="font-style:italic;">t</span> in the residual
+network. If <span class="texhtml mvar" style="font-style:italic;">S</span> is the set of nodes reachable by <span class="texhtml mvar" style="font-style:italic;">s</span> in the residual network, then the total
+capacity in the original network of edges from <span class="texhtml mvar" style="font-style:italic;">S</span> to the remainder of <span class="texhtml mvar" style="font-style:italic;">V</span> is on the one hand
+equal to the total flow we found from <span class="texhtml mvar" style="font-style:italic;">s</span> to <span class="texhtml mvar" style="font-style:italic;">t</span>,
+and on the other hand serves as an upper bound for all such flows.
+This proves that the flow we found is maximal. See also Max-flow Min-cut theorem.
+</p><p>If the graph <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G(V,E)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>G</mi>
+<mo stretchy="false">(</mo>
+<mi>V</mi>
+<mo>,</mo>
+<mi>E</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G(V,E)}</annotation>
+</semantics>
+</math></span><img alt="G(V,E)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7dc43221ee885a10b87c89373b12b8c1110e7ca5" style="vertical-align: -0.838ex; width:8.233ex; height:2.843ex;"/></span> has multiple sources and sinks, we act as follows:
+Suppose that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T=\{t\mid t{\text{ is a sink}}\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+<mo>=</mo>
+<mo fence="false" stretchy="false">{</mo>
+<mi>t</mi>
+<mo>∣<!-- ∣ --></mo>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext> is a sink</mtext>
+</mrow>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T=\{t\mid t{\text{ is a sink}}\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle T=\{t\mid t{\text{ is a sink}}\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/668cadd29271f61cddecee43b37e916fd1655dfc" style="vertical-align: -0.838ex; width:19.227ex; height:2.843ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S=\{s\mid s{\text{ is a source}}\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>S</mi>
+<mo>=</mo>
+<mo fence="false" stretchy="false">{</mo>
+<mi>s</mi>
+<mo>∣<!-- ∣ --></mo>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext> is a source</mtext>
+</mrow>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S=\{s\mid s{\text{ is a source}}\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle S=\{s\mid s{\text{ is a source}}\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7d199670d5197cf3584580935c9ba5f6482d0669" style="vertical-align: -0.838ex; width:21.856ex; height:2.843ex;"/></span>. Add a new source <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s^{*}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s^{*}}</annotation>
+</semantics>
+</math></span><img alt="s^{*}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c0dd30e91ecca56ddf4ee71bf82b506b3249a5f6" style="vertical-align: -0.338ex; width:2.145ex; height:2.343ex;"/></span> with an edge <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (s^{*},s)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<msup>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo>,</mo>
+<mi>s</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (s^{*},s)}</annotation>
+</semantics>
+</math></span><img alt="(s^{*},s)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/711da7814f811d42bd9693e444ebae8a2519ec22" style="vertical-align: -0.838ex; width:6.078ex; height:2.843ex;"/></span> from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s^{*}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s^{*}}</annotation>
+</semantics>
+</math></span><img alt="s^{*}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c0dd30e91ecca56ddf4ee71bf82b506b3249a5f6" style="vertical-align: -0.338ex; width:2.145ex; height:2.343ex;"/></span> to every node <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s\in S}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>s</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>S</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s\in S}</annotation>
+</semantics>
+</math></span><img alt="s\in S" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/acce52dffd84d073a24f4606a175da60148fd0c6" style="vertical-align: -0.338ex; width:5.43ex; height:2.176ex;"/></span>, with capacity <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c(s^{*},s)=d_{s}\;(d_{s}=\sum _{(s,u)\in E}c(s,u))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo>,</mo>
+<mi>s</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<msub>
+<mi>d</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>s</mi>
+</mrow>
+</msub>
+<mspace width="thickmathspace"></mspace>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>d</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>s</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<munder>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">(</mo>
+<mi>s</mi>
+<mo>,</mo>
+<mi>u</mi>
+<mo stretchy="false">)</mo>
+<mo>∈<!-- ∈ --></mo>
+<mi>E</mi>
+</mrow>
+</munder>
+<mi>c</mi>
+<mo stretchy="false">(</mo>
+<mi>s</mi>
+<mo>,</mo>
+<mi>u</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c(s^{*},s)=d_{s}\;(d_{s}=\sum _{(s,u)\in E}c(s,u))}</annotation>
+</semantics>
+</math></span><img alt="c(s^{*},s)=d_{s}\;(d_{s}=\sum _{(s,u)\in E}c(s,u))" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/da83a876bf1ee0eae732e62cec9b0f516399edd0" style="vertical-align: -3.505ex; width:32.618ex; height:6.009ex;"/></span>. And add a new sink <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle t^{*}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle t^{*}}</annotation>
+</semantics>
+</math></span><img alt="t^{*}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/25c73524c328c099fbfcff931451272a61e74fb8" style="vertical-align: -0.338ex; width:1.894ex; height:2.343ex;"/></span> with an edge <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (t,t^{*})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mi>t</mi>
+<mo>,</mo>
+<msup>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (t,t^{*})}</annotation>
+</semantics>
+</math></span><img alt="(t,t^{*})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3f893470bca6f483ca73028a51f3b4a05b03431c" style="vertical-align: -0.838ex; width:5.577ex; height:2.843ex;"/></span> from every node <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle t\in T}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>t</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>T</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle t\in T}</annotation>
+</semantics>
+</math></span><img alt="t\in T" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b4fe93f70df3818ecca67c2ca44f087483951856" style="vertical-align: -0.338ex; width:5.317ex; height:2.176ex;"/></span> to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle t^{*}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle t^{*}}</annotation>
+</semantics>
+</math></span><img alt="t^{*}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/25c73524c328c099fbfcff931451272a61e74fb8" style="vertical-align: -0.338ex; width:1.894ex; height:2.343ex;"/></span>, with capacity <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c(t,t^{*})=d_{t}\;(d_{t}=\sum _{(v,t)\in E}c(v,t))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+<mo stretchy="false">(</mo>
+<mi>t</mi>
+<mo>,</mo>
+<msup>
+<mi>t</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<msub>
+<mi>d</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+<mspace width="thickmathspace"></mspace>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>d</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<munder>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">(</mo>
+<mi>v</mi>
+<mo>,</mo>
+<mi>t</mi>
+<mo stretchy="false">)</mo>
+<mo>∈<!-- ∈ --></mo>
+<mi>E</mi>
+</mrow>
+</munder>
+<mi>c</mi>
+<mo stretchy="false">(</mo>
+<mi>v</mi>
+<mo>,</mo>
+<mi>t</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c(t,t^{*})=d_{t}\;(d_{t}=\sum _{(v,t)\in E}c(v,t))}</annotation>
+</semantics>
+</math></span><img alt="c(t,t^{*})=d_{t}\;(d_{t}=\sum _{(v,t)\in E}c(v,t))" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/199b0a5b46a44e1bd1fa8bd6e06e26a67586f207" style="vertical-align: -3.505ex; width:30.989ex; height:6.009ex;"/></span>. Then apply the Ford–Fulkerson algorithm.
+</p><p>Also, if a node <span class="texhtml mvar" style="font-style:italic;">u</span> has capacity constraint <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d_{u}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>d</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>u</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d_{u}}</annotation>
+</semantics>
+</math></span><img alt="d_{u}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1cb2bf0924f9a58e8a5631adddb46fc0a81e9eed" style="vertical-align: -0.671ex; width:2.381ex; height:2.509ex;"/></span>, we replace this node with two nodes <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u_{\mathrm {in} },u_{\mathrm {out} }}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">i</mi>
+<mi mathvariant="normal">n</mi>
+</mrow>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">o</mi>
+<mi mathvariant="normal">u</mi>
+<mi mathvariant="normal">t</mi>
+</mrow>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u_{\mathrm {in} },u_{\mathrm {out} }}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle u_{\mathrm {in} },u_{\mathrm {out} }}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/63064345fe9de0653aeddb55235018ca0e93f71e" style="vertical-align: -0.671ex; width:7.905ex; height:2.009ex;"/></span>, and an edge <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (u_{\mathrm {in} },u_{\mathrm {out} })}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">i</mi>
+<mi mathvariant="normal">n</mi>
+</mrow>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">o</mi>
+<mi mathvariant="normal">u</mi>
+<mi mathvariant="normal">t</mi>
+</mrow>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (u_{\mathrm {in} },u_{\mathrm {out} })}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle (u_{\mathrm {in} },u_{\mathrm {out} })}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f920f5d79c5d4fa96635767efc25fc28c5d281ee" style="vertical-align: -0.838ex; width:9.714ex; height:2.843ex;"/></span>, with capacity <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c(u_{\mathrm {in} },u_{\mathrm {out} })=d_{u}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">i</mi>
+<mi mathvariant="normal">n</mi>
+</mrow>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>u</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">o</mi>
+<mi mathvariant="normal">u</mi>
+<mi mathvariant="normal">t</mi>
+</mrow>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<msub>
+<mi>d</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>u</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c(u_{\mathrm {in} },u_{\mathrm {out} })=d_{u}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle c(u_{\mathrm {in} },u_{\mathrm {out} })=d_{u}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4aff4498f348913c0bab0be4091a592dab68daae" style="vertical-align: -0.838ex; width:16.201ex; height:2.843ex;"/></span>. Then apply the Ford–Fulkerson algorithm.
+</p>
+<h2><span class="mw-headline" id="Complexity">Complexity</span><span class="mw-editsection"></span></h2>
+<p>By adding the flow augmenting path to the flow already established in the graph, the maximum flow will be reached when no more flow augmenting paths can be found in the graph.  However, there is no certainty that this situation will ever be reached, so the best that can be guaranteed is that the answer will be correct if the algorithm terminates.  In the case that the algorithm runs forever, the flow might not even converge towards the maximum flow.  However, this situation only occurs with irrational flow values.<sup class="reference" id="cite_ref-4">[4]</sup>  When the capacities are integers, the runtime of Ford–Fulkerson is bounded by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(Ef)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>E</mi>
+<mi>f</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(Ef)}</annotation>
+</semantics>
+</math></span><img alt="O(Ef)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ef3238c36fab5ff345a902082c3c99e59b58a05a" style="vertical-align: -0.838ex; width:6.637ex; height:2.843ex;"/></span> (see big O notation), where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle E}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>E</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle E}</annotation>
+</semantics>
+</math></span><img alt="E" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4232c9de2ee3eec0a9c0a19b15ab92daa6223f9b" style="vertical-align: -0.338ex; width:1.776ex; height:2.176ex;"/></span> is the number of edges in the graph and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f}</annotation>
+</semantics>
+</math></span><img alt="f" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/132e57acb643253e7810ee9702d9581f159a1c61" style="vertical-align: -0.671ex; width:1.279ex; height:2.509ex;"/></span> is the maximum flow in the graph.  This is because each augmenting path can be found in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(E)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>E</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(E)}</annotation>
+</semantics>
+</math></span><img alt="O(E)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/39127b19b3a94fbf43d7ccc39452a76040197203" style="vertical-align: -0.838ex; width:5.358ex; height:2.843ex;"/></span> time and increases the flow by an integer amount of at least <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1}</annotation>
+</semantics>
+</math></span><img alt="1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/92d98b82a3778f043108d4e20960a9193df57cbf" style="vertical-align: -0.338ex; width:1.162ex; height:2.176ex;"/></span>, with the upper bound <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f}</annotation>
+</semantics>
+</math></span><img alt="f" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/132e57acb643253e7810ee9702d9581f159a1c61" style="vertical-align: -0.671ex; width:1.279ex; height:2.509ex;"/></span>.
+</p><p>A variation of the Ford–Fulkerson algorithm with guaranteed termination and a runtime independent of the maximum flow value is the Edmonds–Karp algorithm, which runs in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(VE^{2})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>V</mi>
+<msup>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(VE^{2})}</annotation>
+</semantics>
+</math></span><img alt="O(VE^{2})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/11a040ec69aefbb3d561b989787d5baf5e9f22bd" style="vertical-align: -0.838ex; width:8.218ex; height:3.176ex;"/></span> time.
+</p>
+<h2><span class="mw-headline" id="Integral_example">Integral example</span><span class="mw-editsection"></span></h2>
+<p>The following example shows the first steps of Ford–Fulkerson in a flow network with 4 nodes, source <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A}</annotation>
+</semantics>
+</math></span><img alt="A" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7daff47fa58cdfd29dc333def748ff5fa4c923e3" style="vertical-align: -0.338ex; width:1.743ex; height:2.176ex;"/></span> and sink <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle D}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>D</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle D}</annotation>
+</semantics>
+</math></span><img alt="D" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f34a0c600395e5d4345287e21fb26efd386990e6" style="vertical-align: -0.338ex; width:1.924ex; height:2.176ex;"/></span>. This example shows the worst-case behaviour of the algorithm. In each step, only a flow of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1}</annotation>
+</semantics>
+</math></span><img alt="1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/92d98b82a3778f043108d4e20960a9193df57cbf" style="vertical-align: -0.338ex; width:1.162ex; height:2.176ex;"/></span> is sent across the network. If breadth-first-search were used instead, only two steps would be needed.
+</p>
+<table cellpadding="10">
+<tbody><tr style="text-align:center">
+<th>Path
+</th>
+<th>Capacity
+</th>
+<th>Resulting flow network
+</th></tr>
+<tr>
+<td colspan="2" style="text-align:center">Initial flow network
+</td>
+<td><img alt="Ford-Fulkerson example 0.svg" data-file-height="500" data-file-width="700" decoding="async" height="214" src="//upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Ford-Fulkerson_example_0.svg/300px-Ford-Fulkerson_example_0.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Ford-Fulkerson_example_0.svg/450px-Ford-Fulkerson_example_0.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Ford-Fulkerson_example_0.svg/600px-Ford-Fulkerson_example_0.svg.png 2x" width="300"/>
+</td></tr>
+<tr>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A,B,C,D}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+<mo>,</mo>
+<mi>B</mi>
+<mo>,</mo>
+<mi>C</mi>
+<mo>,</mo>
+<mi>D</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A,B,C,D}</annotation>
+</semantics>
+</math></span><img alt="A,B,C,D" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/684d01c09b12e5a28987c6127567daef29ee3b44" style="vertical-align: -0.671ex; width:10.3ex; height:2.509ex;"/></span>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{aligned}&amp;\min(c_{f}(A,B),c_{f}(B,C),c_{f}(C,D))\\={}&amp;\min(c(A,B)-f(A,B),c(B,C)-f(B,C),c(C,D)-f(C,D))\\={}&amp;\min(1000-0,1-0,1000-0)=1\end{aligned}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="right left right left right left right left right left right left" columnspacing="0em 2em 0em 2em 0em 2em 0em 2em 0em 2em 0em" displaystyle="true" rowspacing="3pt">
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mo form="prefix" movablelimits="true">min</mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>A</mi>
+<mo>,</mo>
+<mi>B</mi>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>B</mi>
+<mo>,</mo>
+<mi>C</mi>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>C</mi>
+<mo>,</mo>
+<mi>D</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+</mrow>
+</mtd>
+<mtd>
+<mi></mi>
+<mo form="prefix" movablelimits="true">min</mo>
+<mo stretchy="false">(</mo>
+<mi>c</mi>
+<mo stretchy="false">(</mo>
+<mi>A</mi>
+<mo>,</mo>
+<mi>B</mi>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>A</mi>
+<mo>,</mo>
+<mi>B</mi>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<mi>c</mi>
+<mo stretchy="false">(</mo>
+<mi>B</mi>
+<mo>,</mo>
+<mi>C</mi>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>B</mi>
+<mo>,</mo>
+<mi>C</mi>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<mi>c</mi>
+<mo stretchy="false">(</mo>
+<mi>C</mi>
+<mo>,</mo>
+<mi>D</mi>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>C</mi>
+<mo>,</mo>
+<mi>D</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+</mrow>
+</mtd>
+<mtd>
+<mi></mi>
+<mo form="prefix" movablelimits="true">min</mo>
+<mo stretchy="false">(</mo>
+<mn>1000</mn>
+<mo>−<!-- − --></mo>
+<mn>0</mn>
+<mo>,</mo>
+<mn>1</mn>
+<mo>−<!-- − --></mo>
+<mn>0</mn>
+<mo>,</mo>
+<mn>1000</mn>
+<mo>−<!-- − --></mo>
+<mn>0</mn>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>1</mn>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{aligned}&amp;\min(c_{f}(A,B),c_{f}(B,C),c_{f}(C,D))\\={}&amp;\min(c(A,B)-f(A,B),c(B,C)-f(B,C),c(C,D)-f(C,D))\\={}&amp;\min(1000-0,1-0,1000-0)=1\end{aligned}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\begin{aligned}&amp;\min(c_{f}(A,B),c_{f}(B,C),c_{f}(C,D))\\={}&amp;\min(c(A,B)-f(A,B),c(B,C)-f(B,C),c(C,D)-f(C,D))\\={}&amp;\min(1000-0,1-0,1000-0)=1\end{aligned}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/458428935212fe83ae30b713c0e020a7a63dc43e" style="vertical-align: -4.171ex; width:65.237ex; height:9.343ex;"/></span>
+</td>
+<td><img alt="Ford-Fulkerson example 1.svg" data-file-height="500" data-file-width="700" decoding="async" height="214" src="//upload.wikimedia.org/wikipedia/commons/thumb/9/93/Ford-Fulkerson_example_1.svg/300px-Ford-Fulkerson_example_1.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/9/93/Ford-Fulkerson_example_1.svg/450px-Ford-Fulkerson_example_1.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/9/93/Ford-Fulkerson_example_1.svg/600px-Ford-Fulkerson_example_1.svg.png 2x" width="300"/>
+</td></tr>
+<tr>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A,C,B,D}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+<mo>,</mo>
+<mi>C</mi>
+<mo>,</mo>
+<mi>B</mi>
+<mo>,</mo>
+<mi>D</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A,C,B,D}</annotation>
+</semantics>
+</math></span><img alt="A,C,B,D" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6a0aa3415a8834bd416a53db4d59e906c609a8f8" style="vertical-align: -0.671ex; width:10.3ex; height:2.509ex;"/></span>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{aligned}&amp;\min(c_{f}(A,C),c_{f}(C,B),c_{f}(B,D))\\={}&amp;\min(c(A,C)-f(A,C),c(C,B)-f(C,B),c(B,D)-f(B,D))\\={}&amp;\min(1000-0,0-(-1),1000-0)=1\end{aligned}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="right left right left right left right left right left right left" columnspacing="0em 2em 0em 2em 0em 2em 0em 2em 0em 2em 0em" displaystyle="true" rowspacing="3pt">
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mo form="prefix" movablelimits="true">min</mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>A</mi>
+<mo>,</mo>
+<mi>C</mi>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>C</mi>
+<mo>,</mo>
+<mi>B</mi>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>B</mi>
+<mo>,</mo>
+<mi>D</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+</mrow>
+</mtd>
+<mtd>
+<mi></mi>
+<mo form="prefix" movablelimits="true">min</mo>
+<mo stretchy="false">(</mo>
+<mi>c</mi>
+<mo stretchy="false">(</mo>
+<mi>A</mi>
+<mo>,</mo>
+<mi>C</mi>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>A</mi>
+<mo>,</mo>
+<mi>C</mi>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<mi>c</mi>
+<mo stretchy="false">(</mo>
+<mi>C</mi>
+<mo>,</mo>
+<mi>B</mi>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>C</mi>
+<mo>,</mo>
+<mi>B</mi>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<mi>c</mi>
+<mo stretchy="false">(</mo>
+<mi>B</mi>
+<mo>,</mo>
+<mi>D</mi>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>B</mi>
+<mo>,</mo>
+<mi>D</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+</mrow>
+</mtd>
+<mtd>
+<mi></mi>
+<mo form="prefix" movablelimits="true">min</mo>
+<mo stretchy="false">(</mo>
+<mn>1000</mn>
+<mo>−<!-- − --></mo>
+<mn>0</mn>
+<mo>,</mo>
+<mn>0</mn>
+<mo>−<!-- − --></mo>
+<mo stretchy="false">(</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<mn>1000</mn>
+<mo>−<!-- − --></mo>
+<mn>0</mn>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>1</mn>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{aligned}&amp;\min(c_{f}(A,C),c_{f}(C,B),c_{f}(B,D))\\={}&amp;\min(c(A,C)-f(A,C),c(C,B)-f(C,B),c(B,D)-f(B,D))\\={}&amp;\min(1000-0,0-(-1),1000-0)=1\end{aligned}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\begin{aligned}&amp;\min(c_{f}(A,C),c_{f}(C,B),c_{f}(B,D))\\={}&amp;\min(c(A,C)-f(A,C),c(C,B)-f(C,B),c(B,D)-f(B,D))\\={}&amp;\min(1000-0,0-(-1),1000-0)=1\end{aligned}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f60f3aa9c15772fd2d65dff8ebf4b725ad56925e" style="vertical-align: -4.171ex; width:65.237ex; height:9.343ex;"/></span>
+</td>
+<td><img alt="Ford-Fulkerson example 2.svg" data-file-height="500" data-file-width="700" decoding="async" height="214" src="//upload.wikimedia.org/wikipedia/commons/thumb/1/13/Ford-Fulkerson_example_2.svg/300px-Ford-Fulkerson_example_2.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/1/13/Ford-Fulkerson_example_2.svg/450px-Ford-Fulkerson_example_2.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/1/13/Ford-Fulkerson_example_2.svg/600px-Ford-Fulkerson_example_2.svg.png 2x" width="300"/>
+</td></tr>
+<tr>
+<td colspan="3" style="text-align:center">After 1998 more steps ...
+</td></tr>
+<tr>
+<td colspan="2" style="text-align:center">Final flow network
+</td>
+<td><img alt="Ford-Fulkerson example final.svg" data-file-height="500" data-file-width="700" decoding="async" height="214" src="//upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Ford-Fulkerson_example_final.svg/300px-Ford-Fulkerson_example_final.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Ford-Fulkerson_example_final.svg/450px-Ford-Fulkerson_example_final.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Ford-Fulkerson_example_final.svg/600px-Ford-Fulkerson_example_final.svg.png 2x" width="300"/>
+</td></tr></tbody></table>
+<p>Notice how flow is "pushed back" from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle C}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>C</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle C}</annotation>
+</semantics>
+</math></span><img alt="C" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4fc55753007cd3c18576f7933f6f089196732029" style="vertical-align: -0.338ex; width:1.766ex; height:2.176ex;"/></span> to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle B}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>B</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle B}</annotation>
+</semantics>
+</math></span><img alt="B" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/47136aad860d145f75f3eed3022df827cee94d7a" style="vertical-align: -0.338ex; width:1.764ex; height:2.176ex;"/></span> when finding the path <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A,C,B,D}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+<mo>,</mo>
+<mi>C</mi>
+<mo>,</mo>
+<mi>B</mi>
+<mo>,</mo>
+<mi>D</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A,C,B,D}</annotation>
+</semantics>
+</math></span><img alt="A,C,B,D" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6a0aa3415a8834bd416a53db4d59e906c609a8f8" style="vertical-align: -0.671ex; width:10.3ex; height:2.509ex;"/></span>.
+</p>
+<h2><span class="mw-headline" id="Non-terminating_example">Non-terminating example</span><span class="mw-editsection"></span></h2>
+
+<p>Consider the flow network shown on the right, with source <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle s}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>s</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle s}</annotation>
+</semantics>
+</math></span><img alt="s" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/01d131dfd7673938b947072a13a9744fe997e632" style="vertical-align: -0.338ex; width:1.09ex; height:1.676ex;"/></span>, sink <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle t}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>t</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle t}</annotation>
+</semantics>
+</math></span><img alt="t" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/65658b7b223af9e1acc877d848888ecdb4466560" style="vertical-align: -0.338ex; width:0.84ex; height:2.009ex;"/></span>, capacities of edges <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle e_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle e_{1}}</annotation>
+</semantics>
+</math></span><img alt="e_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6e81caf3d4bcb929315801cbabc83543829484ee" style="vertical-align: -0.671ex; width:2.138ex; height:2.009ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle e_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle e_{2}}</annotation>
+</semantics>
+</math></span><img alt="e_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4045b5c7cee9bd0681153bbb077489b13269355e" style="vertical-align: -0.671ex; width:2.138ex; height:2.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle e_{3}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle e_{3}}</annotation>
+</semantics>
+</math></span><img alt="e_{3}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1686693c185b6df4a5f57f34f7b61c4a0e057ad9" style="vertical-align: -0.671ex; width:2.138ex; height:2.009ex;"/></span> respectively <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1}</annotation>
+</semantics>
+</math></span><img alt="1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/92d98b82a3778f043108d4e20960a9193df57cbf" style="vertical-align: -0.338ex; width:1.162ex; height:2.176ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r=({\sqrt {5}}-1)/2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>r</mi>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mn>5</mn>
+</msqrt>
+</mrow>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r=({\sqrt {5}}-1)/2}</annotation>
+</semantics>
+</math></span><img alt="r=({\sqrt {5}}-1)/2" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6fa8449c3b49f312d7866ec1d0941b302968367a" style="vertical-align: -0.838ex; width:15.383ex; height:3.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1}</annotation>
+</semantics>
+</math></span><img alt="1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/92d98b82a3778f043108d4e20960a9193df57cbf" style="vertical-align: -0.338ex; width:1.162ex; height:2.176ex;"/></span> and the capacity of all other edges some integer <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M\geq 2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+<mo>≥<!-- ≥ --></mo>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M\geq 2}</annotation>
+</semantics>
+</math></span><img alt="M\geq 2" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3b495c8eb91ff77dae41aec5ca3ce89596a2d6ec" style="vertical-align: -0.505ex; width:6.703ex; height:2.343ex;"/></span>. The constant <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>r</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r}</annotation>
+</semantics>
+</math></span><img alt="r" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0d1ecb613aa2984f0576f70f86650b7c2a132538" style="vertical-align: -0.338ex; width:1.049ex; height:1.676ex;"/></span> was chosen so, that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r^{2}=1-r}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>=</mo>
+<mn>1</mn>
+<mo>−<!-- − --></mo>
+<mi>r</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r^{2}=1-r}</annotation>
+</semantics>
+</math></span><img alt="r^{2}=1-r" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/eefeb5c9481298475e475e4e260519bf833f4a09" style="vertical-align: -0.505ex; width:10.253ex; height:2.843ex;"/></span>. We use augmenting paths according to the following table, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p_{1}=\{s,v_{4},v_{3},v_{2},v_{1},t\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mo fence="false" stretchy="false">{</mo>
+<mi>s</mi>
+<mo>,</mo>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>4</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>t</mi>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p_{1}=\{s,v_{4},v_{3},v_{2},v_{1},t\}}</annotation>
+</semantics>
+</math></span><img alt="p_{1}=\{s,v_{4},v_{3},v_{2},v_{1},t\}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ae7adbdd037841bc62ddf953e553d2f77319dffc" style="vertical-align: -0.838ex; margin-left: -0.089ex; width:23.564ex; height:2.843ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p_{2}=\{s,v_{2},v_{3},v_{4},t\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mo fence="false" stretchy="false">{</mo>
+<mi>s</mi>
+<mo>,</mo>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>4</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>t</mi>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p_{2}=\{s,v_{2},v_{3},v_{4},t\}}</annotation>
+</semantics>
+</math></span><img alt="p_{2}=\{s,v_{2},v_{3},v_{4},t\}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bbd8a86b88232693ba5065919799e72436aff781" style="vertical-align: -0.838ex; margin-left: -0.089ex; width:20.348ex; height:2.843ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p_{3}=\{s,v_{1},v_{2},v_{3},t\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mo fence="false" stretchy="false">{</mo>
+<mi>s</mi>
+<mo>,</mo>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>t</mi>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p_{3}=\{s,v_{1},v_{2},v_{3},t\}}</annotation>
+</semantics>
+</math></span><img alt="p_{3}=\{s,v_{1},v_{2},v_{3},t\}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/202cf00de09dbb7692cff6580933c170f1892cda" style="vertical-align: -0.838ex; margin-left: -0.089ex; width:20.348ex; height:2.843ex;"/></span>.
+</p>
+<table class="wikitable" style="text-align: center">
+<tbody><tr>
+<th rowspan="2">Step</th>
+<th rowspan="2">Augmenting path</th>
+<th rowspan="2">Sent flow</th>
+<th colspan="3">Residual capacities
+</th></tr>
+<tr>
+<th><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle e_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle e_{1}}</annotation>
+</semantics>
+</math></span><img alt="e_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6e81caf3d4bcb929315801cbabc83543829484ee" style="vertical-align: -0.671ex; width:2.138ex; height:2.009ex;"/></span></th>
+<th><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle e_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle e_{2}}</annotation>
+</semantics>
+</math></span><img alt="e_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4045b5c7cee9bd0681153bbb077489b13269355e" style="vertical-align: -0.671ex; width:2.138ex; height:2.009ex;"/></span></th>
+<th><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle e_{3}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle e_{3}}</annotation>
+</semantics>
+</math></span><img alt="e_{3}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1686693c185b6df4a5f57f34f7b61c4a0e057ad9" style="vertical-align: -0.671ex; width:2.138ex; height:2.009ex;"/></span>
+</th></tr>
+<tr>
+<td>0</td>
+<td></td>
+<td></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r^{0}=1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msup>
+<mo>=</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r^{0}=1}</annotation>
+</semantics>
+</math></span><img alt="r^{0}=1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/068fa43a67e293de6bf1fc3a89f830934035d01b" style="vertical-align: -0.338ex; width:6.364ex; height:2.676ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>r</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r}</annotation>
+</semantics>
+</math></span><img alt="r" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0d1ecb613aa2984f0576f70f86650b7c2a132538" style="vertical-align: -0.338ex; width:1.049ex; height:1.676ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1}</annotation>
+</semantics>
+</math></span><img alt="1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/92d98b82a3778f043108d4e20960a9193df57cbf" style="vertical-align: -0.338ex; width:1.162ex; height:2.176ex;"/></span>
+</td></tr>
+<tr>
+<td>1</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \{s,v_{2},v_{3},t\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">{</mo>
+<mi>s</mi>
+<mo>,</mo>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mi>t</mi>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \{s,v_{2},v_{3},t\}}</annotation>
+</semantics>
+</math></span><img alt="\{s,v_{2},v_{3},t\}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/df5dd1332ff506087d1b69d969d9be5fdc8107f0" style="vertical-align: -0.838ex; width:11.721ex; height:2.843ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1}</annotation>
+</semantics>
+</math></span><img alt="1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/92d98b82a3778f043108d4e20960a9193df57cbf" style="vertical-align: -0.338ex; width:1.162ex; height:2.176ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r^{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r^{0}}</annotation>
+</semantics>
+</math></span><img alt="r^{0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b456e6a88a9714881602ce35624d277292c6f1bf" style="vertical-align: -0.338ex; width:2.103ex; height:2.676ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r^{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r^{1}}</annotation>
+</semantics>
+</math></span><img alt="r^{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e9c8ee534e26670b08b992331c2097d3bb7c1b06" style="vertical-align: -0.338ex; width:2.103ex; height:2.676ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2aae8864a3c1fec9585261791a809ddec1489950" style="vertical-align: -0.338ex; width:1.162ex; height:2.176ex;"/></span>
+</td></tr>
+<tr>
+<td>2</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p_{1}}</annotation>
+</semantics>
+</math></span><img alt="p_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b9b58f22283ca46dd5da309cc34303b06a797783" style="vertical-align: -0.671ex; margin-left: -0.089ex; width:2.313ex; height:2.009ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r^{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r^{1}}</annotation>
+</semantics>
+</math></span><img alt="r^{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e9c8ee534e26670b08b992331c2097d3bb7c1b06" style="vertical-align: -0.338ex; width:2.103ex; height:2.676ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r^{2}}</annotation>
+</semantics>
+</math></span><img alt="r^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a363a15442d031416d1eb62254a9c726e3f6c66c" style="vertical-align: -0.338ex; width:2.103ex; height:2.676ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2aae8864a3c1fec9585261791a809ddec1489950" style="vertical-align: -0.338ex; width:1.162ex; height:2.176ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r^{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r^{1}}</annotation>
+</semantics>
+</math></span><img alt="r^{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e9c8ee534e26670b08b992331c2097d3bb7c1b06" style="vertical-align: -0.338ex; width:2.103ex; height:2.676ex;"/></span>
+</td></tr>
+<tr>
+<td>3</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p_{2}}</annotation>
+</semantics>
+</math></span><img alt="p_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/43f1b08d7d69712872e051c2b33fdfa9f5d42319" style="vertical-align: -0.671ex; margin-left: -0.089ex; width:2.313ex; height:2.009ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r^{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r^{1}}</annotation>
+</semantics>
+</math></span><img alt="r^{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e9c8ee534e26670b08b992331c2097d3bb7c1b06" style="vertical-align: -0.338ex; width:2.103ex; height:2.676ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r^{2}}</annotation>
+</semantics>
+</math></span><img alt="r^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a363a15442d031416d1eb62254a9c726e3f6c66c" style="vertical-align: -0.338ex; width:2.103ex; height:2.676ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r^{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r^{1}}</annotation>
+</semantics>
+</math></span><img alt="r^{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e9c8ee534e26670b08b992331c2097d3bb7c1b06" style="vertical-align: -0.338ex; width:2.103ex; height:2.676ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2aae8864a3c1fec9585261791a809ddec1489950" style="vertical-align: -0.338ex; width:1.162ex; height:2.176ex;"/></span>
+</td></tr>
+<tr>
+<td>4</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p_{1}}</annotation>
+</semantics>
+</math></span><img alt="p_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b9b58f22283ca46dd5da309cc34303b06a797783" style="vertical-align: -0.671ex; margin-left: -0.089ex; width:2.313ex; height:2.009ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r^{2}}</annotation>
+</semantics>
+</math></span><img alt="r^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a363a15442d031416d1eb62254a9c726e3f6c66c" style="vertical-align: -0.338ex; width:2.103ex; height:2.676ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2aae8864a3c1fec9585261791a809ddec1489950" style="vertical-align: -0.338ex; width:1.162ex; height:2.176ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r^{3}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r^{3}}</annotation>
+</semantics>
+</math></span><img alt="r^{3}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cd69c630eae852a57d5b776d88626b7afe7bb8e1" style="vertical-align: -0.338ex; width:2.103ex; height:2.676ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r^{2}}</annotation>
+</semantics>
+</math></span><img alt="r^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a363a15442d031416d1eb62254a9c726e3f6c66c" style="vertical-align: -0.338ex; width:2.103ex; height:2.676ex;"/></span>
+</td></tr>
+<tr>
+<td>5</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p_{3}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p_{3}}</annotation>
+</semantics>
+</math></span><img alt="p_{3}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2a79626b787857474daa665c953bbc6725e7c345" style="vertical-align: -0.671ex; margin-left: -0.089ex; width:2.313ex; height:2.009ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r^{2}}</annotation>
+</semantics>
+</math></span><img alt="r^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a363a15442d031416d1eb62254a9c726e3f6c66c" style="vertical-align: -0.338ex; width:2.103ex; height:2.676ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r^{2}}</annotation>
+</semantics>
+</math></span><img alt="r^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a363a15442d031416d1eb62254a9c726e3f6c66c" style="vertical-align: -0.338ex; width:2.103ex; height:2.676ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r^{3}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r^{3}}</annotation>
+</semantics>
+</math></span><img alt="r^{3}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cd69c630eae852a57d5b776d88626b7afe7bb8e1" style="vertical-align: -0.338ex; width:2.103ex; height:2.676ex;"/></span></td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2aae8864a3c1fec9585261791a809ddec1489950" style="vertical-align: -0.338ex; width:1.162ex; height:2.176ex;"/></span>
+</td></tr></tbody></table>
+<p>Note that after step 1 as well as after step 5, the residual capacities of edges <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle e_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle e_{1}}</annotation>
+</semantics>
+</math></span><img alt="e_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6e81caf3d4bcb929315801cbabc83543829484ee" style="vertical-align: -0.671ex; width:2.138ex; height:2.009ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle e_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle e_{2}}</annotation>
+</semantics>
+</math></span><img alt="e_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4045b5c7cee9bd0681153bbb077489b13269355e" style="vertical-align: -0.671ex; width:2.138ex; height:2.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle e_{3}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle e_{3}}</annotation>
+</semantics>
+</math></span><img alt="e_{3}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1686693c185b6df4a5f57f34f7b61c4a0e057ad9" style="vertical-align: -0.671ex; width:2.138ex; height:2.009ex;"/></span> are in the form <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r^{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r^{n}}</annotation>
+</semantics>
+</math></span><img alt="r^{n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ed76b0221f301ea11e131707b3851a74e6aa1f26" style="vertical-align: -0.338ex; width:2.267ex; height:2.343ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r^{n+1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r^{n+1}}</annotation>
+</semantics>
+</math></span><img alt="r^{n+1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dc3457a9422030009dceefe8c0c1e6bc48880107" style="vertical-align: -0.338ex; width:4.368ex; height:2.676ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2aae8864a3c1fec9585261791a809ddec1489950" style="vertical-align: -0.338ex; width:1.162ex; height:2.176ex;"/></span>, respectively, for some <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\in \mathbb {N} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>∈<!-- ∈ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">N</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\in \mathbb {N} }</annotation>
+</semantics>
+</math></span><img alt="n\in \mathbb {N} " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d059936e77a2d707e9ee0a1d9575a1d693ce5d0b" style="vertical-align: -0.338ex; width:5.913ex; height:2.176ex;"/></span>. This means that we can use augmenting paths <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p_{1}}</annotation>
+</semantics>
+</math></span><img alt="p_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b9b58f22283ca46dd5da309cc34303b06a797783" style="vertical-align: -0.671ex; margin-left: -0.089ex; width:2.313ex; height:2.009ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p_{2}}</annotation>
+</semantics>
+</math></span><img alt="p_{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/43f1b08d7d69712872e051c2b33fdfa9f5d42319" style="vertical-align: -0.671ex; margin-left: -0.089ex; width:2.313ex; height:2.009ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p_{1}}</annotation>
+</semantics>
+</math></span><img alt="p_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b9b58f22283ca46dd5da309cc34303b06a797783" style="vertical-align: -0.671ex; margin-left: -0.089ex; width:2.313ex; height:2.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p_{3}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p_{3}}</annotation>
+</semantics>
+</math></span><img alt="p_{3}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2a79626b787857474daa665c953bbc6725e7c345" style="vertical-align: -0.671ex; margin-left: -0.089ex; width:2.313ex; height:2.009ex;"/></span> infinitely many times and residual capacities of these edges will always be in the same form. Total flow in the network after step 5 is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1+2(r^{1}+r^{2})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mo>+</mo>
+<mn>2</mn>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msup>
+<mo>+</mo>
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1+2(r^{1}+r^{2})}</annotation>
+</semantics>
+</math></span><img alt="1+2(r^{1}+r^{2})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/710921328c893d74ec78a231dd954e8a499be1e9" style="vertical-align: -0.838ex; width:14.021ex; height:3.176ex;"/></span>. If we continue to use augmenting paths as above, the total flow converges to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \textstyle 1+2\sum _{i=1}^{\infty }r^{i}=3+2r}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mstyle displaystyle="false" scriptlevel="0">
+<mn>1</mn>
+<mo>+</mo>
+<mn>2</mn>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mrow>
+</munderover>
+<msup>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msup>
+<mo>=</mo>
+<mn>3</mn>
+<mo>+</mo>
+<mn>2</mn>
+<mi>r</mi>
+</mstyle>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \textstyle 1+2\sum _{i=1}^{\infty }r^{i}=3+2r}</annotation>
+</semantics>
+</math></span><img alt="\textstyle 1+2\sum _{i=1}^{\infty }r^{i}=3+2r" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fa76c484cf862fb123ce141e56d170b99f32efbe" style="vertical-align: -1.005ex; width:22.454ex; height:3.176ex;"/></span>.  However, note that there is a flow of value <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2M+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>2</mn>
+<mi>M</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2M+1}</annotation>
+</semantics>
+</math></span><img alt="2M+1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dbbfeb66c7f602d5729ac225f9a3357645425186" style="vertical-align: -0.505ex; width:7.608ex; height:2.343ex;"/></span>, by sending <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span> units of flow along <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle sv_{1}t}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>s</mi>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mi>t</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle sv_{1}t}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle sv_{1}t}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f96d3e23957b20a89ad2dd0224c32f02c5105163" style="vertical-align: -0.671ex; width:4.112ex; height:2.343ex;"/></span>, 1 unit of flow along <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle sv_{2}v_{3}t}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>s</mi>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+<mi>t</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle sv_{2}v_{3}t}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle sv_{2}v_{3}t}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/35e8afea28fba69eec2d52ced990ad7d4592e1af" style="vertical-align: -0.671ex; width:6.294ex; height:2.343ex;"/></span>, and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span> units of flow along <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle sv_{4}t}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>s</mi>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>4</mn>
+</mrow>
+</msub>
+<mi>t</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle sv_{4}t}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle sv_{4}t}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c125c7dd5d8562b0471c4100c3d5d80d62e87e5b" style="vertical-align: -0.671ex; width:4.112ex; height:2.343ex;"/></span>. Therefore, the algorithm never terminates and the flow does not even converge to the maximum flow.<sup class="reference" id="cite_ref-5">[5]</sup>
+</p><p>Another non-terminating example based on the Euclidean algorithm is given by Backman &amp; Huynh (2018), where they also show that the worst case running-time of the Ford-Fulkerson algorithm on a network <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G(V,E)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>G</mi>
+<mo stretchy="false">(</mo>
+<mi>V</mi>
+<mo>,</mo>
+<mi>E</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G(V,E)}</annotation>
+</semantics>
+</math></span><img alt="G(V,E)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7dc43221ee885a10b87c89373b12b8c1110e7ca5" style="vertical-align: -0.838ex; width:8.233ex; height:2.843ex;"/></span> in ordinal numbers is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \omega ^{\Theta (|E|)}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>ω<!-- ω --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \omega ^{\Theta (|E|)}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \omega ^{\Theta (|E|)}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9293b52d4f58f07253340d01fcc54bfd4e93cdbb" style="vertical-align: -0.338ex; width:6.406ex; height:2.843ex;"/></span>.
+</p>
+
+<h2><span id="Python_implementation_of_Edmonds.E2.80.93Karp_algorithm"></span><span class="mw-headline" id="Python_implementation_of_Edmonds–Karp_algorithm">Python implementation of Edmonds–Karp algorithm</span><span class="mw-editsection"></span></h2>
+
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Berge's theorem</li>
+<li>Approximate max-flow min-cut theorem</li>
+<li>Turn restriction routing</li>
+<li>Dinic's algorithm</li></ul>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFCormenLeisersonRivestStein2001">Cormen, Thomas H.; Leiserson, Charles E.; Rivest, Ronald L.; Stein, Clifford (2001). "Section 26.2: The Ford–Fulkerson method". <i>Introduction to Algorithms</i> (Second ed.). MIT Press and McGraw–Hill. pp. 651–664. ISBN <bdi>0-262-03293-7</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Section+26.2%3A+The+Ford%26ndash%3BFulkerson+method&amp;rft.btitle=Introduction+to+Algorithms&amp;rft.pages=651-664&amp;rft.edition=Second&amp;rft.pub=MIT+Press+and+McGraw%26ndash%3BHill&amp;rft.date=2001&amp;rft.isbn=0-262-03293-7&amp;rft.aulast=Cormen&amp;rft.aufirst=Thomas+H.&amp;rft.au=Leiserson%2C+Charles+E.&amp;rft.au=Rivest%2C+Ronald+L.&amp;rft.au=Stein%2C+Clifford&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AFord%E2%80%93Fulkerson+algorithm"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFGeorge_T._HeinemanGary_PolliceStanley_Selkow2008">George T. Heineman; Gary Pollice; Stanley Selkow (2008). "Chapter 8:Network Flow Algorithms". <i>Algorithms in a Nutshell</i>. Oreilly Media. pp. 226–250. ISBN <bdi>978-0-596-51624-6</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Chapter+8%3ANetwork+Flow+Algorithms&amp;rft.btitle=Algorithms+in+a+Nutshell&amp;rft.pages=226-250&amp;rft.pub=Oreilly+Media&amp;rft.date=2008&amp;rft.isbn=978-0-596-51624-6&amp;rft.au=George+T.+Heineman&amp;rft.au=Gary+Pollice&amp;rft.au=Stanley+Selkow&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AFord%E2%80%93Fulkerson+algorithm"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFJon_KleinbergÉva_Tardos2006">Jon Kleinberg; Éva Tardos (2006). "Chapter 7:Extensions to the Maximum-Flow Problem". <i>Algorithm Design</i>. Pearson Education. pp. 378–384. ISBN <bdi>0-321-29535-8</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Chapter+7%3AExtensions+to+the+Maximum-Flow+Problem&amp;rft.btitle=Algorithm+Design&amp;rft.pages=378-384&amp;rft.pub=Pearson+Education&amp;rft.date=2006&amp;rft.isbn=0-321-29535-8&amp;rft.au=Jon+Kleinberg&amp;rft.au=%C3%89va+Tardos&amp;rft_id=https%3A%2F%2Farchive.org%2Fdetails%2Falgorithmdesign0000klei%2Fpage%2F378&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AFord%E2%80%93Fulkerson+algorithm"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFSamuel_Gutekunst2009">Samuel Gutekunst (2009). <i>ENGRI 1101</i>. Cornell University.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=ENGRI+1101&amp;rft.pub=Cornell+University&amp;rft.date=2009&amp;rft.au=Samuel+Gutekunst&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AFord%E2%80%93Fulkerson+algorithm"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFBackmanHuynh2018">Backman, Spencer; Huynh, Tony (2018). "Transfinite Ford–Fulkerson on a finite network". <i>Computability</i>. <b>7</b> (4): 341–347. arXiv:<span class="cs1-lock-free" title="Freely accessible">1504.04363</span>. doi:10.3233/COM-180082. S2CID 15497138.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Computability&amp;rft.atitle=Transfinite+Ford%E2%80%93Fulkerson+on+a+finite+network&amp;rft.volume=7&amp;rft.issue=4&amp;rft.pages=341-347&amp;rft.date=2018&amp;rft_id=info%3Aarxiv%2F1504.04363&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A15497138%23id-name%3DS2CID&amp;rft_id=info%3Adoi%2F10.3233%2FCOM-180082&amp;rft.aulast=Backman&amp;rft.aufirst=Spencer&amp;rft.au=Huynh%2C+Tony&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AFord%E2%80%93Fulkerson+algorithm"></span></li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>A tutorial explaining the Ford–Fulkerson method to solve the max-flow problem</li>
+<li>Another Java animation</li>
+<li>Java Web Start application</li></ul>
+<p><img alt="" class="noviewer" data-file-height="1376" data-file-width="1024" decoding="async" height="16" src="//upload.wikimedia.org/wikipedia/en/thumb/4/4a/Commons-logo.svg/12px-Commons-logo.svg.png" srcset="//upload.wikimedia.org/wikipedia/en/thumb/4/4a/Commons-logo.svg/18px-Commons-logo.svg.png 1.5x, //upload.wikimedia.org/wikipedia/en/thumb/4/4a/Commons-logo.svg/24px-Commons-logo.svg.png 2x" width="12"/> Media related to Ford-Fulkerson's algorithm at Wikimedia Commons
+</p>
+<!-- 
+NewPP limit report
+Parsed by mw2375
+Cached time: 20221224003539
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.322 seconds
+Real time usage: 0.546 seconds
+Preprocessor visited node count: 1713/1000000
+Post‐expand include size: 26848/2097152 bytes
+Template argument size: 1411/2097152 bytes
+Highest expansion depth: 12/100
+Expensive parser function count: 2/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 42903/5000000 bytes
+Lua time usage: 0.119/10.000 seconds
+Lua memory usage: 5755240/52428800 bytes
+Number of Wikibase entities loaded: 1/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  251.694      1 -total
+ 38.58%   97.095      1 Template:Reflist
+ 33.05%   83.189      6 Template:Cite_book
+ 16.18%   40.720      1 Template:Short_description
+ 11.57%   29.116      1 Template:Harvtxt
+ 11.42%   28.737      1 Template:Commons_category-inline
+ 10.81%   27.205      1 Template:Sister-inline
+  8.22%   20.695      1 Template:Use_American_English
+  7.55%   19.013      2 Template:Pagetype
+  5.35%   13.473      3 Template:Cite_journal
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:53777-0!canonical and timestamp 20221224003539 and revision id 1121114552.
+ -->
+</div></body>
+</html>

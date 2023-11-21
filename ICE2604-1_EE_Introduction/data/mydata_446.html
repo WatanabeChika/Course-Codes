@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>hash_function</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style><link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/><link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-More_citations_needed plainlinks metadata ambox ambox-content ambox-Refimprove" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+
+<p>A <b>hash function</b> is any function that can be used to map data of arbitrary size to fixed-size values. The values returned by a hash function are called <i>hash values</i>, <i>hash codes</i>, <i>digests</i>, or simply <i>hashes</i>.  The values are usually used to index a fixed-size table called a <i>hash table</i>. Use of a hash function to index a hash table is called <i>hashing</i> or <i>scatter storage addressing</i>.
+</p><p>Hash functions and their associated hash tables are used in data storage and retrieval applications to access data in a small and nearly constant time per retrieval. They require an amount of storage space only fractionally greater than the total space required for the data or records themselves. Hashing is a computationally and storage space-efficient form of data access that avoids the non-constant access time of ordered and unordered lists and structured trees, and the often exponential storage requirements of direct access of state spaces of large or variable-length keys.
+</p><p>Use of hash functions relies on statistical properties of key and function interaction: worst-case behaviour is intolerably bad with a vanishingly small probability, and average-case behaviour can be nearly optimal (minimal collision).<sup class="reference" id="cite_ref-1">[1]</sup>
+</p><p>Hash functions are related to (and often confused with) checksums, check digits, fingerprints, lossy compression, randomization functions, error-correcting codes, and ciphers. Although the concepts overlap to some extent, each one has its own uses and requirements and is designed and optimized differently. The hash function differs from these concepts mainly in terms of data integrity.
+</p>
+
+<h2><span class="mw-headline" id="Overview">Overview</span><span class="mw-editsection"></span></h2>
+<p>A hash function takes a key as an input, which is associated with a datum or record and used to identify it to the data storage and retrieval application. The keys may be fixed length, like an integer, or variable length, like a name.  In some cases, the key is the datum itself.  The output is a hash code used to index a hash table holding the data or records, or pointers to them.
+</p><p>A hash function may be considered to perform three functions:
+</p>
+<ul><li>Convert variable-length keys into fixed length (usually machine word length or less) values, by folding them by words or other units using a parity-preserving operator like ADD or XOR.</li>
+<li>Scramble the bits of the key so that the resulting values are uniformly distributed over the keyspace.</li>
+<li>Map the key values into ones less than or equal to the size of the table</li></ul>
+<p>A good hash function satisfies two basic properties: 1) it should be very fast to compute; 2) it should minimize duplication of output values (collisions).  Hash functions rely on generating favourable probability distributions for their effectiveness, reducing access time to nearly constant.  High table loading factors, pathological key sets and poorly designed hash functions can result in access times approaching linear in the number of items in the table. 
+Hash functions can be designed to give the best worst-case performance,<sup class="reference" id="cite_ref-2">[Notes 1]</sup> good performance under high table loading factors, and in special cases, perfect (collisionless) mapping of keys into hash codes. Implementation is based on parity-preserving bit operations (XOR and ADD), multiply, or divide. A necessary adjunct to the hash function is a collision-resolution method that employs an auxiliary data structure like linked lists, or systematic probing of the table to find an empty slot.
+</p>
+<h2><span class="mw-headline" id="Hash_tables">Hash tables</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>Hash functions are used in conjunction with hash tables to store and retrieve data items or data records. The hash function translates the key associated with each datum or record into a hash code, which is used to index the hash table. When an item is to be added to the table, the hash code may index an empty slot (also called a bucket), in which case the item is added to the table there.  If the hash code indexes a full slot, some kind of collision resolution is required: the new item may be omitted (not added to the table), or replace the old item, or it can be added to the table in some other location by a specified procedure.  That procedure depends on the structure of the hash table: In <i>chained hashing</i>, each slot is the head of a linked list or chain, and items that collide at the slot are added to the chain.  Chains may be kept in random order and searched linearly, or in serial order, or as a self-ordering list by frequency to speed up access.  In <i>open address hashing</i>, the table is probed starting from the occupied slot in a specified manner, usually by linear probing, quadratic probing, or double hashing until an open slot is located or the entire table is probed (overflow).  Searching for the item follows the same procedure until the item is located, an open slot is found or the entire table has been searched (item not in table).
+</p>
+<h3><span class="mw-headline" id="Specialized_uses">Specialized uses</span><span class="mw-editsection"></span></h3>
+<p>Hash functions are also used to build caches for large data sets stored in slow media. A cache is generally simpler than a hashed search table since any collision can be resolved by discarding or writing back the older of the two colliding items.<sup class="reference" id="cite_ref-3">[2]</sup>
+</p><p>Hash functions are an essential ingredient of the Bloom filter, a space-efficient probabilistic data structure that is used to test whether an element is a member of a set.
+</p><p>A special case of hashing  is known as  geometric hashing or <i>the grid method</i>. In these applications, the set of all inputs is some sort of metric space, and the hashing function can be interpreted as a partition of that space into a grid of <i>cells</i>. The table is often an array with two or more indices (called a <i>grid file</i>, <i>grid index</i>, <i>bucket grid</i>, and similar names), and the hash function returns an index tuple.  This principle is widely used in computer graphics, computational geometry and many other disciplines, to solve many proximity problems in the plane or in three-dimensional space, such as finding closest pairs in a set of points, similar shapes in a list of shapes, similar images in an image database, and so on.
+</p><p>Hash tables are also used to implement associative arrays and dynamic sets.<sup class="reference" id="cite_ref-handbook_of_applied_cryptography_4-0">[3]</sup>
+</p>
+<h2><span class="mw-headline" id="Properties">Properties</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1097763485" rel="mw-deduplicated-inline-style"/><table class="box-More_citations_needed plainlinks metadata ambox ambox-content ambox-Refimprove" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<h3><span class="mw-headline" id="Uniformity">Uniformity</span><span class="mw-editsection"></span></h3>
+<p>A good hash function should map the expected inputs as evenly as possible over its output range.  That is, every hash value in the output range should be generated with roughly the same probability. The reason for this last requirement is that the cost of hashing-based methods goes up sharply as the number of <i>collisions</i>—pairs of inputs that are mapped to the same hash value—increases.  If some hash values are more likely to occur than others, a larger fraction of the lookup operations will have to search through a larger set of colliding table entries.
+</p><p>Note that this criterion only requires the value to be <i>uniformly distributed</i>, not <i>random</i> in any sense. A good randomizing function is (barring computational efficiency concerns) generally a good choice as a hash function, but the converse need not be true.
+</p><p>Hash tables often contain only a small subset of the valid inputs. For instance, a club membership list may contain only a hundred or so member names, out of the very large set of all possible names. In these cases, the uniformity criterion should hold for almost all typical subsets of entries that may be found in the table, not just for the global set of all possible entries.
+</p><p>In other words, if a typical set of <span class="texhtml"><i>m</i></span> records is hashed to <span class="texhtml"><i>n</i></span> table slots, the probability of a bucket receiving many more than <span class="texhtml"><i>m</i>/<i>n</i></span> records should be vanishingly small. In particular, if <span class="texhtml"><i>m</i></span> is less than <span class="texhtml"><i>n</i></span>, very few buckets should have more than one or two records.  A small number of collisions is virtually inevitable, even if <span class="texhtml"><i>n</i></span> is much larger than <span class="texhtml"><i>m</i></span> – see the birthday problem.
+</p><p>In special cases when the keys are known in advance and the key set is static, a hash function can be found that achieves absolute (or collisionless) uniformity.  Such a hash function is said to be <i>perfect</i>.  There is no algorithmic way of constructing such a function - searching for one is a factorial function of the number of keys to be mapped versus the number of table slots they're tapped into.  Finding a perfect hash function over more than a very small set of keys is usually computationally infeasible; the resulting function is likely to be more computationally complex than a standard hash function and provides only a marginal advantage over a function with good statistical properties that yields a minimum number of collisions. See <b>universal hash function</b>.
+</p>
+<h3><span class="mw-headline" id="Testing_and_measurement">Testing and measurement</span><span class="mw-editsection"></span></h3>
+<p>When testing a hash function, the uniformity of the distribution of hash values can be evaluated by the chi-squared test.   This test is a goodness-of-fit measure: it's the actual distribution of items in buckets versus the expected (or uniform) distribution of items. The formula is:
+<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\frac {\sum _{j=0}^{m-1}(b_{j})(b_{j}+1)/2}{(n/2m)(n+2m-1)}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>m</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</munderover>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>+</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>2</mn>
+</mrow>
+<mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>2</mn>
+<mi>m</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>+</mo>
+<mn>2</mn>
+<mi>m</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mrow>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\frac {\sum _{j=0}^{m-1}(b_{j})(b_{j}+1)/2}{(n/2m)(n+2m-1)}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\frac {\sum _{j=0}^{m-1}(b_{j})(b_{j}+1)/2}{(n/2m)(n+2m-1)}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e84d7e8804d0ec20058a8297080de66907b1a46f" style="vertical-align: -2.671ex; width:21.656ex; height:7.343ex;"/></span>
+</p><p>where: <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span> is the number of keys, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle m}</annotation>
+</semantics>
+</math></span><img alt="m" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0a07d98bb302f3856cbabc47b2b9016692e3f7bc" style="vertical-align: -0.338ex; width:2.04ex; height:1.676ex;"/></span> is the number of buckets, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle b_{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>b</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle b_{j}}</annotation>
+</semantics>
+</math></span><img alt="b_{j}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fa56eff4488494085785b7b0d6e2069bd45a3ce5" style="vertical-align: -1.005ex; width:1.907ex; height:2.843ex;"/></span> is the number of items in bucket <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle j}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>j</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle j}</annotation>
+</semantics>
+</math></span><img alt="j" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2f461e54f5c093e92a55547b9764291390f0b5d0" style="vertical-align: -0.671ex; margin-left: -0.027ex; width:0.985ex; height:2.509ex;"/></span>
+</p><p>A ratio within one confidence interval (0.95 - 1.05) is indicative that the hash function evaluated has an expected uniform distribution.
+</p><p>Hash functions can have some technical properties that make it more likely that they'll have a uniform distribution when applied.  One is the strict avalanche criterion: whenever a single input bit is complemented, each of the output bits changes with a 50% probability.  The reason for this property is that selected subsets of the keyspace may have low variability.  For the output to be uniformly distributed, a low amount of variability, even one bit, should translate into a high amount of variability (i.e. distribution over the tablespace) in the output.  Each bit should change with a probability of 50% because if some bits are reluctant to change, the keys become clustered around those values.  If the bits want to change too readily, the mapping is approaching a fixed XOR function of a single bit.  Standard tests for this property have been described in the literature.<sup class="reference" id="cite_ref-5">[4]</sup>  The relevance of the criterion to a multiplicative hash function is assessed here.<sup class="reference" id="cite_ref-6">[5]</sup>
+</p>
+<h3><span class="mw-headline" id="Efficiency">Efficiency</span><span class="mw-editsection"></span></h3>
+<p>In data storage and retrieval applications, the use of a hash function is a trade-off between search time and data storage space.  If search time were unbounded, a very compact unordered linear list would be the best medium; if storage space were unbounded, a randomly accessible structure indexable by the key-value would be very large, very sparse, but very fast.  A hash function takes a finite amount of time to map a potentially large keyspace to a feasible amount of storage space searchable in a bounded amount of time regardless of the number of keys.  In most applications, the hash function should be computable with minimum latency and secondarily in a minimum number of instructions.
+</p><p>Computational complexity varies with the number of instructions required and latency of individual instructions, with the simplest being the bitwise methods (folding), followed by the multiplicative methods, and the most complex (slowest) are the division-based methods.
+</p><p>Because collisions should be infrequent, and cause a marginal delay but are otherwise harmless, it's usually preferable to choose a faster hash function over one that needs more computation but saves a few collisions.
+</p><p>Division-based implementations can be of particular concern because the division is microprogrammed on nearly all chip architectures.  Divide (modulo) by a constant can be inverted to become a multiply by the word-size multiplicative-inverse of the constant.  This can be done by the programmer, or by the compiler.  Divide can also be reduced directly into a series of shift-subtracts and shift-adds, though minimizing the number of such operations required is a daunting problem; the number of assembly instructions resulting may be more than a dozen, and swamp the pipeline.  If the architecture has hardware multiply functional units, the multiply-by-inverse is likely a better approach.
+</p><p>We can allow the table size <span class="texhtml"><i>n</i></span> to not be a power of <span class="texhtml">2</span> and still not have to perform any remainder or division operation, as these computations are sometimes costly. For example, let <span class="texhtml"><i>n</i></span> be significantly less than <span class="texhtml">2<sup><i>b</i></sup></span>. Consider a pseudorandom number generator function <span class="texhtml"><i>P</i>(key)</span> that is uniform on the interval <span class="texhtml">[0, 2<sup><i>b</i></sup> − 1]</span>. A hash function uniform on the interval <span class="texhtml">[0, <i>n</i>-1]</span> is <span class="texhtml"><i>n</i> <i>P</i>(key)/2<sup><i>b</i></sup></span>. We can replace the division by a (possibly faster) right bit shift: <span class="texhtml"><i>nP</i>(key) &gt;&gt; <i>b</i></span>.
+</p><p>If keys are being hashed repeatedly, and the hash function is costly, computing time can be saved by precomputing the hash codes and storing them with the keys.  Matching hash codes almost certainly means the keys are identical.  This technique is used for the transposition table in game-playing programs, which stores a 64-bit hashed representation of the board position.
+</p>
+<h3><span class="mw-headline" id="Universality">Universality</span><span class="mw-editsection"></span></h3>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>A <i>universal hashing</i> scheme is a randomized algorithm that selects a hashing function <span class="texhtml"><i>h</i></span> among a family of such functions, in such a way that the probability of a collision of any two distinct keys is <span class="texhtml">1/<i>m</i></span>, where <span class="texhtml"><i>m</i></span> is the number of distinct hash values desired—independently of the two keys. Universal hashing ensures (in a probabilistic sense) that the hash function application will behave as well as if it were using a random function, for any distribution of the input data. It will, however, have more collisions than perfect hashing and may require more operations than a special-purpose hash function.
+</p>
+<h3><span class="mw-headline" id="Applicability">Applicability</span><span class="mw-editsection"></span></h3>
+<p>A hash function is applicable in a variety of situations.
+A hash function that allows only certain table sizes, strings only up to a certain length, or can't accept a seed (i.e. allow double hashing) isn't as useful as one that does.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (February 2022)">citation needed</span></i>]</sup>
+</p>
+<h3><span class="mw-headline" id="Deterministic">Deterministic</span><span class="mw-editsection"></span></h3>
+<p>A hash procedure must be deterministic—meaning that for a given input value it must always generate the same hash value. In other words, it must be a function of the data to be hashed, in the mathematical sense of the term. This requirement excludes hash functions that depend on external variable parameters, such as pseudo-random number generators or the time of day. It also excludes functions that depend on the memory address of the object being hashed in cases that the address may change during execution (as may happen on systems that use certain methods of garbage collection), although sometimes rehashing of the item is possible.
+</p><p>The determinism is in the context of the reuse of the function. For example, Python adds the feature that hash functions make use of a randomized seed that is generated once when the Python process starts in addition to the input to be hashed.<sup class="reference" id="cite_ref-7">[6]</sup> The Python hash (SipHash) is still a valid hash function when used within a single run. But if the values are persisted (for example, written to disk) they can no longer be treated as valid hash values, since in the next run the random value might differ.
+</p>
+<h3><span class="mw-headline" id="Defined_range">Defined range</span><span class="mw-editsection"></span></h3>
+<p>It is often desirable that the output of a hash function have fixed size (but see below). If, for example, the output is constrained to 32-bit integer values, the hash values can be used to index into an array. Such hashing is commonly used to accelerate data searches.<sup class="reference" id="cite_ref-algorithms_in_java_8-0">[7]</sup> 
+Producing fixed-length output from variable length input can be accomplished by breaking the input data into chunks of specific size. Hash functions used for data searches use some arithmetic expression that iteratively processes chunks of the input (such as the characters in a string) to produce the hash value.<sup class="reference" id="cite_ref-algorithms_in_java_8-1">[7]</sup>
+</p>
+<h3><span class="mw-headline" id="Variable_range">Variable range</span><span class="mw-editsection"></span></h3>
+<p>In many applications, the range of hash values may be different for each run of the program or may change along the same run (for instance, when a hash table needs to be expanded). In those situations, one needs a hash function which takes two parameters—the input data <span class="texhtml"><i>z</i></span>, and the number <span class="texhtml"><i>n</i></span> of allowed hash values.
+</p><p>A common solution is to compute a fixed hash function with a very large range (say, <span class="texhtml">0</span> to <span class="texhtml">2<sup>32</sup> − 1</span>), divide the result by <span class="texhtml"><i>n</i></span>, and use the division's remainder. If <span class="texhtml"><i>n</i></span> is itself a power of <span class="texhtml">2</span>, this can be done by bit masking and bit shifting. When this approach is used, the hash function must be chosen so that the result has fairly uniform distribution between <span class="texhtml">0</span> and <span class="texhtml"><i>n</i> − 1</span>, for any value of <span class="texhtml"><i>n</i></span> that may occur in the application. Depending on the function, the remainder may be uniform only for certain values of <span class="texhtml"><i>n</i></span>, e.g. odd or prime numbers.
+</p>
+<h3><span id="Variable_range_with_minimal_movement_.28dynamic_hash_function.29"></span><span class="mw-headline" id="Variable_range_with_minimal_movement_(dynamic_hash_function)">Variable range with minimal movement (dynamic hash function)</span><span class="mw-editsection"></span></h3>
+<p>When the hash function is used to store values in a hash table that outlives the run of the program, and the hash table needs to be expanded or shrunk, the hash table is referred to as a dynamic hash table.
+</p><p>A hash function that will relocate the minimum number of records when the table is resized is desirable.
+What is needed is a hash function <span class="texhtml"><i>H</i>(<i>z</i>,<i>n</i>)</span> – where <span class="texhtml"><i>z</i></span> is the key being hashed and <span class="texhtml"><i>n</i></span> is the number of allowed hash values – such that <span class="texhtml"><i>H</i>(<i>z</i>,<i>n</i> + 1) = <i>H</i>(<i>z</i>,<i>n</i>)</span> with probability close to <span class="texhtml"><i>n</i>/(<i>n</i> + 1)</span>.
+</p><p>Linear hashing and spiral storage are examples of dynamic hash functions that execute in constant time but relax the property of uniformity to achieve the minimal movement property. Extendible hashing uses a dynamic hash function that requires space proportional to <span class="texhtml"><i>n</i></span> to compute the hash function, and it becomes a function of the previous keys that have been inserted. Several algorithms that preserve the uniformity property but require time proportional to <span class="texhtml"><i>n</i></span> to compute the value of <span class="texhtml"><i>H</i>(<i>z</i>,<i>n</i>)</span> have been invented.<sup class="noprint Inline-Template" style="margin-left:0.1em; white-space:nowrap;">[<i><span title="The text near this tag may need clarification or removal of jargon. (September 2019)">clarification needed</span></i>]</sup>
+</p><p>A hash function with minimal movement is especially useful in distributed hash tables.
+</p>
+<h3><span class="mw-headline" id="Data_normalization">Data normalization</span><span class="mw-editsection"></span></h3>
+<p>In some applications, the input data may contain features that are irrelevant for comparison purposes. For example, when looking up a personal name, it may be desirable to ignore the distinction between upper and lower case letters. For such data, one must use a hash function that is compatible with the data equivalence criterion being used: that is, any two inputs that are considered equivalent must yield the same hash value. This can be accomplished by normalizing the input before hashing it, as by upper-casing all letters.
+</p>
+<h2><span class="mw-headline" id="Hashing_integer_data_types">Hashing integer data types</span><span class="mw-editsection"></span></h2>
+<p>There are several common algorithms for hashing integers.  The method giving the best distribution is data-dependent.  One of the simplest and most common methods in practice is the modulo division method.
+</p>
+<h3><span class="mw-headline" id="Identity_hash_function">Identity hash function</span><span class="mw-editsection"></span></h3>
+<p>If the data to be hashed is small enough, one can use the data itself (reinterpreted as an integer) as the hashed value. The cost of computing this <i>identity</i> hash function is effectively zero. This hash function is perfect, as it maps each input to a distinct hash value.
+</p><p>The meaning of "small enough" depends on the size of the type that is used as the hashed value. For example, in Java, the hash code is a 32-bit integer. Thus the 32-bit integer <code>Integer</code> and 32-bit floating-point <code>Float</code> objects can simply use the value directly; whereas the 64-bit integer <code>Long</code> and 64-bit floating-point <code>Double</code> cannot use this method.
+</p><p>Other types of data can also use this hashing scheme. For example, when mapping character strings between upper and lower case, one can use the binary encoding of each character, interpreted as an integer, to index a table that gives the alternative form of that character ("A" for "a", "8" for "8", etc.).  If each character is stored in 8 bits (as in extended ASCII<sup class="reference" id="cite_ref-9">[8]</sup> or ISO Latin 1), the table has only 2<sup>8</sup> = 256 entries; in the case of Unicode characters, the table would have 17×2<sup>16</sup> = <span class="nowrap"><span data-sort-value="7006111411200000000♠"></span>1<span style="margin-left:.25em;">114</span><span style="margin-left:.25em;">112</span></span> entries.
+</p><p>The same technique can be used to map two-letter country codes like "us" or "za" to country names (26<sup>2</sup> = 676 table entries), 5-digit zip codes like 13083 to city names (<span class="nowrap"><span data-sort-value="7005100000000000000♠"></span>100<span style="margin-left:.25em;">000</span></span> entries), etc. Invalid data values (such as the country code "xx" or the zip code 00000) may be left undefined in the table or mapped to some appropriate "null" value.
+</p>
+<h3><span class="mw-headline" id="Trivial_hash_function">Trivial hash function</span><span class="mw-editsection"></span></h3>
+<p>If the keys are uniformly or sufficiently uniformly distributed over the key space, so that the key values are essentially random, they may be considered to be already 'hashed'. In this case, any number of any bits in the key may be dialled<sup class="noprint Inline-Template" style="margin-left:0.1em; white-space:nowrap;">[<i><span title="The text near this tag may need clarification or removal of jargon. (February 2022)">clarification needed</span></i>]</sup> out and collated as an index into the hash table. For example, a simple hash function might mask off the least significant <i>m</i> bits and use the result as an index into a hash table of size 2<sup>m</sup>.
+</p>
+<h3><span class="mw-headline" id="Folding">Folding</span><span class="mw-editsection"></span></h3>
+<p>A folding hash code is produced by dividing the input into n sections of m bits, where 2<sup>m</sup> is the table size, and using a parity-preserving bitwise operation such as ADD or XOR to combine the sections, followed by a mask or shifts to trim off any excess bits at the high or low end. For example, for a table size of 15 bits and key value of 0x0123456789ABCDEF, there are five sections consisting of 0x4DEF, 0x1357, 0x159E, 0x091A and 0x8. Adding, we obtain 0x7AA4, a 15-bit value.
+</p>
+<h3><span class="mw-headline" id="Mid-squares">Mid-squares</span><span class="mw-editsection"></span></h3>
+<p>A mid-squares hash code is produced by squaring the input and extracting an appropriate number of middle digits or bits.  For example, if the input is 123,456,789 and the hash table size 10,000, squaring the key produces 15,241,578,750,190,521, so the hash code is taken as the middle 4 digits of the 17-digit number (ignoring the high digit) 8750.  The mid-squares method produces a reasonable hash code if there is not a lot of leading or trailing zeros in the key.  This is a variant of multiplicative hashing, but not as good because an arbitrary key is not a good multiplier.
+</p>
+<h3><span class="mw-headline" id="Division_hashing">Division hashing</span><span class="mw-editsection"></span></h3>
+<p>A standard technique is to use a modulo function on the key, by selecting a divisor <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M}</annotation>
+</semantics>
+</math></span><img alt="M" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f82cade9898ced02fdd08712e5f0c0151758a0dd" style="vertical-align: -0.338ex; width:2.442ex; height:2.176ex;"/></span> which is a prime number close to the table size, so <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h(K)=K{\bmod {M}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<mi>K</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>K</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo lspace="thickmathspace" rspace="thickmathspace">mod</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>M</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h(K)=K{\bmod {M}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h(K)=K{\bmod {M}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d1ac016841e471eb555a47c15ea9472cb67448db" style="vertical-align: -0.838ex; width:18.502ex; height:2.843ex;"/></span>. The table size is usually a power of 2.  This gives a distribution from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \{0,M-1\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">{</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mi>M</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \{0,M-1\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \{0,M-1\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/32d3fe84dffbc8e9396b7fdfcbffc6e89fd181b3" style="vertical-align: -0.838ex; width:10.966ex; height:2.843ex;"/></span>.  This gives good results over a large number of key sets.  A significant drawback of division hashing is that division is microprogrammed on most modern architectures including x86 and can be 10 times slower than multiply. A second drawback is that it won't break up clustered keys. For example, the keys 123000, 456000, 789000, etc. modulo 1000 all map to the same address.  This technique works well in practice because many key sets are sufficiently random already, and the probability that a key set will be cyclical by a large prime number is small.
+</p>
+<h3><span class="mw-headline" id="Algebraic_coding">Algebraic coding</span><span class="mw-editsection"></span></h3>
+<p>Algebraic coding is a variant of the division method of hashing which uses division by a polynomial modulo 2 instead of an integer to map n bits to m bits.<sup class="reference" id="cite_ref-10">[9]</sup> In this approach, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M=2^{m}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+<mo>=</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>m</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M=2^{m}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle M=2^{m}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b02c8bd5eb45ea3cf2b12ec3f54953e7bbff9c89" style="vertical-align: -0.338ex; width:8.378ex; height:2.343ex;"/></span> and we postulate an <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle m}</annotation>
+</semantics>
+</math></span><img alt="m" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0a07d98bb302f3856cbabc47b2b9016692e3f7bc" style="vertical-align: -0.338ex; width:2.04ex; height:1.676ex;"/></span>th degree polynomial <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathrm {Z} (x)=x^{m}+\zeta _{m-1}x^{m-1}+...+\zeta _{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">Z</mi>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>m</mi>
+</mrow>
+</msup>
+<mo>+</mo>
+<msub>
+<mi>ζ<!-- ζ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>m</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>m</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mo>+</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>+</mo>
+<msub>
+<mi>ζ<!-- ζ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathrm {Z} (x)=x^{m}+\zeta _{m-1}x^{m-1}+...+\zeta _{0}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \mathrm {Z} (x)=x^{m}+\zeta _{m-1}x^{m-1}+...+\zeta _{0}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9fea3667836ba06d1c7d3febc0b6634439ac941c" style="vertical-align: -0.838ex; width:32.193ex; height:3.176ex;"/></span>. A key <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle K=(k_{n-1}...k_{1}k_{0})_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>K</mi>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<msub>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle K=(k_{n-1}...k_{1}k_{0})_{2}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle K=(k_{n-1}...k_{1}k_{0})_{2}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/24ea2c34c3947f1c533f872b4958430c8f893927" style="vertical-align: -0.838ex; width:20.191ex; height:2.843ex;"/></span> can be regarded as the polynomial <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle K(x)=k_{n-1}x^{n-1}+...+k_{1}x+k_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>K</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mo>+</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>+</mo>
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mi>x</mi>
+<mo>+</mo>
+<msub>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle K(x)=k_{n-1}x^{n-1}+...+k_{1}x+k_{0}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle K(x)=k_{n-1}x^{n-1}+...+k_{1}x+k_{0}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/577b8d518de7dadfbdcf91366d9ab6b9a0e7200a" style="vertical-align: -0.838ex; width:32.901ex; height:3.176ex;"/></span>. The remainder using polynomial arithmetic modulo 2 is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle K(x){\bmod {Z}}(x)=h_{m-1}x^{m-1}+...+h_{1}x+h_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>K</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo lspace="thickmathspace" rspace="thickmathspace">mod</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>Z</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>m</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>m</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mo>+</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>+</mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mi>x</mi>
+<mo>+</mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle K(x){\bmod {Z}}(x)=h_{m-1}x^{m-1}+...+h_{1}x+h_{0}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle K(x){\bmod {Z}}(x)=h_{m-1}x^{m-1}+...+h_{1}x+h_{0}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b2562bb202feddf618df3a7a7ee6f975889d9ec7" style="vertical-align: -0.838ex; width:44.698ex; height:3.176ex;"/></span>. Then <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h(K)=(h_{m-1}...h_{1}h_{0})_{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<mi>K</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>m</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<msub>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h(K)=(h_{m-1}...h_{1}h_{0})_{2}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h(K)=(h_{m-1}...h_{1}h_{0})_{2}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7d327942c40517026d5b002cf62be9767f7af2b4" style="vertical-align: -0.838ex; width:24.179ex; height:2.843ex;"/></span>. If <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Z(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>Z</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Z(x)}</annotation>
+</semantics>
+</math></span><img alt="Z(x)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6c2ffb6f5d6e9eeab2867ef3c37ea13f9c294ac8" style="vertical-align: -0.838ex; width:4.819ex; height:2.843ex;"/></span> is constructed to have t or fewer non-zero coefficients, then keys which share less than t bits are guaranteed to not collide.
+</p><p>Z a function of k, t and n, a divisor of 2<sup>k</sup>-1, is constructed from the GF(2<sup>k</sup>) field.  Knuth gives an example: for n=15, m=10 and t=7, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Z(x)=x^{10}+x^{8}+x^{5}+x^{4}+x^{2}+x+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>Z</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>10</mn>
+</mrow>
+</msup>
+<mo>+</mo>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>8</mn>
+</mrow>
+</msup>
+<mo>+</mo>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>5</mn>
+</mrow>
+</msup>
+<mo>+</mo>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>4</mn>
+</mrow>
+</msup>
+<mo>+</mo>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>+</mo>
+<mi>x</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Z(x)=x^{10}+x^{8}+x^{5}+x^{4}+x^{2}+x+1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle Z(x)=x^{10}+x^{8}+x^{5}+x^{4}+x^{2}+x+1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0d7358f67ff292b9b1a348a674a27cc49db67743" style="vertical-align: -0.838ex; width:40.194ex; height:3.176ex;"/></span>. The derivation is as follows: 
+</p><p>Let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>S</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S}</annotation>
+</semantics>
+</math></span><img alt="S" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4611d85173cd3b508e67077d4a1252c9c05abca2" style="vertical-align: -0.338ex; width:1.499ex; height:2.176ex;"/></span> be the smallest set of integers such that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \{1,2,...,t\}\subseteq S}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">{</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mn>2</mn>
+<mo>,</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>,</mo>
+<mi>t</mi>
+<mo fence="false" stretchy="false">}</mo>
+<mo>⊆<!-- ⊆ --></mo>
+<mi>S</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \{1,2,...,t\}\subseteq S}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \{1,2,...,t\}\subseteq S}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1eb90a6c31a763ec912910d4034744d6e5e5f1a2" style="vertical-align: -0.838ex; width:16.291ex; height:2.843ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (2j{\bmod {n}})\in S\quad \forall j\in S}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mn>2</mn>
+<mi>j</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo lspace="thickmathspace" rspace="thickmathspace">mod</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">)</mo>
+<mo>∈<!-- ∈ --></mo>
+<mi>S</mi>
+<mspace width="1em"></mspace>
+<mi mathvariant="normal">∀<!-- ∀ --></mi>
+<mi>j</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>S</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (2j{\bmod {n}})\in S\quad \forall j\in S}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle (2j{\bmod {n}})\in S\quad \forall j\in S}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/97d21f84950ea031ca6ee563dfd249d30db4d46c" style="vertical-align: -0.838ex; width:24.259ex; height:2.843ex;"/></span>.<sup class="reference" id="cite_ref-11">[Notes 2]</sup>
+</p><p>Define <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P(x)=\prod _{j\in S}(x-\alpha ^{j})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<munder>
+<mo>∏<!-- ∏ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi>S</mi>
+</mrow>
+</munder>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo>−<!-- − --></mo>
+<msup>
+<mi>α<!-- α --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P(x)=\prod _{j\in S}(x-\alpha ^{j})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle P(x)=\prod _{j\in S}(x-\alpha ^{j})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8ec503eae00278775be2b42f7e2b873f8c6fb063" style="vertical-align: -3.338ex; width:19.329ex; height:5.843ex;"/></span> where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \alpha \in ^{n}GF(2^{k})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>α<!-- α --></mi>
+<msup>
+<mo>∈<!-- ∈ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mi>G</mi>
+<mi>F</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \alpha \in ^{n}GF(2^{k})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \alpha \in ^{n}GF(2^{k})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9d6c13fbcf986cc6840fd180496e9d31beaab259" style="vertical-align: -0.838ex; width:13.175ex; height:3.176ex;"/></span> and where the coefficients of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P(x)}</annotation>
+</semantics>
+</math></span><img alt="P(x)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/89833156eff2c51bfb8750db3306a0544ce34e14" style="vertical-align: -0.838ex; width:4.884ex; height:2.843ex;"/></span> are computed in this field.  Then the degree of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P(x)=|S|}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P(x)=|S|}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle P(x)=|S|}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3b1c8c51235470b1fbd728f6488139f33471b642" style="vertical-align: -0.838ex; width:10.776ex; height:2.843ex;"/></span>. Since <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \alpha ^{2j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>α<!-- α --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+<mi>j</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \alpha ^{2j}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \alpha ^{2j}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5a0a9989bf5c09af6d631e91944b10603ebd592c" style="vertical-align: -0.338ex; width:3.219ex; height:2.676ex;"/></span> is a root of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P(x)}</annotation>
+</semantics>
+</math></span><img alt="P(x)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/89833156eff2c51bfb8750db3306a0544ce34e14" style="vertical-align: -0.838ex; width:4.884ex; height:2.843ex;"/></span> whenever <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \alpha ^{j}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>α<!-- α --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \alpha ^{j}}</annotation>
+</semantics>
+</math></span><img alt="\alpha^j" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/27b185f9f9058e5b7f59374f9a0e2069f9d0c237" style="vertical-align: -0.338ex; width:2.397ex; height:2.676ex;"/></span> is a root, it follows that the coefficients <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p^{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p^{i}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle p^{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/50d2dcda89c13ddb803fc87a2bf3db00ffbdacf1" style="vertical-align: -0.671ex; margin-left: -0.089ex; width:2.059ex; height:3.009ex;"/></span> of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P(x)}</annotation>
+</semantics>
+</math></span><img alt="P(x)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/89833156eff2c51bfb8750db3306a0544ce34e14" style="vertical-align: -0.838ex; width:4.884ex; height:2.843ex;"/></span> satisfy <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle p_{i}^{2}=p_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msubsup>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msubsup>
+<mo>=</mo>
+<msub>
+<mi>p</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle p_{i}^{2}=p_{i}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle p_{i}^{2}=p_{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/213e030e350557caed58abc7ec57dadd27c58ae6" style="vertical-align: -1.005ex; margin-left: -0.089ex; width:7.381ex; height:3.176ex;"/></span> so they are all 0 or 1. If <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R(x)=r_{(n-1)}x^{n-1}+...+r_{1}x+r_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>R</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mrow>
+</msub>
+<msup>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mo>+</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>+</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mi>x</mi>
+<mo>+</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R(x)=r_{(n-1)}x^{n-1}+...+r_{1}x+r_{0}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle R(x)=r_{(n-1)}x^{n-1}+...+r_{1}x+r_{0}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/239051bb324649529cb4ec406d9a6fe29be7d871" style="vertical-align: -1.171ex; width:33.391ex; height:3.509ex;"/></span> is any nonzero polynomial modulo 2 with at most t nonzero coefficients, then <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle R(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>R</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle R(x)}</annotation>
+</semantics>
+</math></span><img alt="R(x)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cd5e851b43895fbe06436240dc7daa4d2033f082" style="vertical-align: -0.838ex; width:4.903ex; height:2.843ex;"/></span> is not a multiple of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P(x)}</annotation>
+</semantics>
+</math></span><img alt="P(x)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/89833156eff2c51bfb8750db3306a0544ce34e14" style="vertical-align: -0.838ex; width:4.884ex; height:2.843ex;"/></span> modulo 2.<sup class="reference" id="cite_ref-12">[Notes 3]</sup>  If follows that the corresponding hash function will map keys with fewer than t bits in common to unique indices.<sup class="reference" id="cite_ref-13">[10]</sup>
+</p><p>The usual outcome is that either n will get large, or twill gets large, or both, for the scheme to be computationally feasible.  Therefore, its more suited to hardware or microcode implementation.<sup class="reference" id="cite_ref-14">[11]</sup>
+</p>
+<h3><span class="mw-headline" id="Unique_permutation_hashing">Unique permutation hashing</span><span class="mw-editsection"></span></h3>
+<p>See also unique permutation hashing, which has a guaranteed best worst-case insertion time.<sup class="reference" id="cite_ref-15">[12]</sup>
+</p>
+<h3><span class="mw-headline" id="Multiplicative_hashing">Multiplicative hashing</span><span class="mw-editsection"></span></h3>
+<p>Standard multiplicative hashing uses the formula <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{a}(K)=\lfloor (aK{\bmod {W}})/(W/M)\rfloor }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>a</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>K</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mo fence="false" stretchy="false">⌊<!-- ⌊ --></mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mi>K</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo lspace="thickmathspace" rspace="thickmathspace">mod</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>W</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>W</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>M</mi>
+<mo stretchy="false">)</mo>
+<mo fence="false" stretchy="false">⌋<!-- ⌋ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{a}(K)=\lfloor (aK{\bmod {W}})/(W/M)\rfloor }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h_{a}(K)=\lfloor (aK{\bmod {W}})/(W/M)\rfloor }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c6343ef52701c23e0a115ba9fcc8c4a7e8fa2b1d" style="vertical-align: -0.838ex; width:33.712ex; height:2.843ex;"/></span> which produces a hash value in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \{0,\ldots ,M-1\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">{</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<mi>M</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \{0,\ldots ,M-1\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \{0,\ldots ,M-1\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8a0dbf1c3aeeb507c2b124c6952da2606d301875" style="vertical-align: -0.838ex; width:15.111ex; height:2.843ex;"/></span>.  The value <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a}</annotation>
+</semantics>
+</math></span><img alt="a" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ffd2487510aa438433a2579450ab2b3d557e5edc" style="vertical-align: -0.338ex; width:1.23ex; height:1.676ex;"/></span> is an appropriately chosen value that should be relatively prime to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle W}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>W</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle W}</annotation>
+</semantics>
+</math></span><img alt="W" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/54a9c4c547f4d6111f81946cad242b18298d70b7" style="vertical-align: -0.338ex; width:2.435ex; height:2.176ex;"/></span>; it should be large<sup class="noprint Inline-Template" style="margin-left:0.1em; white-space:nowrap;">[<i><span title="How large? (January 2021)">clarification needed</span></i>]</sup> and its binary representation a random mix<sup class="noprint Inline-Template" style="margin-left:0.1em; white-space:nowrap;">[<i><span title='"a" is a constant, so it cannot be random (January 2021)'>clarification needed</span></i>]</sup> of 1's and 0's.   An important practical special case occurs when <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle W=2^{w}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>W</mi>
+<mo>=</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>w</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle W=2^{w}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle W=2^{w}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0aed2d7832b69d4190f1681b07a28666f4da4491" style="vertical-align: -0.338ex; width:8.105ex; height:2.343ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle M=2^{m}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>M</mi>
+<mo>=</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>m</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle M=2^{m}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle M=2^{m}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b02c8bd5eb45ea3cf2b12ec3f54953e7bbff9c89" style="vertical-align: -0.338ex; width:8.378ex; height:2.343ex;"/></span> are powers of 2 and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w}</annotation>
+</semantics>
+</math></span><img alt="w" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/88b1e0c8e1be5ebe69d18a8010676fa42d7961e6" style="vertical-align: -0.338ex; width:1.664ex; height:1.676ex;"/></span> is the machine word size. In this case this formula becomes <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h_{a}(K)=\lfloor (aK{\bmod {2}}^{w})/2^{w-m}\rfloor }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>h</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>a</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>K</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mo fence="false" stretchy="false">⌊<!-- ⌊ --></mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mi>K</mi>
+<msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo lspace="thickmathspace" rspace="thickmathspace">mod</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>w</mi>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>w</mi>
+<mo>−<!-- − --></mo>
+<mi>m</mi>
+</mrow>
+</msup>
+<mo fence="false" stretchy="false">⌋<!-- ⌋ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h_{a}(K)=\lfloor (aK{\bmod {2}}^{w})/2^{w-m}\rfloor }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle h_{a}(K)=\lfloor (aK{\bmod {2}}^{w})/2^{w-m}\rfloor }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/62332d943e10da3d14420baec168c0fddb2b979e" style="vertical-align: -0.838ex; width:31.292ex; height:3.009ex;"/></span>.  This is special because arithmetic modulo <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{w}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>w</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{w}}</annotation>
+</semantics>
+</math></span><img alt="2^{w}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/261ffc021c83bb77c52b4fbcafc6f4e7eab05185" style="vertical-align: -0.338ex; width:2.571ex; height:2.343ex;"/></span> is done by default in low-level programming languages and integer division by a power of 2 is simply a right-shift, so, in C, for example, this function becomes
+</p>
+<pre>unsigned hash(unsigned K)
+{ 
+   return (a*K) &gt;&gt; (w-m);
+}
+</pre>
+<p>and for fixed <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle m}</annotation>
+</semantics>
+</math></span><img alt="m" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0a07d98bb302f3856cbabc47b2b9016692e3f7bc" style="vertical-align: -0.338ex; width:2.04ex; height:1.676ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w}</annotation>
+</semantics>
+</math></span><img alt="w" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/88b1e0c8e1be5ebe69d18a8010676fa42d7961e6" style="vertical-align: -0.338ex; width:1.664ex; height:1.676ex;"/></span> this translates into a single integer multiplication and right-shift making it one of the fastest hash functions to compute.
+</p><p>Multiplicative hashing is susceptible to a "common mistake" that leads to poor diffusion—higher-value input bits do not affect lower-value output bits.<sup class="reference" id="cite_ref-16">[13]</sup>  A transmutation on the input which shifts the span of retained top bits down and XORs or ADDs them to the key before the multiplication step corrects for this. So the resulting function looks like:<sup class="reference" id="cite_ref-17">[14]</sup>
+</p>
+<pre>unsigned hash(unsigned K)
+{
+   K ^= K &gt;&gt; (w-m); 
+   return (a*K) &gt;&gt; (w-m);
+}
+</pre>
+<h3><span class="mw-headline" id="Fibonacci_hashing">Fibonacci hashing</span><span class="mw-editsection"></span></h3>
+<p>Fibonacci hashing is a form of multiplicative hashing in which the multiplier is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{w}/\phi }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>w</mi>
+</mrow>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>ϕ<!-- ϕ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{w}/\phi }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 2^{w}/\phi }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cd367b4dacaed87fbd5199aac20c92de5faf1aab" style="vertical-align: -0.838ex; width:5.119ex; height:2.843ex;"/></span>, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w}</annotation>
+</semantics>
+</math></span><img alt="w" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/88b1e0c8e1be5ebe69d18a8010676fa42d7961e6" style="vertical-align: -0.338ex; width:1.664ex; height:1.676ex;"/></span> is the machine word length and 
+<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \phi }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>ϕ<!-- ϕ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \phi }</annotation>
+</semantics>
+</math></span><img alt="\phi " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/72b1f30316670aee6270a28334bdf4f5072cdde4" style="vertical-align: -0.671ex; width:1.385ex; height:2.509ex;"/></span> (phi) is the golden ratio (approximately 5/3). A property of this multiplier is that it uniformly distributes over the table space, blocks of consecutive keys with respect to any block of bits in the key.  Consecutive keys within the high bits or low bits of the key (or some other field) are relatively common.  The multipliers for various word lengths <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle ^{w}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>w</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle ^{w}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle ^{w}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c9b464354c8c44663efc428d47c0e605cd0ba322" style="vertical-align: -0.171ex; width:1.409ex; height:2.176ex;"/></span> are:
+</p>
+<ul><li>16:  a=40503<sub>10</sub></li>
+<li>32:  a=2654435769<sub>10</sub></li>
+<li>48:  a=173961102589771<sub>10</sub><sup class="reference" id="cite_ref-18">[Notes 4]</sup></li>
+<li>64:  a=11400714819323198485<sub>10</sub><sup class="reference" id="cite_ref-19">[Notes 5]</sup></li></ul>
+<h3><span class="mw-headline" id="Zobrist_hashing">Zobrist hashing</span><span class="mw-editsection"></span></h3>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>Tabulation hashing, more generally known as <i>Zobrist hashing</i> after Albert Zobrist, an American computer scientist, is a method for constructing universal families of hash functions by combining table lookup with XOR operations. This algorithm has proven to be very fast and of high quality for hashing purposes (especially hashing of integer-number keys).<sup class="reference" id="cite_ref-20">[15]</sup>
+</p><p>Zobrist hashing was originally introduced as a means of compactly representing chess positions in computer game-playing programs.  A unique random number was assigned to represent each type of piece (six each for black and white) on each space of the board.  Thus a table of 64x12 such numbers is initialized at the start of the program.  The random numbers could be any length, but 64 bits was natural due to the 64 squares on the board.  A position was transcribed by cycling through the pieces in a position, indexing the corresponding random numbers (vacant spaces were not included in the calculation), and XORing them together (the starting value could be 0, the identity value for XOR, or a random seed).  The resulting value was reduced by modulo, folding or some other operation to produce a hash table index.  The original Zobrist hash was stored in the table as the representation of the position.
+</p><p>Later, the method was extended to hashing integers by representing each byte in each of 4 possible positions in the word by a unique 32-bit random number.  Thus, a table of 2<sup>8</sup>x4 of such random numbers is constructed. A 32-bit hashed integer is transcribed by successively indexing the table with the value of each byte of the plain text integer and XORing the loaded values together (again, the starting value can be the identity value or a random seed). The natural extension to 64-bit integers is by use of a table of 2<sup>8</sup>x8 64-bit random numbers.
+</p><p>This kind of function has some nice theoretical properties, one of which is called <i>3-tuple independence</i> meaning every 3-tuple of keys is equally likely to be mapped to any 3-tuple of hash values.
+</p>
+<h3><span class="mw-headline" id="Customised_hash_function">Customised hash function</span><span class="mw-editsection"></span></h3>
+<p>A hash function can be designed to exploit existing entropy in the keys.  If the keys have leading or trailing zeros, or particular fields that are unused, always zero or some other constant, or generally vary little, then masking out only the volatile bits and hashing on those will provide a better and possibly faster hash function.  Selected divisors or multipliers in the division and multiplicative schemes may make more uniform hash functions if the keys are cyclic or have other redundancies.
+</p>
+<h2><span class="mw-headline" id="Hashing_variable-length_data">Hashing variable-length data</span><span class="mw-editsection"></span></h2>
+<p>When the data values are long (or variable-length) character strings—such as personal names, web page addresses, or mail messages—their distribution is usually very uneven, with complicated dependencies. For example, text in any natural language has highly non-uniform distributions of characters, and character pairs, characteristic of the language. For such data, it is prudent to use a hash function that depends on all characters of the string—and depends on each character in a different way.<sup class="noprint Inline-Template" style="margin-left:0.1em; white-space:nowrap;">[<i><span title="The text near this tag may need clarification or removal of jargon. (September 2019)">clarification needed</span></i>]</sup>
+</p>
+<h3><span class="mw-headline" id="Middle_and_ends">Middle and ends</span><span class="mw-editsection"></span></h3>
+<p>Simplistic hash functions may add the first and last <span class="texhtml"><i>n</i></span> characters of a string along with the length, or form a word-size hash from the middle 4 characters of a string.  This saves iterating over the (potentially long) string,
+but hash functions that do not hash on all characters of a string can readily become linear due to redundancies, clustering or other pathologies in the key set.  Such strategies may be effective as a custom hash function if the structure of the keys is such that either the middle, ends or other fields are zero or some other invariant constant that doesn't differentiate the keys; then the invariant parts of the keys can be ignored.
+</p>
+<h3><span class="mw-headline" id="Character_folding">Character folding</span><span class="mw-editsection"></span></h3>
+<p>The paradigmatic example of folding by characters is to add up the integer values of all the characters in the string.   A better idea is to multiply the hash total by a constant, typically a sizable prime number, before adding in the next character, ignoring overflow.  Using exclusive 'or' instead of add is also a plausible alternative. The final operation would be a modulo, mask, or other function to reduce the word value to an index the size of the table. The weakness of this procedure is that information may cluster in the upper or lower bits of the bytes, which clustering will remain in the hashed result and cause more collisions than a proper randomizing hash. ASCII byte codes, for example, have an upper bit of 0 and printable strings don't use the first 32 byte codes, so the information (95-byte codes) is clustered in the remaining bits in an unobvious manner.
+</p><p>The classic approach dubbed the PJW hash based on the work of Peter. J. Weinberger at ATT Bell Labs in the 1970s, was originally designed for hashing identifiers into compiler symbol tables as given in the "Dragon Book".<sup class="reference" id="cite_ref-21">[16]</sup> This hash function offsets the bytes 4 bits before ADDing them together.  When the quantity wraps, the high 4 bits are shifted out and if non-zero, XORed back into the low byte of the cumulative quantity.  The result is a word size hash code to which a modulo or other reducing operation can be applied to produce the final hash index.
+</p><p>Today, especially with the advent of 64-bit word sizes, much more efficient variable-length string hashing by word chunks is available.
+</p>
+<h3><span class="mw-headline" id="Word_length_folding">Word length folding</span><span class="mw-editsection"></span></h3>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>Modern microprocessors will allow for much faster processing if 8-bit character strings are not hashed by processing one character at a time, but by interpreting the string as an array of 32 bit or 64-bit integers and hashing/accumulating these "wide word" integer values by means of arithmetic operations (e.g. multiplication by constant and bit-shifting). The final word, which may have unoccupied byte positions, is filled with zeros or a specified "randomizing" value before being folded into the hash.  The accumulated hash code is reduced by a final modulo or other operation to yield an index into the table.
+</p>
+<h3><span class="mw-headline" id="Radix_conversion_hashing">Radix conversion hashing</span><span class="mw-editsection"></span></h3>
+<p>Analogous to the way an ASCII or EBCDIC character string representing a decimal number is converted to a numeric quantity for computing, a variable length string can be converted as <span class="texhtml">(<i>x</i><sub>0</sub>a<sup><i>k</i>−1</sup>+<i>x</i><sub>1</sub>a<sup><i>k</i>−2</sup>+...+<i>x</i><sub><i>k</i>−2</sub><i>a</i>+<i>x</i><sub><i>k</i>−1</sub>)</span>. This is simply a polynomial in a radix <span class="texhtml"><i>a</i> &gt; 1</span> that takes the components <span class="texhtml">(<i>x</i><sub>0</sub>,<i>x</i><sub>1</sub>,...,<i>x</i><sub><i>k</i>−1</sub>)</span> as the characters of the input string of length <span class="texhtml"><i>k</i></span>. It can be used directly as the hash code, or a hash function applied to it to map the potentially large value to the hash table size. The value of <span class="texhtml"><i>a</i></span> is usually a prime number at least large enough to hold the number of different characters in the character set of potential keys. Radix conversion hashing of strings minimizes the number of collisions.<sup class="reference" id="cite_ref-22">[17]</sup> Available data sizes may restrict the maximum length of string that can be hashed with this method.  For example, a 128-bit double long word will hash only a 26 character alphabetic string (ignoring case) with a radix of 29; a printable ASCII string is limited to 9 characters using radix 97 and a 64-bit long word.  However, alphabetic keys are usually of modest length, because keys must be stored in the hash table. Numeric character strings are usually not a problem; 64 bits can count up to <span class="texhtml">10<sup>19</sup></span>, or 19 decimal digits with radix 10.
+</p>
+<h3><span class="mw-headline" id="Rolling_hash">Rolling hash</span><span class="mw-editsection"></span></h3>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>In some applications, such as substring search, one can compute a hash function <span class="texhtml"><i>h</i></span> for every <span class="texhtml"><i>k</i></span>-character substring of a given <span class="texhtml"><i>n</i></span>-character string by advancing a window of width <span class="texhtml"><i>k</i></span> characters along the string; where  <span class="texhtml"><i>k</i></span> is a fixed integer, and <span class="texhtml"><i>n</i></span> is greater than <span class="texhtml"><i>k</i></span>. The straightforward solution, which is to extract such a substring at every character position in the text and compute <span class="texhtml"><i>h</i></span> separately, requires a number of operations proportional to <span class="texhtml"><i>k</i>·<i>n</i></span>. However, with the proper choice of <span class="texhtml"><i>h</i></span>, one can use the technique of rolling hash to compute all those hashes with an effort proportional to <span class="texhtml"><i>mk</i> + <i>n</i></span> where <span class="texhtml"><i>m</i></span> is the number of occurrences of the substring.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (November 2022)">citation needed</span></i>]</sup><sup class="noprint Inline-Template" style="white-space:nowrap;">[<i><span title="Wikipedia:Cleanup">what is the choice of h?</span></i>]</sup>
+</p><p>The most familiar algorithm of this type is Rabin-Karp with best and average case performance <span class="texhtml"><i>O</i>(<i>n</i>+<i>mk</i>)</span> and worst case <span class="texhtml"><i>O</i>(<i>n</i>·<i>k</i>)</span> (in all fairness, the worst case here is gravely pathological: both the text string and substring are composed of a repeated single character, such as <span class="texhtml"><i>t</i></span>="AAAAAAAAAAA", and <span class="texhtml"><i>s</i></span>="AAA").  The hash function used for the algorithm is usually the Rabin fingerprint, designed to avoid collisions in 8-bit character strings, but other suitable hash functions are also used.
+</p>
+<h2><span class="mw-headline" id="Analysis">Analysis</span><span class="mw-editsection"></span></h2>
+<p>Worst case result for a hash function can be assessed two ways: theoretical and practical. Theoretical worst case is the probability that all keys map to a single slot.  Practical worst case is expected longest probe sequence (hash function + collision resolution method).  This analysis considers uniform hashing, that is, any key will map to any particular slot with probability <span class="texhtml">1/<i>m</i></span>, characteristic of universal hash functions.
+</p><p>While Knuth worries about adversarial attack on real time systems,<sup class="reference" id="cite_ref-23">[18]</sup> Gonnet has shown that the probability of such a case is "ridiculously small". His representation was that the probability of <span class="texhtml"><i>k</i></span> of <span class="texhtml"><i>n</i></span> keys mapping to a single slot is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\frac {e^{-\alpha }\alpha ^{k}}{k!}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<msup>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>α<!-- α --></mi>
+</mrow>
+</msup>
+<msup>
+<mi>α<!-- α --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msup>
+</mrow>
+<mrow>
+<mi>k</mi>
+<mo>!</mo>
+</mrow>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\frac {e^{-\alpha }\alpha ^{k}}{k!}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\frac {e^{-\alpha }\alpha ^{k}}{k!}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/504b43709607790a304bde66ed1de34e4bcbf424" style="vertical-align: -2.005ex; width:7.059ex; height:5.843ex;"/></span> where <span class="texhtml"><i>α</i></span> is the load factor, <span class="texhtml"><i>n</i>/<i>m</i></span>.<sup class="reference" id="cite_ref-24">[19]</sup>
+</p>
+<h2><span class="mw-headline" id="History">History</span><span class="mw-editsection"></span></h2>
+<p>The term <i>hash</i> offers a natural analogy with its non-technical meaning (to chop up or make a mess out of something), given how hash functions scramble their input data to derive their output.<sup class="reference" id="cite_ref-25">[20]</sup> In his research for the precise origin of the term, Donald Knuth notes that, while Hans Peter Luhn of IBM appears to have been the first to use the concept of a hash function in a memo dated January 1953, the term itself would only appear in published literature in the late 1960s, in Herbert Hellerman's <i>Digital Computer System Principles</i>, even though it was already widespread jargon by then.<sup class="reference" id="cite_ref-26">[21]</sup>
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097025294">.mw-parser-output .side-box{margin:4px 0;box-sizing:border-box;border:1px solid #aaa;font-size:88%;line-height:1.25em;background-color:#f9f9f9}.mw-parser-output .side-box-abovebelow,.mw-parser-output .side-box-text{padding:0.25em 0.9em}.mw-parser-output .side-box-image{padding:2px 0 2px 0.9em;text-align:center}.mw-parser-output .side-box-imageright{padding:2px 0.9em 2px 0;text-align:center}@media(min-width:500px){.mw-parser-output .side-box-flex{display:flex;align-items:center}.mw-parser-output .side-box-text{flex:1}}@media(min-width:720px){.mw-parser-output .side-box{width:238px}.mw-parser-output .side-box-right{clear:right;float:right;margin-left:1em}.mw-parser-output .side-box-left{margin-right:1em}}</style>
+<style data-mw-deduplicate="TemplateStyles:r998391716">.mw-parser-output .div-col{margin-top:0.3em;column-width:30em}.mw-parser-output .div-col-small{font-size:90%}.mw-parser-output .div-col-rules{column-rule:1px solid #aaa}.mw-parser-output .div-col dl,.mw-parser-output .div-col ol,.mw-parser-output .div-col ul{margin-top:0}.mw-parser-output .div-col li,.mw-parser-output .div-col dd{page-break-inside:avoid;break-inside:avoid-column}</style>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1011085734" rel="mw-deduplicated-inline-style"/>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1097025294" rel="mw-deduplicated-inline-style"/>
+<ul><li>Calculate hash of a given value by Timo Denk</li>
+<li>The Goulburn Hashing Function  (PDF) by Mayur Patel</li>
+<li>Hash Function Construction for Textual and Geometrical Data Retrieval  (PDF) Latest Trends on Computers, Vol.2, pp. 483–489, CSCC Conference, Corfu, 2010</li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw2388
+Cached time: 20221217172310
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.493 seconds
+Real time usage: 0.681 seconds
+Preprocessor visited node count: 6142/1000000
+Post‐expand include size: 72112/2097152 bytes
+Template argument size: 10044/2097152 bytes
+Highest expansion depth: 12/100
+Expensive parser function count: 18/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 48868/5000000 bytes
+Lua time usage: 0.245/10.000 seconds
+Lua memory usage: 8080833/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  491.887      1 -total
+ 26.97%  132.639      2 Template:Reflist
+ 15.30%   75.275      3 Template:Cite_web
+ 12.20%   60.010     66 Template:Math
+ 11.69%   57.526      2 Template:More_citations_needed
+ 10.45%   51.380      2 Template:Ambox
+  9.74%   47.914      1 Template:Short_description
+  7.06%   34.719      5 Template:Clarify
+  5.97%   29.345      5 Template:Fix-span
+  5.95%   29.247      2 Template:Val
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:13790-0!canonical and timestamp 20221217172310 and revision id 1123870368.
+ -->
+</div></body>
+</html>

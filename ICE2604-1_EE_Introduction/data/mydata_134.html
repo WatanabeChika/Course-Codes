@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Boruvka's_algorithm</title>
+</head>
+<body>
+<div class="mw-parser-output">
+
+<p><b>Borůvka's algorithm</b> is a greedy algorithm for finding a minimum spanning tree in a graph,
+or a minimum spanning forest in the case of a graph that is not connected.
+</p><p>It was first published in 1926 by Otakar Borůvka as a method of constructing an efficient electricity network for Moravia.<sup class="reference" id="cite_ref-1">[1]</sup><sup class="reference" id="cite_ref-2">[2]</sup><sup class="reference" id="cite_ref-3">[3]</sup>
+The algorithm was rediscovered by Choquet in 1938;<sup class="reference" id="cite_ref-4">[4]</sup> again by Florek,  Łukasiewicz, Perkal, Steinhaus, and Zubrzycki in 1951;<sup class="reference" id="cite_ref-5">[5]</sup> and again by Georges Sollin in 1965.<sup class="reference" id="cite_ref-6">[6]</sup> This algorithm is frequently called <b>Sollin's algorithm</b>, especially in the parallel computing literature.
+</p><p>The algorithm begins by finding the minimum-weight edge incident to each vertex of the graph, and adding all of those edges to the forest.
+Then, it repeats a similar process of finding the minimum-weight edge from each tree constructed so far to a different tree, and adding all of those edges to the forest.
+Each repetition of this process reduces the number of trees, within each connected component of the graph, to at most half of this former value,
+so after logarithmically many repetitions the process finishes. When it does, the set of edges it has added forms the minimum spanning forest.
+</p>
+
+<h2><span class="mw-headline" id="Pseudocode">Pseudocode</span><span class="mw-editsection"></span></h2>
+<p>The following pseudocode illustrates a basic implementation of Borůvka's algorithm.
+In the conditional clauses, every edge <i>uv</i> is considered cheaper than "None".  The purpose of the <i>completed</i> variable is to determine whether the forest <i>F</i> is yet a spanning forest.
+</p><p>If edges do not have distinct weights, then a consistent <b>tie-breaking rule</b> must be used, e.g. based on some total order on vertices or edges.
+This can be achieved by representing vertices as integers and comparing them directly; comparing their memory addresses; etc.
+A tie-breaking rule is necessary to ensure that the created graph is indeed a forest, that is, it does not contain cycles. For example, consider a triangle graph with nodes {<i>a</i>,<i>b</i>,<i>c</i>} and all edges of weight 1. Then a cycle could be created if we select <i>ab</i> as the minimal weight edge for {<i>a</i>}, <i>bc</i> for {<i>b</i>}, and <i>ca</i> for {<i>c</i>}.
+A tie-breaking rule which orders edges first by source, then by destination, will prevent creation of a cycle, resulting in the minimal spanning tree {<i>ab</i>, <i>bc</i>}.
+</p>
+<pre><b>algorithm</b> Borůvka <b>is</b>
+    <b>input:</b> A weighted undirected graph <i>G</i> = (<i>V</i>, <i>E</i>).
+    <b>output:</b> <i>F</i>, a minimum spanning forest of <i>G</i>.
+
+    Initialize a forest <i>F</i> to (<i>V</i>, <i>E'</i>) where <i>E'</i> = {}.
+
+    <i>completed</i> := <b>false</b>
+    <b>while</b> not <i>completed</i> <b>do</b>
+        Find the connected components of <i>F</i> and assign to each vertex its component
+        Initialize the cheapest edge for each component to "None"
+        <b>for each</b> edge <i>uv</i> in <i>E</i>, where <i>u</i> and <i>v</i> are in different components of <i>F</i>:
+            let <i>wx</i> be the cheapest edge for the component of <i>u</i>
+            <b>if</b> is-preferred-over(<i>uv</i>, <i>wx</i>) <b>then</b>
+                Set <i>uv</i> as the cheapest edge for the component of <i>u</i>
+            let <i>yz</i> be the cheapest edge for the component of <i>v</i>
+            <b>if</b> is-preferred-over(<i>uv</i>, <i>yz</i>) <b>then</b>
+                Set <i>uv</i> as the cheapest edge for the component of <i>v</i>
+        <b>if</b> all components have cheapest edge set to "None" <b>then</b>
+            <i>// no more trees can be merged -- we are finished</i>
+            <i>completed</i> := <b>true</b>
+        <b>else</b>
+            <i>completed</i> := <b>false</b>
+            <b>for each</b> component whose cheapest edge is not "None" <b>do</b>
+                Add its cheapest edge to <i>E'</i>
+
+<b>function</b> is-preferred-over(<i>edge1</i>, <i>edge2</i>) <b>is</b>
+    <b>return</b> (<i>edge2</i> is "None") or
+           (weight(<i>edge1</i>) &lt; weight(<i>edge2</i>)) or
+           (weight(<i>edge1</i>) = weight(<i>edge2</i>) and tie-breaking-rule(<i>edge1</i>, <i>edge2</i>))
+
+<b>function</b> tie-breaking-rule(<i>edge1</i>, <i>edge2</i>) <b>is</b>
+    The tie-breaking rule; returns <b>true</b> if and only if <i>edge1</i>
+    is preferred over <i>edge2</i> in the case of a tie.
+</pre>
+<p>As an optimization, one could remove from <i>G</i> each edge that is found to connect two vertices in the same component, so that it does not contribute to the time for searching for cheapest edges in later components.
+</p>
+<h2><span class="mw-headline" id="Complexity">Complexity</span><span class="mw-editsection"></span></h2>
+<p>Borůvka's algorithm can be shown to take O(log <i>V</i>) iterations of the outer loop until it terminates, and therefore to run in time O(<i>E</i> log <i>V</i>), where <i>E</i> is the number of edges, and <i>V</i> is the number of vertices in <i>G</i> (assuming <i>E</i> ≥ <i>V</i>). In planar graphs, and more generally in families of graphs closed under graph minor operations, it can be made to run in linear time, by removing all but the cheapest edge between each pair of components after each stage of the algorithm.<sup class="reference" id="cite_ref-7">[7]</sup>
+</p>
+<h2><span class="mw-headline" id="Example">Example</span><span class="mw-editsection"></span></h2>
+<table class="wikitable">
+<tbody><tr>
+<th>Image
+</th>
+<th width="100">components
+</th>
+<th>Description
+</th></tr>
+<tr>
+<td><img alt="Borůvka Algorithm 1.svg" data-file-height="522" data-file-width="616" decoding="async" height="169" src="//upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Bor%C5%AFvka_Algorithm_1.svg/200px-Bor%C5%AFvka_Algorithm_1.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Bor%C5%AFvka_Algorithm_1.svg/300px-Bor%C5%AFvka_Algorithm_1.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Bor%C5%AFvka_Algorithm_1.svg/400px-Bor%C5%AFvka_Algorithm_1.svg.png 2x" width="200"/>
+</td>
+<td>{A}<br/>{B}<br/>{C}<br/>{D}<br/>{E}<br/>{F}<br/>{G}
+</td>
+<td>This is our original weighted graph. The numbers near the edges indicate their weight. Initially, every vertex by itself is a component (blue circles).
+</td></tr>
+<tr>
+<td><img alt="Borůvka Algorithm 2.svg" data-file-height="522" data-file-width="616" decoding="async" height="169" src="//upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Bor%C5%AFvka_Algorithm_2.svg/200px-Bor%C5%AFvka_Algorithm_2.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Bor%C5%AFvka_Algorithm_2.svg/300px-Bor%C5%AFvka_Algorithm_2.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Bor%C5%AFvka_Algorithm_2.svg/400px-Bor%C5%AFvka_Algorithm_2.svg.png 2x" width="200"/>
+</td>
+<td>{A,B,D,F}<br/>{C,E,G}
+</td>
+<td>In the first iteration of the outer loop, the minimum weight edge out of every component is added. Some edges are selected twice (AD, CE). Two components remain.
+</td></tr>
+<tr>
+<td><img alt="Borůvka Algorithm 3.svg" data-file-height="540" data-file-width="616" decoding="async" height="175" src="//upload.wikimedia.org/wikipedia/commons/thumb/8/86/Bor%C5%AFvka_Algorithm_3.svg/200px-Bor%C5%AFvka_Algorithm_3.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/8/86/Bor%C5%AFvka_Algorithm_3.svg/300px-Bor%C5%AFvka_Algorithm_3.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/8/86/Bor%C5%AFvka_Algorithm_3.svg/400px-Bor%C5%AFvka_Algorithm_3.svg.png 2x" width="200"/>
+</td>
+<td>{A,B,C,D,E,F,G}
+</td>
+<td>In the second and final iteration, the minimum weight edge out of each of the two remaining components is added. These happen to be the same edge. One component remains and we are done. The edge BD is not considered because both endpoints are in the same component.
+</td></tr></tbody></table>
+<h2><span class="mw-headline" id="Other_algorithms">Other algorithms</span><span class="mw-editsection"></span></h2>
+<p>Other algorithms for this problem include Prim's algorithm and Kruskal's algorithm. Fast parallel algorithms can be obtained by combining Prim's algorithm with Borůvka's.<sup class="reference" id="cite_ref-8">[8]</sup>
+</p><p>A faster randomized minimum spanning tree algorithm based in part on Borůvka's algorithm due to Karger, Klein, and Tarjan runs in expected <span class="texhtml">O(<i>E</i>)</span> time.<sup class="reference" id="cite_ref-9">[9]</sup>  The best known (deterministic) minimum spanning tree algorithm by Bernard Chazelle is also based in part on Borůvka's and runs in <span class="texhtml">O(<i>E</i> α(<i>E</i>,<i>V</i>))</span> time, where α is the inverse of the Ackermann function.<sup class="reference" id="cite_ref-10">[10]</sup> These randomized and deterministic algorithms combine steps of Borůvka's algorithm, reducing the number of components that remain to be connected, with steps of a different type that reduce the number of edges between pairs of components.
+</p>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+
+<!-- 
+NewPP limit report
+Parsed by mw1407
+Cached time: 20221224010908
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.179 seconds
+Real time usage: 0.220 seconds
+Preprocessor visited node count: 800/1000000
+Post‐expand include size: 25013/2097152 bytes
+Template argument size: 638/2097152 bytes
+Highest expansion depth: 8/100
+Expensive parser function count: 0/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 34699/5000000 bytes
+Lua time usage: 0.113/10.000 seconds
+Lua memory usage: 5207329/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  174.867      1 -total
+ 65.59%  114.687     10 Template:Cite_journal
+ 25.28%   44.202      1 Template:Short_description
+ 14.11%   24.669      2 Template:Pagetype
+  6.19%   10.828      4 Template:Main_other
+  5.22%    9.124      1 Template:SDcat
+  3.26%    5.694      1 Template:Cite_book
+  1.93%    3.377      2 Template:Math
+  1.00%    1.757      1 Template:Short_description/lowercasecheck
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:197253-0!canonical and timestamp 20221224010908 and revision id 1083605866.
+ -->
+</div></body>
+</html>

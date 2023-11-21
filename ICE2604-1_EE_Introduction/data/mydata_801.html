@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>proper_coloring</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+
+<p>In graph theory, <b>graph coloring</b> is a special case of graph labeling; it is an assignment of labels traditionally called "colors" to elements of a graph subject to certain constraints. In its simplest form, it is a way of coloring the vertices of a graph such that no two adjacent vertices are of the same color; this is called a <b>vertex coloring</b>. Similarly, an <b>edge coloring</b> assigns a color to each edge so that no two adjacent edges are of the same color, and a <b>face coloring</b> of a planar graph assigns a color to each face or region so that no two faces that share a boundary have the same color.
+</p><p>Vertex coloring is often used to introduce graph coloring problems, since other coloring problems can be transformed into a vertex coloring instance. For example, an edge coloring of a graph is just a vertex coloring of its line graph, and a face coloring of a plane graph is just a vertex coloring of its dual. However, non-vertex coloring problems are often stated and studied as-is. This is partly pedagogical, and partly because some problems are best studied in their non-vertex form, as in the case of edge coloring.
+</p><p>The convention of using colors originates from coloring the countries of a map, where each face is literally colored. This was generalized to coloring the faces of a graph embedded in the plane. By planar duality it became coloring the vertices, and in this form it generalizes to all graphs. In mathematical and computer representations, it is typical to use the first few positive or non-negative integers as the "colors". In general, one can use any finite set as the "color set". The nature of the coloring problem depends on the number of colors but not on what they are.
+</p><p>Graph coloring enjoys many practical applications as well as theoretical challenges. Beside the classical types of problems, different limitations can also be set on the graph, or on the way a color is assigned, or even on the color itself. It has even reached popularity with the general public in the form of the popular number puzzle Sudoku. Graph coloring is still a very active field of research.
+</p><p><i>Note: Many terms used in this article are defined in Glossary of graph theory.</i>
+</p>
+
+<h2><span class="mw-headline" id="History">History</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>The first results about graph coloring deal almost exclusively with planar graphs in the form of the coloring of <i>maps</i>.
+While trying to color a map of the counties of England, Francis Guthrie postulated the four color conjecture, noting that four colors were sufficient to color the map so that no regions sharing a common border received the same color. Guthrie's brother passed on the question to his mathematics teacher Augustus de Morgan at University College, who mentioned it in a letter to William Hamilton in 1852. Arthur Cayley raised the problem at a meeting of the London Mathematical Society in 1879. The same year, Alfred Kempe published a paper that claimed to establish the result, and for a decade the four color problem was considered solved. For his accomplishment Kempe was elected a Fellow of the Royal Society and later President of the London Mathematical Society.<sup class="reference" id="cite_ref-1">[1]</sup>
+</p><p>In 1890, Heawood pointed out that Kempe's argument was wrong. However, in that paper he proved the five color theorem, saying that every planar map can be colored with no more than <i>five</i> colors, using ideas of Kempe. In the following century, a vast amount of work and theories were developed to reduce the number of colors to four,  until the four color theorem was finally proved in 1976 by Kenneth Appel and Wolfgang Haken. The proof went back to the ideas of Heawood and Kempe and largely disregarded the intervening developments.<sup class="reference" id="cite_ref-2">[2]</sup> The proof of the four color theorem is also noteworthy for being the first major computer-aided proof.
+</p><p>In 1912, George David Birkhoff introduced the chromatic polynomial to study the coloring problems, which was generalised to the Tutte polynomial by Tutte, important structures in algebraic graph theory. Kempe had already drawn attention to the general, non-planar case in 1879,<sup class="reference" id="cite_ref-3">[3]</sup> and many results on generalisations of planar graph coloring to surfaces of higher order followed in the early 20th century.
+</p><p>In 1960, Claude Berge formulated another conjecture about graph coloring, the <i>strong perfect graph conjecture</i>, originally motivated by an information-theoretic concept called the zero-error capacity of a graph introduced by Shannon. The conjecture remained unresolved for 40 years, until it was established as the celebrated strong perfect graph theorem by Chudnovsky, Robertson, Seymour, and Thomas in 2002.
+</p><p>Graph coloring has been studied as an algorithmic problem since the early 1970s: the chromatic number problem (see below) is one of Karp's 21 NP-complete problems from 1972, and at approximately the same time various exponential-time algorithms were developed based on backtracking and on the deletion-contraction recurrence of Zykov (1949). One of the major applications of graph coloring,  register allocation in compilers, was introduced in 1981.
+</p>
+<h2><span class="mw-headline" id="Definition_and_terminology">Definition and terminology</span><span class="mw-editsection"></span></h2>
+
+<h3><span class="mw-headline" id="Vertex_coloring">Vertex coloring</span><span class="mw-editsection"></span></h3>
+<p>When used without any qualification, a <b>coloring</b> of a graph is almost always a <i>proper vertex coloring</i>, namely a labeling of the graph's vertices with colors such that no two vertices sharing the same edge have the same color. Since a vertex with a loop (i.e. a connection directly back to itself) could never be properly colored, it is understood that graphs in this context are loopless.
+</p><p>The terminology of using <i>colors</i> for vertex labels goes back to map coloring. Labels like <i>red</i> and <i>blue</i> are only used when the number of colors is small, and normally it is understood that the labels are drawn from the integers <span class="texhtml">{1, 2, 3, …}.</span>
+</p><p><span class="anchor" id="Chromatic_number"></span>
+A coloring using at most <span class="texhtml mvar" style="font-style:italic;">k</span> colors is called a (proper) <b><span class="texhtml mvar" style="font-style:italic;">k</span>-coloring</b>. The smallest number of colors needed to color a graph <span class="texhtml mvar" style="font-style:italic;">G</span> is called its <b>chromatic number</b>, and is often denoted <span class="texhtml">χ(<i>G</i>)</span>.  Sometimes <span class="texhtml">γ(<i>G</i>)</span> is used, since <span class="texhtml">χ(<i>G</i>)</span> is also used to denote the Euler characteristic of a graph. A graph that can be assigned a (proper) <span class="texhtml mvar" style="font-style:italic;">k</span>-coloring is <b> <span class="texhtml mvar" style="font-style:italic;">k</span>-colorable</b>, and it is <b><span class="texhtml mvar" style="font-style:italic;">k</span>-chromatic</b> if its chromatic number is exactly <span class="texhtml mvar" style="font-style:italic;">k</span>. A subset of vertices assigned to the same color is called a <i>color class</i>, every such class forms an independent set. Thus, a <span class="texhtml mvar" style="font-style:italic;">k</span>-coloring is the same as a partition of the vertex set into <span class="texhtml mvar" style="font-style:italic;">k</span> independent sets, and the terms <i><span class="texhtml mvar" style="font-style:italic;">k</span>-partite</i> and <i><span class="texhtml mvar" style="font-style:italic;">k</span>-colorable</i> have the same meaning.
+</p>
+<h3><span class="mw-headline" id="Chromatic_polynomial">Chromatic polynomial</span><span class="mw-editsection"></span></h3>
+
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>The <b>chromatic polynomial</b> counts the number of ways a graph can be colored using some of a given number of colors. For example, using three colors, the graph in the adjacent image can be colored in 12 ways. With only two colors, it cannot be colored at all. With four colors, it can be colored in 24 + 4⋅12 = 72 ways: using all four colors, there are 4! = 24 valid colorings (<i>every</i> assignment of four colors to <i>any</i> 4-vertex graph is a proper coloring); and for every choice of three of the four colors, there are 12 valid 3-colorings. So, for the graph in the example, a table of the number of valid colorings would start like this:
+</p>
+<table class="wikitable" style="background:white; text-align:right;">
+<tbody><tr>
+<th>Available colors
+</th>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>…
+</td></tr>
+<tr>
+<th>Number of colorings
+</th>
+<td>0</td>
+<td>0</td>
+<td>12</td>
+<td>72</td>
+<td>…
+</td></tr></tbody></table>
+<p>The chromatic polynomial is a function <span class="texhtml"><i>P</i>(<i>G</i>,<i>t</i>)</span> that counts the number of <span class="texhtml mvar" style="font-style:italic;">t</span>-colorings of <span class="texhtml mvar" style="font-style:italic;">G</span>. As the name indicates, for a given <span class="texhtml mvar" style="font-style:italic;">G</span> the function is indeed a polynomial in <span class="texhtml mvar" style="font-style:italic;">t</span>. For the example graph, <span class="texhtml"><i>P</i>(<i>G</i>,<i>t</i>) = <i>t</i>(<i>t</i> – 1)<sup>2</sup>(<i>t</i> – 2)</span>, and indeed <span class="texhtml"><i>P</i>(<i>G</i>,4) = 72</span>.
+</p><p>The chromatic polynomial includes more information about the colorability of <span class="texhtml mvar" style="font-style:italic;">G</span> than does the chromatic number. Indeed, <span class="texhtml mvar" style="font-style:italic;">χ</span> is the smallest positive integer that is not a zero of the chromatic polynomial <span class="texhtml">χ(<i>G</i>) = min{<i>k</i> : <i>P</i>(<i>G</i>,<i>k</i>) &gt; 0}.</span>
+</p>
+<table class="wikitable" style="background:white;">
+<caption>Chromatic polynomials for certain graphs
+</caption>
+<tbody><tr>
+<th>Triangle <span class="texhtml"><i>K</i><sub>3</sub></span>
+</th>
+<td><span class="texhtml"><i>t</i>(<i>t</i> – 1)(<i>t</i> – 2)</span>
+</td></tr>
+<tr>
+<th>Complete graph <span class="texhtml mvar" style="font-style:italic;">K<sub>n</sub></span>
+</th>
+<td><span class="texhtml"><i>t</i>(<i>t</i> – 1)(<i>t</i> – 2) … (<i>t</i> – (<i>n</i> – 1))</span>
+</td></tr>
+<tr>
+<th>Tree with <span class="texhtml mvar" style="font-style:italic;">n</span> vertices
+</th>
+<td><span class="texhtml"><i>t</i>(<i>t</i> – 1)<sup><i>n</i> –  1</sup></span>
+</td></tr>
+<tr>
+<th>Cycle <span class="texhtml mvar" style="font-style:italic;">C<sub>n</sub></span>
+</th>
+<td><span class="texhtml">(<i>t</i> – 1)<sup><i>n</i></sup> + (-1)<sup><i>n</i></sup>(<i>t</i> – 1)</span>
+</td></tr>
+<tr>
+<th>Petersen graph
+</th>
+<td><span class="texhtml"><i>t</i>(<i>t</i> – 1)(<i>t</i> – 2)(<i>t</i><sup>7</sup> – 12<i>t</i><sup>6</sup> + 67<i>t</i><sup>5</sup> – 230<i>t</i><sup>4</sup> + 529<i>t</i><sup>3</sup> – 814<i>t</i><sup>2</sup> + 775<i>t</i> – 352)</span>
+</td></tr></tbody></table>
+<h3><span class="mw-headline" id="Edge_coloring">Edge coloring</span><span class="mw-editsection"></span></h3>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>An <b>edge coloring</b> of a graph is a  proper coloring of the <i>edges</i>, meaning an assignment of colors to edges so that no vertex is incident to two edges of the same color. An edge coloring with <span class="texhtml mvar" style="font-style:italic;">k</span> colors is called a <span class="texhtml mvar" style="font-style:italic;">k</span>-edge-coloring and is equivalent to the problem of partitioning the edge set into <span class="texhtml mvar" style="font-style:italic;">k</span> matchings. The smallest number of colors needed for an edge coloring of a graph <span class="texhtml mvar" style="font-style:italic;">G</span> is the <b>chromatic index</b>, or <b>edge chromatic number</b>, <span class="texhtml">χ′(<i>G</i>)</span>. A <b>Tait coloring</b> is a 3-edge coloring of a cubic graph. The four color theorem is equivalent to the assertion that every planar cubic bridgeless graph admits a Tait coloring.
+</p>
+<h3><span class="mw-headline" id="Total_coloring">Total coloring</span><span class="mw-editsection"></span></h3>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p><b>Total coloring</b> is a type of coloring on the vertices <i>and</i> edges of a graph. When used without any qualification, a total coloring is always assumed to be proper in the sense that no adjacent vertices, no adjacent edges, and no edge and its end-vertices are assigned the same color. The total chromatic number <span class="texhtml">χ″(<i>G</i>)</span> of a graph <span class="texhtml mvar" style="font-style:italic;">G</span> is the fewest colors needed in any total coloring of <span class="texhtml mvar" style="font-style:italic;">G</span>.
+</p>
+<h3><span class="mw-headline" id="Unlabeled_coloring">Unlabeled coloring</span><span class="mw-editsection"></span></h3>
+<p>An <b>unlabeled coloring</b> of a graph is an orbit of a coloring under the action of the automorphism group of the graph. Note that the colors remain labeled; it is the graph that is unlabeled.
+There is an analogue of the chromatic polynomial which counts the number of unlabeled colorings of a graph from a given finite color set.
+</p><p>If we interpret a coloring of a graph on <span class="texhtml mvar" style="font-style:italic;">d</span> vertices as a vector in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathbb {Z} ^{d}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">Z</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathbb {Z} ^{d}}</annotation>
+</semantics>
+</math></span><img alt="\mathbb {Z} ^{d}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/649f796a3703c840a3c78c6c6eb2e31018e5eaa8" style="vertical-align: -0.338ex; width:2.642ex; height:2.676ex;"/></span>, the action of an automorphism is a permutation of the coefficients in the coloring vector.
+</p>
+<h2><span class="mw-headline" id="Properties">Properties</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Upper_bounds_on_the_chromatic_number">Upper bounds on the chromatic number</span><span class="mw-editsection"></span></h3>
+<p>Assigning distinct colors to distinct vertices always yields a proper coloring, so
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1\leq \chi (G)\leq n.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>χ<!-- χ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mi>n</mi>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1\leq \chi (G)\leq n.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 1\leq \chi (G)\leq n.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d919c313c4ffb2e10ac638571068dcb7b8d327c2" style="vertical-align: -0.838ex; width:14.492ex; height:2.843ex;"/></span></dd></dl>
+<p>The only graphs that can be 1-colored are edgeless graphs. A complete graph <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle K_{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>K</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle K_{n}}</annotation>
+</semantics>
+</math></span><img alt="K_{n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ea2b988ea630d2c5571afe47efa3d3b251708acb" style="vertical-align: -0.671ex; width:3.192ex; height:2.509ex;"/></span> of <i>n</i> vertices requires <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \chi (K_{n})=n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>χ<!-- χ --></mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>K</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \chi (K_{n})=n}</annotation>
+</semantics>
+</math></span><img alt="\chi (K_{n})=n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e035f8a1631585651ac542eb90a142b831b9ce52" style="vertical-align: -0.838ex; width:10.949ex; height:2.843ex;"/></span> colors. In an optimal coloring there must be at least one of the graph's <i>m</i> edges between every pair of color classes, so
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \chi (G)(\chi (G)-1)\leq 2m.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>χ<!-- χ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">(</mo>
+<mi>χ<!-- χ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mn>2</mn>
+<mi>m</mi>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \chi (G)(\chi (G)-1)\leq 2m.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \chi (G)(\chi (G)-1)\leq 2m.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d80e00635a13d32f23be0ba2ecb68af9457260bd" style="vertical-align: -0.838ex; width:22.943ex; height:2.843ex;"/></span></dd></dl>
+<p>If <i>G</i> contains a clique of size <i>k</i>, then at least <i>k</i> colors are needed to color that clique; in other words, the chromatic number is at least the clique number:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \chi (G)\geq \omega (G).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>χ<!-- χ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>≥<!-- ≥ --></mo>
+<mi>ω<!-- ω --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \chi (G)\geq \omega (G).}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \chi (G)\geq \omega (G).}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bf04e63a3880a85616818869a05baf70b1d66fa9" style="vertical-align: -0.838ex; width:13.918ex; height:2.843ex;"/></span></dd></dl>
+<p>For perfect graphs this bound is tight. Finding cliques is known as the clique problem.
+</p><p>More generally a family <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {F}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">F</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {F}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathcal {F}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/205d4b91000d9dcf1a5bbabdfa6a8395fa60b676" style="vertical-align: -0.338ex; width:1.927ex; height:2.176ex;"/></span> of graphs is <b><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \chi }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>χ<!-- χ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \chi }</annotation>
+</semantics>
+</math></span><img alt="\chi " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/656111758322ace96d80a9371771aa6d3de25437" style="vertical-align: -0.671ex; width:1.455ex; height:2.009ex;"/></span>-bounded</b>  if there is some function <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c}</annotation>
+</semantics>
+</math></span><img alt="c" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/86a67b81c2de995bd608d5b2df50cd8cd7d92455" style="vertical-align: -0.338ex; width:1.007ex; height:1.676ex;"/></span> such that the graphs <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>G</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G}</annotation>
+</semantics>
+</math></span><img alt="G" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f5f3c8921a3b352de45446a6789b104458c9f90b" style="vertical-align: -0.338ex; width:1.827ex; height:2.176ex;"/></span> in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {F}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">F</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {F}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathcal {F}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/205d4b91000d9dcf1a5bbabdfa6a8395fa60b676" style="vertical-align: -0.338ex; width:1.927ex; height:2.176ex;"/></span> can be colored with at most <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c(\omega (G))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+<mo stretchy="false">(</mo>
+<mi>ω<!-- ω --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c(\omega (G))}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle c(\omega (G))}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/076817b6f294ea251f6262dbbc217e6182d5a77a" style="vertical-align: -0.838ex; width:7.898ex; height:2.843ex;"/></span> colors, for the family of the perfect graphs this function is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c(\omega (G))=\omega (G)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+<mo stretchy="false">(</mo>
+<mi>ω<!-- ω --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>ω<!-- ω --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c(\omega (G))=\omega (G)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle c(\omega (G))=\omega (G)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b0bfdba12234f11bdd772d0e2de01f084023f1fe" style="vertical-align: -0.838ex; width:16.078ex; height:2.843ex;"/></span>.
+</p><p>The 2-colorable graphs are exactly the bipartite graphs, including trees and forests.
+By the four color theorem, every planar graph can be 4-colored.
+</p><p>A greedy coloring shows that every graph can be colored with one more color than the maximum vertex degree,
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \chi (G)\leq \Delta (G)+1.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>χ<!-- χ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mn>1.</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \chi (G)\leq \Delta (G)+1.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \chi (G)\leq \Delta (G)+1.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/94e572aebdf5f5dfd6656313ca36bfcc9fb14bd4" style="vertical-align: -0.838ex; width:18.411ex; height:2.843ex;"/></span></dd></dl>
+<p>Complete graphs have <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \chi (G)=n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>χ<!-- χ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \chi (G)=n}</annotation>
+</semantics>
+</math></span><img alt="\chi (G)=n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4e4b1f149cc2611ac4af90d6f00f04a8866f4769" style="vertical-align: -0.838ex; width:9.584ex; height:2.843ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Delta (G)=n-1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Delta (G)=n-1}</annotation>
+</semantics>
+</math></span><img alt="\Delta (G)=n-1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b0a541157c1d7762249d288a4204507c98d6ef7f" style="vertical-align: -0.838ex; width:14.068ex; height:2.843ex;"/></span>,  and odd cycles have <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \chi (G)=3}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>χ<!-- χ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>3</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \chi (G)=3}</annotation>
+</semantics>
+</math></span><img alt="\chi (G)=3" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f00ea929c7e707635b7e46b5b6c78ecd90e7a780" style="vertical-align: -0.838ex; width:9.352ex; height:2.843ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Delta (G)=2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Delta (G)=2}</annotation>
+</semantics>
+</math></span><img alt="\Delta (G)=2" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3c62a073f90689a4d368aaa8ea0d9f08d426e7e3" style="vertical-align: -0.838ex; width:9.833ex; height:2.843ex;"/></span>, so for these graphs this bound is best possible. In all other cases, the bound can be slightly improved; Brooks' theorem<sup class="reference" id="cite_ref-4">[4]</sup> states that
+</p>
+<dl><dd><b>Brooks' theorem: </b><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \chi (G)\leq \Delta (G)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>χ<!-- χ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \chi (G)\leq \Delta (G)}</annotation>
+</semantics>
+</math></span><img alt="\chi (G)\leq \Delta (G)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/499ffb1d5384311939844e3ee737cc6e550dde1d" style="vertical-align: -0.838ex; width:13.761ex; height:2.843ex;"/></span> for a connected, simple graph <i>G</i>, unless <i>G</i> is a complete graph or an odd cycle.</dd></dl>
+<h3><span class="mw-headline" id="Lower_bounds_on_the_chromatic_number">Lower bounds on the chromatic number</span><span class="mw-editsection"></span></h3>
+<p>Several lower bounds for the chromatic bounds have been discovered over the years:
+</p><p><b>Hoffman's bound:</b> Let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle W}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>W</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle W}</annotation>
+</semantics>
+</math></span><img alt="W" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/54a9c4c547f4d6111f81946cad242b18298d70b7" style="vertical-align: -0.338ex; width:2.435ex; height:2.176ex;"/></span> be a real symmetric matrix such that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle W_{i,j}=0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>W</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>,</mo>
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle W_{i,j}=0}</annotation>
+</semantics>
+</math></span><img alt="W_{i,j}=0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/55c8a57e35e8d660b781e195ab955789c9203de9" style="vertical-align: -1.005ex; width:8.389ex; height:2.843ex;"/></span> whenever <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (i,j)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo>,</mo>
+<mi>j</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (i,j)}</annotation>
+</semantics>
+</math></span><img alt="(i,j)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8ef21910f980c6fca2b15bee102a7a0d861ed712" style="vertical-align: -0.838ex; width:4.604ex; height:2.843ex;"/></span> is not an edge in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>G</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G}</annotation>
+</semantics>
+</math></span><img alt="G" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f5f3c8921a3b352de45446a6789b104458c9f90b" style="vertical-align: -0.338ex; width:1.827ex; height:2.176ex;"/></span>. Define <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \chi _{W}(G)=1-{\tfrac {\lambda _{\max }(W)}{\lambda _{\min }(W)}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>χ<!-- χ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>W</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>1</mn>
+<mo>−<!-- − --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mrow>
+<msub>
+<mi>λ<!-- λ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo form="prefix" movablelimits="true">max</mo>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>W</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+<mrow>
+<msub>
+<mi>λ<!-- λ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo form="prefix" movablelimits="true">min</mo>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>W</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</mfrac>
+</mstyle>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \chi _{W}(G)=1-{\tfrac {\lambda _{\max }(W)}{\lambda _{\min }(W)}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \chi _{W}(G)=1-{\tfrac {\lambda _{\max }(W)}{\lambda _{\min }(W)}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f5e28b01c2a68e29df86a18602b38a01292c5578" style="vertical-align: -1.838ex; width:21.59ex; height:4.843ex;"/></span>, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \lambda _{\max }(W),\lambda _{\min }(W)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>λ<!-- λ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo form="prefix" movablelimits="true">max</mo>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>W</mi>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<msub>
+<mi>λ<!-- λ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo form="prefix" movablelimits="true">min</mo>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>W</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \lambda _{\max }(W),\lambda _{\min }(W)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \lambda _{\max }(W),\lambda _{\min }(W)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2875dea6fb6216091d96e7cae8d03e05c6c9b4bb" style="vertical-align: -0.838ex; width:18.497ex; height:2.843ex;"/></span> are the largest and smallest eigenvalues of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle W}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>W</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle W}</annotation>
+</semantics>
+</math></span><img alt="W" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/54a9c4c547f4d6111f81946cad242b18298d70b7" style="vertical-align: -0.338ex; width:2.435ex; height:2.176ex;"/></span>. Define <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle \chi _{H}(G)=\max _{W}\chi _{W}(G)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<msub>
+<mi>χ<!-- χ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>H</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<munder>
+<mo form="prefix" movablelimits="true">max</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>W</mi>
+</mrow>
+</munder>
+<msub>
+<mi>χ<!-- χ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>W</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle \chi _{H}(G)=\max _{W}\chi _{W}(G)}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle \chi _{H}(G)=\max _{W}\chi _{W}(G)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d06e73e7a28b775d80b60c8aef5cd3e0fee8b158" style="vertical-align: -0.838ex; width:23.594ex; height:2.843ex;"/></span>, with <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle W}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>W</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle W}</annotation>
+</semantics>
+</math></span><img alt="W" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/54a9c4c547f4d6111f81946cad242b18298d70b7" style="vertical-align: -0.338ex; width:2.435ex; height:2.176ex;"/></span> as above. Then:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \chi _{H}(G)\leq \chi (G).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>χ<!-- χ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>H</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mi>χ<!-- χ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \chi _{H}(G)\leq \chi (G).}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \chi _{H}(G)\leq \chi (G).}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5bf9da7dc77f48a5f9e11de7a07e4221d606c15b" style="vertical-align: -0.838ex; width:15.619ex; height:2.843ex;"/></span></dd></dl>
+<p><b><style data-mw-deduplicate="TemplateStyles:r1023754711">.mw-parser-output .vanchor>:target~.vanchor-text{background-color:#b1d2ff}</style><span class="vanchor"><span id="Vector_chromatic_number"></span><span class="vanchor-text">Vector chromatic number</span></span>:</b> Let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle W}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>W</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle W}</annotation>
+</semantics>
+</math></span><img alt="W" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/54a9c4c547f4d6111f81946cad242b18298d70b7" style="vertical-align: -0.338ex; width:2.435ex; height:2.176ex;"/></span> be a positive semi-definite matrix such that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle W_{i,j}\leq -{\tfrac {1}{k-1}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>W</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>,</mo>
+<mi>j</mi>
+</mrow>
+</msub>
+<mo>≤<!-- ≤ --></mo>
+<mo>−<!-- − --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mn>1</mn>
+<mrow>
+<mi>k</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</mfrac>
+</mstyle>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle W_{i,j}\leq -{\tfrac {1}{k-1}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle W_{i,j}\leq -{\tfrac {1}{k-1}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6ebaa3668a0e7612eda65616b404ad916c6fef3a" style="vertical-align: -1.338ex; width:12.828ex; height:3.676ex;"/></span> whenever <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (i,j)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo>,</mo>
+<mi>j</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (i,j)}</annotation>
+</semantics>
+</math></span><img alt="(i,j)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8ef21910f980c6fca2b15bee102a7a0d861ed712" style="vertical-align: -0.838ex; width:4.604ex; height:2.843ex;"/></span> is an edge in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>G</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G}</annotation>
+</semantics>
+</math></span><img alt="G" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f5f3c8921a3b352de45446a6789b104458c9f90b" style="vertical-align: -0.338ex; width:1.827ex; height:2.176ex;"/></span>. Define <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \chi _{V}(G)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>χ<!-- χ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>V</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \chi _{V}(G)}</annotation>
+</semantics>
+</math></span><img alt="\chi _{V}(G)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec09347820c43be77dd7886ad342ddd6c662e86c" style="vertical-align: -0.838ex; width:6.587ex; height:2.843ex;"/></span> to be the least k for which such a matrix <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle W}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>W</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle W}</annotation>
+</semantics>
+</math></span><img alt="W" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/54a9c4c547f4d6111f81946cad242b18298d70b7" style="vertical-align: -0.338ex; width:2.435ex; height:2.176ex;"/></span> exists. Then
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \chi _{V}(G)\leq \chi (G).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>χ<!-- χ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>V</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mi>χ<!-- χ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \chi _{V}(G)\leq \chi (G).}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \chi _{V}(G)\leq \chi (G).}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/63437f9ce25e9e8e881c28efa30a9b9b50512b20" style="vertical-align: -0.838ex; width:15.424ex; height:2.843ex;"/></span></dd></dl>
+<p><b>Lovász number:</b> The Lovász number of a complementary graph is also a lower bound on the chromatic number:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \vartheta ({\bar {G}})\leq \chi (G).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>ϑ<!-- ϑ --></mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>G</mi>
+<mo stretchy="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mrow>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mi>χ<!-- χ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \vartheta ({\bar {G}})\leq \chi (G).}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \vartheta ({\bar {G}})\leq \chi (G).}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f8c1604782d32611b7b5a9a6c2572444bfe5128d" style="vertical-align: -0.838ex; width:13.846ex; height:3.176ex;"/></span></dd></dl>
+<p><b>Fractional chromatic number:</b> The fractional chromatic number of a graph is a lower bound on the chromatic number as well:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \chi _{f}(G)\leq \chi (G).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>χ<!-- χ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mi>χ<!-- χ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \chi _{f}(G)\leq \chi (G).}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \chi _{f}(G)\leq \chi (G).}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a037f9592bb49c9e570297dd97757607da89a50f" style="vertical-align: -1.005ex; width:15.064ex; height:3.009ex;"/></span></dd></dl>
+<p>These bounds are ordered as follows:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \chi _{H}(G)\leq \chi _{V}(G)\leq \vartheta ({\bar {G}})\leq \chi _{f}(G)\leq \chi (G).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>χ<!-- χ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>H</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<msub>
+<mi>χ<!-- χ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>V</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mi>ϑ<!-- ϑ --></mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>G</mi>
+<mo stretchy="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mrow>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<msub>
+<mi>χ<!-- χ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mi>χ<!-- χ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \chi _{H}(G)\leq \chi _{V}(G)\leq \vartheta ({\bar {G}})\leq \chi _{f}(G)\leq \chi (G).}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \chi _{H}(G)\leq \chi _{V}(G)\leq \vartheta ({\bar {G}})\leq \chi _{f}(G)\leq \chi (G).}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2f463ba78d2e3b7f629221920e6de920c35b7c93" style="vertical-align: -1.005ex; width:42.739ex; height:3.343ex;"/></span></dd></dl>
+<h3><span class="mw-headline" id="Graphs_with_high_chromatic_number">Graphs with high chromatic number</span><span class="mw-editsection"></span></h3>
+<p>Graphs with large cliques have a high chromatic number, but the opposite is not true. The Grötzsch graph is an example of a 4-chromatic graph without a triangle, and the example can be generalized to the Mycielskians.
+</p>
+<dl><dd><b>Theorem</b> (William T. Tutte 1947,<sup class="reference" id="cite_ref-5">[5]</sup> Alexander Zykov 1949, Jan Mycielski 1955): There exist triangle-free graphs with arbitrarily high chromatic number.</dd></dl>
+<p>To prove this, both, Mycielski and Zykov, each gave a construction of an inductively defined family of triangle-free graphs but with arbitrarily large chromatic number.<sup class="reference" id="cite_ref-6">[6]</sup> Burling (1965)<sup class="reference" id="cite_ref-7">[7]</sup> constructed axis aligned boxes in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathbb {R} ^{3}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">R</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathbb {R} ^{3}}</annotation>
+</semantics>
+</math></span><img alt="\mathbb {R} ^{3}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f936ddf584f8f3dd2a0ed08917001b7a404c10b5" style="vertical-align: -0.338ex; width:2.732ex; height:2.676ex;"/></span> whose intersection graph is triangle-free and requires arbitrarily many colors to be properly colored. This family of graphs is then called the Burling graphs. The same class of graphs is used for the construction of a family of triangle-free line segments in the plane, given by Pawlik et al. (2014).<sup class="reference" id="cite_ref-Triangle-free_intersection_graphs_o_8-0">[8]</sup> It shows that the chromatic number of its intersection graph is arbitrarily large as well. Hence, this implies that axis aligned boxes in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathbb {R} ^{3}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">R</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathbb {R} ^{3}}</annotation>
+</semantics>
+</math></span><img alt="\mathbb {R} ^{3}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f936ddf584f8f3dd2a0ed08917001b7a404c10b5" style="vertical-align: -0.338ex; width:2.732ex; height:2.676ex;"/></span> as well as line segments in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathbb {R} ^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">R</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathbb {R} ^{2}}</annotation>
+</semantics>
+</math></span><img alt="{\mathbb  {R}}^{{2}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e150115ab9f63023215109595b76686a1ff890fd" style="vertical-align: -0.338ex; width:2.732ex; height:2.676ex;"/></span> are not χ-bounded.<sup class="reference" id="cite_ref-Triangle-free_intersection_graphs_o_8-1">[8]</sup>
+</p><p>From Brooks's theorem, graphs with high chromatic number must have high maximum degree. But colorability is not an entirely local phenomenon: A graph with high girth looks locally like a tree, because all cycles are long, but its chromatic number need not be 2:
+</p>
+<dl><dd><b>Theorem</b> (Erdős): There exist graphs of arbitrarily high girth and chromatic number.<sup class="reference" id="cite_ref-9">[9]</sup></dd></dl>
+<h3><span class="mw-headline" id="Bounds_on_the_chromatic_index">Bounds on the chromatic index</span><span class="mw-editsection"></span></h3>
+<p>An edge coloring of <i>G</i> is a vertex coloring of its line graph <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle L(G)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>L</mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle L(G)}</annotation>
+</semantics>
+</math></span><img alt="L(G)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8b080e7cb1370a47e04efa3395a2212940fba797" style="vertical-align: -0.838ex; width:5.219ex; height:2.843ex;"/></span>, and vice versa. Thus,
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \chi '(G)=\chi (L(G)).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>χ<!-- χ --></mi>
+<mo>′</mo>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>χ<!-- χ --></mi>
+<mo stretchy="false">(</mo>
+<mi>L</mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \chi '(G)=\chi (L(G)).}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \chi '(G)=\chi (L(G)).}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/19215a80461cc6505b3942a30acedb689586809a" style="vertical-align: -0.838ex; width:18.004ex; height:3.009ex;"/></span></dd></dl>
+<p>There is a strong relationship between edge colorability and the graph's maximum degree <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Delta (G)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Delta (G)}</annotation>
+</semantics>
+</math></span><img alt="\Delta (G)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/359a5b6529b6b451a49a95beec7c87d147f51961" style="vertical-align: -0.838ex; width:5.572ex; height:2.843ex;"/></span>. Since all edges incident to the same vertex need their own color, we have
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \chi '(G)\geq \Delta (G).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>χ<!-- χ --></mi>
+<mo>′</mo>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>≥<!-- ≥ --></mo>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \chi '(G)\geq \Delta (G).}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \chi '(G)\geq \Delta (G).}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0989575a44402d1f6f22af3e5498769fd2c04e7f" style="vertical-align: -0.838ex; width:15.093ex; height:3.009ex;"/></span></dd></dl>
+<p>Moreover,
+</p>
+<dl><dd><b>Kőnig's theorem:</b> <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \chi '(G)=\Delta (G)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>χ<!-- χ --></mi>
+<mo>′</mo>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \chi '(G)=\Delta (G)}</annotation>
+</semantics>
+</math></span><img alt="\chi '(G)=\Delta (G)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1548abff2f493504504199b6ec55c2ec81734236" style="vertical-align: -0.838ex; width:14.446ex; height:3.009ex;"/></span> if <i>G</i> is bipartite.</dd></dl>
+<p>In general, the relationship is even stronger than what Brooks's theorem gives for vertex coloring:
+</p>
+<dl><dd><b>Vizing's Theorem:</b> A graph of maximal degree <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Delta }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Delta }</annotation>
+</semantics>
+</math></span><img alt="\Delta " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/32769037c408874e1890f77554c65f39c523ebe2" style="vertical-align: -0.338ex; width:1.936ex; height:2.176ex;"/></span> has edge-chromatic number <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Delta }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Delta }</annotation>
+</semantics>
+</math></span><img alt="\Delta " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/32769037c408874e1890f77554c65f39c523ebe2" style="vertical-align: -0.338ex; width:1.936ex; height:2.176ex;"/></span> or <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Delta +1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Delta +1}</annotation>
+</semantics>
+</math></span><img alt="\Delta +1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6c0cbce1fb869e1c501de75da79da656a61e5db5" style="vertical-align: -0.505ex; width:5.939ex; height:2.343ex;"/></span>.</dd></dl>
+<h3><span class="mw-headline" id="Other_properties">Other properties</span><span class="mw-editsection"></span></h3>
+<p>A graph has a <i>k</i>-coloring if and only if it has an acyclic orientation for which the longest path has length at most <i>k</i>; this is the Gallai–Hasse–Roy–Vitaver theorem (Nešetřil &amp; Ossona de Mendez 2012).
+</p><p>For planar graphs, vertex colorings are essentially dual to nowhere-zero flows.
+</p><p>About infinite graphs, much less is known.
+The following are two of the few results about infinite graph coloring:
+</p>
+<ul><li>If all finite subgraphs of an infinite graph <i>G</i> are <i>k</i>-colorable, then so is <i>G</i>, under the assumption of the axiom of choice. This is the de Bruijn–Erdős theorem of de Bruijn &amp; Erdős (1951).</li>
+<li>If a graph admits a full <i>n</i>-coloring for every <i>n</i> ≥ <i>n</i><sub>0</sub>, it admits an infinite full coloring (Fawcett 1978).</li></ul>
+<h3><span class="mw-headline" id="Open_problems">Open problems</span><span class="mw-editsection"></span></h3>
+<p>As stated above, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \omega (G)\leq \chi (G)\leq \Delta (G)+1.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>ω<!-- ω --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mi>χ<!-- χ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mn>1.</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \omega (G)\leq \chi (G)\leq \Delta (G)+1.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \omega (G)\leq \chi (G)\leq \Delta (G)+1.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/970d196bbdfddcbd6345d7cef7ff08037f2a35fe" style="vertical-align: -0.838ex; width:26.591ex; height:2.843ex;"/></span> A conjecture of Reed from 1998 is that the value is essentially closer to the lower bound, 
+<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \chi (G)\leq \left\lceil {\frac {\omega (G)+\Delta (G)+1}{2}}\right\rceil .}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>χ<!-- χ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mrow>
+<mo>⌈</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mi>ω<!-- ω --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi mathvariant="normal">Δ<!-- Δ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mo>⌉</mo>
+</mrow>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \chi (G)\leq \left\lceil {\frac {\omega (G)+\Delta (G)+1}{2}}\right\rceil .}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \chi (G)\leq \left\lceil {\frac {\omega (G)+\Delta (G)+1}{2}}\right\rceil .}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/10593f1b04e5eeb4de59e3aaecd73ab0f69c0884" style="vertical-align: -2.505ex; width:30.267ex; height:6.343ex;"/></span>
+</p><p>The chromatic number of the plane, where two points are adjacent if they have unit distance, is unknown, although it is one of 5, 6, or 7. Other open problems concerning the chromatic number of graphs include the Hadwiger conjecture stating that every graph with chromatic number <i>k</i> has a complete graph on <i>k</i> vertices as a minor, the Erdős–Faber–Lovász conjecture bounding the chromatic number of unions of complete graphs that have at most one vertex in common to each pair, and the Albertson conjecture that among <i>k</i>-chromatic graphs the complete graphs are the ones with smallest crossing number.
+</p><p>When Birkhoff and Lewis introduced the chromatic polynomial in their attack on the four-color theorem, they conjectured that for planar graphs <i>G</i>, the polynomial <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P(G,t)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo>,</mo>
+<mi>t</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P(G,t)}</annotation>
+</semantics>
+</math></span><img alt="P(G,t)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6c2a76191fcbde04ac9e3c1837711a184b008635" style="vertical-align: -0.838ex; width:7.255ex; height:2.843ex;"/></span> has no zeros in the region <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle [4,\infty )}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">[</mo>
+<mn>4</mn>
+<mo>,</mo>
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle [4,\infty )}</annotation>
+</semantics>
+</math></span><img alt="[4,\infty )" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7721ea88bccfe5687a9ff007b4c88fc1941a63c9" style="vertical-align: -0.838ex; width:6.072ex; height:2.843ex;"/></span>. Although it is known that such a chromatic polynomial has no zeros in the region <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle [5,\infty )}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">[</mo>
+<mn>5</mn>
+<mo>,</mo>
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle [5,\infty )}</annotation>
+</semantics>
+</math></span><img alt="[5,\infty )" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/716e29f0937bc4839c61cd0bb72879287c887917" style="vertical-align: -0.838ex; width:6.072ex; height:2.843ex;"/></span> and that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P(G,4)\neq 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo>,</mo>
+<mn>4</mn>
+<mo stretchy="false">)</mo>
+<mo>≠<!-- ≠ --></mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P(G,4)\neq 0}</annotation>
+</semantics>
+</math></span><img alt="P(G,4)\neq 0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/aecb492a353fee2f339bb1369693744346bac09a" style="vertical-align: -0.838ex; width:11.839ex; height:2.843ex;"/></span>, their conjecture is still unresolved. It also remains an unsolved problem to characterize graphs which have the same chromatic polynomial and to determine which polynomials are chromatic.
+</p>
+<h2><span class="mw-headline" id="Algorithms">Algorithms</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1066479718">.mw-parser-output .infobox-subbox{padding:0;border:none;margin:-3px;width:auto;min-width:100%;font-size:100%;clear:none;float:none;background-color:transparent}.mw-parser-output .infobox-3cols-child{margin:auto}.mw-parser-output .infobox .navbar{font-size:100%}body.skin-minerva .mw-parser-output .infobox-header,body.skin-minerva .mw-parser-output .infobox-subheader,body.skin-minerva .mw-parser-output .infobox-above,body.skin-minerva .mw-parser-output .infobox-title,body.skin-minerva .mw-parser-output .infobox-image,body.skin-minerva .mw-parser-output .infobox-full-data,body.skin-minerva .mw-parser-output .infobox-below{text-align:center}</style><table class="infobox"><tbody><tr><th class="infobox-above" colspan="2" style="background: #DD9">Graph coloring</th></tr><tr><td class="infobox-image" colspan="2"><img alt="3-coloringEx.svg" data-file-height="142" data-file-width="160" decoding="async" height="142" src="//upload.wikimedia.org/wikipedia/commons/thumb/b/b7/3-coloringEx.svg/160px-3-coloringEx.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/b/b7/3-coloringEx.svg/240px-3-coloringEx.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/b/b7/3-coloringEx.svg/320px-3-coloringEx.svg.png 2x" width="160"/></td></tr><tr><th class="infobox-header" colspan="2" style="background: #DD9">Decision</th></tr><tr><th class="infobox-label" scope="row" style="font-weight:normal">Name</th><td class="infobox-data">Graph coloring, vertex coloring, <i>k</i>-coloring</td></tr><tr><th class="infobox-label" scope="row" style="font-weight:normal">Input</th><td class="infobox-data">Graph <i>G</i> with <i>n</i> vertices. Integer <i>k</i></td></tr><tr><th class="infobox-label" scope="row" style="font-weight:normal">Output</th><td class="infobox-data">Does <i>G</i> admit a proper vertex coloring with <i>k</i> colors?</td></tr><tr><th class="infobox-label" scope="row" style="font-weight:normal">Running time</th><td class="infobox-data">O(2<sup> <i>n</i></sup><i>n</i>)<sup class="reference" id="cite_ref-bhk_10-0">[10]</sup></td></tr><tr><th class="infobox-label" scope="row" style="font-weight:normal">Complexity</th><td class="infobox-data">NP-complete</td></tr><tr><th class="infobox-label" scope="row" style="font-weight:normal">Reduction from</th><td class="infobox-data">3-Satisfiability</td></tr><tr><th class="infobox-label" scope="row" style="font-weight:normal">Garey–Johnson</th><td class="infobox-data">GT4</td></tr><tr><th class="infobox-header" colspan="2" style="background: #DD9">Optimisation</th></tr><tr><th class="infobox-label" scope="row" style="font-weight:normal">Name</th><td class="infobox-data">Chromatic number</td></tr><tr><th class="infobox-label" scope="row" style="font-weight:normal">Input</th><td class="infobox-data">Graph <i>G</i> with <i>n</i> vertices.</td></tr><tr><th class="infobox-label" scope="row" style="font-weight:normal">Output</th><td class="infobox-data">χ(<i>G</i>)</td></tr><tr><th class="infobox-label" scope="row" style="font-weight:normal">Complexity</th><td class="infobox-data">NP-hard</td></tr><tr><th class="infobox-label" scope="row" style="font-weight:normal">Approximability</th><td class="infobox-data">O(<i>n</i> (log <i>n</i>)<sup>−3</sup>(log log <i>n</i>)<sup>2</sup>)</td></tr><tr><th class="infobox-label" scope="row" style="font-weight:normal">Inapproximability</th><td class="infobox-data">O(<i>n</i><sup>1−ε</sup>) unless P = NP</td></tr><tr><th class="infobox-header" colspan="2" style="background: #DD9">Counting problem</th></tr><tr><th class="infobox-label" scope="row" style="font-weight:normal">Name</th><td class="infobox-data">Chromatic polynomial</td></tr><tr><th class="infobox-label" scope="row" style="font-weight:normal">Input</th><td class="infobox-data">Graph <i>G</i> with <i>n</i> vertices. Integer <i>k</i></td></tr><tr><th class="infobox-label" scope="row" style="font-weight:normal">Output</th><td class="infobox-data">The number <i>P</i> (<i>G</i>,<i>k</i>) of proper <i>k</i>-colorings of <i>G</i></td></tr><tr><th class="infobox-label" scope="row" style="font-weight:normal">Running time</th><td class="infobox-data">O(2<sup> <i>n</i></sup><i>n</i>)</td></tr><tr><th class="infobox-label" scope="row" style="font-weight:normal">Complexity</th><td class="infobox-data">#P-complete</td></tr><tr><th class="infobox-label" scope="row" style="font-weight:normal">Approximability</th><td class="infobox-data">FPRAS for restricted cases</td></tr><tr><th class="infobox-label" scope="row" style="font-weight:normal">Inapproximability</th><td class="infobox-data">No PTAS unless P = NP</td></tr></tbody></table>
+<h3><span class="mw-headline" id="Polynomial_time">Polynomial time</span><span class="mw-editsection"></span></h3>
+<p>Determining if a graph can be colored with 2 colors is equivalent to determining whether or not the graph is bipartite, and thus computable in linear time using breadth-first search or depth-first search. More generally, the chromatic number and a corresponding coloring of  perfect graphs can be computed in polynomial time using semidefinite programming. Closed formulas for chromatic polynomials are known for many classes of graphs, such as forests, chordal graphs, cycles, wheels, and ladders, so these can be evaluated in polynomial time.
+</p><p>If the graph is planar and has low branch-width (or is nonplanar but with a known branch decomposition), then it can be solved in polynomial time using dynamic programming. In general, the time required is polynomial in the graph size, but exponential in the branch-width.
+</p>
+<h3><span class="mw-headline" id="Exact_algorithms">Exact algorithms</span><span class="mw-editsection"></span></h3>
+<p>Brute-force search for a <i>k</i>-coloring considers each of the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k^{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k^{n}}</annotation>
+</semantics>
+</math></span><img alt="k^{n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/29d0ca5fd176db2867ec07a961a31f17bc6fb07e" style="vertical-align: -0.338ex; width:2.43ex; height:2.343ex;"/></span> assignments of <i>k</i> colors to <i>n</i> vertices and checks for each if it is legal. To compute the chromatic number and the chromatic polynomial, this procedure is used for every <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k=1,\ldots ,n-1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+<mo>=</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+<mo>,</mo>
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k=1,\ldots ,n-1}</annotation>
+</semantics>
+</math></span><img alt="k=1,\ldots ,n-1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/db3a592f61b9c1ecd2cbf868095d127bf1caa130" style="vertical-align: -0.671ex; width:16.048ex; height:2.509ex;"/></span>, impractical for all but the smallest input graphs.
+</p><p>Using dynamic programming and a bound on the number of maximal independent sets, <i>k</i>-colorability can be decided in time and space <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(2.4423^{n})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mn>2.4423</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(2.4423^{n})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(2.4423^{n})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d9acaf672900ef29f78cad72618aa958df78e6aa" style="vertical-align: -0.838ex; width:11.26ex; height:2.843ex;"/></span>.<sup class="reference" id="cite_ref-11">[11]</sup> Using the principle of inclusion–exclusion and Yates's algorithm for the fast zeta transform, <i>k</i>-colorability can be decided in time <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(2^{n}n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(2^{n}n)}</annotation>
+</semantics>
+</math></span><img alt="O(2^{n}n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/98af3c2516a7f02bb40830b67d48b9d3446a8ea3" style="vertical-align: -0.838ex; width:7.358ex; height:2.843ex;"/></span><sup class="reference" id="cite_ref-bhk_10-1">[10]</sup><sup class="reference" id="cite_ref-12">[12]</sup><sup class="reference" id="cite_ref-13">[13]</sup><sup class="reference" id="cite_ref-14">[14]</sup> for any <i>k</i>. Faster algorithms  are  known for 3- and 4-colorability, which can be decided in time <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(1.3289^{n})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mn>1.3289</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(1.3289^{n})}</annotation>
+</semantics>
+</math></span><img alt="O(1.3289^{n})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/15ad359bf5eceb8c66cb5edc11214f9453a0c406" style="vertical-align: -0.838ex; width:11.26ex; height:2.843ex;"/></span><sup class="reference" id="cite_ref-15">[15]</sup> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(1.7272^{n})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mn>1.7272</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(1.7272^{n})}</annotation>
+</semantics>
+</math></span><img alt="O(1.7272^{n})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c0e5e8245afc1e1bbdf9106a8a10159f9d61d6c1" style="vertical-align: -0.838ex; width:11.26ex; height:2.843ex;"/></span>,<sup class="reference" id="cite_ref-16">[16]</sup> respectively. Exponentially faster algorithms are also known for 5- and 6-colorability, as well as for restricted families of graphs, including sparse graphs.<sup class="reference" id="cite_ref-17">[17]</sup>
+</p>
+<h3><span class="mw-headline" id="Contraction">Contraction</span><span class="mw-editsection"></span></h3>
+<p>The  contraction <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G/uv}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>G</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>u</mi>
+<mi>v</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G/uv}</annotation>
+</semantics>
+</math></span><img alt="G/uv" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1234e8b6fcefeb54b9fd1d4357273f58caba82bb" style="vertical-align: -0.838ex; width:5.446ex; height:2.843ex;"/></span> of a graph <i>G</i> is the graph obtained by identifying the vertices <i>u</i> and <i>v</i>, and removing any edges between them. The remaining edges originally incident to <i>u</i> or <i>v</i> are now incident to their identification (<i>i.e.</i>, the new fused node <i>uv</i>). This operation plays a major role in the analysis of graph coloring.
+</p><p>The chromatic number satisfies the recurrence relation:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \chi (G)={\text{min}}\{\chi (G+uv),\chi (G/uv)\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>χ<!-- χ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>min</mtext>
+</mrow>
+<mo fence="false" stretchy="false">{</mo>
+<mi>χ<!-- χ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo>+</mo>
+<mi>u</mi>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<mi>χ<!-- χ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>u</mi>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \chi (G)={\text{min}}\{\chi (G+uv),\chi (G/uv)\}}</annotation>
+</semantics>
+</math></span><img alt="\chi (G)={\text{min}}\{\chi (G+uv),\chi (G/uv)\}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9c3f5e7e65fea62f0f242a54e507d4e939eb67de" style="vertical-align: -0.838ex; width:34.523ex; height:2.843ex;"/></span></dd></dl>
+<p>due to Zykov (1949), where <i>u</i> and <i>v</i> are non-adjacent vertices, and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G+uv}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>G</mi>
+<mo>+</mo>
+<mi>u</mi>
+<mi>v</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G+uv}</annotation>
+</semantics>
+</math></span><img alt="G+uv" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/92ad18764a2c3b8bc3ef1c27581954b15836b8cd" style="vertical-align: -0.505ex; width:7.124ex; height:2.343ex;"/></span> is the graph with the edge <span class="texhtml mvar" style="font-style:italic;">uv</span> added. Several algorithms are based on evaluating this recurrence and the resulting computation tree is sometimes called a Zykov tree. The running time is based on a heuristic for choosing the vertices <i>u</i> and <i>v</i>.
+</p><p>The chromatic polynomial satisfies the following recurrence relation
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P(G-uv,k)=P(G/uv,k)+P(G,k)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo>−<!-- − --></mo>
+<mi>u</mi>
+<mi>v</mi>
+<mo>,</mo>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>P</mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>u</mi>
+<mi>v</mi>
+<mo>,</mo>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>P</mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo>,</mo>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P(G-uv,k)=P(G/uv,k)+P(G,k)}</annotation>
+</semantics>
+</math></span><img alt="P(G-uv,k)=P(G/uv,k)+P(G,k)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f034d3506efab89e13a7f938f5f9a0fa58d36068" style="vertical-align: -0.838ex; width:37.736ex; height:2.843ex;"/></span></dd></dl>
+<p>where <i>u</i> and <i>v</i> are adjacent vertices, and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle G-uv}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>G</mi>
+<mo>−<!-- − --></mo>
+<mi>u</mi>
+<mi>v</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle G-uv}</annotation>
+</semantics>
+</math></span><img alt="G-uv" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/13ebcbd5e15f458fcbfa1ba3c575b689bf0a9de3" style="vertical-align: -0.505ex; width:7.124ex; height:2.343ex;"/></span> is the graph with the edge <span class="texhtml mvar" style="font-style:italic;">uv</span> removed. <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P(G-uv,k)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo>−<!-- − --></mo>
+<mi>u</mi>
+<mi>v</mi>
+<mo>,</mo>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P(G-uv,k)}</annotation>
+</semantics>
+</math></span><img alt="P(G-uv,k)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5b7efe57817570128e40df809fda1c89b6423ac5" style="vertical-align: -0.838ex; width:12.924ex; height:2.843ex;"/></span> represents the number of possible proper colorings of the graph, where the vertices may have the same or different colors. Then the proper colorings arise from two different graphs. To explain, if the vertices <i>u</i> and <i>v</i> have different colors, then we might as well consider a graph where <i>u</i> and <i>v</i> are adjacent. If <i>u</i> and <i>v</i> have the same colors, we might as well consider a graph where <i>u</i> and <i>v</i> are contracted. Tutte's curiosity about which other graph properties satisfied this recurrence led him to discover a bivariate generalization of the chromatic polynomial, the Tutte polynomial.
+</p><p>These expressions give rise to a recursive procedure called the <i>deletion–contraction algorithm</i>, which forms the basis of many algorithms for graph coloring. The running time satisfies the same recurrence relation as the Fibonacci numbers, so in the worst case the algorithm runs in time within a polynomial factor  of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \left({\tfrac {1+{\sqrt {5}}}{2}}\right)^{n+m}=O(1.6180^{n+m})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mrow>
+<mo>(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mrow>
+<mn>1</mn>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mn>5</mn>
+</msqrt>
+</mrow>
+</mrow>
+<mn>2</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo>+</mo>
+<mi>m</mi>
+</mrow>
+</msup>
+<mo>=</mo>
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mn>1.6180</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo>+</mo>
+<mi>m</mi>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \left({\tfrac {1+{\sqrt {5}}}{2}}\right)^{n+m}=O(1.6180^{n+m})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \left({\tfrac {1+{\sqrt {5}}}{2}}\right)^{n+m}=O(1.6180^{n+m})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b7d1d8622a787c10041bc2c16a9c2e81f42feb5b" style="vertical-align: -1.838ex; width:28.923ex; height:5.176ex;"/></span> for <i>n</i> vertices and <i>m</i> edges.<sup class="reference" id="cite_ref-18">[18]</sup> The analysis can be improved to within a polynomial factor of the number <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle t(G)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>t</mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle t(G)}</annotation>
+</semantics>
+</math></span><img alt="t(G)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e01fdf79d65b83e06d5cf46bc771cac7f50d2d2a" style="vertical-align: -0.838ex; width:4.476ex; height:2.843ex;"/></span> of spanning trees of the input graph.<sup class="reference" id="cite_ref-19">[19]</sup> In practice, branch and bound strategies and graph isomorphism rejection are employed to avoid some recursive calls. The running time depends on the heuristic used to pick the vertex pair.
+</p>
+<h3><span class="mw-headline" id="Greedy_coloring">Greedy coloring</span><span class="mw-editsection"></span></h3>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+
+<p>The  greedy algorithm considers the vertices in a specific order <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v_{1}}</annotation>
+</semantics>
+</math></span><img alt="v_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/98d33f5d498d528bd8c10edc8ac8c34347f32b3a" style="vertical-align: -0.671ex; width:2.182ex; height:2.009ex;"/></span>,…,<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v_{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v_{n}}</annotation>
+</semantics>
+</math></span><img alt="v_{n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d5615ffa6233b0d09d5bafafb58a752c1e8de95f" style="vertical-align: -0.671ex; width:2.346ex; height:2.009ex;"/></span> and assigns to  <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v_{i}}</annotation>
+</semantics>
+</math></span><img alt="v_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7dffe5726650f6daac54829972a94f38eb8ec127" style="vertical-align: -0.671ex; width:1.927ex; height:2.009ex;"/></span> the smallest available color not used by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v_{i}}</annotation>
+</semantics>
+</math></span><img alt="v_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7dffe5726650f6daac54829972a94f38eb8ec127" style="vertical-align: -0.671ex; width:1.927ex; height:2.009ex;"/></span>'s neighbours among <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v_{1}}</annotation>
+</semantics>
+</math></span><img alt="v_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/98d33f5d498d528bd8c10edc8ac8c34347f32b3a" style="vertical-align: -0.671ex; width:2.182ex; height:2.009ex;"/></span>,…,<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v_{i-1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v_{i-1}}</annotation>
+</semantics>
+</math></span><img alt="v_{i-1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f64987f4447177f86c030062509a3aee2a8db2cf" style="vertical-align: -0.671ex; width:4.028ex; height:2.009ex;"/></span>, adding a fresh color if needed. The quality of the resulting coloring depends on the chosen ordering. There exists an ordering that leads to a greedy coloring with the optimal number of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \chi (G)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>χ<!-- χ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \chi (G)}</annotation>
+</semantics>
+</math></span><img alt="\chi (G)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6a825aa31788f0948b5fd759acd7adcbbe512258" style="vertical-align: -0.838ex; width:5.091ex; height:2.843ex;"/></span> colors. On the other hand, greedy colorings can be arbitrarily bad; for example, the crown graph on <i>n</i> vertices  can be 2-colored, but has an ordering that leads to a greedy coloring with <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n/2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n/2}</annotation>
+</semantics>
+</math></span><img alt="n/2" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/95c3931a3fa03cc98cfacd2c49a7ca35b96eaa9b" style="vertical-align: -0.838ex; width:3.72ex; height:2.843ex;"/></span> colors.
+</p><p>For chordal graphs, and for special cases of chordal graphs such as interval graphs and indifference graphs, the greedy coloring algorithm can be used to find optimal colorings in polynomial time, by choosing the vertex ordering to be the reverse of a perfect elimination ordering for the graph. The perfectly orderable graphs generalize this property, but it is NP-hard to find a perfect ordering of these graphs.
+</p><p>If the vertices are ordered according to their degrees, the resulting greedy coloring uses at most <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\text{max}}_{i}{\text{ min}}\{d(x_{i})+1,i\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>max</mtext>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext> min</mtext>
+</mrow>
+<mo fence="false" stretchy="false">{</mo>
+<mi>d</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mi>i</mi>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\text{max}}_{i}{\text{ min}}\{d(x_{i})+1,i\}}</annotation>
+</semantics>
+</math></span><img alt="{\text{max}}_{i}{\text{ min}}\{d(x_{i})+1,i\}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/60df8084cdb720ff53dd7b35f3fcbb805cd5d109" style="vertical-align: -0.838ex; width:22.9ex; height:2.843ex;"/></span> colors, at most one more than the graph's maximum degree. This heuristic is sometimes called the  Welsh–Powell algorithm.<sup class="reference" id="cite_ref-20">[20]</sup> Another heuristic due to Brélaz establishes the ordering dynamically while the algorithm proceeds, choosing next  the vertex adjacent to the largest number of different colors.<sup class="reference" id="cite_ref-21">[21]</sup> Many other graph coloring heuristics are similarly based on greedy coloring for a specific static or dynamic strategy of ordering the vertices, these algorithms are sometimes called <b>sequential coloring</b> algorithms.
+</p><p>The maximum (worst) number of colors that can be obtained by the greedy algorithm, by using a vertex ordering chosen to maximize this number, is called the Grundy number of a graph.
+</p>
+<h3><span class="mw-headline" id="Heuristic_algorithms">Heuristic algorithms</span><span class="mw-editsection"></span></h3>
+<p>Two well-known polynomial-time heuristics for graph colouring are the DSatur and recursive largest first (RLF) algorithms.
+</p><p>Similarly to the greedy colouring algorithm, DSatur colours the vertices of a graph one after another, expending a previously unused colour when needed. Once a new vertex has been coloured, the algorithm determines which of the remaining uncoloured vertices has the highest number of different colours in its neighbourhood and colours this vertex next. This is defined as the <i>degree of saturation</i> of a given vertex.
+</p><p>The recursive largest first algorithm operates in a different fashion by constructing each color class one at a time. It does this by identifying a maximal independent set of vertices in the graph using specialised heuristic rules. It then assigns these vertices to the same color and removes them from the graph. These actions are repeated on the remaining subgraph until no vertices remain.
+</p><p>The worst-case complexity of DSatur is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n^{2})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n^{2})}</annotation>
+</semantics>
+</math></span><img alt="O(n^{2})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6cd9594a16cb898b8f2a2dff9227a385ec183392" style="vertical-align: -0.838ex; width:6.032ex; height:3.176ex;"/></span>, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span> is the number of vertices in the graph. The algorithm can also be implemented using a binary heap to store saturation degrees, operating in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O((n+m)\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>+</mo>
+<mi>m</mi>
+<mo stretchy="false">)</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O((n+m)\log n)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O((n+m)\log n)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/14b8192d882337762232df108b305cba719808d9" style="vertical-align: -0.838ex; width:16.808ex; height:2.843ex;"/></span> where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle m}</annotation>
+</semantics>
+</math></span><img alt="m" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0a07d98bb302f3856cbabc47b2b9016692e3f7bc" style="vertical-align: -0.338ex; width:2.04ex; height:1.676ex;"/></span> is the number of edges in the graph.<sup class="reference" id="cite_ref-Lewis2021_22-0">[22]</sup> This produces much faster runs with sparse graphs. The overall complexity of RLF is slightly higher than DSatur at <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {O}}(mn)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">O</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>m</mi>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {O}}(mn)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\mathcal {O}}(mn)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b89b39096416443cf320c79da8d5c8022a253358" style="vertical-align: -0.838ex; width:7.094ex; height:2.843ex;"/></span>.<sup class="reference" id="cite_ref-Lewis2021_22-1">[22]</sup>
+</p><p>DSatur and RLF are exact for bipartite, cycle, and wheel graphs.<sup class="reference" id="cite_ref-Lewis2021_22-2">[22]</sup>
+</p>
+<h3><span class="mw-headline" id="Parallel_and_distributed_algorithms">Parallel and distributed algorithms</span><span class="mw-editsection"></span></h3>
+<p>In the field of distributed algorithms, graph coloring is closely related to the problem of symmetry breaking.  The current state-of-the-art randomized algorithms are faster for sufficiently large maximum degree Δ than deterministic algorithms. The fastest randomized algorithms employ the multi-trials technique by Schneider et al.<sup class="reference" id="cite_ref-Schneider_2010_23-0">[23]</sup>
+</p><p>In a symmetric graph, a deterministic distributed algorithm cannot find a proper vertex coloring. Some auxiliary information is needed in order to break symmetry. A standard assumption is that initially each node has a <i>unique identifier</i>, for example, from the set {1, 2, ..., <i>n</i>}. Put otherwise, we assume that we are given an <i>n</i>-coloring. The challenge is to <i>reduce</i> the number of colors from <i>n</i> to, e.g., Δ + 1. The more colors are employed, e.g. O(Δ) instead of Δ + 1, the fewer communication rounds are required.<sup class="reference" id="cite_ref-Schneider_2010_23-1">[23]</sup>
+</p><p>A straightforward distributed version of the greedy algorithm for (Δ + 1)-coloring requires Θ(<i>n</i>) communication rounds in the worst case − information may need to be propagated from one side of the network to another side.
+</p><p>The simplest interesting case is an <i>n</i>-cycle. Richard Cole and Uzi Vishkin<sup class="reference" id="cite_ref-24">[24]</sup> show that there is a distributed algorithm that reduces the number of colors from <i>n</i> to <i>O</i>(log <i>n</i>) in one synchronous communication step. By iterating the same procedure, it is possible to obtain a 3-coloring of an <i>n</i>-cycle in <i>O</i>(log<span style="vertical-align: 10%">*</span> <i>n</i>) communication steps (assuming that we have unique node identifiers).
+</p><p>The function log<span style="vertical-align: 10%">*</span>, iterated logarithm, is an extremely slowly growing function, "almost constant". Hence the result by Cole and Vishkin raised the question of whether there is a <i>constant-time</i> distributed algorithm for 3-coloring an <i>n</i>-cycle. Linial (1992) showed that this is not possible: any deterministic distributed algorithm requires Ω(log<span style="vertical-align: 10%">*</span> <i>n</i>) communication steps to reduce an <i>n</i>-coloring to a 3-coloring in an <i>n</i>-cycle.
+</p><p>The technique by Cole and Vishkin can be applied in arbitrary bounded-degree graphs as well; the running time is poly(Δ) + <i>O</i>(log<span style="vertical-align: 10%">*</span> <i>n</i>).<sup class="reference" id="cite_ref-25">[25]</sup> The technique was extended to unit disk graphs by Schneider et al.<sup class="reference" id="cite_ref-26">[26]</sup> The fastest deterministic algorithms for (Δ + 1)-coloring for small Δ are due to Leonid Barenboim, Michael Elkin and Fabian Kuhn.<sup class="reference" id="cite_ref-27">[27]</sup> The algorithm by Barenboim et al. runs in time <i>O</i>(Δ) + log<span style="vertical-align: 10%">*</span>(<i>n</i>)/2, which is optimal in terms of <i>n</i> since the constant factor 1/2 cannot be improved due to Linial's lower bound. Panconesi &amp; Srinivasan (1996) use network decompositions to compute a Δ+1 coloring in time <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{O\left({\sqrt {\log n}}\right)}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>O</mi>
+<mrow>
+<mo>(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</msqrt>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{O\left({\sqrt {\log n}}\right)}}</annotation>
+</semantics>
+</math></span><img alt="2^{O\left({\sqrt {\log n}}\right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c0cb5fde400b3a03e945b1d8a9f49ba03aad4892" style="vertical-align: -0.338ex; width:9.272ex; height:3.009ex;"/></span>.
+</p><p>The problem of edge coloring has also been studied in the distributed model. Panconesi &amp; Rizzi (2001) achieve a (2Δ − 1)-coloring in <i>O</i>(Δ + log<span style="vertical-align: 10%">*</span> <i>n</i>) time in this model. The lower bound for distributed vertex coloring due to Linial (1992) applies to the distributed edge coloring problem as well.
+</p>
+<h3><span class="mw-headline" id="Decentralized_algorithms">Decentralized algorithms</span><span class="mw-editsection"></span></h3>
+<p>Decentralized algorithms are ones where no message passing is allowed (in contrast to distributed algorithms where local message passing takes places), and efficient decentralized algorithms exist that will color a graph if a proper coloring exists.  These assume that a vertex is able to sense whether any of its neighbors are using the same color as the vertex i.e., whether a local conflict exists.  This is a mild assumption in many applications e.g. in wireless channel allocation it is usually reasonable to assume that a station will be able to detect whether other interfering transmitters are using the same channel (e.g. by measuring the SINR).  This sensing information is sufficient to allow algorithms based on learning automata to find a proper graph coloring with probability one.<sup class="reference" id="cite_ref-28">[28]</sup>
+</p>
+<h3><span class="mw-headline" id="Computational_complexity">Computational complexity</span><span class="mw-editsection"></span></h3>
+<p>Graph coloring is computationally hard. It is NP-complete to decide if a given graph admits a <i>k</i>-coloring for a given <i>k</i> except for the cases  <i>k</i> ∈ {0,1,2} .    In particular, it is NP-hard to compute the chromatic number.<sup class="reference" id="cite_ref-29">[29]</sup> The 3-coloring problem remains NP-complete even on 4-regular planar graphs.<sup class="reference" id="cite_ref-30">[30]</sup> On graphs with maximal degree 3 or less, however, Brooks' theorem implies that the 3-coloring problem can be solved in linear time. Further, for every <i>k</i> &gt; 3, a <i>k</i>-coloring of a planar graph exists by the four color theorem, and it is possible to find such a coloring in polynomial time.
+</p><p>The best known approximation algorithm computes a coloring of size at most within a factor O(<i>n</i>(log log <i>n</i>)<sup>2</sup>(log n)<sup>−3</sup>) of the chromatic number.<sup class="reference" id="cite_ref-31">[31]</sup> For all <i>ε</i> &gt; 0, approximating the chromatic number within <i>n</i><sup>1−<i>ε</i></sup> is NP-hard.<sup class="reference" id="cite_ref-32">[32]</sup>
+</p><p>It is also NP-hard to color a 3-colorable graph with 4 colors<sup class="reference" id="cite_ref-33">[33]</sup> and a <i>k</i>-colorable graph with <i>k</i><sup>(log <i>k</i> ) / 25</sup> colors for sufficiently large constant <i>k</i>.<sup class="reference" id="cite_ref-34">[34]</sup>
+</p><p>Computing the coefficients of the chromatic polynomial is #P-hard. In fact, even computing the value of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \chi (G,k)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>χ<!-- χ --></mi>
+<mo stretchy="false">(</mo>
+<mi>G</mi>
+<mo>,</mo>
+<mi>k</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \chi (G,k)}</annotation>
+</semantics>
+</math></span><img alt="\chi (G,k)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/efe3ab0769fc45214547005f7c130dacd4fff7e5" style="vertical-align: -0.838ex; width:7.336ex; height:2.843ex;"/></span> is #P-hard at any rational point <i>k</i> except for <i>k</i> = 1  and <i>k</i> = 2.<sup class="reference" id="cite_ref-35">[35]</sup> There is no FPRAS for evaluating the chromatic polynomial at any rational point <i>k</i> ≥ 1.5 except for <i>k</i> = 2 unless NP = RP.<sup class="reference" id="cite_ref-36">[36]</sup>
+</p><p>For edge coloring, the proof of Vizing's result gives an algorithm that uses at most Δ+1 colors. However, deciding between the two candidate values for the edge chromatic number is NP-complete.<sup class="reference" id="cite_ref-37">[37]</sup> In terms of approximation algorithms, Vizing's algorithm shows that the edge chromatic number can be approximated to within 4/3,
+and the hardness result shows that no (4/3 − <i>ε</i> )-algorithm exists for any <i>ε &gt; 0</i> unless P = NP. These are among the oldest results in the literature of approximation algorithms, even though neither paper makes explicit use of that notion.<sup class="reference" id="cite_ref-38">[38]</sup>
+</p>
+<h2><span class="mw-headline" id="Applications">Applications</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Scheduling">Scheduling</span><span class="mw-editsection"></span></h3>
+<p>Vertex coloring models to a number of scheduling problems.<sup class="reference" id="cite_ref-39">[39]</sup> In the cleanest form, a given set of jobs need to be assigned to time slots, each job requires one such slot. Jobs can be scheduled in any order, but pairs of jobs may be in <i>conflict</i> in the sense that they may not be assigned to the same time slot, for example because they both rely on a shared resource. The corresponding graph contains a vertex for every job and an edge for every conflicting pair of jobs. The chromatic number of the graph is exactly the minimum <i>makespan</i>, the optimal time to finish all jobs without conflicts.
+</p><p>Details of the scheduling problem define the structure of the graph. For example, when assigning aircraft to flights, the resulting conflict graph is an interval graph, so the coloring problem can be solved efficiently. In bandwidth allocation to radio stations, the resulting conflict graph is a unit disk graph, so the coloring problem is 3-approximable.
+</p>
+<h3><span class="mw-headline" id="Register_allocation">Register allocation</span><span class="mw-editsection"></span></h3>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>A compiler is a computer program that translates one computer language into another. To improve the execution time of the resulting code, one of the techniques of compiler optimization is register allocation, where the most frequently used values of the compiled program are kept in the fast processor registers. Ideally, values are assigned to registers so that they can all reside in the registers when they are used.
+</p><p>The textbook approach to this problem is to model it as a graph coloring problem.<sup class="reference" id="cite_ref-40">[40]</sup> The compiler constructs an  <i>interference graph</i>, where vertices are variables and an edge connects two vertices if they are needed at the same time. If the graph can be colored with <i>k</i> colors then any set of variables needed at the same time can be stored in at most <i>k</i> registers.
+</p>
+<h3><span class="mw-headline" id="Other_applications">Other applications</span><span class="mw-editsection"></span></h3>
+<p>The problem of coloring a graph arises in many practical areas such as pattern matching,<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="The link between graph coloring and pattern matching is not trivial and the linked article does not mention graph coloring. A citation that explains the link would help. (June 2022)">citation needed</span></i>]</sup> sports scheduling, designing seating plans, exam timetabling, the scheduling of  taxis, and solving Sudoku puzzles.<sup class="reference" id="cite_ref-Lewis2021_22-3">[22]</sup>
+</p>
+<h2><span class="mw-headline" id="Other_colorings">Other colorings</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Ramsey_theory">Ramsey theory</span><span class="mw-editsection"></span></h3>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>An important class of <i>improper</i> coloring problems is studied in Ramsey theory, where the graph's edges are assigned to colors, and there is no restriction on the colors of incident edges. A simple example is the theorem on friends and strangers, which states that in any coloring of the edges of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle K_{6}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>K</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>6</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle K_{6}}</annotation>
+</semantics>
+</math></span><img alt="K_{6}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f6739d4144330840d9a11aa97b8af44cdf6ae52a" style="vertical-align: -0.671ex; width:3.027ex; height:2.509ex;"/></span>, the complete graph of six vertices, there will be a monochromatic triangle; often illustrated by saying that any group of six people either has three mutual strangers or three mutual acquaintances. Ramsey theory is concerned with generalisations of this idea to seek regularity amid disorder, finding general conditions for the existence of monochromatic subgraphs with given structure.
+</p>
+<h3><span class="mw-headline" id="Other_colorings_2">Other colorings</span><span class="mw-editsection"></span></h3>
+
+<p>Coloring can also be considered for signed graphs and gain graphs.
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Critical graph</li>
+<li>Graph coloring game</li>
+<li>Graph homomorphism</li>
+<li>Hajós construction</li>
+<li>Mathematics of Sudoku</li>
+<li>Multipartite graph</li>
+<li>Uniquely colorable graph</li></ul>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1054258005">.mw-parser-output .refbegin{font-size:90%;margin-bottom:0.5em}.mw-parser-output .refbegin-hanging-indents>ul{margin-left:0}.mw-parser-output .refbegin-hanging-indents>ul>li{margin-left:0;padding-left:3.2em;text-indent:-3.2em}.mw-parser-output .refbegin-hanging-indents ul,.mw-parser-output .refbegin-hanging-indents ul li{list-style:none}@media(max-width:720px){.mw-parser-output .refbegin-hanging-indents>ul>li{padding-left:1.6em;text-indent:-1.6em}}.mw-parser-output .refbegin-columns{margin-top:0.3em}.mw-parser-output .refbegin-columns ul{margin-top:0}.mw-parser-output .refbegin-columns li{page-break-inside:avoid;break-inside:avoid-column}</style>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097025294">.mw-parser-output .side-box{margin:4px 0;box-sizing:border-box;border:1px solid #aaa;font-size:88%;line-height:1.25em;background-color:#f9f9f9}.mw-parser-output .side-box-abovebelow,.mw-parser-output .side-box-text{padding:0.25em 0.9em}.mw-parser-output .side-box-image{padding:2px 0 2px 0.9em;text-align:center}.mw-parser-output .side-box-imageright{padding:2px 0.9em 2px 0;text-align:center}@media(min-width:500px){.mw-parser-output .side-box-flex{display:flex;align-items:center}.mw-parser-output .side-box-text{flex:1}}@media(min-width:720px){.mw-parser-output .side-box{width:238px}.mw-parser-output .side-box-right{clear:right;float:right;margin-left:1em}.mw-parser-output .side-box-left{margin-right:1em}}</style>
+<ul><li><i>High-Performance Graph Colouring Algorithms</i> Suite of 8 different algorithms (implemented in C++) used in the book <i>A Guide to Graph Colouring: Algorithms and Applications</i> (Springer International Publishers, 2015).</li>
+<li><i>Graph Coloring Page</i> by Joseph Culberson (graph coloring programs)</li>
+<li><i>CoLoRaTiOn</i> by Jim Andrews and Mike Fellows is a graph coloring puzzle</li>
+<li>Links to Graph Coloring source codes</li>
+<li>Code for efficiently computing Tutte, Chromatic and Flow Polynomials Archived 2008-04-16 at the Wayback Machine by Gary Haggard, David J. Pearce and Gordon Royle</li>
+<li>A graph coloring Web App by Jose Antonio Martin H.</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2311
+Cached time: 20221223230929
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.897 seconds
+Real time usage: 1.135 seconds
+Preprocessor visited node count: 7291/1000000
+Post‐expand include size: 136924/2097152 bytes
+Template argument size: 4665/2097152 bytes
+Highest expansion depth: 14/100
+Expensive parser function count: 12/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 131820/5000000 bytes
+Lua time usage: 0.499/10.000 seconds
+Lua memory usage: 9212082/52428800 bytes
+Number of Wikibase entities loaded: 1/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  815.622      1 -total
+ 35.85%  292.379     53 Template:Citation
+ 23.57%  192.266      1 Template:Reflist
+ 13.73%  111.973     44 Template:Harvtxt
+  6.89%   56.193      1 Template:Authority_control
+  6.54%   53.347      1 Template:Commons_category
+  6.47%   52.810      1 Template:Short_description
+  6.33%   51.646      1 Template:Sister_project
+  6.14%   50.068      1 Template:Side_box
+  4.07%   33.161      2 Template:Fix
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:426743-0!canonical and timestamp 20221223230928 and revision id 1127935745.
+ -->
+</div></body>
+</html>

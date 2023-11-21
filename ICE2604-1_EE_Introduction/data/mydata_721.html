@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>pairing_heap</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1097618699">.mw-parser-output .tmbox{margin:4px 0;border-collapse:collapse;border:1px solid #c0c090;background-color:#f8eaba;box-sizing:border-box}.mw-parser-output .tmbox.mbox-small{font-size:88%;line-height:1.25em}.mw-parser-output .tmbox-speedy{border:2px solid #b32424;background-color:#fee7e6}.mw-parser-output .tmbox-delete{border:2px solid #b32424}.mw-parser-output .tmbox-content{border:2px solid #f28500}.mw-parser-output .tmbox-style{border:2px solid #fc3}.mw-parser-output .tmbox-move{border:2px solid #9932cc}.mw-parser-output .tmbox .mbox-text{border:none;padding:0.25em 0.9em;width:100%}.mw-parser-output .tmbox .mbox-image{border:none;padding:2px 0 2px 0.9em;text-align:center}.mw-parser-output .tmbox .mbox-imageright{border:none;padding:2px 0.9em 2px 0;text-align:center}.mw-parser-output .tmbox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .tmbox .mbox-invalid-type{text-align:center}@media(min-width:720px){.mw-parser-output .tmbox{margin:4px 10%}.mw-parser-output .tmbox.mbox-small{clear:right;float:right;margin:4px 0 4px 1em;width:238px}}</style><table class="plainlinks tmbox tmbox-notice" role="presentation" style="text-align:center;"><tbody><tr><td class="mbox-image"></td><td class="mbox-text">It is requested that a <b>computing diagram</b> or <b>diagrams</b>  be included in this article to improve its quality. Specific illustrations, plots or diagrams can be requested at the Graphic Lab.<br/><small>For more information, refer to discussion on this page and/or the listing at Wikipedia:Requested images. </small></td></tr></tbody></table>
+<style data-mw-deduplicate="TemplateStyles:r1066479718">.mw-parser-output .infobox-subbox{padding:0;border:none;margin:-3px;width:auto;min-width:100%;font-size:100%;clear:none;float:none;background-color:transparent}.mw-parser-output .infobox-3cols-child{margin:auto}.mw-parser-output .infobox .navbar{font-size:100%}body.skin-minerva .mw-parser-output .infobox-header,body.skin-minerva .mw-parser-output .infobox-subheader,body.skin-minerva .mw-parser-output .infobox-above,body.skin-minerva .mw-parser-output .infobox-title,body.skin-minerva .mw-parser-output .infobox-image,body.skin-minerva .mw-parser-output .infobox-full-data,body.skin-minerva .mw-parser-output .infobox-below{text-align:center}</style><table class="infobox"><tbody><tr><th class="infobox-above" colspan="2">Pairing heap</th></tr><tr><th class="infobox-label" scope="row">Type</th><td class="infobox-data">heap</td></tr><tr><th class="infobox-label" scope="row">Invented</th><td class="infobox-data">1986</td></tr><tr><th class="infobox-label" scope="row">Invented by</th><td class="infobox-data">Michael L. Fredman, Robert Sedgewick, Daniel Sleator, and Robert Endre Tarjan</td></tr><tr><th class="infobox-header" colspan="2">Time complexity in big O notation</th></tr><tr><td class="infobox-full-data" colspan="2"><link href="mw-data:TemplateStyles:r1066479718" rel="mw-deduplicated-inline-style"/><table class="infobox-subbox infobox-3cols-child"><tbody><tr><th class="infobox-label" scope="row" style="white-space:nowrap;">Algorithm</th><td class="infobox-data infobox-data-a">
+<b>Average</b></td><td class="infobox-data infobox-data-b">
+<b>Worst case</b></td></tr><tr><th class="infobox-label" scope="row" style="white-space:nowrap;">Insert</th><td class="infobox-data infobox-data-a">
+<i>Θ</i>(1)</td><td class="infobox-data infobox-data-b">
+</td></tr><tr><th class="infobox-label" scope="row" style="white-space:nowrap;">Find-min</th><td class="infobox-data infobox-data-a">
+<i>Θ</i>(1)</td><td class="infobox-data infobox-data-b">
+ </td></tr><tr><th class="infobox-label" scope="row" style="white-space:nowrap;">Delete-min</th><td class="infobox-data infobox-data-a">
+O(log <i>n</i>)</td><td class="infobox-data infobox-data-b">
+ </td></tr><tr><th class="infobox-label" scope="row" style="white-space:nowrap;">Decrease-key</th><td class="infobox-data infobox-data-a">
+O(log <i>n</i>)</td><td class="infobox-data infobox-data-b">
+</td></tr><tr><th class="infobox-label" scope="row" style="white-space:nowrap;">Merge</th><td class="infobox-data infobox-data-a">
+<i>Θ</i>(1)</td><td class="infobox-data infobox-data-b">
+ </td></tr></tbody></table></td></tr></tbody></table>
+<p>A <b>pairing heap</b> is a type of heap data structure with relatively simple implementation and excellent practical amortized performance, introduced by Michael Fredman, Robert Sedgewick, Daniel Sleator, and Robert Tarjan in 1986.<sup class="reference" id="cite_ref-FSST_1-0">[1]</sup>
+Pairing heaps are heap-ordered multiway tree structures, and can be considered simplified Fibonacci heaps. They are considered a "robust choice" for implementing such algorithms as Prim's MST algorithm,<sup class="reference" id="cite_ref-mehlhorn_2-0">[2]</sup> and support the following operations (assuming a min-heap):
+</p>
+<ul><li><i>find-min</i>: simply return the top element of the heap.</li>
+<li><i>meld</i>: compare the two root elements, the smaller remains the root of the result, the larger element and its subtree is appended as a child of this root.</li>
+<li><i>insert</i>: create a new heap for the inserted element and <i>meld</i> into the original heap.</li>
+<li><i>decrease-key</i> (optional): remove the subtree rooted at the key to be decreased, replace the key with a smaller key, then <i>meld</i> the result back into the heap.</li>
+<li><i>delete-min</i>: remove the root and do repeated <i>melds</i> of its subtrees until one tree remains.  Various merging strategies are employed.</li></ul>
+<p>The analysis of pairing heaps' time complexity was initially inspired by that of splay trees.<sup class="reference" id="cite_ref-FSST_1-1">[1]</sup>
+The amortized time per <i>delete-min</i> is <span class="texhtml"><i>O</i>(log <i>n</i>)</span>, and the operations <i>find-min</i>, <i>meld</i>, and <i>insert</i> run in <span class="texhtml"><i>O</i>(1)</span> amortized time.<sup class="reference" id="cite_ref-Iacono_3-0">[3]</sup>
+</p><p>When a <i>decrease-key</i> operation is added as well, determining the precise asymptotic running time of pairing heaps has turned out to be difficult. Initially, the time complexity of this operation was conjectured on empirical grounds to be <span class="texhtml"><i>O</i>(1)</span>,<sup class="reference" id="cite_ref-StaskoVitter_4-0">[4]</sup> but Fredman proved that the amortized time per <i>decrease-key</i> is at least <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Omega (\log \log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Ω<!-- Ω --></mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Omega (\log \log n)}</annotation>
+</semantics>
+</math></span><img alt="\Omega (\log \log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/abd3ed358ca0ff406e846ab34eacde0685b93373" style="vertical-align: -0.838ex; width:11.6ex; height:2.843ex;"/></span> for some sequences of operations.<sup class="reference" id="cite_ref-Fredman_5-0">[5]</sup>
+Using a different amortization argument, Pettie then proved that <i>insert</i>, <i>meld</i>, and <i>decrease-key</i> all run in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(2^{2{\sqrt {\log \log n}}})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</msqrt>
+</mrow>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(2^{2{\sqrt {\log \log n}}})}</annotation>
+</semantics>
+</math></span><img alt="O(2^{{2{\sqrt  {\log \log n}}}})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4b3d444493124030d873d3402df00041c776b4ce" style="vertical-align: -0.838ex; width:13.406ex; height:3.509ex;"/></span> amortized time, which is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle o(\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>o</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle o(\log n)}</annotation>
+</semantics>
+</math></span><img alt="o(\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7e7d4cbb8e0d21f6d98d62af2d0952516d49693a" style="vertical-align: -0.838ex; width:7.69ex; height:2.843ex;"/></span>.<sup class="reference" id="cite_ref-Pettie_6-0">[6]</sup>
+Elmasry later introduced elaborations of pairing heaps (lazy, consolidate) for which <i>decrease-key</i> runs in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(\log \log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(\log \log n)}</annotation>
+</semantics>
+</math></span><img alt="O(\log \log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a9f3ded7e013a35c8039ff3276bee6e183d7f1a7" style="vertical-align: -0.838ex; width:11.695ex; height:2.843ex;"/></span> amortized time and other operations have optimal amortized bounds,<sup class="reference" id="cite_ref-Elmasry_7-0">[7]</sup><sup class="reference" id="cite_ref-Elmasry2_8-0">[8]</sup> but no tight <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta (\log \log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta (\log \log n)}</annotation>
+</semantics>
+</math></span><img alt="\Theta (\log \log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4285c3027821d0441426e416cbb8605224292bc4" style="vertical-align: -0.838ex; width:11.73ex; height:2.843ex;"/></span> bound is known for the original data structure.<sup class="reference" id="cite_ref-Iacono_3-1">[3]</sup><sup class="reference" id="cite_ref-Pettie_6-1">[6]</sup>
+</p><p>Although the asymptotic performance of pairing heaps is worse than other priority queue algorithms such as Fibonacci heaps, which perform <i>decrease-key</i> in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(1)}</annotation>
+</semantics>
+</math></span><img alt="O(1)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e66384bc40452c5452f33563fe0e27e803b0cc21" style="vertical-align: -0.838ex; width:4.745ex; height:2.843ex;"/></span> amortized time, the performance in practice is excellent. Jones<sup class="reference" id="cite_ref-jones_9-0">[9]</sup>
+and Larkin, Sen, and Tarjan<sup class="reference" id="cite_ref-LST_10-0">[10]</sup>
+conducted experiments on pairing heaps and other heap data structures.  They concluded that d-ary heaps such as binary heaps are faster than all other heap implementations when the <i>decrease-key</i> operation is not needed (and hence there is no need to externally track the location of nodes in the heap), but that when <i>decrease-key</i> is needed pairing heaps are often faster than d-ary heaps and almost always faster than other pointer-based heaps, including data structures like Fibonacci heaps that are theoretically more efficient. Chen et al.<sup class="reference" id="cite_ref-chen_11-0">[11]</sup> examined priority queues specifically for use with Dijkstra's algorithm and concluded that in normal cases using a d-ary heap without <i>decrease-key</i> (instead duplicating nodes on the heap and ignoring redundant instances) resulted in better performance, despite the inferior theoretical performance guarantees.
+</p>
+
+<h2><span class="mw-headline" id="Structure">Structure</span><span class="mw-editsection"></span></h2>
+<p>A pairing heap is either an empty heap, or a pairing tree consisting of a root element and a possibly empty list of pairing trees. The heap ordering property requires that parent of any node is no greater than the node itself. The following description assumes a purely functional heap that does not support the <i>decrease-key</i> operation.
+</p>
+<pre><b>type</b> PairingTree[Elem] = Heap(elem: Elem, subheaps: List[PairingTree[Elem]])
+<b>type</b> PairingHeap[Elem] = Empty | PairingTree[Elem]
+</pre>
+<p>A pointer-based implementation for RAM machines, supporting <i>decrease-key</i>, can be achieved using three pointers per node, by representing the children of a node by a singly-linked list: a pointer to the node's first child, one to its next sibling, and one to its previous sibling (or, for the leftmost sibling, to its parent). Alternatively, the previous-pointer can be omitted by letting the last child point back to the parent, if a single boolean flag is added to indicate "end of list". This achieves a more compact structure at the expense of a constant overhead factor per operation.<sup class="reference" id="cite_ref-FSST_1-2">[1]</sup>
+</p>
+<h2><span class="mw-headline" id="Operations">Operations</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="find-min">find-min</span><span class="mw-editsection"></span></h3>
+<p>The function <i>find-min</i> simply returns the root element of the heap:
+</p>
+<pre><b>function</b> find-min(heap: PairingHeap[Elem]) -&gt; Elem
+    <b>if</b> heap is Empty
+        <b>error</b>
+    <b>else</b>
+        <b>return</b> heap.elem
+</pre>
+<h3><span class="mw-headline" id="meld">meld</span><span class="mw-editsection"></span></h3>
+<p>Melding with an empty heap returns the other heap, otherwise a new heap is returned that has the minimum of the two root elements as its root element and just adds the heap with the larger root to the list of subheaps:
+</p>
+<pre><b>function</b> meld(heap1, heap2: PairingHeap[Elem]) -&gt; PairingHeap[Elem]
+    <b>if</b> heap1 is Empty
+        <b>return</b> heap2
+    <b>elsif</b> heap2 is Empty
+        <b>return</b> heap1
+    <b>elsif</b> heap1.elem &lt; heap2.elem
+        <b>return</b> Heap(heap1.elem, heap2 :: heap1.subheaps)
+    <b>else</b>
+        <b>return</b> Heap(heap2.elem, heap1 :: heap2.subheaps)
+</pre>
+<h3><span class="mw-headline" id="insert">insert</span><span class="mw-editsection"></span></h3>
+<p>The easiest way to insert an element into a heap is to meld the heap with a new heap containing just this element and an empty list of subheaps:
+</p>
+<pre><b>function</b> insert(elem: Elem, heap: PairingHeap[Elem]) -&gt; PairingHeap[Elem]
+    <b>return</b> meld(Heap(elem, []), heap)
+</pre>
+<h3><span class="mw-headline" id="delete-min">delete-min</span><span class="mw-editsection"></span></h3>
+<p>The only non-trivial fundamental operation is the deletion of the minimum element from the heap. This requires performing repeated melds of its children until only one tree remains.    The standard strategy first melds the subheaps in pairs (this is the step that gave this data structure its name) from left to right and then melds the resulting list of heaps from right to left:
+</p>
+<pre><b>function</b> delete-min(heap: PairingHeap[Elem]) -&gt; PairingHeap[Elem]
+    <b>if</b> heap is Empty
+        <b>error</b>
+    <b>else</b>
+        <b>return</b> merge-pairs(heap.subheaps)
+</pre>
+<p>This uses the auxiliary function <i>merge-pairs</i>:
+</p>
+<pre><b>function</b> merge-pairs(list: List[PairingTree[Elem]]) -&gt; PairingHeap[Elem]
+    <b>if</b> length(list) == 0
+        <b>return</b> Empty
+    <b>elsif</b> length(list) == 1
+        <b>return</b> list[0]
+    <b>else</b>
+        <b>return</b> meld(meld(list[0], list[1]), merge-pairs(list[2..]))
+</pre>
+<p>That this does indeed implement the described two-pass left-to-right then right-to-left merging strategy can be seen from this reduction:
+</p>
+<pre>   merge-pairs([H1, H2, H3, H4, H5, H6, H7])
+=&gt; meld(meld(H1, H2), merge-pairs([H3, H4, H5, H6, H7]))
+     # meld H1 and H2 to H12, then the rest of the list
+=&gt; meld(<b>H12</b>, meld(meld(H3, H4), merge-pairs([H5, H6, H7])))
+     # meld H3 and H4 to H34, then the rest of the list
+=&gt; meld(H12, meld(<b>H34</b>, meld(meld(H5, H6), merge-pairs([H7]))))
+     # meld H5 and H6 to H56, then the rest of the list
+=&gt; meld(H12, meld(H34, meld(<b>H56</b>, H7)))
+     # switch direction, meld the last two resulting heaps, giving H567
+=&gt; meld(H12, meld(H34, <b>H567</b>))
+     # meld the last two resulting heaps, giving H34567
+=&gt; meld(H12, <b>H34567</b>) 
+     # finally, meld the first pair with the result of merging the rest
+=&gt; <b>H1234567</b>
+</pre>
+<h2><span class="mw-headline" id="Summary_of_running_times">Summary of running times</span><span class="mw-editsection"></span></h2>
+<p>Here are time complexities<sup class="reference" id="cite_ref-CLRS_12-0">[12]</sup> of various heap data structures. Function names assume a min-heap.  For the meaning of "<i>O</i>(<i>f</i>)" and "<i>Θ</i>(<i>f</i>)" see Big O notation.
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>Operation
+</th>
+<th>find-min
+</th>
+<th>delete-min
+</th>
+<th>insert
+</th>
+<th>decrease-key
+</th>
+<th>meld
+</th></tr>
+<tr>
+<th>Binary<sup class="reference" id="cite_ref-CLRS_12-1">[12]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>Θ</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)
+</td>
+<td style="background:#ffdddd"><i>Θ</i>(<i>n</i>)
+</td></tr>
+<tr>
+<th>Leftist
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>Θ</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>Θ</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>Θ</i>(log <i>n</i>)
+</td></tr>
+<tr>
+<th>Binomial<sup class="reference" id="cite_ref-CLRS_12-2">[12]</sup><sup class="reference" id="cite_ref-13">[13]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>Θ</i>(log <i>n</i>)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)<sup class="reference" id="cite_ref-amortized_14-0">[a]</sup>
+</td>
+<td style="background:#ffffdd"><i>Θ</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)<sup class="reference" id="cite_ref-meld_15-0">[b]</sup>
+</td></tr>
+<tr>
+<th>Fibonacci<sup class="reference" id="cite_ref-CLRS_12-3">[12]</sup><sup class="reference" id="cite_ref-Fredman_And_Tarjan_16-0">[14]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)<sup class="reference" id="cite_ref-amortized_14-1">[a]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)<sup class="reference" id="cite_ref-amortized_14-2">[a]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td></tr>
+<tr>
+<th>Pairing<sup class="reference" id="cite_ref-Iacono_3-2">[3]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)<sup class="reference" id="cite_ref-amortized_14-3">[a]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>o</i>(log <i>n</i>)<sup class="reference" id="cite_ref-amortized_14-4">[a]</sup><sup class="reference" id="cite_ref-pairingdecreasekey_19-0">[c]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td></tr>
+<tr>
+<th>Brodal<sup class="reference" id="cite_ref-20">[17]</sup><sup class="reference" id="cite_ref-brodal_22-0">[d]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td></tr>
+<tr>
+<th>Rank-pairing<sup class="reference" id="cite_ref-23">[19]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)<sup class="reference" id="cite_ref-amortized_14-5">[a]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)<sup class="reference" id="cite_ref-amortized_14-6">[a]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td></tr>
+<tr>
+<th>Strict Fibonacci<sup class="reference" id="cite_ref-24">[20]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td></tr>
+<tr>
+<th>2–3 heap<sup class="reference" id="cite_ref-25">[21]</sup>
+</th>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)<sup class="reference" id="cite_ref-amortized_14-7">[a]</sup>
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)<sup class="reference" id="cite_ref-amortized_14-8">[a]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>?</i>
+</td></tr></tbody></table>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1011085734" rel="mw-deduplicated-inline-style"/>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>Louis Wasserman discusses pairing heaps and their implementation in Haskell in The Monad Reader, Issue 16 (pp. 37–52).</li>
+<li>pairing heaps, Sartaj Sahni</li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw2271
+Cached time: 20221224001106
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.429 seconds
+Real time usage: 0.576 seconds
+Preprocessor visited node count: 2879/1000000
+Post‐expand include size: 67669/2097152 bytes
+Template argument size: 1883/2097152 bytes
+Highest expansion depth: 12/100
+Expensive parser function count: 0/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 78814/5000000 bytes
+Lua time usage: 0.217/10.000 seconds
+Lua memory usage: 7394537/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  453.250      1 -total
+ 54.29%  246.087      2 Template:Reflist
+ 24.32%  110.213      7 Template:Cite_journal
+ 13.39%   60.687      1 Template:Short_description
+ 10.65%   48.262      1 Template:Heap_Running_Times
+ 10.01%   45.351      1 Template:Infobox_data_structure
+  9.07%   41.119      1 Template:Infobox
+  8.89%   40.274      7 Template:Citation
+  7.11%   32.232      1 Template:Computing_diagram_requested
+  6.94%   31.457      2 Template:Pagetype
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:3402053-0!canonical and timestamp 20221224001106 and revision id 1082805283.
+ -->
+</div></body>
+</html>

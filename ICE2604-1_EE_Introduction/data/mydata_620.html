@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>minimax</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p><b>Minimax</b> (sometimes <b>MinMax</b>, <b>MM</b><sup class="reference" id="cite_ref-1">[1]</sup> or <b>saddle point</b><sup class="reference" id="cite_ref-2">[2]</sup>) is a decision rule used in artificial intelligence, decision theory, game theory, statistics, and philosophy for <i>mini</i>mizing the possible loss for a worst case (<i>max</i>imum loss) scenario. When dealing with gains, it is referred to as "maximin" – to maximize the minimum gain. Originally formulated for several-player zero-sum game theory, covering both the cases where players take alternate moves and those where they make simultaneous moves, it has also been extended to more complex games and to general decision-making in the presence of uncertainty.
+</p>
+
+<h2><span class="mw-headline" id="Game_theory">Game theory</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="In_general_games">In general games</span><span class="mw-editsection"></span></h3>
+<p>The <b>maximin value</b> is the highest value that the player can be sure to get without knowing the actions of the other players; equivalently, it is the lowest value the other players can force the player to receive when they know the player's action. Its formal definition is:<sup class="reference" id="cite_ref-ZMS2013_3-0">[3]</sup>
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\underline {v_{i}}}=\max _{a_{i}}\min _{a_{-i}}{v_{i}(a_{i},a_{-i})}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<munder>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>_<!-- _ --></mo>
+</munder>
+</mrow>
+<mo>=</mo>
+<munder>
+<mo form="prefix" movablelimits="true">max</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mrow>
+</munder>
+<munder>
+<mo form="prefix" movablelimits="true">min</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+</mrow>
+</msub>
+</mrow>
+</munder>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\underline {v_{i}}}=\max _{a_{i}}\min _{a_{-i}}{v_{i}(a_{i},a_{-i})}}</annotation>
+</semantics>
+</math></span><img alt="{\underline {v_{i}}}=\max _{a_{i}}\min _{a_{-i}}{v_{i}(a_{i},a_{-i})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/76d2fe8fe2fc328093c7b0c19e83a0197004a5d3" style="vertical-align: -2.338ex; width:24.111ex; height:4.343ex;"/></span></dd></dl>
+<p>Where:
+</p>
+<ul><li><span class="texhtml mvar" style="font-style:italic;">i</span> is the index of the player of interest.</li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle -i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle -i}</annotation>
+</semantics>
+</math></span><img alt="-i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/91fddb9f89a520937db3a8821575068cdcc76f60" style="vertical-align: -0.505ex; width:2.611ex; height:2.343ex;"/></span> denotes all other players except player <span class="texhtml mvar" style="font-style:italic;">i</span>.</li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a_{i}}</annotation>
+</semantics>
+</math></span><img alt="a_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0bc77764b2e74e64a63341054fa90f3e07db275f" style="vertical-align: -0.671ex; width:2.029ex; height:2.009ex;"/></span> is the action taken by player <span class="texhtml mvar" style="font-style:italic;">i</span>.</li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a_{-i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a_{-i}}</annotation>
+</semantics>
+</math></span><img alt="a_{{-i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/42ad62ea9270fed5d53c1ec1d7f41177e50d0abf" style="vertical-align: -0.671ex; width:3.308ex; height:2.009ex;"/></span> denotes the actions taken by all other players.</li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v_{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v_{i}}</annotation>
+</semantics>
+</math></span><img alt="v_{i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7dffe5726650f6daac54829972a94f38eb8ec127" style="vertical-align: -0.671ex; width:1.927ex; height:2.009ex;"/></span> is the value function of player <span class="texhtml mvar" style="font-style:italic;">i</span>.</li></ul>
+<p>Calculating the maximin value of a player is done in a worst-case approach: for each possible action of the player, we check all possible actions of the other players and determine the worst possible combination of actions – the one that gives player <span class="texhtml mvar" style="font-style:italic;">i</span> the smallest value. Then, we determine which action player <span class="texhtml mvar" style="font-style:italic;">i</span> can take in order to make sure that this smallest value is the highest possible.
+</p><p>For example, consider the following game for two players, where the first player ("row player") may choose any of three moves, labelled <span class="texhtml mvar" style="font-style:italic;">T</span>, <span class="texhtml mvar" style="font-style:italic;">M</span>, or <span class="texhtml mvar" style="font-style:italic;">B</span>, and the second player ("column" player) may choose either of two moves, <span class="texhtml mvar" style="font-style:italic;">L</span> or <span class="texhtml mvar" style="font-style:italic;">R</span>. The result of the combination of both moves is expressed in a payoff table:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{array}{c|cc}\hline &amp;L&amp;R\\\hline T&amp;3,1&amp;2,-20\\M&amp;5,0&amp;-10,1\\B&amp;-100,2&amp;4,4\\\hline \end{array}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<menclose notation="top bottom">
+<mtable columnalign="center center center" columnlines="solid none" columnspacing="1em" rowlines="solid none none" rowspacing="4pt">
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi>L</mi>
+</mtd>
+<mtd>
+<mi>R</mi>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mi>T</mi>
+</mtd>
+<mtd>
+<mn>3</mn>
+<mo>,</mo>
+<mn>1</mn>
+</mtd>
+<mtd>
+<mn>2</mn>
+<mo>,</mo>
+<mo>−<!-- − --></mo>
+<mn>20</mn>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mi>M</mi>
+</mtd>
+<mtd>
+<mn>5</mn>
+<mo>,</mo>
+<mn>0</mn>
+</mtd>
+<mtd>
+<mo>−<!-- − --></mo>
+<mn>10</mn>
+<mo>,</mo>
+<mn>1</mn>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mi>B</mi>
+</mtd>
+<mtd>
+<mo>−<!-- − --></mo>
+<mn>100</mn>
+<mo>,</mo>
+<mn>2</mn>
+</mtd>
+<mtd>
+<mn>4</mn>
+<mo>,</mo>
+<mn>4</mn>
+</mtd>
+</mtr>
+</mtable>
+</menclose>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{array}{c|cc}\hline &amp;L&amp;R\\\hline T&amp;3,1&amp;2,-20\\M&amp;5,0&amp;-10,1\\B&amp;-100,2&amp;4,4\\\hline \end{array}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\begin{array}{c|cc}\hline &amp;L&amp;R\\\hline T&amp;3,1&amp;2,-20\\M&amp;5,0&amp;-10,1\\B&amp;-100,2&amp;4,4\\\hline \end{array}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c94218d6211047370d9243ce80081b8860b90c33" style="vertical-align: -6.338ex; width:23.091ex; height:13.843ex;"/></span></dd></dl>
+<p>(where the first number in each of the cell is the pay-out of the row player and the second number is the pay-out of the column player).
+</p><p>For the sake of example, we consider only pure strategies. Check each player in turn:
+</p>
+<ul><li>The row player can play <span class="texhtml mvar" style="font-style:italic;">T</span>, which guarantees them a payoff of at least <span class="nowrap"><span data-sort-value="7000200000000000000♠"></span>2</span> (playing <span class="texhtml mvar" style="font-style:italic;">B</span> is risky since it can lead to payoff <span class="nowrap"><span data-sort-value="2997900000000000000♠"></span>−100</span>, and playing <span class="texhtml mvar" style="font-style:italic;">M</span> can result in a payoff of <span class="nowrap"><span data-sort-value="2998900000000000000♠"></span>−10</span>). Hence: <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\underline {v_{row}}}=2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<munder>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>r</mi>
+<mi>o</mi>
+<mi>w</mi>
+</mrow>
+</msub>
+<mo>_<!-- _ --></mo>
+</munder>
+</mrow>
+<mo>=</mo>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\underline {v_{row}}}=2}</annotation>
+</semantics>
+</math></span><img alt="{\underline {v_{row}}}=2" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a2506f62ac53a3d64ade893dca7134bd4142a037" style="vertical-align: -0.877ex; margin-bottom: -0.795ex; width:8.339ex; height:3.509ex;"/></span>.</li>
+<li>The column player can play <span class="texhtml mvar" style="font-style:italic;">L</span> and secure a payoff of at least <span class="nowrap"><span data-sort-value="5000000000000000000♠"></span>0</span> (playing <span class="texhtml mvar" style="font-style:italic;">R</span> puts them in the risk of getting <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle -20}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>−<!-- − --></mo>
+<mn>20</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle -20}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle -20}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/498de4e7b3ddc127b4be006bd2efafed19fa120d" style="vertical-align: -0.505ex; width:4.133ex; height:2.343ex;"/></span>). Hence: <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\underline {v_{col}}}=0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<munder>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>c</mi>
+<mi>o</mi>
+<mi>l</mi>
+</mrow>
+</msub>
+<mo>_<!-- _ --></mo>
+</munder>
+</mrow>
+<mo>=</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\underline {v_{col}}}=0}</annotation>
+</semantics>
+</math></span><img alt="{\underline {v_{col}}}=0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/05ec335c2a2babeb8424432c8f1552b0c8dded90" style="vertical-align: -0.878ex; margin-bottom: -0.793ex; width:7.623ex; height:3.509ex;"/></span>.</li></ul>
+<p>If both players play their respective maximin strategies <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (T,L)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mi>T</mi>
+<mo>,</mo>
+<mi>L</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (T,L)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle (T,L)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/20493aa06e4ba84a0057e0fc6a261dc87667ca8e" style="vertical-align: -0.838ex; width:6.062ex; height:2.843ex;"/></span>, the payoff vector is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (3,1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mn>3</mn>
+<mo>,</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (3,1)}</annotation>
+</semantics>
+</math></span><img alt="(3,1)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a8933db1c87b5fefc8d54c6e2d157e4b343bb8b8" style="vertical-align: -0.838ex; width:5.168ex; height:2.843ex;"/></span>.
+</p><p>The <b>minimax value</b> of a player is the smallest value that the other players can force the player to receive, without knowing the player's actions; equivalently, it is the largest value the player can be sure to get when they <i>know</i> the actions of the other players. Its formal definition is:<sup class="reference" id="cite_ref-ZMS2013_3-1">[3]</sup>
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\overline {v_{i}}}=\min _{a_{-i}}\max _{a_{i}}{v_{i}(a_{i},a_{-i})}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>=</mo>
+<munder>
+<mo form="prefix" movablelimits="true">min</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+</mrow>
+</msub>
+</mrow>
+</munder>
+<munder>
+<mo form="prefix" movablelimits="true">max</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mrow>
+</munder>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\overline {v_{i}}}=\min _{a_{-i}}\max _{a_{i}}{v_{i}(a_{i},a_{-i})}}</annotation>
+</semantics>
+</math></span><img alt="{\overline {v_{i}}}=\min _{a_{-i}}\max _{a_{i}}{v_{i}(a_{i},a_{-i})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/074c806d741e20cc0e770027e6efcb9796b72871" style="vertical-align: -2.338ex; width:24.224ex; height:4.343ex;"/></span></dd></dl>
+<p>The definition is very similar to that of the maximin value – only the order of the maximum and minimum operators is inverse. In the above example:
+</p>
+<ul><li>The row player can get a maximum value of <span class="texhtml mvar" style="font-style:italic;">4</span> (if the other player plays <span class="texhtml mvar" style="font-style:italic;">R</span>) or <span class="nowrap"><span data-sort-value="7000500000000000000♠"></span>5</span> (if the other player plays <span class="texhtml mvar" style="font-style:italic;">L</span>), so: <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\overline {v_{row}}}=4\ .}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>r</mi>
+<mi>o</mi>
+<mi>w</mi>
+</mrow>
+</msub>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>=</mo>
+<mn>4</mn>
+<mtext> </mtext>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\overline {v_{row}}}=4\ .}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\overline {v_{row}}}=4\ .}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3bb013feb5d042115f8d5cc01f598af02e78ed1b" style="vertical-align: -0.671ex; width:9.679ex; height:2.676ex;"/></span></li>
+<li>The column player can get a maximum value of <span class="texhtml mvar" style="font-style:italic;">1</span> (if the other player plays <span class="texhtml mvar" style="font-style:italic;">T</span>), <span class="nowrap"><span data-sort-value="7000100000000000000♠"></span>1</span> (if <span class="texhtml mvar" style="font-style:italic;">M</span>) or <span class="nowrap"><span data-sort-value="7000400000000000000♠"></span>4</span> (if <span class="texhtml mvar" style="font-style:italic;">B</span>). Hence: <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\overline {v_{col}}}=1\ .}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>c</mi>
+<mi>o</mi>
+<mi>l</mi>
+</mrow>
+</msub>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>=</mo>
+<mn>1</mn>
+<mtext> </mtext>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\overline {v_{col}}}=1\ .}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\overline {v_{col}}}=1\ .}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/532e4596876de0ce798f69db3dbf268369e6c3ce" style="vertical-align: -0.671ex; width:8.963ex; height:2.676ex;"/></span></li></ul>
+<p>For every player <span class="texhtml mvar" style="font-style:italic;">i</span>, the maximin is at most the minimax:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\underline {v_{i}}}\leq {\overline {v_{i}}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<munder>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>_<!-- _ --></mo>
+</munder>
+</mrow>
+<mo>≤<!-- ≤ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\underline {v_{i}}}\leq {\overline {v_{i}}}}</annotation>
+</semantics>
+</math></span><img alt="\underline{v_i} \leq \overline{v_i}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/36dd33ead0af78f7bfbc890a8b6561a5203e7289" style="vertical-align: -0.877ex; margin-bottom: -0.795ex; width:7.07ex; height:3.676ex;"/></span></dd></dl>
+<p>Intuitively, in maximin the maximization comes after the minimization, so player <span class="texhtml mvar" style="font-style:italic;">i</span> tries to maximize their value before knowing what the others will do; in minimax the maximization comes before the minimization, so player <span class="texhtml mvar" style="font-style:italic;">i</span> is in a much better position – they maximize their value knowing what the others did.
+</p><p>Another way to understand the <i>notation</i> is by reading from right to left: When we write
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\overline {v_{i}}}=\min _{a_{-i}}\max _{a_{i}}{v_{i}(a_{i},a_{-i})}=\min _{a_{-i}}{\Big (}\max _{a_{i}}{v_{i}(a_{i},a_{-i})}{\Big )}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mo>=</mo>
+<munder>
+<mo form="prefix" movablelimits="true">min</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+</mrow>
+</msub>
+</mrow>
+</munder>
+<munder>
+<mo form="prefix" movablelimits="true">max</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mrow>
+</munder>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mrow>
+<mo>=</mo>
+<munder>
+<mo form="prefix" movablelimits="true">min</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+</mrow>
+</msub>
+</mrow>
+</munder>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mo maxsize="1.623em" minsize="1.623em">(</mo>
+</mrow>
+</mrow>
+<munder>
+<mo form="prefix" movablelimits="true">max</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mrow>
+</munder>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mo maxsize="1.623em" minsize="1.623em">)</mo>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\overline {v_{i}}}=\min _{a_{-i}}\max _{a_{i}}{v_{i}(a_{i},a_{-i})}=\min _{a_{-i}}{\Big (}\max _{a_{i}}{v_{i}(a_{i},a_{-i})}{\Big )}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\overline {v_{i}}}=\min _{a_{-i}}\max _{a_{i}}{v_{i}(a_{i},a_{-i})}=\min _{a_{-i}}{\Big (}\max _{a_{i}}{v_{i}(a_{i},a_{-i})}{\Big )}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/77e920b4e68020c5447fb03276dfc107aa8c3a82" style="vertical-align: -2.338ex; width:49.568ex; height:5.343ex;"/></span></dd></dl>
+<p>the initial set of outcomes <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \ v_{i}(a_{i},a_{-i})\ }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mtext> </mtext>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mtext> </mtext>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \ v_{i}(a_{i},a_{-i})\ }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \ v_{i}(a_{i},a_{-i})\ }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/81bb566eb8a83bcae4d5b2a53b4eefcdd71d733b" style="vertical-align: -0.838ex; width:11.269ex; height:2.843ex;"/></span> depends on both <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \ {a_{i}}\ }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mtext> </mtext>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mrow>
+<mtext> </mtext>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \ {a_{i}}\ }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \ {a_{i}}\ }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b6cb382086935b075ac6de7671af9d0e8d3e7139" style="vertical-align: -0.671ex; width:3.191ex; height:2.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \ {a_{-i}}\ .}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mtext> </mtext>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+</mrow>
+</msub>
+</mrow>
+<mtext> </mtext>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \ {a_{-i}}\ .}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \ {a_{-i}}\ .}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/04bbd96afafec00598355429d921db457429f8c4" style="vertical-align: -0.671ex; width:5.116ex; height:2.009ex;"/></span> We first <i>marginalize away</i> <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {a_{i}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {a_{i}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {a_{i}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7b451383d62588c35b768dd4595ba364ab417139" style="vertical-align: -0.671ex; width:2.029ex; height:2.009ex;"/></span> from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v_{i}(a_{i},a_{-i})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v_{i}(a_{i},a_{-i})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle v_{i}(a_{i},a_{-i})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d6d9fc159469cf6df16c86e019b298557ee7c751" style="vertical-align: -0.838ex; width:10.108ex; height:2.843ex;"/></span>, by maximizing over <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \ {a_{i}}\ }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mtext> </mtext>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+</mrow>
+<mtext> </mtext>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \ {a_{i}}\ }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \ {a_{i}}\ }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b6cb382086935b075ac6de7671af9d0e8d3e7139" style="vertical-align: -0.671ex; width:3.191ex; height:2.009ex;"/></span> (for every possible value of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {a_{-i}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+</mrow>
+</msub>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {a_{-i}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {a_{-i}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9194a406a3213d04cc60dc4be73e3f5160bbe15d" style="vertical-align: -0.671ex; width:3.308ex; height:2.009ex;"/></span>) to yield a set of marginal outcomes <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \ v'_{i}(a_{-i})\,,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mtext> </mtext>
+<msubsup>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+<mo>′</mo>
+</msubsup>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mspace width="thinmathspace"></mspace>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \ v'_{i}(a_{-i})\,,}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \ v'_{i}(a_{-i})\,,}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4a093923d26d7efb76ba8cc299e28280fae84b4e" style="vertical-align: -1.005ex; width:8.659ex; height:3.009ex;"/></span> which depends only on <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \ {a_{-i}}\ .}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mtext> </mtext>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+</mrow>
+</msub>
+</mrow>
+<mtext> </mtext>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \ {a_{-i}}\ .}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \ {a_{-i}}\ .}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/04bbd96afafec00598355429d921db457429f8c4" style="vertical-align: -0.671ex; width:5.116ex; height:2.009ex;"/></span> We then minimize over <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \ {a_{-i}}\ }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mtext> </mtext>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>−<!-- − --></mo>
+<mi>i</mi>
+</mrow>
+</msub>
+</mrow>
+<mtext> </mtext>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \ {a_{-i}}\ }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \ {a_{-i}}\ }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/78ff62123276cf371d055c30d87f143b69a5183f" style="vertical-align: -0.671ex; width:4.469ex; height:2.009ex;"/></span> over these outcomes. (Conversely for maximin.)
+</p><p>Although it is always the case that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \ {\underline {v_{row}}}\leq {\overline {v_{row}}}\ }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mtext> </mtext>
+<mrow class="MJX-TeXAtom-ORD">
+<munder>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>r</mi>
+<mi>o</mi>
+<mi>w</mi>
+</mrow>
+</msub>
+<mo>_<!-- _ --></mo>
+</munder>
+</mrow>
+<mo>≤<!-- ≤ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>r</mi>
+<mi>o</mi>
+<mi>w</mi>
+</mrow>
+</msub>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mtext> </mtext>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \ {\underline {v_{row}}}\leq {\overline {v_{row}}}\ }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \ {\underline {v_{row}}}\leq {\overline {v_{row}}}\ }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e848cffb8643e2f0942b8642955807c86dac4b25" style="vertical-align: -0.877ex; margin-bottom: -0.795ex; width:12.528ex; height:3.676ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \ {\underline {v_{col}}}\leq {\overline {v_{col}}}\,,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mtext> </mtext>
+<mrow class="MJX-TeXAtom-ORD">
+<munder>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>c</mi>
+<mi>o</mi>
+<mi>l</mi>
+</mrow>
+</msub>
+<mo>_<!-- _ --></mo>
+</munder>
+</mrow>
+<mo>≤<!-- ≤ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<msub>
+<mi>v</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>c</mi>
+<mi>o</mi>
+<mi>l</mi>
+</mrow>
+</msub>
+<mo accent="false">¯<!-- ¯ --></mo>
+</mover>
+</mrow>
+<mspace width="thinmathspace"></mspace>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \ {\underline {v_{col}}}\leq {\overline {v_{col}}}\,,}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \ {\underline {v_{col}}}\leq {\overline {v_{col}}}\,,}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f6b41fd0145bfb716a9496dea1dd4e94a3a9b14a" style="vertical-align: -0.878ex; margin-bottom: -0.793ex; width:11.549ex; height:3.676ex;"/></span> the payoff vector resulting from both players playing their minimax strategies, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \ (2,-20)\ }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mtext> </mtext>
+<mo stretchy="false">(</mo>
+<mn>2</mn>
+<mo>,</mo>
+<mo>−<!-- − --></mo>
+<mn>20</mn>
+<mo stretchy="false">)</mo>
+<mtext> </mtext>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \ (2,-20)\ }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \ (2,-20)\ }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c8844bb63fc604748f97c0b22edfd9b561c3f70d" style="vertical-align: -0.838ex; width:9.3ex; height:2.843ex;"/></span> in the case of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \ (T,R)\ }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mtext> </mtext>
+<mo stretchy="false">(</mo>
+<mi>T</mi>
+<mo>,</mo>
+<mi>R</mi>
+<mo stretchy="false">)</mo>
+<mtext> </mtext>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \ (T,R)\ }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \ (T,R)\ }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fd5d3332dfd6375116f8cb91d04ad41855c1f879" style="vertical-align: -0.838ex; width:7.405ex; height:2.843ex;"/></span> or <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (-10,1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mo>−<!-- − --></mo>
+<mn>10</mn>
+<mo>,</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (-10,1)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle (-10,1)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d864d6c2532b278cfcefb38f1b33d339f3b5d5f5" style="vertical-align: -0.838ex; width:8.139ex; height:2.843ex;"/></span> in the case of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \ (M,R)\,,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mtext> </mtext>
+<mo stretchy="false">(</mo>
+<mi>M</mi>
+<mo>,</mo>
+<mi>R</mi>
+<mo stretchy="false">)</mo>
+<mspace width="thinmathspace"></mspace>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \ (M,R)\,,}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \ (M,R)\,,}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/918d3e7264b7e3bf37ae54d64c1369bf1f69a533" style="vertical-align: -0.838ex; width:8.664ex; height:2.843ex;"/></span> cannot similarly be ranked against the payoff vector <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \ (3,1)\ }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mtext> </mtext>
+<mo stretchy="false">(</mo>
+<mn>3</mn>
+<mo>,</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mtext> </mtext>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \ (3,1)\ }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \ (3,1)\ }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0a5d36f237d70e3b479f2426a70b68128638da23" style="vertical-align: -0.838ex; width:6.329ex; height:2.843ex;"/></span> resulting from both players playing their maximin strategy.
+</p>
+<h3><span class="mw-headline" id="In_zero-sum_games">In zero-sum games</span><span class="mw-editsection"></span></h3>
+<p><span id="Minimax_theorem"></span>
+In two-player zero-sum games, the minimax solution is the same as the Nash equilibrium.
+</p><p>In the context of zero-sum games, the minimax theorem is equivalent to:<sup class="reference" id="cite_ref-Osborne_4-0">[4]</sup><sup class="noprint Inline-Template" style="white-space:nowrap;">[<i><span title="The material near this tag failed verification of its source citation(s). (February 2015)">failed verification</span></i>]</sup>
+</p>
+<blockquote><p>For every two-person, zero-sum game with finitely many strategies, there exists a value <span class="texhtml mvar" style="font-style:italic;">V</span> and a mixed strategy for each player, such that
+</p><dl><dd>(a) Given Player 2's strategy, the best payoff possible for Player 1 is <span class="texhtml mvar" style="font-style:italic;">V</span>, and</dd>
+<dd>(b) Given Player 1's strategy, the best payoff possible for Player 2 is −<span class="texhtml mvar" style="font-style:italic;">V</span>.</dd></dl>
+</blockquote>
+<p>Equivalently, Player 1's strategy guarantees them a payoff of <span class="texhtml mvar" style="font-style:italic;">V</span> regardless of Player 2's strategy, and similarly Player 2 can guarantee themselves a payoff of −<span class="texhtml mvar" style="font-style:italic;">V</span>. The name <i>minimax</i> arises because each player minimizes the maximum payoff possible for the other – since the game is zero-sum, they also minimize their own maximum loss (i.e. maximize their minimum payoff).
+See also example of a game without a value.
+</p>
+<h3><span class="mw-headline" id="Example">Example</span><span class="mw-editsection"></span></h3>
+<table class="wikitable" style="text-align:center; float:right; margin-left:1em">
+<caption align="bottom" style="caption-side: bottom">Payoff matrix for player A
+</caption>
+<tbody><tr>
+<th>
+</th>
+<th>B chooses B1
+</th>
+<th>B chooses B2
+</th>
+<th>B chooses B3
+</th></tr>
+<tr>
+<th>A chooses A1
+</th>
+<td>+3
+</td>
+<td>−2
+</td>
+<td>+2
+</td></tr>
+<tr>
+<th>A chooses A2
+</th>
+<td>−1
+</td>
+<td><span style="visibility:hidden;color:transparent;">+</span>0
+</td>
+<td>+4
+</td></tr>
+<tr>
+<th>A chooses A3
+</th>
+<td>−4
+</td>
+<td>−3
+</td>
+<td>+1
+</td></tr></tbody></table>
+<p>The following example of a zero-sum game, where <b>A</b> and <b>B</b> make simultaneous moves, illustrates <i>maximin</i> solutions. Suppose each player has three choices and consider the payoff matrix for <b>A</b> displayed on the table ("Payoff matrix for player A"). Assume the payoff matrix for <b>B</b> is the same matrix with the signs reversed (i.e. if the choices are A1 and B1 then <b>B</b> pays 3 to <b>A</b>). Then, the maximin choice for <b>A</b> is A2 since the worst possible result is then having to pay 1, while the simple maximin choice for <b>B</b> is B2 since the worst possible result is then no payment.  However, this solution is not stable, since if <b>B</b> believes <b>A</b> will choose A2 then <b>B</b> will choose B1 to gain 1; then if <b>A</b> believes <b>B</b> will choose B1 then <b>A</b> will choose A1 to gain 3; and then <b>B</b> will choose B2; and eventually both players will realize the difficulty of making a choice. So a more stable strategy is needed.
+</p><p>Some choices are <i>dominated</i> by others and can be eliminated: <b>A</b> will not choose A3 since either A1 or A2 will produce a better result, no matter what <b>B</b> chooses; <b>B</b> will not choose B3 since some mixtures of B1 and B2 will produce a better result, no matter what <b>A</b> chooses.
+</p><p>Player <b>A</b> can avoid having to make an expected payment of more than <style data-mw-deduplicate="TemplateStyles:r1050945101">.mw-parser-output .sfrac{white-space:nowrap}.mw-parser-output .sfrac.tion,.mw-parser-output .sfrac .tion{display:inline-block;vertical-align:-0.5em;font-size:85%;text-align:center}.mw-parser-output .sfrac .num,.mw-parser-output .sfrac .den{display:block;line-height:1em;margin:0 0.1em}.mw-parser-output .sfrac .den{border-top:1px solid}.mw-parser-output .sr-only{border:0;clip:rect(0,0,0,0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px}</style><span class="sfrac tion" role="math"><span class="num">1</span><span class="sr-only">/</span><span class="den"> 3 </span></span> by choosing A1 with probability <link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac tion" role="math"><span class="num">1</span><span class="sr-only">/</span><span class="den"> 6 </span></span> and A2 with probability <span class="nowrap"> <link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac tion" role="math"><span class="num">5</span><span class="sr-only">/</span><span class="den"> 6 </span></span>:</span> The expected payoff for <b>A</b> would be <span class="nowrap">  3 × <link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac tion" role="math"><span class="num">1</span><span class="sr-only">/</span><span class="den"> 6 </span></span> − 1 × <link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac tion" role="math"><span class="num">5</span><span class="sr-only">/</span><span class="den"> 6 </span></span> = <link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac" role="math">−<span class="sr-only">+</span><span class="tion"><span class="num">1</span><span class="sr-only">/</span><span class="den"> 3 </span></span></span>  </span> in case <b>B</b> chose B1 and <span class="nowrap">  −2 × <link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac tion" role="math"><span class="num">1</span><span class="sr-only">/</span><span class="den">6 </span></span> + 0 × <link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac tion" role="math"><span class="num">5</span><span class="sr-only">/</span><span class="den"> 6 </span></span> = <link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac" role="math">−<span class="sr-only">+</span><span class="tion"><span class="num">1</span><span class="sr-only">/</span><span class="den"> 3 </span></span></span>  </span> in case <b>B</b> chose B2. Similarly, <b>B</b> can ensure an expected gain of at least <link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac tion" role="math"><span class="num">1</span><span class="sr-only">/</span><span class="den"> 3 </span></span>, no matter what <b>A</b> chooses, by using a randomized strategy of choosing B1 with probability <link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac tion" role="math"><span class="num">1</span><span class="sr-only">/</span><span class="den"> 3 </span></span> and B2 with probability <link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac tion" role="math"><span class="num">2</span><span class="sr-only">/</span><span class="den"> 3 </span></span>. These mixed minimax strategies cannot be improved and are now stable.
+</p>
+<h3><span class="mw-headline" id="Maximin">Maximin</span><span class="mw-editsection"></span></h3>
+<p>Frequently, in game theory, <b>maximin</b> is distinct from minimax. Minimax is used in zero-sum games to denote minimizing the opponent's maximum payoff. In a zero-sum game, this is identical to minimizing one's own maximum loss, and to maximizing one's own minimum gain.
+</p><p>"Maximin" is a term commonly used for non-zero-sum games to describe the strategy which maximizes one's own minimum payoff. In non-zero-sum games, this is not generally the same as minimizing the opponent's maximum gain, nor the same as the Nash equilibrium strategy.
+</p>
+<h3><span class="mw-headline" id="In_repeated_games">In repeated games</span><span class="mw-editsection"></span></h3>
+<p>The minimax values are very important in the theory of repeated games. One of the central theorems in this theory, the folk theorem, relies on the minimax values.
+</p>
+<h2><span class="mw-headline" id="Combinatorial_game_theory">Combinatorial game theory</span><span class="mw-editsection"></span></h2>
+<p>In combinatorial game theory, there is a minimax algorithm for game solutions.
+</p><p>A <b>simple</b> version of the minimax <i>algorithm</i>, stated below, deals with games such as tic-tac-toe, where each player can win, lose, or draw. If player A <i>can</i> win in one move, their best move is that winning move. If player B knows that one move will lead to the situation where player A <i>can</i> win in one move, while another move will lead to the situation where player A can, at best, draw, then player B's best move is the one leading to a draw. Late in the game, it's easy to see what the "best" move is. The minimax algorithm helps find the best move, by working backwards from the end of the game. At each step it assumes that player A is trying to <b>maximize</b> the chances of A winning, while on the next turn player B is trying to <b>minimize</b> the chances of A winning (i.e., to maximize B's own chances of winning).
+</p>
+<h3><span class="mw-headline" id="Minimax_algorithm_with_alternate_moves">Minimax algorithm with alternate moves</span><span class="mw-editsection"></span></h3>
+<p>A <b>minimax algorithm</b><sup class="reference" id="cite_ref-5">[5]</sup> is a recursive algorithm for choosing the next move in an n-player game, usually a two-player game. A value is associated with each position or state of the game. This value is computed by means of a position evaluation function and it indicates how good it would be for a player to reach that position. The player then makes the move that maximizes the minimum value of the position resulting from the opponent's possible following moves. If it is <b>A</b>'s turn to move, <b>A</b> gives a value to each of their legal moves.
+</p><p>A possible allocation method consists in assigning a certain win for <b>A</b> as +1 and for <b>B</b> as −1. This leads to combinatorial game theory as developed by J.H. Conway. An alternative is using a rule that if the result of a move is an immediate win for <b>A</b> it is assigned positive infinity and if it is an immediate win for <b>B</b>, negative infinity. The value to <b>A</b> of any other move is the minimum of the values resulting from each of <b>B</b>'s possible replies. For this reason, <b>A</b> is called the <i>maximizing player</i> and <b>B</b> is called the <i>minimizing player</i>, hence the name <i>minimax algorithm</i>. The above algorithm will assign a value of positive or negative infinity to any position since the value of every position will be the value of some final winning or losing position.  Often this is generally only possible at the very end of complicated games such as chess or go, since it is not computationally feasible to look ahead as far as the completion of the game, except towards the end, and instead, positions are given finite values as estimates of the degree of belief that they will lead to a win for one player or another.
+</p><p>This can be extended if we can supply a heuristic evaluation function which gives values to non-final game states without considering all possible following complete sequences. We can then limit the minimax algorithm to look only at a certain number of moves ahead. This number is called the "look-ahead", measured in "plies". For example, the chess computer Deep Blue (the first one to beat a reigning world champion, Garry Kasparov at that time) looked ahead at least 12 plies, then applied a heuristic evaluation function.<sup class="reference" id="cite_ref-6">[6]</sup>
+</p><p>The algorithm can be thought of as exploring the nodes of a <i>game tree</i>. The <i>effective branching factor</i> of the tree is the average number of children of each node (i.e., the average number of legal moves in a position).  The number of nodes to be explored usually increases exponentially with the number of plies (it is less than exponential if evaluating forced moves or repeated positions). The number of nodes to be explored for the analysis of a game is therefore approximately the branching factor raised to the power of the number of plies. It is therefore impractical to completely analyze games such as chess using the minimax algorithm.
+</p><p>The performance of the naïve minimax algorithm may be improved dramatically, without affecting the result, by the use of alpha–beta pruning. Other heuristic pruning methods can also be used, but not all of them are guaranteed to give the same result as the unpruned search.
+</p><p>A naïve minimax algorithm may be trivially modified to additionally return an entire Principal Variation along with a minimax score.
+</p>
+<h3><span class="mw-headline" id="Pseudocode">Pseudocode</span><span class="mw-editsection"></span></h3>
+<p>The pseudocode for the depth-limited minimax algorithm is given below.
+</p>
+<pre><b>function </b> minimax( node, depth, maximizingPlayer ) <b>is</b>
+    <b>if</b> depth = 0 <b>or</b> node is a terminal node <b>then</b>
+        <b>return</b> the heuristic value of node
+    <b>if</b> maximizingPlayer <b>then</b>
+        value := −∞
+        <b>for each</b> child of node <b>do</b>
+            value := max( value, minimax( child, depth − 1, FALSE ) )
+        <b>return</b> value
+    <b>else</b> <i>(* minimizing player *)</i>
+        value := +∞
+        <b>for each</b> child of node <b>do</b>
+            value := min( value, minimax( child, depth − 1, TRUE ) )
+        <b>return</b> value
+</pre>
+<pre><i>(* Initial call *)</i>
+minimax( origin, depth, TRUE )
+</pre>
+<p>The minimax function returns a heuristic value for leaf nodes (terminal nodes and nodes at the maximum search depth). Non-leaf nodes inherit their value from a descendant leaf node. The heuristic value is a score measuring the favorability of the node for the maximizing player. Hence nodes resulting in a favorable outcome, such as a win, for the maximizing player have higher scores than nodes more favorable for the minimizing player. The heuristic value for terminal (game ending) leaf nodes are scores corresponding to win, loss, or draw, for the maximizing player. For non terminal leaf nodes at the maximum search depth, an evaluation function estimates a heuristic value for the node. The quality of this estimate and the search depth determine the quality and accuracy of the final minimax result.
+</p><p>Minimax treats the two players (the maximizing player and the minimizing player) separately in its code. Based on the observation that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \ \max(a,b)=-\min(-a,-b)\ ,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mtext> </mtext>
+<mo form="prefix" movablelimits="true">max</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mo>−<!-- − --></mo>
+<mo form="prefix" movablelimits="true">min</mo>
+<mo stretchy="false">(</mo>
+<mo>−<!-- − --></mo>
+<mi>a</mi>
+<mo>,</mo>
+<mo>−<!-- − --></mo>
+<mi>b</mi>
+<mo stretchy="false">)</mo>
+<mtext> </mtext>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \ \max(a,b)=-\min(-a,-b)\ ,}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \ \max(a,b)=-\min(-a,-b)\ ,}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/783d0a48a7d334535ee3117c0795d5d51f65710e" style="vertical-align: -0.838ex; width:29.447ex; height:2.843ex;"/></span> minimax may often be simplified into the negamax algorithm.
+</p>
+<h3><span class="mw-headline" id="Example_2">Example</span><span class="mw-editsection"></span></h3>
+
+
+<p>Suppose the game being played only has a maximum of two possible moves per player each turn. The algorithm generates the tree on the right, where the circles represent the moves of the player running the algorithm (<i>maximizing player</i>), and squares represent the moves of the opponent (<i>minimizing player</i>). Because of the limitation of computation resources, as explained above, the tree is limited to a <i>look-ahead</i> of 4 moves.
+</p><p>The algorithm evaluates each <i>leaf node</i> using a heuristic evaluation function, obtaining the values shown. The moves where the <i>maximizing player</i> wins are assigned with positive infinity, while the moves that lead to a win of the <i>minimizing player</i> are assigned with negative infinity. At level 3, the algorithm will choose, for each node, the <b>smallest</b> of the <i>child node</i> values, and assign it to that same node (e.g. the node on the left will choose the minimum between "10" and "+∞", therefore assigning the value "10" to itself). The next step, in level 2, consists of choosing for each node the <b>largest</b> of the <i>child node</i> values. Once again, the values are assigned to each <i>parent node</i>. The algorithm continues evaluating the maximum and minimum values of the child nodes alternately until it reaches the <i>root node</i>, where it chooses the move with the largest value (represented in the figure with a blue arrow). This is the move that the player should make in order to <i>minimize</i> the <i>maximum</i> possible loss.
+</p>
+<h2><span class="mw-headline" id="Minimax_for_individual_decisions">Minimax for individual decisions</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Minimax_in_the_face_of_uncertainty">Minimax in the face of uncertainty</span><span class="mw-editsection"></span></h3>
+<p>Minimax theory has been extended to decisions where there is no other player, but where the consequences of decisions depend on unknown facts. For example, deciding to prospect for minerals entails a cost, which will be wasted if the minerals are not present, but will bring major rewards if they are. One approach is to treat this as a game against <i>nature</i> (see move by nature), and using a similar mindset as Murphy's law or resistentialism, take an approach which minimizes the maximum expected loss, using the same techniques as in the two-person zero-sum games.
+</p><p>In addition, expectiminimax trees have been developed, for two-player games in which chance (for example, dice) is a factor.
+</p>
+<h3><span class="mw-headline" id="Minimax_criterion_in_statistical_decision_theory">Minimax criterion in statistical decision theory</span><span class="mw-editsection"></span></h3>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>In classical statistical decision theory, we have an estimator <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \ \delta \ }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mtext> </mtext>
+<mi>δ<!-- δ --></mi>
+<mtext> </mtext>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \ \delta \ }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \ \delta \ }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f849a31e497be33fca8db9b71119138c5a9bb41b" style="vertical-align: -0.338ex; width:2.21ex; height:2.343ex;"/></span> that is used to estimate a parameter <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \ \theta \in \Theta \ .}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mtext> </mtext>
+<mi>θ<!-- θ --></mi>
+<mo>∈<!-- ∈ --></mo>
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mtext> </mtext>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \ \theta \in \Theta \ .}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \ \theta \in \Theta \ .}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7b1ee28f61e8f32d56a28a269c670d5008afc2d9" style="vertical-align: -0.338ex; width:7.547ex; height:2.176ex;"/></span> We also assume a risk function <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \ R(\theta ,\delta )\ .}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mtext> </mtext>
+<mi>R</mi>
+<mo stretchy="false">(</mo>
+<mi>θ<!-- θ --></mi>
+<mo>,</mo>
+<mi>δ<!-- δ --></mi>
+<mo stretchy="false">)</mo>
+<mtext> </mtext>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \ R(\theta ,\delta )\ .}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \ R(\theta ,\delta )\ .}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/122583f7f2a94391d791a95f8008dde15ee3560a" style="vertical-align: -0.838ex; width:8.554ex; height:2.843ex;"/></span> usually specified as the integral of a loss function. In this framework, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \ {\tilde {\delta }}\ }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mtext> </mtext>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>δ<!-- δ --></mi>
+<mo stretchy="false">~<!-- ~ --></mo>
+</mover>
+</mrow>
+</mrow>
+<mtext> </mtext>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \ {\tilde {\delta }}\ }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \ {\tilde {\delta }}\ }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c5085e0b92ae861c2ae2b0141e75cf296392b4d7" style="vertical-align: -0.338ex; width:2.464ex; height:2.676ex;"/></span> is called <b>minimax</b> if it satisfies
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sup _{\theta }R(\theta ,{\tilde {\delta }})=\inf _{\delta }\ \sup _{\theta }\ R(\theta ,\delta )\ .}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<munder>
+<mo form="prefix" movablelimits="true">sup</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>θ<!-- θ --></mi>
+</mrow>
+</munder>
+<mi>R</mi>
+<mo stretchy="false">(</mo>
+<mi>θ<!-- θ --></mi>
+<mo>,</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mover>
+<mi>δ<!-- δ --></mi>
+<mo stretchy="false">~<!-- ~ --></mo>
+</mover>
+</mrow>
+</mrow>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<munder>
+<mo form="prefix" movablelimits="true">inf</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>δ<!-- δ --></mi>
+</mrow>
+</munder>
+<mtext> </mtext>
+<munder>
+<mo form="prefix" movablelimits="true">sup</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>θ<!-- θ --></mi>
+</mrow>
+</munder>
+<mtext> </mtext>
+<mi>R</mi>
+<mo stretchy="false">(</mo>
+<mi>θ<!-- θ --></mi>
+<mo>,</mo>
+<mi>δ<!-- δ --></mi>
+<mo stretchy="false">)</mo>
+<mtext> </mtext>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sup _{\theta }R(\theta ,{\tilde {\delta }})=\inf _{\delta }\ \sup _{\theta }\ R(\theta ,\delta )\ .}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \sup _{\theta }R(\theta ,{\tilde {\delta }})=\inf _{\delta }\ \sup _{\theta }\ R(\theta ,\delta )\ .}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/853be7f4311be94863637b4c9dc3534d0926e52f" style="vertical-align: -2.505ex; width:30.436ex; height:4.843ex;"/></span></dd></dl>
+<p>An alternative criterion in the decision theoretic framework is the Bayes estimator in the presence of a prior distribution <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Pi \ .}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Π<!-- Π --></mi>
+<mtext> </mtext>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Pi \ .}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \Pi \ .}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fdb0718e98dc8b2318fdbb26053e69168b3dbe44" style="vertical-align: -0.338ex; width:2.971ex; height:2.176ex;"/></span> An estimator is Bayes if it minimizes the <i>average</i> risk
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \int _{\Theta }R(\theta ,\delta )\ \operatorname {d} \Pi (\theta )\ .}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mo>∫<!-- ∫ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+</mrow>
+</msub>
+<mi>R</mi>
+<mo stretchy="false">(</mo>
+<mi>θ<!-- θ --></mi>
+<mo>,</mo>
+<mi>δ<!-- δ --></mi>
+<mo stretchy="false">)</mo>
+<mtext> </mtext>
+<mi mathvariant="normal">d</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi mathvariant="normal">Π<!-- Π --></mi>
+<mo stretchy="false">(</mo>
+<mi>θ<!-- θ --></mi>
+<mo stretchy="false">)</mo>
+<mtext> </mtext>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \int _{\Theta }R(\theta ,\delta )\ \operatorname {d} \Pi (\theta )\ .}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \int _{\Theta }R(\theta ,\delta )\ \operatorname {d} \Pi (\theta )\ .}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9bfd3dc17a8577945b20013f95605e7dd18cc247" style="vertical-align: -2.338ex; width:18.454ex; height:5.676ex;"/></span></dd></dl>
+<h3><span class="mw-headline" id="Non-probabilistic_decision_theory">Non-probabilistic decision theory</span><span class="mw-editsection"></span></h3>
+<p>A key feature of minimax decision making is being non-probabilistic: in contrast to decisions using expected value or expected utility, it makes no assumptions about the probabilities of various outcomes, just scenario analysis of what the possible outcomes are. It is thus robust to changes in the assumptions, in contrast to these other decision techniques. Various extensions of this non-probabilistic approach exist, notably minimax regret and Info-gap decision theory.
+</p><p>Further, minimax only requires ordinal measurement (that outcomes be compared and ranked), not <i>interval</i> measurements (that outcomes include "how much better or worse"), and returns ordinal data, using only the modeled outcomes: the conclusion of a minimax analysis is: "this strategy is minimax, as the worst case is (outcome), which is less bad than any other strategy". Compare to expected value analysis, whose conclusion is of the form: "This strategy yields <span class="nowrap"> <span class="texhtml">ℰ</span>(<span class="texhtml mvar" style="font-style:italic;">X</span>) = <span class="texhtml mvar" style="font-style:italic;">n</span> ."</span> Minimax thus can be used on ordinal data, and can be more transparent.
+</p>
+<h2><span class="mw-headline" id="Maximin_in_philosophy">Maximin in philosophy</span><span class="mw-editsection"></span></h2>
+<p>In philosophy, the term "maximin" is often used in the context of John Rawls's <i>A Theory of Justice,</i> where he refers to it in the context of The Difference Principle.<sup class="reference" id="cite_ref-Rawls-1971_7-0">[7]</sup> Rawls defined this principle as the rule which states that social and economic inequalities should be arranged so that "they are to be of the greatest benefit to the least-advantaged members of society".<sup class="reference" id="cite_ref-8">[8]</sup><sup class="reference" id="cite_ref-9">[9]</sup>
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r998391716">.mw-parser-output .div-col{margin-top:0.3em;column-width:30em}.mw-parser-output .div-col-small{font-size:90%}.mw-parser-output .div-col-rules{column-rule:1px solid #aaa}.mw-parser-output .div-col dl,.mw-parser-output .div-col ol,.mw-parser-output .div-col ul{margin-top:0}.mw-parser-output .div-col li,.mw-parser-output .div-col dd{page-break-inside:avoid;break-inside:avoid-column}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097025294">.mw-parser-output .side-box{margin:4px 0;box-sizing:border-box;border:1px solid #aaa;font-size:88%;line-height:1.25em;background-color:#f9f9f9}.mw-parser-output .side-box-abovebelow,.mw-parser-output .side-box-text{padding:0.25em 0.9em}.mw-parser-output .side-box-image{padding:2px 0 2px 0.9em;text-align:center}.mw-parser-output .side-box-imageright{padding:2px 0.9em 2px 0;text-align:center}@media(min-width:500px){.mw-parser-output .side-box-flex{display:flex;align-items:center}.mw-parser-output .side-box-text{flex:1}}@media(min-width:720px){.mw-parser-output .side-box{width:238px}.mw-parser-output .side-box-right{clear:right;float:right;margin-left:1em}.mw-parser-output .side-box-left{margin-right:1em}}</style>
+<link href="mw-data:TemplateStyles:r1097025294" rel="mw-deduplicated-inline-style"/>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2">"Minimax principle", <i>Encyclopedia of Mathematics</i>, EMS Press, 2001 [1994]</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Minimax+principle&amp;rft.btitle=Encyclopedia+of+Mathematics&amp;rft.pub=EMS+Press&amp;rft.date=2001&amp;rft_id=https%3A%2F%2Fwww.encyclopediaofmath.org%2Findex.php%3Ftitle%3DMinimax_principle&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AMinimax"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation web cs1">"Mixed strategies". <i>cut-the-knot.org</i>. Curriculum: Games.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=unknown&amp;rft.jtitle=cut-the-knot.org&amp;rft.atitle=Mixed+strategies&amp;rft_id=http%3A%2F%2Fwww.cut-the-knot.org%2FCurriculum%2FGames%2FMixedStrategies.shtml&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AMinimax"></span> — A visualization applet</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation encyclopaedia cs1">"Maximin principle". <i>Dictionary of Philosophical Terms and Names</i>. Archived from the original on 2006-03-07.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Maximin+principle&amp;rft.btitle=Dictionary+of+Philosophical+Terms+and+Names&amp;rft_id=http%3A%2F%2Fwww.swif.uniba.it%2Flei%2Ffoldop%2Ffoldoc.cgi%3Fmaximin%2Bprinciple&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AMinimax"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation web cs1">"Quaak rules". <i>bewersdorff-online.de</i>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=unknown&amp;rft.jtitle=bewersdorff-online.de&amp;rft.atitle=Quaak+rules&amp;rft_id=http%3A%2F%2Fwww.bewersdorff-online.de%2Fquaak%2Frules.htm&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AMinimax"></span> — Play a betting-and-bluffing game against a mixed minimax strategy</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation encyclopaedia cs1">"Minimax". <i>Dictionary of Algorithms and Data Structures</i>. US NIST.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Minimax&amp;rft.btitle=Dictionary+of+Algorithms+and+Data+Structures&amp;rft.pub=US+NIST&amp;rft_id=https%3A%2F%2Fxlinux.nist.gov%2Fdads%2FHTML%2Fminimax.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AMinimax"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation web cs1">"Launch game visual". <i>ksquared.de</i>. Archived from the original on 2015-03-24.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=unknown&amp;rft.jtitle=ksquared.de&amp;rft.atitle=Launch+game+visual&amp;rft_id=http%3A%2F%2Fksquared.de%2Fgamevisual%2Flaunch.php&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AMinimax"></span> — game tree solving (Java Applet), for balance or off-balance trees, with or without alpha-beta pruning) algorithm visualization</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation web cs1">"MiniMax". <i>apmonitor.com</i>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=unknown&amp;rft.jtitle=apmonitor.com&amp;rft.atitle=MiniMax&amp;rft_id=http%3A%2F%2Fapmonitor.com%2Fme575%2Findex.php%2FMain%2FMiniMax&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AMinimax"></span> — Tutorial with a numerical solution platform</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation web cs1">"MinimaxAlgorithm.java". <i>github.com</i>. 24 February 2022.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=unknown&amp;rft.jtitle=github.com&amp;rft.atitle=MinimaxAlgorithm.java&amp;rft.date=2022-02-24&amp;rft_id=https%3A%2F%2Fgithub.com%2Fykaragol%2Fcheckersmaster%2Fblob%2Fmaster%2FCheckersMaster%2Fsrc%2Fcheckers%2Falgorithm%2FMinimaxAlgorithm.java&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AMinimax"></span> — Java implementation used in a Checkers game</li></ul>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation web cs1">"Strategy Game Programming". <i>fierz.ch</i>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=unknown&amp;rft.jtitle=fierz.ch&amp;rft.atitle=Strategy+Game+Programming&amp;rft_id=https%3A%2F%2Fwww.fierz.ch%2Fstrategy1.htm&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AMinimax"></span> — Strategy Game Programming for board games such as Checkers and Chess</li></ul>
+
+
+<!-- 
+NewPP limit report
+Parsed by mw2379
+Cached time: 20221220212058
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.423 seconds
+Real time usage: 0.801 seconds
+Preprocessor visited node count: 2583/1000000
+Post‐expand include size: 81586/2097152 bytes
+Template argument size: 3610/2097152 bytes
+Highest expansion depth: 12/100
+Expensive parser function count: 3/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 64367/5000000 bytes
+Lua time usage: 0.206/10.000 seconds
+Lua memory usage: 8969645/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  416.247      1 -total
+ 29.84%  124.189      1 Template:Reflist
+ 15.53%   64.629      1 Template:Cite_report
+ 12.24%   50.930      3 Template:Navbox
+ 11.88%   49.448      1 Template:Short_description
+ 11.18%   46.527      1 Template:Algorithmic_paradigms
+  7.83%   32.599      7 Template:Val
+  6.79%   28.257      1 Template:Failed_verification
+  6.17%   25.693      2 Template:Pagetype
+  5.80%   24.154      1 Template:Fix
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:19589-0!canonical and timestamp 20221220212057 and revision id 1123452311.
+ -->
+</div></body>
+</html>

@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>halting_problem</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p class="mw-empty-elt">
+</p>
+<style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-More_footnotes plainlinks metadata ambox ambox-style ambox-More_footnotes" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<p>In computability theory, the <b>halting problem</b> is the problem of determining, from a description of an arbitrary computer program and an input, whether the program will finish running, or continue to run forever. Alan Turing proved in 1936 that a general algorithm to solve the halting problem for all possible program–input pairs cannot exist.
+</p><p>For any program <var style="padding-right: 1px;">f</var> that might determine whether programs halt, a "pathological" program <var style="padding-right: 1px;">g</var>, called with some input, can pass its own source and its input to <i>f</i> and then specifically do the opposite of what <i>f</i> predicts <i>g</i> will do. No <i>f</i> can exist that handles this case. A key part of the proof is a mathematical definition of a computer and program, which is known as a Turing machine; the halting problem is <i>undecidable</i> over Turing machines. It is one of the first cases of decision problems proven to be unsolvable. This proof is significant to practical computing efforts, defining a class of applications which no programming invention can possibly perform perfectly.
+</p><p>Jack Copeland attributes the introduction of the term <i>halting problem</i> to the work of Martin Davis in the 1950s.<sup class="reference" id="cite_ref-FOOTNOTECopeland200440_1-0">[1]</sup>
+</p>
+
+<h2><span class="mw-headline" id="Background">Background</span><span class="mw-editsection"></span></h2>
+<p>The halting problem is a decision problem about properties of computer programs on a fixed Turing-complete model of computation, i.e., all programs that can be written in some given programming language that is general enough to be equivalent to a Turing machine. The problem is to determine, given a program and an input to the program, whether the program will eventually halt when run with that input. In this abstract framework, there are no resource limitations on the amount of memory or time required for the program's execution; it can take arbitrarily long and use an arbitrary amount of storage space before halting. The question is simply whether the given program will ever halt on a particular input.
+</p><p>For example, in pseudocode, the program
+</p>
+<dl><dd><code>while (true) continue</code></dd></dl>
+<p>does not halt; rather, it goes on forever in an infinite loop. On the other hand, the program
+</p>
+<dl><dd><code>print "Hello, world!"</code></dd></dl>
+<p>does halt.
+</p><p>While deciding whether these programs halt is simple, more complex programs prove problematic. One approach to the problem might be to run the program for some number of steps and check if it halts. But if the program does not halt, it is unknown whether the program will eventually halt or run forever. Turing proved no algorithm exists that always correctly decides whether, for a given arbitrary program and input, the program halts when run with that input. The essence of Turing's proof is that any such algorithm can be made to produce contradictory output and therefore cannot be correct.
+</p>
+<h3><span class="mw-headline" id="Programming_consequences">Programming consequences<span class="anchor" id="Avoiding_the_halting_problem"></span></span><span class="mw-editsection"></span></h3>
+<p>Some infinite loops can be quite useful. For instance, event loops are typically coded as infinite loops.<sup class="reference" id="cite_ref-2">[2]</sup> However, most subroutines are intended to finish.<sup class="reference" id="cite_ref-3">[3]</sup> In particular, in hard real-time computing, programmers attempt to write subroutines that are not only guaranteed to finish, but are also guaranteed to finish before a given deadline<sup class="reference" id="cite_ref-4">[4]</sup>
+</p><p>Sometimes these programmers use some general-purpose (Turing-complete) programming language,
+but attempt to write in a restricted style—such as MISRA C or SPARK—that makes it easy to prove that the resulting subroutines finish before the given deadline.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (May 2017)">citation needed</span></i>]</sup>
+</p><p>Other times these programmers apply the rule of least power—they deliberately use a computer language that is not quite fully Turing-complete. Frequently, these are languages that guarantee all subroutines finish, such as Coq.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (May 2017)">citation needed</span></i>]</sup>
+</p>
+<h3><span class="mw-headline" id="Common_pitfalls">Common pitfalls</span><span class="mw-editsection"></span></h3>
+<p>The difficulty in the halting problem lies in the requirement that the decision procedure must work for all programs and inputs. A particular program either halts on a given input or does not halt. Consider one algorithm that always answers "halts" and another that always answers "does not halt". For any specific program and input, one of these two algorithms answers correctly, even though nobody may know which one. Yet neither algorithm solves the halting problem generally.
+</p><p>There are programs (interpreters) that simulate the execution of whatever source code they are given. Such programs can demonstrate that a program does halt if this is the case: the interpreter itself will eventually halt its simulation, which shows that the original program halted. However, an interpreter will not halt if its input program does not halt, so this approach cannot solve the halting problem as stated; it does not successfully answer "does not halt" for programs that do not halt.
+</p><p>The halting problem is theoretically decidable for linear bounded automata (LBAs) or deterministic machines with finite memory. A machine with finite memory has a finite number of configurations, and thus any deterministic program on it must eventually either halt or repeat a previous configuration:<sup class="reference" id="cite_ref-5">[5]</sup>
+</p>
+<style data-mw-deduplicate="TemplateStyles:r996844942">.mw-parser-output .templatequote{overflow:hidden;margin:1em 0;padding:0 40px}.mw-parser-output .templatequote .templatequotecite{line-height:1.5em;text-align:left;padding-left:1.6em;margin-top:0}</style><blockquote class="templatequote"><p>...<i>any finite-state machine, if left completely to itself, will fall eventually into a perfectly periodic repetitive pattern</i>. The duration of this repeating pattern cannot exceed the number of internal states of the machine...</p></blockquote>
+<p>However, a computer with a million small parts, each with two states, would have at least 2<sup>1,000,000</sup> possible states:<sup class="reference" id="cite_ref-FOOTNOTEMinsky196725_6-0">[6]</sup>
+</p>
+<link href="mw-data:TemplateStyles:r996844942" rel="mw-deduplicated-inline-style"/><blockquote class="templatequote"><p>This is a 1 followed by about three hundred thousand zeroes ... Even if such a machine were to operate at the frequencies of cosmic rays, the aeons of galactic evolution would be as nothing compared to the time of a journey through such a cycle:</p></blockquote>
+<p>Although a machine may be finite, and finite automata "have a number of theoretical limitations":<sup class="reference" id="cite_ref-FOOTNOTEMinsky196725_6-1">[6]</sup>
+</p>
+<link href="mw-data:TemplateStyles:r996844942" rel="mw-deduplicated-inline-style"/><blockquote class="templatequote"><p>...the magnitudes involved should lead one to suspect that theorems and arguments based chiefly on the mere finiteness [of] the state diagram may not carry a great deal of significance.</p></blockquote>
+<p>It can also be decided automatically whether a nondeterministic machine with finite memory halts on none, some, or all of the possible sequences of nondeterministic decisions, by enumerating states after each possible decision.
+</p>
+<h2><span class="mw-headline" id="History">History</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p>The halting problem is historically important because it was one of the first problems to be proved undecidable. In April 1936, Alonzo Church published his proof of the undecidability of a problem in the lambda calculus. Turing's proof was published later, in January 1937. Since then, many other undecidable problems have been described.
+</p>
+<h3><span class="mw-headline" id="Timeline">Timeline</span><span class="mw-editsection"></span></h3>
+<ul><li><span class="vevent">1900<span style="display:none"> (<span class="bday dtstart published updated">1900</span>)</span>: <span class="summary">David Hilbert poses his "23 questions" (now known as Hilbert's problems) at the Second International Congress of Mathematicians in Paris. "Of these, the second was that of proving the consistency of the 'Peano axioms' on which, as he had shown, the rigour of mathematics depended".</span></span><sup class="reference" id="cite_ref-7">[7]</sup></li>
+<li><span class="vevent">1920<span style="display:none"> (<span class="bday dtstart published updated">1920</span>)</span> – 1921<span style="display:none"> (<span class="dtend">1921</span>)</span>: <span class="summary">Emil Post explores the halting problem for tag systems, regarding it as a candidate for unsolvability.<sup class="reference" id="cite_ref-8">[8]</sup> Its unsolvability was not established until much later, by Marvin Minsky.<sup class="reference" id="cite_ref-FOOTNOTEMinsky1967_9-0">[9]</sup></span></span></li>
+<li><span class="vevent">1928<span style="display:none"> (<span class="bday dtstart published updated">1928</span>)</span>: <span class="summary">Hilbert recasts his 'Second Problem' at the Bologna International Congress.<sup class="reference" id="cite_ref-FOOTNOTEReid1996188–189_10-0">[10]</sup> He posed three questions: i.e. #1: Was mathematics <i>complete</i>? #2: Was mathematics <i>consistent</i>? #3: Was mathematics <i>decidable</i>?<sup class="reference" id="cite_ref-FOOTNOTEHodges198391_11-0">[11]</sup> The third question is known as the <i>Entscheidungsproblem</i> (Decision Problem).<sup class="reference" id="cite_ref-FOOTNOTEHodges198391Penrose198934_12-0">[12]</sup></span></span></li>
+<li><span class="vevent">1930<span style="display:none"> (<span class="bday dtstart published updated">1930</span>)</span>: <span class="summary">Kurt Gödel announces a proof as an answer to the first two of Hilbert's 1928 questions.<sup class="reference" id="cite_ref-FOOTNOTEReid1996198_13-0">[13]</sup> "At first he [Hilbert] was only angry and frustrated, but then he began to try to deal constructively with the problem... Gödel himself felt—and expressed the thought in his paper—that his work did not contradict Hilbert's formalistic point of view"</span></span><sup class="reference" id="cite_ref-FOOTNOTEReid1996199_14-0">[14]</sup></li>
+<li><span class="vevent">1931<span style="display:none"> (<span class="bday dtstart published updated">1931</span>)</span>: <span class="summary">Gödel publishes "On Formally Undecidable Propositions of Principia Mathematica and Related Systems I"</span></span><sup class="reference" id="cite_ref-15">[15]</sup></li>
+<li><span class="vevent">19 April 1935<span style="display:none"> (<span class="bday dtstart published updated">1935-04-19</span>)</span>: <span class="summary">Alonzo Church publishes "An Unsolvable Problem of Elementary Number Theory", which proposes that the intuitive notion of an <i>effectively calculable</i> function can be formalized by the general recursive functions or equivalently by the lambda-definable functions. He proves that the halting problem for lambda calculus (i.e., whether a given lambda-expression has a normal form) is not effectively calculable.</span></span><sup class="reference" id="cite_ref-FOOTNOTEChurch1936_16-0">[16]</sup></li>
+<li><span class="vevent">1936<span style="display:none"> (<span class="bday dtstart published updated">1936</span>)</span>: <span class="summary">Church publishes the first proof that the <i>Entscheidungsproblem</i> is unsolvable.</span></span><sup class="reference" id="cite_ref-17">[17]</sup></li>
+<li><span class="vevent">7 October 1936<span style="display:none"> (<span class="bday dtstart published updated">1936-10-07</span>)</span>: <span class="summary">Emil Post's paper "Finite Combinatory Processes. Formulation I" is received. Post adds to his "process" an instruction "(C) Stop". He called such a process "type 1 ... if the process it determines terminates for each specific problem."</span></span><sup class="reference" id="cite_ref-FOOTNOTEDavis1965289ff_18-0">[18]</sup></li>
+<li><span class="vevent">May 1936<span style="display:none"> (<span class="bday dtstart published updated">1936-05</span>)</span> – January 1937<span style="display:none"> (<span class="dtend">1937-01</span>)</span>: <span class="summary">Alan Turing's paper <i>On Computable Numbers With an Application to the Entscheidungsproblem</i> went to press in May 1936 and reached print in January 1937.<sup class="reference" id="cite_ref-19">[19]</sup> Turing's proof departs from calculation by recursive functions and introduces the notion of  computation by machine. This is one of the "first examples of decision problems proved unsolvable".<sup class="reference" id="cite_ref-FOOTNOTEKleene1952_20-0">[20]</sup><sup class="noprint Inline-Template" style="white-space:nowrap;">[<i><span title="This citation requires a reference to the specific page or range of pages in which the material appears. (March 2022)">page needed</span></i>]</sup></span></span></li>
+<li><span class="vevent">1939<span style="display:none"> (<span class="bday dtstart published updated">1939</span>)</span>: <span class="summary">J. Barkley Rosser observes the essential equivalence of "effective method" defined by Gödel, Church, and Turing</span></span><sup class="reference" id="cite_ref-21">[21]</sup></li>
+<li><span class="vevent">1943<span style="display:none"> (<span class="bday dtstart published updated">1943</span>)</span>: <span class="summary">In a paper, Stephen Kleene states that "In setting up a complete algorithmic theory, what we do is describe a procedure ... which procedure necessarily terminates and in such manner that from the outcome we can read a definite answer, 'Yes' or 'No,' to the question, 'Is the predicate value true?'."</span></span></li>
+<li><span class="vevent">1952<span style="display:none"> (<span class="bday dtstart published updated">1952</span>)</span>: <span class="summary">Kleene includes a discussion of the unsolvability of the halting problem for Turing machines and reformulates it in terms of machines that "eventually stop", i.e. halt: "... there is no algorithm for deciding whether any given machine, when started from any given situation, <i>eventually stops</i>."</span></span><sup class="reference" id="cite_ref-FOOTNOTEKleene1952382_22-0">[22]</sup></li>
+<li><span class="vevent">1952<span style="display:none"> (<span class="bday dtstart published updated">1952</span>)</span>: <span class="summary">Martin Davis uses the term 'halting problem' in a series of lectures at the Control Systems Laboratory at the University of Illinois in 1952. It is likely that this is the first such use of the term.</span></span><sup class="reference" id="cite_ref-DavisLetter_23-0">[23]</sup></li></ul>
+<h3><span id="Etymology_of_the_phrase_.22halting_problem.22"></span><span class="mw-headline" id='Etymology_of_the_phrase_"halting_problem"'>Etymology of the phrase "halting problem"</span><span class="mw-editsection"></span></h3>
+<p>In none of his work did Turing use the word "halting" or "termination". Turing's biographer Hodges does not have the word "halting" or words "halting problem" in his index.  The earliest recorded use of the words "halting problem" is in a proof by Davis in 1958:<sup class="reference" id="cite_ref-FOOTNOTEDavis195870–71_24-0">[24]</sup>
+</p>
+<link href="mw-data:TemplateStyles:r996844942" rel="mw-deduplicated-inline-style"/><blockquote class="templatequote"><p>"Theorem 2.2 <i>There exists a Turing machine whose halting problem is recursively unsolvable</i>.<br/>
+A related problem is the <i>printing problem</i> for a simple Turing machine Z with respect to a symbol S<sub>i</sub>".</p></blockquote>
+<p>Davis adds no attribution for his proof, so one infers that it is original with him. But Davis has said that Kleene stated the proof informally.<sup class="reference" id="cite_ref-FOOTNOTEKleene1952382_22-1">[22]</sup> Copeland states that:<sup class="reference" id="cite_ref-FOOTNOTECopeland200440_1-1">[1]</sup>
+</p>
+<link href="mw-data:TemplateStyles:r996844942" rel="mw-deduplicated-inline-style"/><blockquote class="templatequote"><p>"The halting problem was so named (and it appears, first stated)<sup class="reference" id="cite_ref-DavisLetter_23-1">[23]</sup> by Martin Davis... (It is often said that Turing stated and proved the halting theorem in 'On Computable Numbers', but strictly this is not true)."</p></blockquote>
+<h2><span class="mw-headline" id="Formalization">Formalization</span><span class="mw-editsection"></span></h2>
+<p>In his original proof Turing formalized the concept of <i>algorithm</i> by introducing Turing machines.  However, the result is in no way specific to them; it applies equally to any other model of computation that is equivalent in its computational power to Turing machines, such as Markov algorithms, Lambda calculus, Post systems, register machines, or tag systems.
+</p><p>What is important is that the formalization allows a straightforward mapping of algorithms to some data type that the algorithm can operate upon.  For example, if the formalism lets algorithms define functions over strings (such as Turing machines) then there should be a mapping of these algorithms to strings, and if the formalism lets algorithms define functions over natural numbers (such as computable functions) then there should be a mapping of algorithms to natural numbers. The mapping to strings is usually the most straightforward, but strings over an alphabet with <i>n</i> characters can also be mapped to numbers by interpreting them as numbers in an <i>n</i>-ary numeral system.
+</p>
+<h3><span class="mw-headline" id="Representation_as_a_set">Representation as a set</span><span class="mw-editsection"></span></h3>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>The conventional representation of decision problems is the set of objects possessing the property in question. The <i>halting set</i>
+</p>
+<dl><dd><i>K</i> = {(<i>i</i>, <i>x</i>) | program <i>i</i> halts when run on input <i>x</i>}</dd></dl>
+<p>represents the halting problem.
+</p><p>This set is recursively enumerable, which means there is a computable function that lists all of the pairs (<i>i</i>, <i>x</i>) it contains. However, the complement of this set is not recursively enumerable.<sup class="reference" id="cite_ref-FOOTNOTEMooreMertens2011236–237_25-0">[25]</sup>
+</p><p>There are many equivalent formulations of the halting problem; any set whose Turing degree equals that of the halting problem is such a formulation.  Examples of such sets include:
+</p>
+<ul><li>{<i>i</i> | program <i>i</i> eventually halts when run with input 0}</li>
+<li>{<i>i</i> | there is an input <i>x</i> such that program <i>i</i> eventually halts when run with input <i>x</i>}.</li></ul>
+<h3><span class="mw-headline" id="Proof_concept">Proof concept</span><span class="mw-editsection"></span></h3>
+<p>Christopher Strachey outlined a proof by contradiction that the halting problem is not solvable.<sup class="reference" id="cite_ref-26">[26]</sup><sup class="reference" id="cite_ref-27">[27]</sup> The proof proceeds as follows: Suppose that there exists a total computable function <i>halts(f)</i> that returns true if the subroutine <i>f</i> halts (when run with no inputs) and returns false otherwise. Now consider the following subroutine:
+</p>
+
+<p><i>halts(g)</i> must either return true or false, because <i>halts</i> was assumed to be total. If <i>halts(g)</i> returns true, then <i>g</i> will call <i>loop_forever</i> and never halt, which is a contradiction. If <i>halts(g)</i> returns false, then <i>g</i> will halt, because it will not call <i>loop_forever</i>; this is also a contradiction.  Overall, <i>g</i> does the opposite of what <i>halts</i> says <i>g</i> should do, so <i>halts(g)</i> can not return a truth value that is consistent with whether <i>g</i> halts. Therefore, the initial assumption that <i>halts</i> is a total computable function must be false.
+</p>
+<h3><span class="mw-headline" id="Sketch_of_rigorous_proof">Sketch of rigorous proof</span><span class="mw-editsection"></span></h3>
+<p>The concept above shows the general method of the proof, but the computable function <i>halts</i> does not directly take a subroutine as an argument; instead it takes the source code of a program. Moreover, the definition of <i>g</i> is self-referential. A rigorous proof addresses these issues. The overall goal is to show that there is no total computable function that decides whether an arbitrary program <i>i</i> halts on arbitrary input <i>x</i>; that is, the following function <i>h</i> (for "halts") is not computable:<sup class="reference" id="cite_ref-FOOTNOTEPenrose198957–63_28-0">[28]</sup>
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h(i,x)={\begin{cases}1&amp;{\text{if }}{\text{  program }}i{\text{ halts on input }}x,\\0&amp;{\text{otherwise.}}\end{cases}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo>,</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>{</mo>
+<mtable columnalign="left left" columnspacing="1em" displaystyle="false" rowspacing=".2em">
+<mtr>
+<mtd>
+<mn>1</mn>
+</mtd>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>if </mtext>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext> program </mtext>
+</mrow>
+<mi>i</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext> halts on input </mtext>
+</mrow>
+<mi>x</mi>
+<mo>,</mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mn>0</mn>
+</mtd>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>otherwise.</mtext>
+</mrow>
+</mtd>
+</mtr>
+</mtable>
+<mo fence="true" stretchy="true" symmetric="true"></mo>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h(i,x)={\begin{cases}1&amp;{\text{if }}{\text{  program }}i{\text{ halts on input }}x,\\0&amp;{\text{otherwise.}}\end{cases}}}</annotation>
+</semantics>
+</math></span><img alt="h(i,x)={\begin{cases}1&amp;{\text{if }}{\text{  program }}i{\text{ halts on input }}x,\\0&amp;{\text{otherwise.}}\end{cases}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/76728da59b2423fe6fd133a8f6b14593f4c54716" style="vertical-align: -2.505ex; width:44.94ex; height:6.176ex;"/></span></dd></dl>
+<p>Here <i>program i</i> refers to the <i>i</i> th program in an enumeration of all the programs of a fixed Turing-complete model of computation.
+</p>
+
+<p>The proof proceeds by directly establishing that no total computable function with two arguments can be the required function <i>h</i>.   As in the sketch of the concept, given any total computable binary function <i>f</i>, the following partial function <i>g</i> is also computable by some program <i>e</i>:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle g(i)={\begin{cases}0&amp;{\text{if }}f(i,i)=0,\\{\text{undefined}}&amp;{\text{otherwise.}}\end{cases}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>g</mi>
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow>
+<mo>{</mo>
+<mtable columnalign="left left" columnspacing="1em" displaystyle="false" rowspacing=".2em">
+<mtr>
+<mtd>
+<mn>0</mn>
+</mtd>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>if </mtext>
+</mrow>
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo>,</mo>
+<mi>i</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>0</mn>
+<mo>,</mo>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>undefined</mtext>
+</mrow>
+</mtd>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>otherwise.</mtext>
+</mrow>
+</mtd>
+</mtr>
+</mtable>
+<mo fence="true" stretchy="true" symmetric="true"></mo>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle g(i)={\begin{cases}0&amp;{\text{if }}f(i,i)=0,\\{\text{undefined}}&amp;{\text{otherwise.}}\end{cases}}}</annotation>
+</semantics>
+</math></span><img alt="g(i)={\begin{cases}0&amp;{\text{if }}f(i,i)=0,\\{\text{undefined}}&amp;{\text{otherwise.}}\end{cases}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c41dab0cdddcd1afa65ca31710c21d6254c650ed" style="vertical-align: -2.505ex; width:34.103ex; height:6.176ex;"/></span></dd></dl>
+<p>The verification that <i>g</i> is computable relies on the following constructs (or their equivalents):
+</p>
+<ul><li>computable subprograms (the program that computes <i>f</i> is a subprogram in program <i>e</i>),</li>
+<li>duplication of values (program <i>e</i> computes the inputs <i>i</i>,<i>i</i> for <i>f</i> from the input <i>i</i> for <i>g</i>),</li>
+<li>conditional branching (program <i>e</i> selects between two results depending on the value it computes for <i>f</i>(<i>i</i>,<i>i</i>)),</li>
+<li>not producing a defined result (for example, by looping forever),</li>
+<li>returning a value of 0.</li></ul>
+<p>The following pseudocode for <i>e</i> illustrates a straightforward way to compute <i>g</i>:
+</p>
+
+<p>Because <i>g</i> is partial computable, there must be a program <i>e</i> that computes <i>g</i>, by the assumption that the model of computation is Turing-complete. This program is one of all the programs on which the halting function <i>h</i> is defined. The next step of the proof shows that <i>h</i>(<i>e</i>,<i>e</i>) will not have the same value as <i>f</i>(<i>e</i>,<i>e</i>).
+</p><p>It follows from the definition of <i>g</i> that exactly one of the following two cases must hold:
+</p>
+<ul><li><i>f</i>(<i>e</i>,<i>e</i>) = 0 and so <i>g</i>(<i>e</i>) = 0. In this case program <i>e</i> halts on input <i>e</i>, so <i>h</i>(<i>e</i>,<i>e</i>) = 1.</li>
+<li><i>f</i>(<i>e</i>,<i>e</i>) ≠ 0 and so <i>g</i>(<i>e</i>) is undefined. In this case program <i>e</i> does not halt on input <i>e</i>, so <i>h</i>(<i>e</i>,<i>e</i>) = 0.</li></ul>
+<p>In either case, <i>f</i> cannot be the same function as <i>h</i>. Because <i>f</i> was an <i>arbitrary</i> total computable function with two arguments, all such functions must differ from <i>h</i>.
+</p><p>This proof is analogous to Cantor's diagonal argument. One may visualize a two-dimensional array with one column and one row for each natural number, as indicated in the table above. The value of <i>f</i>(<i>i</i>,<i>j</i>) is placed at column <i>i</i>, row <i>j</i>. Because <i>f</i> is assumed to be a total computable function, any element of the array can be calculated using <i>f</i>. The construction of the function <i>g</i> can be visualized using the main diagonal of this array.  If the array has a 0 at position (<i>i</i>,<i>i</i>), then <i>g</i>(<i>i</i>) is 0. Otherwise, <i>g</i>(<i>i</i>) is undefined. The contradiction comes from the fact that there is some column <i>e</i> of the array corresponding to <i>g</i> itself. Now assume <i>f</i> was the halting function <i>h</i>, if <i>g</i>(<i>e</i>) is defined (<i>g</i>(<i>e</i>) = 0 in this case), <i>g</i>(<i>e</i>) halts so <i>f</i>(<i>e,e</i>) = 1.  But <i>g</i>(<i>e</i>) = 0 only when <i>f</i>(<i>e,e</i>) = 0, contradicting <i>f</i>(<i>e,e</i>) = 1. Similarly, if <i>g</i>(<i>e</i>) is not defined, then halting function <i>f</i>(<i>e,e</i>) = 0, which leads to <i>g</i>(<i>e</i>) = 0 under <i>g'</i>s construction. This contradicts the assumption of <i>g</i>(<i>e</i>) not being defined. In both cases contradiction arises. Therefore any arbitrary computable function <i>f</i> cannot be the halting function <i>h</i>.
+</p>
+<h2><span class="mw-headline" id="Computability_theory">Computability theory</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>A typical method of proving a problem to be undecidable is to <i>reduce</i> it to the halting problem.
+For example, there cannot be a general algorithm that decides whether a given statement about natural numbers is true or false. The reason for this is that the proposition stating that a certain program will halt given a certain input can be converted into an equivalent statement about natural numbers. If an algorithm could find the truth value of every statement about natural numbers, it could certainly find the truth value of this one; but that would determine whether the original program halts.
+</p><p>Rice's theorem generalizes the theorem that the halting problem is unsolvable. It states that for <i>any</i> non-trivial property, there is no general decision procedure that, for all programs, decides whether the partial function implemented by the input program has that property. (A partial function is a function which may not always produce a result, and so is used to model programs, which can either produce results or fail to halt.)  For example, the property "halt for the input 0" is undecidable. Here, "non-trivial" means that the set of partial functions that satisfy the property is neither the empty set nor the set of all partial functions. For example, "halts or fails to halt on input 0" is clearly true of all partial functions, so it is a trivial property, and can be decided by an algorithm that simply reports "true." Also, this theorem holds only for properties of the partial function implemented by the program; Rice's Theorem does not apply to properties of the program itself. For example, "halt on input 0 within 100 steps" is <i>not</i> a property of the partial function that is implemented by the program—it is a property of the program implementing the partial function and is very much decidable.
+</p><p>Gregory Chaitin has defined a halting probability, represented by the symbol Ω, a type of real number that informally is said to represent the probability that a randomly produced program halts.  These numbers have the same Turing degree as the halting problem. It is a normal and transcendental number which can be defined but cannot be completely computed. This means one can prove that there is no algorithm which produces the digits of Ω, although its first few digits can be calculated in simple cases.
+</p><p>Since the negative answer to the halting problem shows that there are problems that cannot be solved by a Turing machine, the Church–Turing thesis limits what can be accomplished by any machine that implements effective methods. However, not all machines conceivable to human imagination are subject to the Church–Turing thesis (e.g. oracle machines). It is an open question whether there can be actual deterministic physical processes that, in the long run, elude simulation by a Turing machine, and in particular whether any such hypothetical process could usefully be harnessed in the form of a calculating machine (a hypercomputer) that could solve the halting problem for a Turing machine amongst other things. It is also an open question whether any such unknown physical processes are involved in the working of the human brain, and whether humans can solve the halting problem.<sup class="reference" id="cite_ref-FOOTNOTECopeland200415_29-0">[29]</sup>
+</p>
+<h3><span class="mw-headline" id="Approximations">Approximations</span><span class="mw-editsection"></span></h3>
+<p>Turing's proof shows that there can be no mechanical, general method (i.e., a Turing machine or a program in some equivalent model of computation) to determine whether algorithms halt. However, each individual instance of the halting problem has a definitive answer, which may or may not be practically computable. Given a specific algorithm and input, one can often show that it halts or does not halt, and in fact computer scientists often do just that as part of a correctness proof. There are some heuristics that can be used in an automated fashion to attempt to construct a proof, which frequently succeed on typical programs. This field of research is known as automated termination analysis.
+</p><p>Some results have been established on the theoretical performance of halting problem heuristics, in particular the fraction of programs of a given size that may be correctly classified by a recursive algorithm. These results do not give precise numbers because the fractions are uncomputable and also highly dependent on the choice of program encoding used to determine "size". For example, consider classifying programs by their number of states and using a specific "Turing semi-infinite tape" model of computation that errors (without halting) if the program runs off the left side of the tape. Then <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \lim _{n\to \infty }P(x\,{\text{halts is decidable}}\mid x\,{\text{has}}\,n\,{\text{states}})=1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<munder>
+<mo form="prefix" movablelimits="true">lim</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo stretchy="false">→<!-- → --></mo>
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mrow>
+</munder>
+<mi>P</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mspace width="thinmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>halts is decidable</mtext>
+</mrow>
+<mo>∣<!-- ∣ --></mo>
+<mi>x</mi>
+<mspace width="thinmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>has</mtext>
+</mrow>
+<mspace width="thinmathspace"></mspace>
+<mi>n</mi>
+<mspace width="thinmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>states</mtext>
+</mrow>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \lim _{n\to \infty }P(x\,{\text{halts is decidable}}\mid x\,{\text{has}}\,n\,{\text{states}})=1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \lim _{n\to \infty }P(x\,{\text{halts is decidable}}\mid x\,{\text{has}}\,n\,{\text{states}})=1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b25fbe79a002ccff4aefc48d08eeb038bc0b21e0" style="vertical-align: -1.838ex; width:46.301ex; height:3.843ex;"/></span>, over programs <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> chosen uniformly by number of states. But this result is in some sense "trivial" because these decidable programs are simply the ones that fall off the tape, and the heuristic is simply to predict not halting due to error. Thus a seemingly irrelevant detail, namely the treatment of programs with errors, can turn out to be the deciding factor in determining the fraction of programs.<sup class="reference" id="cite_ref-30">[30]</sup>
+</p><p>To avoid these issues, several restricted notions of the "size" of a program have been developed. A dense Gödel numbering assigns numbers to programs such that each computable function occurs a positive fraction in each sequence of indices from 1 to n, i.e. a Gödelization φ is dense iff for all <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span>, there exists a <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c&gt;0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+<mo>&gt;</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c&gt;0}</annotation>
+</semantics>
+</math></span><img alt="c&gt;0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2ba126f626d61752f62eaacaf11761a54de4dc84" style="vertical-align: -0.338ex; width:5.268ex; height:2.176ex;"/></span> such that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \liminf _{n\to \infty }\#\{j\in \mathbb {N} :0\leq j&lt;n,\phi _{i}=\phi _{j}\}/n\geq c}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<munder>
+<mo form="prefix" movablelimits="true">lim inf</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo stretchy="false">→<!-- → --></mo>
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mrow>
+</munder>
+<mi mathvariant="normal">#<!-- # --></mi>
+<mo fence="false" stretchy="false">{</mo>
+<mi>j</mi>
+<mo>∈<!-- ∈ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">N</mi>
+</mrow>
+<mo>:</mo>
+<mn>0</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>j</mi>
+<mo>&lt;</mo>
+<mi>n</mi>
+<mo>,</mo>
+<msub>
+<mi>ϕ<!-- ϕ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<msub>
+<mi>ϕ<!-- ϕ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>j</mi>
+</mrow>
+</msub>
+<mo fence="false" stretchy="false">}</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>n</mi>
+<mo>≥<!-- ≥ --></mo>
+<mi>c</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \liminf _{n\to \infty }\#\{j\in \mathbb {N} :0\leq j&lt;n,\phi _{i}=\phi _{j}\}/n\geq c}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \liminf _{n\to \infty }\#\{j\in \mathbb {N} :0\leq j&lt;n,\phi _{i}=\phi _{j}\}/n\geq c}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b0521dc84f75f7043838835d752fc905361b8e4e" style="vertical-align: -1.838ex; width:43.318ex; height:3.843ex;"/></span>. For example, a numbering that assigns indexes <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{n}}</annotation>
+</semantics>
+</math></span><img alt="2^{n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8226f30650ee4fe4e640c6d2798127e80e9c160d" style="vertical-align: -0.338ex; width:2.381ex; height:2.343ex;"/></span> to nontrivial programs and all other indices the error state is not dense, but there exists a dense Gödel numbering of syntactically correct Brainfuck programs.<sup class="reference" id="cite_ref-RealWorldApprox_31-0">[31]</sup> A dense Gödel numbering is called optimal if, for any other Gödel numbering <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \alpha }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>α<!-- α --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \alpha }</annotation>
+</semantics>
+</math></span><img alt="\alpha " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b79333175c8b3f0840bfb4ec41b8072c83ea88d3" style="vertical-align: -0.338ex; width:1.488ex; height:1.676ex;"/></span>, there is a 1-1 total recursive function <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f}</annotation>
+</semantics>
+</math></span><img alt="f" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/132e57acb643253e7810ee9702d9581f159a1c61" style="vertical-align: -0.671ex; width:1.279ex; height:2.509ex;"/></span> and a constant <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c}</annotation>
+</semantics>
+</math></span><img alt="c" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/86a67b81c2de995bd608d5b2df50cd8cd7d92455" style="vertical-align: -0.338ex; width:1.007ex; height:1.676ex;"/></span> such that for all <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \alpha _{i}=\phi _{f(i)}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>α<!-- α --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msub>
+<mo>=</mo>
+<msub>
+<mi>ϕ<!-- ϕ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \alpha _{i}=\phi _{f(i)}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \alpha _{i}=\phi _{f(i)}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/474a986dabf16a7be21f0491b41f5b525ee753f8" style="vertical-align: -1.171ex; width:9.754ex; height:3.009ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle f(i)\leq ci}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>f</mi>
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo stretchy="false">)</mo>
+<mo>≤<!-- ≤ --></mo>
+<mi>c</mi>
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle f(i)\leq ci}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle f(i)\leq ci}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/56b9407432b091366062e0a7066da42f9858ea89" style="vertical-align: -0.838ex; width:8.798ex; height:2.843ex;"/></span>. This condition ensures that all programs have indices not much larger than their indices in any other Gödel numbering. Optimal Gödel numberings are constructed by numbering the inputs of a universal Turing machine.<sup class="reference" id="cite_ref-32">[32]</sup> A third notion of size uses universal machines operating on binary strings and measures the length of the string needed to describe the input program. A universal machine <i>U</i> is a machine for which every other machine <i>V</i> there exists a total computable function h such that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle V(x)=U(h(x))}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>V</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>U</mi>
+<mo stretchy="false">(</mo>
+<mi>h</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle V(x)=U(h(x))}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle V(x)=U(h(x))}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b22acc095f4b0aba336209f028e142eaab1e4f4d" style="vertical-align: -0.838ex; width:16.095ex; height:2.843ex;"/></span>. An optimal machine is a universal machine that achieves the Kolmogorov complexity invariance  bound, i.e. for every machine <i>V</i>, there exists <i>c</i> such that for all outputs <i>x</i>, if a <i>V</i>-program of length <i>n</i> outputs <i>x</i>, then there exists a <i>U</i>-program of at most length <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n+c}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>+</mo>
+<mi>c</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n+c}</annotation>
+</semantics>
+</math></span><img alt="n+c" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/30bab9e10734351b176477c325f3ef8f0eb95bb2" style="vertical-align: -0.505ex; width:5.242ex; height:2.176ex;"/></span> outputting <i>x</i>.<sup class="reference" id="cite_ref-OptimalMachines_33-0">[33]</sup>
+</p><p>We consider partial computable functions (algorithms) <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A}</annotation>
+</semantics>
+</math></span><img alt="A" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7daff47fa58cdfd29dc333def748ff5fa4c923e3" style="vertical-align: -0.338ex; width:1.743ex; height:2.176ex;"/></span>. For each <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span> we consider the fraction <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \epsilon _{n}(A)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>ϵ<!-- ϵ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>A</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \epsilon _{n}(A)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \epsilon _{n}(A)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e9d08028d30e7880406e1c07ee7619ba88128b12" style="vertical-align: -0.838ex; width:5.715ex; height:2.843ex;"/></span> of errors among all programs of size metric at most <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span>, counting each program <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> for which <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A}</annotation>
+</semantics>
+</math></span><img alt="A" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7daff47fa58cdfd29dc333def748ff5fa4c923e3" style="vertical-align: -0.338ex; width:1.743ex; height:2.176ex;"/></span> fails to terminate, produces a "don't know" answer, or produces a wrong answer, i.e. <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> halts and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A(x)}</annotation>
+</semantics>
+</math></span><img alt="A(x)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b078651e6d1a522e8955b73059fbd63e13aec616" style="vertical-align: -0.838ex; width:4.882ex; height:2.843ex;"/></span> outputs <code>DOES_NOT_HALT</code>, or <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> does not halt and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A(x)}</annotation>
+</semantics>
+</math></span><img alt="A(x)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b078651e6d1a522e8955b73059fbd63e13aec616" style="vertical-align: -0.838ex; width:4.882ex; height:2.843ex;"/></span> outputs <code>HALTS</code>. The behavior may be described as follows, for dense Gödelizations and optimal machines:<sup class="reference" id="cite_ref-RealWorldApprox_31-1">[31]</sup><sup class="reference" id="cite_ref-OptimalMachines_33-1">[33]</sup>
+</p>
+<ul><li>For every algorithm <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A}</annotation>
+</semantics>
+</math></span><img alt="A" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7daff47fa58cdfd29dc333def748ff5fa4c923e3" style="vertical-align: -0.338ex; width:1.743ex; height:2.176ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \liminf _{n\to \infty }\epsilon _{n}(A)&gt;0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<munder>
+<mo form="prefix" movablelimits="true">lim inf</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo stretchy="false">→<!-- → --></mo>
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mrow>
+</munder>
+<msub>
+<mi>ϵ<!-- ϵ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>A</mi>
+<mo stretchy="false">)</mo>
+<mo>&gt;</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \liminf _{n\to \infty }\epsilon _{n}(A)&gt;0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \liminf _{n\to \infty }\epsilon _{n}(A)&gt;0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/13dbaffbd80c79251172e556d9e6ff46a5fd3a63" style="vertical-align: -1.838ex; width:16.632ex; height:3.843ex;"/></span></li>
+<li>There exists <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \epsilon &gt;0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>ϵ<!-- ϵ --></mi>
+<mo>&gt;</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \epsilon &gt;0}</annotation>
+</semantics>
+</math></span><img alt="\epsilon &gt;0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/568095ad3924314374a5ab68fae17343661f2a71" style="vertical-align: -0.338ex; width:5.205ex; height:2.176ex;"/></span> such that for every algorithm <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A}</annotation>
+</semantics>
+</math></span><img alt="A" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7daff47fa58cdfd29dc333def748ff5fa4c923e3" style="vertical-align: -0.338ex; width:1.743ex; height:2.176ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \limsup _{n\to \infty }\epsilon _{n}(A)\geq \epsilon }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<munder>
+<mo form="prefix" movablelimits="true">lim sup</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo stretchy="false">→<!-- → --></mo>
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mrow>
+</munder>
+<msub>
+<mi>ϵ<!-- ϵ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>A</mi>
+<mo stretchy="false">)</mo>
+<mo>≥<!-- ≥ --></mo>
+<mi>ϵ<!-- ϵ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \limsup _{n\to \infty }\epsilon _{n}(A)\geq \epsilon }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \limsup _{n\to \infty }\epsilon _{n}(A)\geq \epsilon }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c5869032f7ea393616939aef379f923f6da3cecd" style="vertical-align: -2.338ex; width:17.263ex; height:4.343ex;"/></span></li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \inf _{A}\liminf _{n\to \infty }\epsilon _{n}(A)=0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<munder>
+<mo form="prefix" movablelimits="true">inf</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>A</mi>
+</mrow>
+</munder>
+<munder>
+<mo form="prefix" movablelimits="true">lim inf</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo stretchy="false">→<!-- → --></mo>
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mrow>
+</munder>
+<msub>
+<mi>ϵ<!-- ϵ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>A</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \inf _{A}\liminf _{n\to \infty }\epsilon _{n}(A)=0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \inf _{A}\liminf _{n\to \infty }\epsilon _{n}(A)=0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e48c286d1763633f05eb70c0d9f081ee88e98df2" style="vertical-align: -2.005ex; width:19.67ex; height:4.009ex;"/></span>. However, this includes algorithms that produce wrong answers.</li>
+<li>If we consider only "honest" algorithms that may be undefined but never produce wrong answers, then depending on the metric <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \inf _{A\,{\textrm {honest}}}\liminf _{n\to \infty }\epsilon _{n}(A)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<munder>
+<mo form="prefix" movablelimits="true">inf</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>A</mi>
+<mspace width="thinmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>honest</mtext>
+</mrow>
+</mrow>
+</mrow>
+</munder>
+<munder>
+<mo form="prefix" movablelimits="true">lim inf</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+<mo stretchy="false">→<!-- → --></mo>
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mrow>
+</munder>
+<msub>
+<mi>ϵ<!-- ϵ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>A</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \inf _{A\,{\textrm {honest}}}\liminf _{n\to \infty }\epsilon _{n}(A)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \inf _{A\,{\textrm {honest}}}\liminf _{n\to \infty }\epsilon _{n}(A)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/555b40fb630cc2bb83a0b9fc706cf048a36aa840" style="vertical-align: -2.005ex; width:19.045ex; height:4.009ex;"/></span> may or may not be 0. In particular it is 0 for left-total universal machines, but for effectively optimal machines it is greater than 0.<sup class="reference" id="cite_ref-OptimalMachines_33-2">[33]</sup></li></ul>
+<p>The complex nature of these bounds is due to the oscillatory behavior of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \epsilon _{n}(A)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>ϵ<!-- ϵ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>n</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>A</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \epsilon _{n}(A)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \epsilon _{n}(A)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e9d08028d30e7880406e1c07ee7619ba88128b12" style="vertical-align: -0.838ex; width:5.715ex; height:2.843ex;"/></span>. There are infrequently occurring new varieties of programs that come in arbitrarily large "blocks", and a constantly growing fraction of repeats. If the blocks of new varieties are fully included, the error rate is at least <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \epsilon }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>ϵ<!-- ϵ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \epsilon }</annotation>
+</semantics>
+</math></span><img alt="\epsilon " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c3837cad72483d97bcdde49c85d3b7b859fb3fd2" style="vertical-align: -0.338ex; width:0.944ex; height:1.676ex;"/></span>, but between blocks the fraction of correctly categorized repeats can be arbitrarily high. In particular a "tally" heuristic that simply remembers the first N inputs and recognizes their equivalents allows reaching an arbitrarily low error rate infinitely often.<sup class="reference" id="cite_ref-RealWorldApprox_31-2">[31]</sup>
+</p>
+<h3><span id="G.C3.B6del.27s_incompleteness_theorems"></span><span class="mw-headline" id="Gödel's_incompleteness_theorems">Gödel's incompleteness theorems</span><span class="mw-editsection"></span></h3>
+<link href="mw-data:TemplateStyles:r1097763485" rel="mw-deduplicated-inline-style"/><table class="box-More_citations_needed_section plainlinks metadata ambox ambox-content ambox-Refimprove" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<p>The concepts raised by Gödel's incompleteness theorems are very similar to those raised by the halting problem, and the proofs are quite similar. In fact, a weaker form of the First Incompleteness Theorem is an easy consequence of the undecidability of the halting problem. This weaker form differs from the standard statement of the incompleteness theorem by asserting that an axiomatization of the natural numbers that is both complete and sound is impossible. The "sound" part is the weakening: it means that we require the axiomatic system in question to prove only <i>true</i> statements about natural numbers. Since soundness implies consistency, this weaker form can be seen as a corollary of the strong form. It is important to observe that the statement of the standard form of Gödel's First Incompleteness Theorem is completely unconcerned with the truth value of a statement, but only concerns the issue of whether it is possible to find it through a mathematical proof.
+</p><p>The weaker form of the theorem can be proved from the undecidability of the halting problem as follows.<sup class="reference" id="cite_ref-34">[34]</sup> Assume that we have a sound (and hence consistent) and complete axiomatization of all true first-order logic statements about natural numbers. Then we can build an algorithm that enumerates all these statements. This means that there is an algorithm <i>N</i>(<i>n</i>) that, given a natural number <i>n</i>, computes a true first-order logic statement about natural numbers, and that for all true statements, there is at least one <i>n</i> such that <i>N</i>(<i>n</i>) yields that statement. Now suppose we want to decide if the algorithm with representation <i>a</i> halts on input <i>i</i>.  We know that this statement can be expressed with a first-order logic statement, say <i>H</i>(<i>a</i>, <i>i</i>).  Since the axiomatization is complete it follows that either there is an <i>n</i> such that <i>N</i>(<i>n</i>) =  <i>H</i>(<i>a</i>, <i>i</i>) or there is an <i>n'</i> such that <i>N</i>(<i>n'</i>) = ¬ <i>H</i>(<i>a</i>, <i>i</i>).  So if we iterate over all <i>n</i> until we either find <i>H</i>(<i>a</i>, <i>i</i>) or its negation, we will always halt, and furthermore, the answer it gives us will be true (by soundness). This means that this gives us an algorithm to decide the halting problem. Since we know that there cannot be such an algorithm, it follows that the assumption that there is a consistent and complete axiomatization of all true first-order logic statements about natural numbers must be false.
+</p>
+<h2><span class="mw-headline" id="Generalization">Generalization</span><span class="mw-editsection"></span></h2>
+<p>Many variants of the halting problem can be found in computability textbooks.<sup class="reference" id="cite_ref-35">[35]</sup> Typically, these problems are RE-complete and describe sets of complexity <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Sigma _{1}^{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msubsup>
+<mi mathvariant="normal">Σ<!-- Σ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msubsup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Sigma _{1}^{0}}</annotation>
+</semantics>
+</math></span><img alt="\Sigma _{1}^{0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8130a55f302deb0b733de5a526f2d92c364e4dd6" style="vertical-align: -1.005ex; width:2.732ex; height:3.176ex;"/></span> in the arithmetical hierarchy, the same as the standard halting problem. The variants are thus undecidable, and the standard halting problem reduces to each variant and vice-versa. However, some variants have a higher degree of unsolvability and cannot be reduced to the standard halting problem. The next two examples are common.
+</p>
+<h3><span class="mw-headline" id="Halting_on_all_inputs">Halting on all inputs</span><span class="mw-editsection"></span></h3>
+<p>The <i>universal halting problem</i>, also known (in recursion theory) as <i>totality</i>, is the problem of determining whether a given computer program will halt <i>for every input</i> (the name <i>totality</i> comes from the equivalent question of whether the computed function is total).
+This problem is not only undecidable, as the halting problem is, but highly undecidable. In terms of the arithmetical hierarchy, it is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Pi _{2}^{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msubsup>
+<mi mathvariant="normal">Π<!-- Π --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msubsup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Pi _{2}^{0}}</annotation>
+</semantics>
+</math></span><img alt="\Pi _{2}^{0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0d58b0d35851996c3e8fa2ed4b5f4c583a3337df" style="vertical-align: -1.005ex; width:2.797ex; height:3.176ex;"/></span>-complete.<sup class="reference" id="cite_ref-FOOTNOTEBörger1989121_36-0">[36]</sup>
+</p><p>This means, in particular, that it cannot be decided even with an oracle for the halting problem.
+</p>
+<h3><span class="mw-headline" id="Recognizing_partial_solutions">Recognizing partial solutions</span><span class="mw-editsection"></span></h3>
+<p>There are many programs that, for some inputs, return a correct answer to the halting problem, while for other inputs they do not return an answer at all. 
+However the problem "given program <i>p</i>, is it a partial halting solver" (in the sense described) is at least as hard as the halting problem.
+To see this, assume that there is an algorithm PHSR ("partial halting solver recognizer") to do that. Then it can be used to solve the halting problem,
+as follows:
+To test whether input program <i>x</i> halts on <i>y</i>, construct a program <i>p</i> that on input (<i>x</i>,<i>y</i>) reports <i>true</i> and diverges on all other inputs.
+Then test <i>p</i> with PHSR.
+</p><p>The above argument is a reduction of the halting problem to PHS recognition, and in the same manner, 
+harder problems such as <i>halting on all inputs</i> can also be reduced, implying that PHS recognition is not only undecidable, but higher in the arithmetical hierarchy, specifically <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Pi _{2}^{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msubsup>
+<mi mathvariant="normal">Π<!-- Π --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msubsup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Pi _{2}^{0}}</annotation>
+</semantics>
+</math></span><img alt="\Pi _{2}^{0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0d58b0d35851996c3e8fa2ed4b5f4c583a3337df" style="vertical-align: -1.005ex; width:2.797ex; height:3.176ex;"/></span>-complete.
+</p>
+<h3><span class="mw-headline" id="Lossy_computation">Lossy computation</span><span class="mw-editsection"></span></h3>
+<p>A <i>lossy Turing machine</i> is a Turing machine in which part of the tape may non-deterministically disappear. The halting problem is decidable for a lossy Turing machine but non-primitive recursive.<sup class="reference" id="cite_ref-FOOTNOTEAbdullaJonsson199692_37-0">[37]</sup>
+</p>
+<h3><span class="mw-headline" id="Oracle_machines">Oracle machines</span><span class="mw-editsection"></span></h3>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>A machine with an oracle for the halting problem can determine whether particular Turing machines will halt on particular inputs, but they cannot determine, in general, whether machines equivalent to themselves will halt.
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Busy beaver</li>
+<li>Gödel's incompleteness theorem</li>
+<li>Brouwer–Hilbert controversy</li>
+<li>Kolmogorov complexity</li>
+<li>P versus NP problem</li>
+<li>Termination analysis</li>
+<li>Worst-case execution time</li></ul>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFChurch1936">Church, Alonzo (1936). "An Unsolvable Problem of Elementary Number Theory". <i>American Journal of Mathematics</i>. <b>58</b> (2): 345–363. doi:10.2307/2371045. JSTOR 2371045.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=American+Journal+of+Mathematics&amp;rft.atitle=An+Unsolvable+Problem+of+Elementary+Number+Theory&amp;rft.volume=58&amp;rft.issue=2&amp;rft.pages=345-363&amp;rft.date=1936&amp;rft_id=info%3Adoi%2F10.2307%2F2371045&amp;rft_id=%2F%2Fwww.jstor.org%2Fstable%2F2371045%23id-name%3DJSTOR&amp;rft.aulast=Church&amp;rft.aufirst=Alonzo&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AHalting+problem"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFCopeland2004">Copeland, B. Jack, ed. (2004). <i>The essential Turing : seminal writings in computing, logic, philosophy, artificial intelligence, and artificial life, plus the secrets of Enigma</i>. Oxford: Clarendon Press. ISBN <bdi>0-19-825079-7</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=The+essential+Turing+%3A+seminal+writings+in+computing%2C+logic%2C+philosophy%2C+artificial+intelligence%2C+and+artificial+life%2C+plus+the+secrets+of+Enigma&amp;rft.place=Oxford&amp;rft.pub=Clarendon+Press&amp;rft.date=2004&amp;rft.isbn=0-19-825079-7&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AHalting+problem"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFDavis1965">Davis, Martin (1965). <span class="cs1-lock-registration" title="Free registration required"><i>The Undecidable, Basic Papers on Undecidable Propositions, Unsolvable Problems And Computable Functions</i></span>. New York: Raven Press.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=The+Undecidable%2C+Basic+Papers+on+Undecidable+Propositions%2C+Unsolvable+Problems+And+Computable+Functions&amp;rft.place=New+York&amp;rft.pub=Raven+Press&amp;rft.date=1965&amp;rft.aulast=Davis&amp;rft.aufirst=Martin&amp;rft_id=https%3A%2F%2Farchive.org%2Fdetails%2Fundecidablebasic0000davi&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AHalting+problem"></span>. Turing's paper is #3 in this volume. Papers include those by Godel, Church, Rosser, Kleene, and Post.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFDavis1958">Davis, Martin (1958). <i>Computability and Unsolvability</i>. New York: McGraw-Hill.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Computability+and+Unsolvability&amp;rft.place=New+York&amp;rft.pub=McGraw-Hill&amp;rft.date=1958&amp;rft.aulast=Davis&amp;rft.aufirst=Martin&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AHalting+problem"></span>.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFKleene1952">Kleene, Stephen Cole (1952). <i>Introduction to metamathematics</i>. North-Holland. ISBN <bdi>0923891579</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Introduction+to+metamathematics&amp;rft.pub=North-Holland&amp;rft.date=1952&amp;rft.isbn=0923891579&amp;rft.aulast=Kleene&amp;rft.aufirst=Stephen+Cole&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AHalting+problem"></span>. Chapter XIII ("Computable Functions") includes a discussion of the unsolvability of the halting problem for Turing machines. In a departure from Turing's terminology of circle-free nonhalting machines, Kleene refers instead to machines that "stop", i.e. halt.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFMinsky1967">Minsky, Marvin (1967). <i>Computation: finite and infinite machines</i>. Englewood Cliffs, NJ: Prentice-Hall. ISBN <bdi>0131655639</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Computation%3A+finite+and+infinite+machines&amp;rft.place=Englewood+Cliffs%2C+NJ&amp;rft.pub=Prentice-Hall&amp;rft.date=1967&amp;rft.isbn=0131655639&amp;rft.aulast=Minsky&amp;rft.aufirst=Marvin&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AHalting+problem"></span>. See chapter 8, Section 8.2 "Unsolvability of the Halting Problem."</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFMooreMertens2011">Moore, Cristopher; Mertens, Stephan (2011). <i>The Nature of Computation</i>. Oxford University Press. doi:10.1093/acprof:oso/9780199233212.001.0001. ISBN <bdi>978-0-19-923321-2</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=The+Nature+of+Computation&amp;rft.pub=Oxford+University+Press&amp;rft.date=2011&amp;rft_id=info%3Adoi%2F10.1093%2Facprof%3Aoso%2F9780199233212.001.0001&amp;rft.isbn=978-0-19-923321-2&amp;rft.aulast=Moore&amp;rft.aufirst=Cristopher&amp;rft.au=Mertens%2C+Stephan&amp;rft_id=http%3A%2F%2Fdx.doi.org%2F10.1093%2Facprof%3Aoso%2F9780199233212.001.0001&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AHalting+problem"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFReid1996">Reid, Constance (1996). <i>Hilbert</i>. New York: Copernicus. ISBN <bdi>0387946748</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Hilbert&amp;rft.place=New+York&amp;rft.pub=Copernicus&amp;rft.date=1996&amp;rft.isbn=0387946748&amp;rft.aulast=Reid&amp;rft.aufirst=Constance&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AHalting+problem"></span>. First published in 1970, a fascinating history of German mathematics and physics from 1880s through 1930s. Hundreds of names familiar to mathematicians, physicists and engineers appear in its pages. Perhaps marred by no overt references and few footnotes: Reid states her sources were numerous interviews with those who personally knew Hilbert, and Hilbert's letters and papers.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFSipser2006">Sipser, Michael (2006). <span class="cs1-lock-registration" title="Free registration required">"Section 4.2: The Halting Problem"</span>. <i>Introduction to the Theory of Computation</i> (Second ed.). PWS Publishing. pp. 173–182. ISBN <bdi>0-534-94728-X</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Section+4.2%3A+The+Halting+Problem&amp;rft.btitle=Introduction+to+the+Theory+of+Computation&amp;rft.pages=173-182&amp;rft.edition=Second&amp;rft.pub=PWS+Publishing&amp;rft.date=2006&amp;rft.isbn=0-534-94728-X&amp;rft.aulast=Sipser&amp;rft.aufirst=Michael&amp;rft_id=https%3A%2F%2Farchive.org%2Fdetails%2Fintroductiontoth00sips%2Fpage%2F173&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AHalting+problem"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1 cs1-prop-long-vol" id="CITEREFTuring1937">Turing, A. M. (1937). "On Computable Numbers, with an Application to the Entscheidungsproblem". <i>Proceedings of the London Mathematical Society</i>. Wiley. s2-42 (1): 230–265. doi:10.1112/plms/s2-42.1.230. ISSN 0024-6115. S2CID 73712.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Proceedings+of+the+London+Mathematical+Society&amp;rft.atitle=On+Computable+Numbers%2C+with+an+Application+to+the+Entscheidungsproblem&amp;rft.volume=s2-42&amp;rft.issue=1&amp;rft.pages=230-265&amp;rft.date=1937&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A73712%23id-name%3DS2CID&amp;rft.issn=0024-6115&amp;rft_id=info%3Adoi%2F10.1112%2Fplms%2Fs2-42.1.230&amp;rft.aulast=Turing&amp;rft.aufirst=A.+M.&amp;rft_id=http%3A%2F%2Fwww.turingarchive.org%2Fbrowse.php%2FB%2F12&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AHalting+problem"></span>, <link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1 cs1-prop-long-vol" id="CITEREFTuring1938">Turing, A. M. (1938). "On Computable Numbers, with an Application to the Entscheidungsproblem. A Correction". <i>Proceedings of the London Mathematical Society</i>. Wiley. s2-43 (1): 544–546. doi:10.1112/plms/s2-43.6.544. ISSN 0024-6115.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Proceedings+of+the+London+Mathematical+Society&amp;rft.atitle=On+Computable+Numbers%2C+with+an+Application+to+the+Entscheidungsproblem.+A+Correction&amp;rft.volume=s2-43&amp;rft.issue=1&amp;rft.pages=544-546&amp;rft.date=1938&amp;rft_id=info%3Adoi%2F10.1112%2Fplms%2Fs2-43.6.544&amp;rft.issn=0024-6115&amp;rft.aulast=Turing&amp;rft.aufirst=A.+M.&amp;rft_id=http%3A%2F%2Fwww.turingarchive.org%2Fbrowse.php%2FB%2F12&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AHalting+problem"></span> This is the epochal paper where Turing defines Turing machines, formulates the halting problem, and shows that it (as well as the Entscheidungsproblem) is unsolvable.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFPenrose1989">Penrose, Roger (1989). <i>The emperor's new mind: concerning computers, minds, and the laws of physics</i> (1990 corrected reprint ed.). Oxford: Oxford University Press. ISBN <bdi>0192861980</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=The+emperor%27s+new+mind%3A+concerning+computers%2C+minds%2C+and+the+laws+of+physics&amp;rft.place=Oxford&amp;rft.edition=1990+corrected+reprint&amp;rft.pub=Oxford+University+Press&amp;rft.date=1989&amp;rft.isbn=0192861980&amp;rft.aulast=Penrose&amp;rft.aufirst=Roger&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AHalting+problem"></span>. Cf. Chapter 2, "Algorithms and Turing Machines". An over-complicated presentation (see Davis's paper for a better model), but a thorough presentation of Turing machines and the halting problem, and Church's Lambda Calculus.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFHopcroftUllman1979">Hopcroft, John E.; Ullman, Jeffrey D. (1979). <span class="cs1-lock-registration" title="Free registration required"><i>Introduction to Automata Theory, Languages, and Computation</i></span> (1st ed.). Addison-Wesley. ISBN <bdi>81-7808-347-7</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Introduction+to+Automata+Theory%2C+Languages%2C+and+Computation&amp;rft.edition=1st&amp;rft.pub=Addison-Wesley&amp;rft.date=1979&amp;rft.isbn=81-7808-347-7&amp;rft.aulast=Hopcroft&amp;rft.aufirst=John+E.&amp;rft.au=Ullman%2C+Jeffrey+D.&amp;rft_id=https%3A%2F%2Farchive.org%2Fdetails%2Fintroductiontoau00hopc&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AHalting+problem"></span>. See Chapter 7 "Turing Machines." A book centered around the machine-interpretation of "languages", NP-Completeness, etc.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFHodges1983">Hodges, Andrew (1983). <i>Alan Turing: the enigma</i>. New York: Simon and Schuster. ISBN <bdi>0-671-49207-1</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Alan+Turing%3A+the+enigma&amp;rft.place=New+York&amp;rft.pub=Simon+and+Schuster&amp;rft.date=1983&amp;rft.isbn=0-671-49207-1&amp;rft.aulast=Hodges&amp;rft.aufirst=Andrew&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AHalting+problem"></span>. Cf. Chapter "The Spirit of Truth" for a history leading to, and a discussion of, his proof.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFBörger1989">Börger, Egon (1989). <i>Computability, complexity, logic</i>. Amsterdam: North-Holland. ISBN <bdi>008088704X</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Computability%2C+complexity%2C+logic&amp;rft.place=Amsterdam&amp;rft.pub=North-Holland&amp;rft.date=1989&amp;rft.isbn=008088704X&amp;rft.aulast=B%C3%B6rger&amp;rft.aufirst=Egon&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AHalting+problem"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFAbdullaJonsson1996">Abdulla, Parosh Aziz; Jonsson, Bengt (1996). "Verifying Programs with Unreliable Channels". <i>Information and Computation</i>. <b>127</b> (2): 91–101. doi:<span class="cs1-lock-free" title="Freely accessible">10.1006/inco.1996.0053</span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Information+and+Computation&amp;rft.atitle=Verifying+Programs+with+Unreliable+Channels&amp;rft.volume=127&amp;rft.issue=2&amp;rft.pages=91-101&amp;rft.date=1996&amp;rft_id=info%3Adoi%2F10.1006%2Finco.1996.0053&amp;rft.aulast=Abdulla&amp;rft.aufirst=Parosh+Aziz&amp;rft.au=Jonsson%2C+Bengt&amp;rft_id=%2F%2Fdoi.org%2F10.1006%252Finco.1996.0053&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AHalting+problem"></span></li></ul>
+<h2><span class="mw-headline" id="Further_reading">Further reading</span><span class="mw-editsection"></span></h2>
+<ul><li>c2:HaltingProblem</li>
+<li>Alfred North Whitehead and Bertrand Russell, <i>Principia Mathematica</i> to *56, Cambridge at the University Press, 1962. Re: the problem of paradoxes, the authors discuss the problem of a set not be an object in any of its "determining functions", in particular "Introduction, Chap. 1 p. 24 "...difficulties which arise in formal logic", and Chap. 2.I. "The Vicious-Circle Principle" p. 37ff, and Chap. 2.VIII. "The Contradictions" p. 60ff.</li>
+<li>Martin Davis, "What is a computation", in <i>Mathematics Today</i>, Lynn Arthur Steen, Vintage Books (Random House), 1980. A wonderful little paper, perhaps the best ever written about Turing Machines for the non-specialist. Davis reduces the Turing Machine to a far-simpler model based on Post's model of a computation. Discusses Chaitin proof. Includes little biographies of Emil Post, Julia Robinson.</li>
+<li>Edward Beltrami, <i>What is Random? Chance and order in mathematics and life</i>, Copernicus: Springer-Verlag, New York, 1999. Nice, gentle read for the mathematically inclined non-specialist, puts tougher stuff at the end. Has a Turing-machine model in it. Discusses the Chaitin contributions.</li>
+<li>Ernest Nagel and James R. Newman, <i>Godel’s Proof</i>, New York University Press, 1958. Wonderful writing about a very difficult subject. For the mathematically inclined non-specialist. Discusses Gentzen's proof on pages 96–97 and footnotes. Appendices discuss the Peano Axioms briefly, gently introduce readers to formal logic.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFDarasRassias2018">Daras, Nicholas J.; Rassias, Themistocles M. (2018). <i>Modern discrete mathematics and analysis: with applications in cryptography, information systems and modeling</i>. Cham, Switzerland. ISBN <bdi>978-3319743240</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Modern+discrete+mathematics+and+analysis%3A+with+applications+in+cryptography%2C+information+systems+and+modeling&amp;rft.place=Cham%2C+Switzerland&amp;rft.date=2018&amp;rft.isbn=978-3319743240&amp;rft.aulast=Daras&amp;rft.aufirst=Nicholas+J.&amp;rft.au=Rassias%2C+Themistocles+M.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AHalting+problem"></span>. Chapter 3 Section 1 contains a quality description of the halting problem, a proof by contradiction, and a helpful graphic representation of the Halting Problem.</li>
+<li>Taylor Booth, <i>Sequential Machines and Automata Theory</i>, Wiley, New York, 1967. Cf. Chapter 9, Turing Machines. Difficult book, meant for electrical engineers and technical specialists. Discusses recursion, partial-recursion with reference to Turing Machines, halting problem. Has a Turing Machine model in it. References at end of Chapter 9 catch most of the older books (i.e. 1952 until 1967 including authors Martin Davis, F. C. Hennie, H. Hermes, S. C. Kleene, M. Minsky, T. Rado) and various technical papers. See note under Busy-Beaver Programs.</li>
+<li>Busy Beaver Programs are described in Scientific American, August 1984, also March 1985 p. 23. A reference in Booth attributes them to Rado, T.(1962), On non-computable functions, Bell Systems Tech. J. 41. Booth also defines Rado's Busy Beaver Problem in problems 3, 4, 5, 6 of Chapter 9, p. 396.</li>
+<li>David Bolter, <i>Turing’s Man: Western Culture in the Computer Age</i>, The University of North Carolina Press, Chapel Hill, 1984. For the general reader. May be dated. Has yet another (very simple) Turing Machine model in it.</li>
+<li>Sven Köhler, Christian Schindelhauer, Martin Ziegler, <i>On approximating real-world halting problems</i>, pp.454-466 (2005) <link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/>ISBN 3540281932 Springer Lecture Notes in Computer Science volume 3623: Undecidability of the Halting Problem means that not all instances can be answered correctly; but maybe "some", "many" or "most" can? On the one hand the constant answer "yes" will be correct infinitely often, and wrong also infinitely often. To make the question reasonable, consider the density of the instances that can be solved. This turns out to depend significantly on the Programming System under consideration.</li>
+<li>Logical Limitations to Machine Ethics, with Consequences to Lethal Autonomous Weapons - paper discussed in: Does the Halting Problem Mean No Moral Robots?</li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>Scooping the loop snooper - a poetic proof of undecidability of the halting problem</li>
+<li>animated movie - an animation explaining the proof of the undecidability of the halting problem</li>
+<li>A 2-Minute Proof of the 2nd-Most Important Theorem of the 2nd Millennium - a proof in only 13 lines</li></ul>
+
+
+<!-- 
+NewPP limit report
+Parsed by mw2375
+Cached time: 20221223233428
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.640 seconds
+Real time usage: 0.853 seconds
+Preprocessor visited node count: 5903/1000000
+Post‐expand include size: 166317/2097152 bytes
+Template argument size: 20602/2097152 bytes
+Highest expansion depth: 20/100
+Expensive parser function count: 13/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 90616/5000000 bytes
+Lua time usage: 0.343/10.000 seconds
+Lua memory usage: 9371279/52428800 bytes
+Number of Wikibase entities loaded: 1/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  631.366      1 -total
+ 23.32%  147.209      1 Template:Reflist
+ 19.87%  125.461     16 Template:Cite_book
+ 13.83%   87.293     20 Template:Sfn
+ 10.66%   67.325      4 Template:Navbox
+  9.69%   61.174      1 Template:Mathematical_logic
+  7.38%   46.574     13 Template:Timeline-event
+  7.32%   46.216      1 Template:Short_description
+  7.20%   45.442      1 Template:More_footnotes
+  7.02%   44.320     10 Template:Cite_journal
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:21391870-0!canonical and timestamp 20221223233427 and revision id 1123597048.
+ -->
+</div></body>
+</html>

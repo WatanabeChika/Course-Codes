@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Christofides_algorithm</title>
+</head>
+<body>
+<div class="mw-parser-output"><p>The <b>Christofides algorithm</b> or <b>Christofides–Serdyukov algorithm</b> is an algorithm for finding approximate solutions to the travelling salesman problem, on instances where the distances form a metric space (they are symmetric and obey the triangle inequality).<sup class="reference" id="cite_ref-gt_1-0">[1]</sup>
+It is an approximation algorithm that guarantees that its solutions will be within a factor of 3/2 of the optimal solution length, and is named after Nicos Christofides and Anatoliy I. Serdyukov, who discovered it independently in 1976.<sup class="reference" id="cite_ref-2">[2]</sup><sup class="reference" id="cite_ref-3">[3]</sup><sup class="reference" id="cite_ref-4">[4]</sup>
+</p><p>This algorithm still stands as the best polynomial time approximation algorithm that has been thoroughly peer-reviewed by the relevant scientific community for the traveling salesman problem on general metric spaces. In July 2020 however, Karlin, Klein, and Gharan released a preprint in which they introduced a novel approximation algorithm and claimed that its approximation ratio is 1.5 − 10<sup>−36</sup>. Their method follows similar principles to Christofides' algorithm, but uses a randomly chosen tree from a carefully chosen random distribution in place of the minimum spanning tree.<sup class="reference" id="cite_ref-5">[5]</sup><sup class="reference" id="cite_ref-6">[6]</sup> The paper was published at STOC'21<sup class="reference" id="cite_ref-7">[7]</sup> where it received a best paper award.<sup class="reference" id="cite_ref-8">[8]</sup>
+</p>
+
+<h2><span class="mw-headline" id="Algorithm">Algorithm</span><span class="mw-editsection"></span></h2>
+<p>Let <span class="texhtml"><i>G</i> = (<i>V</i>,<i>w</i>)</span> be an instance of the travelling salesman problem. That is, <span class="texhtml mvar" style="font-style:italic;">G</span> is a complete graph on the set <span class="texhtml mvar" style="font-style:italic;">V</span> of vertices, and the function <span class="texhtml mvar" style="font-style:italic;">w</span> assigns a nonnegative real weight to every edge of <span class="texhtml mvar" style="font-style:italic;">G</span>.
+According to the triangle inequality, for every three vertices <span class="texhtml mvar" style="font-style:italic;">u</span>, <span class="texhtml mvar" style="font-style:italic;">v</span>, and <span class="texhtml mvar" style="font-style:italic;">x</span>, it should be the case that <span class="texhtml"><i>w</i>(<i>uv</i>) + <i>w</i>(<i>vx</i>) ≥ <i>w</i>(<i>ux</i>)</span>.
+</p><p>Then the algorithm can be described in pseudocode as follows.<sup class="reference" id="cite_ref-gt_1-1">[1]</sup>
+</p>
+<ol><li>Create a minimum spanning tree <span class="texhtml mvar" style="font-style:italic;">T</span> of <span class="texhtml mvar" style="font-style:italic;">G</span>.</li>
+<li>Let <span class="texhtml mvar" style="font-style:italic;">O</span> be the set of vertices with odd degree in <span class="texhtml mvar" style="font-style:italic;">T</span>. By the handshaking lemma, <span class="texhtml mvar" style="font-style:italic;">O</span> has an even number of vertices.</li>
+<li>Find a minimum-weight perfect matching <span class="texhtml mvar" style="font-style:italic;">M</span> in the induced subgraph given by the vertices from <span class="texhtml mvar" style="font-style:italic;">O</span>.</li>
+<li>Combine the edges of <span class="texhtml mvar" style="font-style:italic;">M</span> and <span class="texhtml mvar" style="font-style:italic;">T</span> to form a connected multigraph <span class="texhtml mvar" style="font-style:italic;">H</span> in which each vertex has even degree.</li>
+<li>Form an Eulerian circuit in <span class="texhtml mvar" style="font-style:italic;">H</span>.</li>
+<li>Make the circuit found in previous step into a Hamiltonian circuit by skipping repeated vertices (<i>shortcutting</i>).</li></ol>
+<p>The steps 5 and 6 do not necessarily yield only one result. As such the heuristic can give several different paths.
+</p>
+<h2><span class="mw-headline" id="Approximation_ratio">Approximation ratio</span><span class="mw-editsection"></span></h2>
+<p>The cost of the solution produced by the algorithm is within 3/2 of the optimum.
+To prove this, let <span class="texhtml mvar" style="font-style:italic;">C</span> be the optimal traveling salesman tour. Removing an edge from <span class="texhtml mvar" style="font-style:italic;">C</span> produces a spanning tree, which must have weight at least that of the minimum spanning tree, implying that <span class="texhtml"><i>w</i>(<i>T</i>) ≤ <i>w</i>(<i>C</i>)</span>.
+Next, number the vertices of <span class="texhtml mvar" style="font-style:italic;">O</span> in cyclic order around <span class="texhtml mvar" style="font-style:italic;">C</span>, and partition <span class="texhtml mvar" style="font-style:italic;">C</span> into two sets of paths: the ones in which the first path vertex in cyclic order has an odd number and the ones in which the first path vertex has an even number.
+Each set of paths corresponds to a perfect matching of <span class="texhtml mvar" style="font-style:italic;">O</span> that matches the two endpoints of each path, and the weight of this matching is at most equal to the weight of the paths.
+Since these two sets of paths partition the edges of <span class="texhtml mvar" style="font-style:italic;">C</span>, one of the two sets has at most half of the weight of <span class="texhtml mvar" style="font-style:italic;">C</span>, and thanks to the triangle inequality its corresponding matching has weight that is also at most half the weight of <span class="texhtml mvar" style="font-style:italic;">C</span>.
+The minimum-weight perfect matching can have no larger weight, so <span class="texhtml"><i>w</i>(<i>M</i>) ≤ <i>w</i>(<i>C</i>)/2</span>.
+Adding the weights of <span class="texhtml mvar" style="font-style:italic;">T</span> and <span class="texhtml mvar" style="font-style:italic;">M</span> gives the weight of the Euler tour, at most <span class="texhtml">3<i>w</i>(<i>C</i>)/2</span>. Thanks to the triangle inequality, shortcutting does not increase the weight,
+so the weight of the output is also at most <span class="texhtml">3<i>w</i>(<i>C</i>)/2</span>.<sup class="reference" id="cite_ref-gt_1-2">[1]</sup>
+</p>
+<h2><span class="mw-headline" id="Lower_bounds">Lower bounds</span><span class="mw-editsection"></span></h2>
+<p>There exist inputs to the travelling salesman problem that cause the Christofides algorithm to find a solution whose approximation ratio is arbitrarily close to 3/2. One such class of 
+inputs are formed by a path of <span class="texhtml mvar" style="font-style:italic;">n</span> vertices, with the path edges having weight <span class="texhtml">1</span>, together with a set of edges connecting vertices two steps apart in the path with weight <span class="texhtml">1 + <i>ε</i></span>
+for a number <span class="texhtml"><i>ε</i></span> chosen close to zero but positive. All remaining edges of the complete graph have distances given by the shortest paths in this subgraph.
+Then the minimum spanning tree will be given by the path, of length <span class="texhtml"><i>n</i> − 1</span>, and the only two odd vertices will be the path endpoints, whose perfect matching consists of a single edge with weight approximately <span class="texhtml"><i>n</i>/2</span>.
+The union of the tree and the matching is a cycle, with no possible shortcuts, and with weight approximately <span class="texhtml">3<i>n</i>/2</span>. However, the optimal solution uses the edges of weight <span class="texhtml">1 + <i>ε</i></span> together with two weight-<span class="texhtml">1</span> edges incident to the endpoints of the path,
+and has total weight <span class="texhtml">(1 + <i>ε</i>)(<i>n</i> − 2) + 2</span>, close to <span class="texhtml mvar" style="font-style:italic;">n</span> for small values of <span class="texhtml"><i>ε</i></span>. Hence we obtain an approximation ratio of 3/2.<sup class="reference" id="cite_ref-9">[9]</sup>
+</p>
+<h2><span class="mw-headline" id="Example">Example</span><span class="mw-editsection"></span></h2>
+<table class="wikitable">
+<tbody><tr>
+<td><img alt="Metrischer Graph mit 5 Knoten.svg" data-file-height="461" data-file-width="531" decoding="async" height="174" src="//upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Metrischer_Graph_mit_5_Knoten.svg/200px-Metrischer_Graph_mit_5_Knoten.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Metrischer_Graph_mit_5_Knoten.svg/300px-Metrischer_Graph_mit_5_Knoten.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Metrischer_Graph_mit_5_Knoten.svg/400px-Metrischer_Graph_mit_5_Knoten.svg.png 2x" width="200"/></td>
+<td>Given: complete graph whose edge weights obey the triangle inequality
+</td></tr>
+<tr>
+<td><img alt="Christofides MST.svg" data-file-height="390" data-file-width="390" decoding="async" height="200" src="//upload.wikimedia.org/wikipedia/commons/thumb/1/18/Christofides_MST.svg/200px-Christofides_MST.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/1/18/Christofides_MST.svg/300px-Christofides_MST.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/1/18/Christofides_MST.svg/400px-Christofides_MST.svg.png 2x" width="200"/></td>
+<td>Calculate minimum spanning tree <span class="texhtml mvar" style="font-style:italic;">T</span>
+</td></tr>
+<tr>
+<td><img alt="V'.svg" data-file-height="390" data-file-width="425" decoding="async" height="184" src="//upload.wikimedia.org/wikipedia/commons/thumb/9/90/V%27.svg/200px-V%27.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/9/90/V%27.svg/300px-V%27.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/9/90/V%27.svg/400px-V%27.svg.png 2x" width="200"/></td>
+<td>Calculate the set of vertices <span class="texhtml mvar" style="font-style:italic;">O</span> with odd degree in <span class="texhtml mvar" style="font-style:italic;">T</span>
+</td></tr>
+<tr>
+<td><img alt="G V'.svg" data-file-height="390" data-file-width="390" decoding="async" height="200" src="//upload.wikimedia.org/wikipedia/commons/thumb/8/82/G_V%27.svg/200px-G_V%27.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/8/82/G_V%27.svg/300px-G_V%27.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/8/82/G_V%27.svg/400px-G_V%27.svg.png 2x" width="200"/></td>
+<td>Form the subgraph of <span class="texhtml mvar" style="font-style:italic;">G</span> using only the vertices of <span class="texhtml mvar" style="font-style:italic;">O</span>
+</td></tr>
+<tr>
+<td><img alt="Christofides Matching.svg" data-file-height="390" data-file-width="390" decoding="async" height="200" src="//upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Christofides_Matching.svg/200px-Christofides_Matching.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Christofides_Matching.svg/300px-Christofides_Matching.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Christofides_Matching.svg/400px-Christofides_Matching.svg.png 2x" width="200"/></td>
+<td>Construct a minimum-weight perfect matching <span class="texhtml mvar" style="font-style:italic;">M</span> in this subgraph
+</td></tr>
+<tr>
+<td><img alt="TuM.svg" data-file-height="390" data-file-width="390" decoding="async" height="200" src="//upload.wikimedia.org/wikipedia/commons/thumb/b/b4/TuM.svg/200px-TuM.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/b/b4/TuM.svg/300px-TuM.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/b/b4/TuM.svg/400px-TuM.svg.png 2x" width="200"/></td>
+<td>Unite matching and spanning tree <span class="texhtml"><i>T</i> ∪ <i>M</i></span> to form an Eulerian multigraph
+</td></tr>
+<tr>
+<td><img alt="Eulertour.svg" data-file-height="425" data-file-width="390" decoding="async" height="218" src="//upload.wikimedia.org/wikipedia/commons/thumb/3/30/Eulertour.svg/200px-Eulertour.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/3/30/Eulertour.svg/300px-Eulertour.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/3/30/Eulertour.svg/400px-Eulertour.svg.png 2x" width="200"/></td>
+<td>Calculate Euler tour<br/><br/>Here the tour goes A-&gt;B-&gt;C-&gt;A-&gt;D-&gt;E-&gt;A. Equally valid is A-&gt;B-&gt;C-&gt;A-&gt;E-&gt;D-&gt;A.
+</td></tr>
+<tr>
+<td><img alt="Eulertour bereinigt.svg" data-file-height="496" data-file-width="461" decoding="async" height="215" src="//upload.wikimedia.org/wikipedia/commons/thumb/6/61/Eulertour_bereinigt.svg/200px-Eulertour_bereinigt.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/6/61/Eulertour_bereinigt.svg/300px-Eulertour_bereinigt.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/6/61/Eulertour_bereinigt.svg/400px-Eulertour_bereinigt.svg.png 2x" width="200"/></td>
+<td>Remove repeated vertices, giving the algorithm's output.<br/><br/>If the alternate tour would have been used, the shortcut would be going from C to E which results in a shorter route (A-&gt;B-&gt;C-&gt;E-&gt;D-&gt;A) if this is an euclidean graph as the route A-&gt;B-&gt;C-&gt;D-&gt;E-&gt;A has intersecting lines which is proven not to be the shortest route.
+</td></tr></tbody></table>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>NIST Christofides Algorithm Definition</li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw1435
+Cached time: 20221214140215
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.193 seconds
+Real time usage: 0.220 seconds
+Preprocessor visited node count: 1598/1000000
+Post‐expand include size: 24044/2097152 bytes
+Template argument size: 1526/2097152 bytes
+Highest expansion depth: 8/100
+Expensive parser function count: 0/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 28965/5000000 bytes
+Lua time usage: 0.108/10.000 seconds
+Lua memory usage: 4269536/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  176.729      1 -total
+ 80.69%  142.601      1 Template:Reflist
+ 58.76%  103.848      6 Template:Citation
+ 16.07%   28.404     17 Template:Math
+  5.94%   10.504      2 Template:Cite_web
+  3.75%    6.631      1 Template:Cite_arXiv
+  2.22%    3.920     18 Template:Main_other
+  1.08%    1.915     37 Template:Mvar
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:3589536-0!canonical and timestamp 20221214140215 and revision id 1100642497.
+ -->
+</div></body>
+</html>

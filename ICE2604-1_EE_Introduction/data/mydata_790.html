@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Prim-Jarnik_algorithm</title>
+</head>
+<body>
+<div class="mw-parser-output">
+
+<p>In computer science, <b>Prim's algorithm</b> (also known as Jarník's algorithm) is a greedy algorithm that finds a minimum spanning tree for a weighted undirected graph. This means it finds a subset of the edges that forms a tree that includes every vertex, where the total weight of all the edges in the tree is minimized. The algorithm operates by building this tree one vertex at a time, from an arbitrary starting vertex, at each step adding the cheapest possible connection from the tree to another vertex.
+</p><p>The algorithm was developed in 1930 by Czech mathematician Vojtěch Jarník<sup class="reference" id="cite_ref-1">[1]</sup> and later rediscovered and republished by computer scientists Robert C. Prim in 1957<sup class="reference" id="cite_ref-2">[2]</sup> and Edsger W. Dijkstra in 1959.<sup class="reference" id="cite_ref-3">[3]</sup> Therefore, it is also sometimes called the <b>Jarník's algorithm</b>,<sup class="reference" id="cite_ref-4">[4]</sup> <b>Prim–Jarník algorithm</b>,<sup class="reference" id="cite_ref-5">[5]</sup> <b>Prim–Dijkstra algorithm</b><sup class="reference" id="cite_ref-chertar_6-0">[6]</sup>
+or the <b>DJP algorithm</b>.<sup class="reference" id="cite_ref-pr02_7-0">[7]</sup>
+</p><p>Other well-known algorithms for this problem include Kruskal's algorithm and Borůvka's algorithm.<sup class="reference" id="cite_ref-8">[8]</sup> These algorithms find the minimum spanning forest in a possibly disconnected graph; in contrast, the most basic form of Prim's algorithm only finds minimum spanning trees in connected graphs. However, running Prim's algorithm separately for each connected component of the graph, it can also be used to find the minimum spanning forest.<sup class="reference" id="cite_ref-9">[9]</sup> In terms of their asymptotic time complexity, these three algorithms are equally fast for sparse graphs, but slower than other more sophisticated algorithms.<sup class="reference" id="cite_ref-pr02_7-1">[7]</sup><sup class="reference" id="cite_ref-chertar_6-1">[6]</sup>
+However, for graphs that are sufficiently dense, Prim's algorithm can be made to run in linear time, meeting or improving the time bounds for other algorithms.<sup class="reference" id="cite_ref-tarjan83p77_10-0">[10]</sup>
+</p>
+
+
+<h2><span class="mw-headline" id="Description">Description</span><span class="mw-editsection"></span></h2>
+<p>The algorithm may informally be described as performing the following steps:
+</p>
+
+<p>In more detail, it may be implemented following the pseudocode below.
+</p>
+
+<p>As described above, the starting vertex for the algorithm will be chosen arbitrarily, because the first iteration of the main loop of the algorithm will have a set of vertices in <i>Q</i> that all have equal weights, and the algorithm will automatically start a new tree in <i>F</i> when it completes a spanning tree of each connected component of the input graph. The algorithm may be modified to start with any particular vertex <i>s</i> by setting <i>C</i>[<i>s</i>] to be a number smaller than the other values of <i>C</i> (for instance, zero), and it may be modified to only find a single spanning tree rather than an entire spanning forest (matching more closely the informal description) by stopping whenever it encounters another vertex flagged as having no associated edge.
+</p><p>Different variations of the algorithm differ from each other in how the set <i>Q</i> is implemented: as a simple linked list or array of vertices, or as a more complicated priority queue data structure. This choice leads to differences in the time complexity of the algorithm. In general, a priority queue will be quicker at finding the vertex <i>v</i> with minimum cost, but will entail more expensive updates when the value of <i>C</i>[<i>w</i>] changes.
+</p>
+<h2><span class="mw-headline" id="Time_complexity">Time complexity</span><span class="mw-editsection"></span></h2>
+
+<p>The time complexity of Prim's algorithm depends on the data structures used for the graph and for ordering the edges by weight, which can be done using a priority queue. The following table shows the typical choices:
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>Minimum edge weight data structure</th>
+<th>Time complexity (total)
+</th></tr>
+<tr>
+<td>adjacency matrix, searching</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(|V|^{2})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(|V|^{2})}</annotation>
+</semantics>
+</math></span><img alt="O(|V|^{2})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e1e99764e23be92b694aef042c6460ff921357e3" style="vertical-align: -0.838ex; width:7.718ex; height:3.343ex;"/></span>
+</td></tr>
+<tr>
+<td>binary heap and adjacency list</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O((|V|+|E|)\log |V|)=O(|E|\log |V|)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O((|V|+|E|)\log |V|)=O(|E|\log |V|)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O((|V|+|E|)\log |V|)=O(|E|\log |V|)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/19e7605c32e80569d7fb15473143e6e8487a2f80" style="vertical-align: -0.838ex; width:37.787ex; height:2.843ex;"/></span>
+</td></tr>
+<tr>
+<td>Fibonacci heap and adjacency list</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(|E|+|V|\log |V|)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(|E|+|V|\log |V|)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(|E|+|V|\log |V|)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4fcb7644781d08e9e958d4a430a3107da04bf1b3" style="vertical-align: -0.838ex; width:19.4ex; height:2.843ex;"/></span>
+</td></tr></tbody></table>
+<p>A simple implementation of Prim's, using an adjacency matrix or an adjacency list graph representation and linearly searching an array of weights to find the minimum weight edge to add, requires O(|V|<sup>2</sup>) running time. However, this running time can be greatly improved further by using heaps to implement finding minimum weight edges in the algorithm's inner loop.
+</p><p>A first improved version uses a heap to store all edges of the input graph, ordered by their weight. This leads to an O(|E| log |E|) worst-case running time. But storing vertices instead of edges can improve it still further. The heap should order the vertices by the smallest edge-weight that connects them to any vertex in the partially constructed minimum spanning tree (MST) (or infinity if no such edge exists). Every time a vertex <i>v</i> is chosen and added to the MST, a decrease-key operation is performed on all vertices <i>w</i> outside the partial MST such that <i>v</i> is connected to <i>w</i>, setting the key to the minimum of its previous value and the edge cost of (<i>v</i>,<i>w</i>).
+</p><p>Using a simple binary heap data structure, Prim's algorithm can now be shown to run in time O(|E| log |V|) where |E| is the number of edges and |V| is the number of vertices. Using a more sophisticated Fibonacci heap, this can be brought down to O(|E| + |V| log |V|), which is asymptotically faster when the graph is dense enough that |E| is ω(|V|), and linear time when |E| is at least |V| log |V|. For graphs of even greater density (having at least |V|<sup><i>c</i></sup> edges for some <i>c</i> &gt; 1), Prim's algorithm can be made to run in linear time even more simply, by using a <i>d</i>-ary heap in place of a Fibonacci heap.<sup class="reference" id="cite_ref-tarjan83p77_10-1">[10]</sup><sup class="reference" id="cite_ref-11">[11]</sup>
+</p>
+
+<h2><span class="mw-headline" id="Proof_of_correctness">Proof of correctness</span><span class="mw-editsection"></span></h2>
+<p>Let <i>P</i> be a connected, weighted graph.  At every iteration of Prim's algorithm, an edge must be found that connects a vertex in a subgraph to a vertex outside the subgraph.  Since  <i>P</i> is connected, there will always be a path to every vertex.  The output <i>Y</i> of Prim's algorithm is a tree, because the edge and vertex added to tree <i>Y</i> are connected. Let <i>Y<sub>1</sub></i> be a minimum spanning tree of graph P. If <i>Y<sub>1</sub></i>=<i>Y</i> then <i>Y</i> is a minimum spanning tree. Otherwise, let <i>e</i> be the first edge added during the construction of tree <i>Y</i> that is not in tree <i>Y<sub>1</sub></i>, and <i>V</i> be the set of vertices connected by the edges added before edge <i>e</i>.  Then one endpoint of edge <i>e</i> is in set <i>V</i> and the other is not.  Since tree <i>Y<sub>1</sub></i> is a spanning tree of graph <i>P</i>, there is a path in tree <i>Y<sub>1</sub></i> joining the two endpoints.  As one travels along the path, one must encounter an edge <i>f</i> joining a vertex in set <i>V</i> to one that is not in set <i>V</i>.  Now, at the iteration when edge <i>e</i> was added to tree <i>Y</i>, edge <i>f</i> could also have been added and it would be added instead of edge <i>e</i> if its weight was less than <i>e</i>, and since edge <i>f</i> was not added, we conclude that
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle w(f)\geq w(e).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>w</mi>
+<mo stretchy="false">(</mo>
+<mi>f</mi>
+<mo stretchy="false">)</mo>
+<mo>≥<!-- ≥ --></mo>
+<mi>w</mi>
+<mo stretchy="false">(</mo>
+<mi>e</mi>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle w(f)\geq w(e).}</annotation>
+</semantics>
+</math></span><img alt="w(f)\geq w(e)." aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cedd55ba247aa96d262dc181d9233cbcdd2fdc56" style="vertical-align: -0.838ex; width:13.054ex; height:2.843ex;"/></span></dd></dl>
+<p>Let tree <i>Y<sub>2</sub></i> be the graph obtained by removing edge <i>f</i> from and adding edge <i>e</i> to tree <i>Y<sub>1</sub></i>.  It is easy to show that tree <i>Y<sub>2</sub></i> is connected, has the same number of edges as tree <i>Y<sub>1</sub></i>, and the total weights of its edges is not larger than that of tree <i>Y<sub>1</sub></i>, therefore it is also a minimum spanning tree of graph <i>P</i> and it contains edge <i>e</i> and all the edges added before it during the construction of set <i>V</i>.  Repeat the steps above and we will eventually obtain a minimum spanning tree of graph <i>P</i> that is identical to tree <i>Y</i>.  This shows <i>Y</i> is a minimum spanning tree. The minimum spanning tree allows for the first subset of the sub-region to be expanded into a smaller subset <i>X</i>, which we assume to be the minimum.
+</p>
+<h2><span class="mw-headline" id="Parallel_algorithm">Parallel algorithm</span><span class="mw-editsection"></span></h2>
+
+<p>The main loop of Prim's algorithm is inherently sequential and thus not parallelizable. However, the inner loop, which determines the next edge of minimum weight that does not form a cycle, can be parallelized by dividing the vertices and edges between the available processors.<sup class="reference" id="cite_ref-grama2003_12-0">[12]</sup> The following pseudocode demonstrates this.
+</p>
+
+<p>This algorithm can generally be implemented on distributed machines<sup class="reference" id="cite_ref-grama2003_12-1">[12]</sup> as well as on shared memory machines.<sup class="reference" id="cite_ref-13">[13]</sup> The running time is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O({\tfrac {|V|^{2}}{|P|}})+O(|V|\log |P|)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mfrac>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mrow>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>P</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mrow>
+</mfrac>
+</mstyle>
+</mrow>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>P</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O({\tfrac {|V|^{2}}{|P|}})+O(|V|\log |P|)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O({\tfrac {|V|^{2}}{|P|}})+O(|V|\log |P|)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/18b01ce4136f7723979797e6b8ea4303e28de358" style="vertical-align: -1.838ex; width:23.718ex; height:5.176ex;"/></span>, assuming that the <i>reduce</i> and <i>broadcast</i> operations can be performed in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(\log |P|)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>P</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(\log |P|)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(\log |P|)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/45a349d595f6b6189539caf1a888107c5d8022c1" style="vertical-align: -0.838ex; width:9.981ex; height:2.843ex;"/></span>.<sup class="reference" id="cite_ref-grama2003_12-2">[12]</sup> A variant of Prim's algorithm for shared memory machines, in which Prim's sequential algorithm is being run in parallel, starting from different vertices, has also been explored.<sup class="reference" id="cite_ref-14">[14]</sup> It should, however, be noted that more sophisticated algorithms exist to solve the distributed minimum spanning tree problem in a more efficient manner.
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Dijkstra's algorithm, a very similar algorithm for the shortest path problem</li>
+<li>Greedoids offer a general way to understand the correctness of Prim's algorithm</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>Prim's Algorithm progress on randomly distributed points</li>
+<li><img alt="" class="noviewer" data-file-height="1376" data-file-width="1024" decoding="async" height="16" src="//upload.wikimedia.org/wikipedia/en/thumb/4/4a/Commons-logo.svg/12px-Commons-logo.svg.png" srcset="//upload.wikimedia.org/wikipedia/en/thumb/4/4a/Commons-logo.svg/18px-Commons-logo.svg.png 1.5x, //upload.wikimedia.org/wikipedia/en/thumb/4/4a/Commons-logo.svg/24px-Commons-logo.svg.png 2x" width="12"/> Media related to Prim's algorithm at Wikimedia Commons</li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw2325
+Cached time: 20221224005347
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.280 seconds
+Real time usage: 0.397 seconds
+Preprocessor visited node count: 1266/1000000
+Post‐expand include size: 36822/2097152 bytes
+Template argument size: 731/2097152 bytes
+Highest expansion depth: 11/100
+Expensive parser function count: 0/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 43443/5000000 bytes
+Lua time usage: 0.150/10.000 seconds
+Lua memory usage: 5963703/52428800 bytes
+Number of Wikibase entities loaded: 1/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  279.726      1 -total
+ 64.78%  181.203      1 Template:Reflist
+ 44.50%  124.488     13 Template:Citation
+ 17.43%   48.761      1 Template:Short_description
+ 10.36%   28.982      1 Template:Harvtxt
+  9.22%   25.794      1 Template:Commons_category-inline
+  8.74%   24.452      1 Template:Sister-inline
+  8.62%   24.106      2 Template:Pagetype
+  6.29%   17.601      6 Template:Ordered_list
+  5.55%   15.517      3 Template:Main_other
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:53783-0!canonical and timestamp 20221224005347 and revision id 1127278141.
+ -->
+</div></body>
+</html>

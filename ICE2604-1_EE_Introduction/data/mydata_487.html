@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>index_file</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p>A <b>database index</b> is a data structure that improves the speed of data retrieval operations on a database table at the cost of additional writes and storage space to maintain the index data structure.  Indexes are used to quickly locate data without having to search every row in a database table every time a database table is accessed.  Indexes can be created using one or more columns of a database table, providing the basis for both rapid random lookups and efficient access of ordered records.
+</p><p>An index is a copy of selected columns of data, from a table, that is designed to enable very efficient search.  An index normally includes a "key" or direct link to the original row of data from which it was copied, to allow the complete row to be retrieved efficiently.  Some databases extend the power of indexing by letting developers create indexes on column values that have been transformed by functions or expressions. For example, an index could be created on <code>upper(last_name)</code>, which would only store the upper-case versions of the <code>last_name</code> field in the index. Another option sometimes supported is the use of partial indices, where index entries are created only for those records that satisfy some conditional expression. A further aspect of flexibility is to permit indexing on user-defined functions, as well as expressions formed from an assortment of built-in functions.
+</p>
+
+<h2><span class="mw-headline" id="Usage">Usage</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Support_for_fast_lookup">Support for fast lookup</span><span class="mw-editsection"></span></h3>
+<p>Most database software includes indexing technology that enables sub-linear time lookup to improve performance, as linear search is inefficient for large databases.
+</p><p>Suppose a database contains N data items and one must be retrieved based on the value of one of the fields. A simple implementation retrieves and examines each item according to the test. If there is only one matching item, this can stop when it finds that single item, but if there are multiple matches, it must test everything. This means that the number of operations in the average case is O(N) or linear time. Since databases may contain many objects, and since lookup is a common operation, it is often desirable to improve performance.
+</p><p>An index is any data structure that improves the performance of lookup. There are many different data structures used for this purpose. There are complex design trade-offs involving lookup performance, index size, and index-update performance. Many index designs exhibit logarithmic (O(log(N))) lookup performance and in some applications it is possible to achieve flat (O(1)) performance.
+</p>
+<h3><span class="mw-headline" id="Policing_the_database_constraints">Policing the database constraints</span><span class="mw-editsection"></span></h3>
+<p>Indexes are used to police database constraints, such as UNIQUE, EXCLUSION, PRIMARY KEY and FOREIGN KEY. An index may be declared as UNIQUE, which creates an implicit constraint on the underlying table. Database systems usually implicitly create an index on a set of columns declared PRIMARY KEY, and some are capable of using an already-existing index to police this constraint. Many database systems require that both referencing and referenced sets of columns in a FOREIGN KEY constraint are indexed, thus improving performance of inserts, updates and deletes to the tables participating in the constraint.
+</p><p>Some database systems support an EXCLUSION constraint that ensures that, for a newly inserted or updated record, a certain predicate holds for no other record. This can be used to implement a UNIQUE constraint (with equality predicate) or more complex constraints, like ensuring that no overlapping time ranges or no intersecting geometry objects would be stored in the table. An index supporting fast searching for records satisfying the predicate is required to police such a constraint.<sup class="reference" id="cite_ref-9-1-create-table_1-0">[1]</sup>
+</p>
+<h2><span class="mw-headline" id="Index_architecture_and_indexing_methods">Index architecture and indexing methods</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Non-clustered">Non-clustered</span><span class="mw-editsection"></span></h3>
+<p>The data is present in arbitrary order, but the <b>logical ordering</b> is specified by the index. The data rows may be spread throughout the table regardless of the value of the indexed column or expression. The non-clustered index tree contains the index keys in sorted order, with the leaf level of the index containing the pointer to the record (page and the row number in the data page in page-organized engines; row offset in file-organized engines).
+</p><p>In a non-clustered index,
+</p>
+<ul><li>The physical order of the rows is not the same as the index order.</li>
+<li>The indexed columns are typically non-primary key columns used in JOIN, WHERE, and ORDER BY clauses.</li></ul>
+<p>There can be more than one non-clustered index on a database table.
+</p>
+<h3><span class="mw-headline" id="Clustered">Clustered</span><span class="mw-editsection"></span></h3>
+<p>Clustering alters the data block into a certain distinct order to match the index, resulting in the row data being stored in order. Therefore, only one clustered index can be created on a given database table. Clustered indices can greatly increase overall speed of retrieval, but usually only where the data is accessed sequentially in the same or reverse order of the clustered index, or when a range of items is selected.
+</p><p>Since the physical records are in this sort order on disk, the next row item in the sequence is immediately before or after the last one, and so fewer data block reads are required. The primary feature of a clustered index is therefore the ordering of the physical data rows in accordance with the index blocks that point to them. Some databases separate the data and index blocks into separate files, others put two completely different data blocks within the same physical file(s).
+</p>
+<h3><span class="mw-headline" id="Cluster">Cluster</span><span class="mw-editsection"></span></h3>
+<p>When multiple databases and multiple tables are joined, it is called a <b>cluster</b> (not to be confused with clustered index described previously). The records for the tables sharing the value of a cluster key shall be stored together in the same or nearby data blocks. This may improve the joins of these tables on the cluster key, since the matching records are stored together and less I/O is required to locate them.<sup class="reference" id="cite_ref-oracle_clusters_2-0">[2]</sup> The cluster configuration defines the data layout in the tables that are parts of the cluster. A cluster can be keyed with a B-Tree index or a hash table. The data block where the table record is stored is defined by the value of the cluster key.
+</p>
+<h2><span class="mw-headline" id="Column_order">Column order</span><span class="mw-editsection"></span></h2>
+<p>The order that the index definition defines the columns in is important. It is possible to retrieve a set of row identifiers using only the first indexed column.  However, it is not possible or efficient (on most databases) to retrieve the set of row identifiers using only the second or greater indexed column.
+</p><p>For example, in a phone book organized by city first, then by last name, and then by first name, in a particular city, one can easily extract the list of all phone numbers.  However, it would be very tedious to find all the phone numbers for a particular last name.  One would have to look within each city's section for the entries with that last name.  Some databases can do this, others just won't use the index.
+</p><p>In the phone book example with a composite index created on the columns (<code>city, last_name, first_name</code>), if we search by giving exact values for all the three fields, search time is minimal—but if we provide the values for <code>city</code> and  <code>first_name</code> only, the search uses only the <code>city</code> field to retrieve all matched records. Then a sequential lookup checks the matching with <code>first_name</code>. So, to improve the performance, one must ensure that the index is created on the order of search columns.
+</p>
+<h2><span class="mw-headline" id="Applications_and_limitations">Applications and limitations</span><span class="mw-editsection"></span></h2>
+<p>Indexes are useful for many applications but come with some limitations. Consider the following SQL statement: <code>SELECT first_name FROM people WHERE last_name = 'Smith';</code>. To process this statement without an index the database software must look at the last_name column on every row in the table (this is known as a full table scan).  With an index the database simply follows the index data structure (typically a B-tree) until the Smith entry has been found; this is much less computationally expensive than a full table scan.
+</p><p>Consider this SQL statement: <code>SELECT email_address FROM customers WHERE email_address LIKE '%@wikipedia.org';</code>. This query would yield an email address for every customer whose email address ends with "@wikipedia.org", but even if the email_address column has been indexed the database must perform a full index scan. This is because the index is built with the assumption that words go from left to right. With a wildcard at the beginning of the search-term, the database software is unable to use the underlying index data structure (in other words, the WHERE-clause is <i>not sargable</i>). This problem can be solved through the addition of another index created on <code>reverse(email_address)</code> and a SQL query like this: <code>SELECT email_address FROM customers WHERE reverse(email_address) LIKE reverse('%@wikipedia.org');</code>. This puts the wild-card at the right-most part of the query (now gro.aidepikiw@%), which the index on reverse(email_address) can satisfy.
+</p><p>When the wildcard characters are used on both sides of the search word as <i>%wikipedia.org%</i>, the index available on this field is not used. Rather only a sequential search is performed, which takes O(N) time.
+</p>
+<h2><span class="mw-headline" id="Types_of_indexes">Types of indexes</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Bitmap_index">Bitmap index</span><span class="mw-editsection"></span></h3>
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p>A bitmap index is a special kind of indexing that stores the bulk of its data as bit arrays (bitmaps) and answers most queries by performing bitwise logical operations on these bitmaps. The most commonly used indexes, such as B+ trees, are most efficient if the values they index do not repeat or repeat a small number of times. In contrast, the bitmap index is designed for cases where the values of a variable repeat very frequently. For example, the sex field in a customer database usually contains at most three distinct values: male, female or unknown (not recorded). For such variables, the bitmap index can have a significant performance advantage over the commonly used trees.
+</p>
+<h3><span class="mw-headline" id="Dense_index">Dense index</span><span class="mw-editsection"></span></h3>
+<p>A dense index in databases is a file with pairs of keys and pointers for every record in the data file. Every key in this file is associated with a particular pointer to <i>a record</i> in the sorted data file.
+In clustered indices with duplicate keys, the dense index points <i>to the first record</i> with that key.<sup class="reference" id="cite_ref-3">[3]</sup>
+</p>
+<h3><span class="mw-headline" id="Sparse_index">Sparse index</span><span class="mw-editsection"></span></h3>
+<p>A sparse index in databases is a file with pairs of keys and pointers for every block in the data file. Every key in this file is associated with a particular pointer <i>to the block</i> in the sorted data file. In clustered indices with duplicate keys, the sparse index points <i>to the lowest search key</i> in each block.
+</p>
+<h3><span class="mw-headline" id="Reverse_index">Reverse index</span><span class="mw-editsection"></span></h3>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>A reverse-key index reverses the key value before entering it in the index. E.g., the value 24538 becomes 83542 in the index. Reversing the key value is particularly useful for indexing data such as sequence numbers, where new key values monotonically increase.
+</p>
+<h3><span class="mw-headline" id="Primary_index">Primary index</span><span class="mw-editsection"></span></h3>
+<p>The primary index contains the key fields of the table and a pointer to the non-key fields of the table. The primary index is created automatically when the table is created in the database.
+</p>
+<h3><span class="mw-headline" id="Secondary_index">Secondary index</span><span class="mw-editsection"></span></h3>
+<p>It is used to index fields that are neither ordering fields nor key fields (there is no assurance that the file is organized on key field or primary key field). One index entry for every tuple in the data file (dense index) contains the value of the indexed attribute and pointer to the block or record.
+</p>
+<h3><span class="mw-headline" id="Hash_index">Hash index</span><span class="mw-editsection"></span></h3>
+<h2><span class="mw-headline" id="Index_implementations">Index implementations</span><span class="mw-editsection"></span></h2>
+<p>Indices can be implemented using a variety of data structures.  Popular indices include balanced trees, B+ trees and hashes.<sup class="reference" id="cite_ref-4">[4]</sup>
+</p><p>In Microsoft SQL Server, the leaf node of the clustered index corresponds to the actual data, not simply a pointer to data that resides elsewhere, as is the case with a non-clustered index.<sup class="reference" id="cite_ref-5">[5]</sup> Each relation can have a single clustered index and many unclustered indices.<sup class="reference" id="cite_ref-6">[6]</sup>
+</p>
+<h3><span class="mw-headline" id="Index_concurrency_control">Index concurrency control</span><span class="mw-editsection"></span></h3>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>An index is typically being accessed concurrently by several transactions and processes, and thus needs concurrency control. While in principle indexes can utilize the common database concurrency control methods, specialized concurrency control methods for indexes exist, which are applied in conjunction with the common methods for a substantial performance gain..
+</p>
+<h2><span class="mw-headline" id="Covering_index">Covering index</span><span class="mw-editsection"></span></h2>
+<p>In most cases, an index is used to quickly locate the data records from which the required data is read. In other words, the index is only used to locate data records in the table and not to return data.
+</p><p>A covering index is a special case where the index itself contains the required data fields and can answer the required data.
+</p><p>Consider the following table (other fields omitted):
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>ID
+</th>
+<th>Name
+</th>
+<th>Other Fields
+</th></tr>
+<tr>
+<td>12
+</td>
+<td>Plug
+</td>
+<td>...
+</td></tr>
+<tr>
+<td>13
+</td>
+<td>Lamp
+</td>
+<td>...
+</td></tr>
+<tr>
+<td>14
+</td>
+<td>Fuse
+</td>
+<td>...
+</td></tr></tbody></table>
+<p>To find the Name for ID 13, an index on (ID) is useful, but the record must still be read to get the Name. However, an index on (ID, Name) contains the required data field and eliminates the need to look up the record.
+</p><p>Covering indexes are each for a specific table. Queries which JOIN/ access across multiple tables, may potentially consider covering indexes on more than one of these tables.<sup class="reference" id="cite_ref-covering_indexes_joined_queries_7-0">[7]</sup>
+</p><p>A covering index can dramatically speed up data retrieval but may itself be large due to the additional keys, which slow down data insertion and update. To reduce such index size, some systems allow including non-key fields in the index. Non-key fields are not themselves part of the index ordering but only included at the leaf level, allowing for a covering index with less overall index size.
+</p>
+<h2><span class="mw-headline" id="Standardization">Standardization</span><span class="mw-editsection"></span></h2>
+<p>No standard defines how to create indexes, because the ISO SQL Standard does not cover physical aspects. Indexes are one of the physical parts of database conception among others like storage (tablespace or filegroups). RDBMS vendors all give a CREATE INDEX syntax with some specific options that depend on their software's capabilities.
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Index locking</li>
+<li>Inverted index – Type of database index</li>
+<li>Search engine indexing</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+
+<!-- 
+NewPP limit report
+Parsed by mw2338
+Cached time: 20221224091626
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.195 seconds
+Real time usage: 0.277 seconds
+Preprocessor visited node count: 835/1000000
+Post‐expand include size: 22390/2097152 bytes
+Template argument size: 864/2097152 bytes
+Highest expansion depth: 8/100
+Expensive parser function count: 3/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 15318/5000000 bytes
+Lua time usage: 0.115/10.000 seconds
+Lua memory usage: 3685816/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  236.889      1 -total
+ 34.82%   82.490      1 Template:Reflist
+ 25.34%   60.020      1 Template:Cite_book
+ 20.83%   49.346      1 Template:Short_description
+ 20.72%   49.073      1 Template:Databases
+ 19.61%   46.454      1 Template:Navbox
+ 12.90%   30.561      3 Template:Annotated_link
+ 11.06%   26.195      2 Template:Pagetype
+ 10.64%   25.208      7 Template:Template_parameter_value
+  9.12%   21.609      3 Template:Main
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:1711076-0!canonical and timestamp 20221224091625 and revision id 1120580139.
+ -->
+</div></body>
+</html>

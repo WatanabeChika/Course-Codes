@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>doubly_linked_list</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-More_citations_needed plainlinks metadata ambox ambox-content ambox-Refimprove" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<p>In computer science, a <b>doubly linked list</b> is a linked data structure that consists of a set of sequentially linked records called nodes. Each node contains three fields: two link fields (references to the previous and to the next node in the sequence of nodes) and one data field.  The beginning and ending nodes' <b>previous</b> and <b>next</b> links, respectively, point to some kind of terminator, typically a sentinel node or null, to facilitate traversal of the list. If there is only one sentinel node, then the list is circularly linked via the sentinel node. It can be conceptualized as two singly linked lists formed from the same data items, but in opposite sequential orders.
+</p>
+
+<p>The two node links allow traversal of the list in either direction. While adding or removing a node in a doubly linked list requires changing more links than the same operations on a singly linked list, the operations are simpler and potentially more efficient (for nodes other than first nodes) because there is no need to keep track of the previous node during traversal or no need to traverse the list to find the previous node, so that its link can be modified.
+</p>
+
+<h2><span class="mw-headline" id="Nomenclature_and_implementation">Nomenclature and implementation</span><span class="mw-editsection"></span></h2>
+<p>The first and last nodes of a doubly linked list for all practical applications are immediately accessible (i.e., accessible without traversal, and usually called <i>head</i> and <i>tail</i>) and therefore allow traversal of the list from the beginning or end of the list, respectively: e.g., traversing the list from beginning to end, or from end to beginning, in a search of the list for a node with specific data value. Any node of a doubly linked list, once obtained, can be used to begin a new traversal of the list, in either direction (towards beginning or end), from the given node.
+</p><p>The link fields of a doubly linked list node are often called <b>next</b> and <b>previous</b> or <b>forward</b> and <b>backward</b>. The references stored in the link fields are usually implemented as pointers, but (as in any linked data structure) they may also be address offsets or indices into an array where the nodes live.
+</p>
+<h2><span class="mw-headline" id="Basic_algorithms">Basic algorithms</span><span class="mw-editsection"></span></h2>
+<p>Consider the following basic algorithms written in Ada:
+</p>
+<h3><span class="mw-headline" id="Open_doubly_linked_lists">Open doubly linked lists</span><span class="mw-editsection"></span></h3>
+<pre><b>record</b> <i>DoublyLinkedNode</i> {
+    next <i>// A reference to the next node</i>
+    prev <i>// A reference to the previous node</i>
+    data <i>// Data or a reference to data</i>
+}
+</pre>
+<pre><b>record</b> <i>DoublyLinkedList</i> {
+     <i>DoublyLinkedNode</i> firstNode   <i>// points to first node of list</i>
+     <i>DoublyLinkedNode</i> lastNode    <i>// points to last node of list</i>
+}
+</pre>
+<h4><span class="mw-headline" id="Traversing_the_list">Traversing the list</span><span class="mw-editsection"></span></h4>
+<p>Traversal of a doubly linked list can be in either direction. In fact, the direction of traversal can change many times, if desired. <b>Traversal</b> is often called <b>iteration</b>, but that choice of terminology is unfortunate, for <b>iteration</b> has well-defined semantics (e.g., in mathematics) which are not analogous to <b>traversal</b>.
+</p><p><i>Forwards</i>
+</p>
+<pre>node  := list.firstNode
+<b>while</b> node ≠ <b>null</b>
+    &lt;do something with node.data&gt;
+    node  := node.next
+</pre>
+<p><i>Backwards</i>
+</p>
+<pre>node  := list.lastNode
+<b>while</b> node ≠ <b>null</b>
+    &lt;do something with node.data&gt;
+    node  := node.prev
+</pre>
+<h4><span class="mw-headline" id="Inserting_a_node">Inserting a node</span><span class="mw-editsection"></span></h4>
+<p>These symmetric functions insert a node either after or before a given node:
+</p>
+<pre><b>function</b> insertAfter(<i>List</i> list, <i>Node</i> node, <i>Node</i> newNode)
+    newNode.prev  := node      
+    <b>if</b> node.next == <b>null</b>
+        newNode.next  := <b>null</b> <i>-- (not always necessary)</i>
+        list.lastNode  := newNode
+    <b>else</b>
+        newNode.next  := node.next
+        node.next.prev  := newNode
+    node.next  := newNode
+</pre>
+<pre><b>function</b> insertBefore(<i>List</i> list, <i>Node</i> node, <i>Node</i> newNode)
+    newNode.next  := node
+    <b>if</b> node.prev == <b>null</b>
+        newNode.prev  := <b>null</b> <i>-- (not always necessary)</i>
+        list.firstNode  := newNode
+    <b>else</b>
+        newNode.prev  := node.prev
+        node.prev.next  := newNode
+    node.prev  := newNode
+</pre>
+<p>We also need a function to insert a node at the beginning of a possibly empty list:
+</p>
+<pre><b>function</b> insertBeginning(<i>List</i> list, <i>Node</i> newNode)
+    <b>if</b> list.firstNode == <b>null</b>
+        list.firstNode  := newNode
+        list.lastNode   := newNode
+        newNode.prev  := null
+        newNode.next  := null
+    <b>else</b>
+        insertBefore(list, list.firstNode, newNode)
+</pre>
+<p>A symmetric function inserts at the end:
+</p>
+<pre><b>function</b> insertEnd(<i>List</i> list, <i>Node</i> newNode)
+     <b>if</b> list.lastNode == <b>null</b>
+         insertBeginning(list, newNode)
+     <b>else</b>
+         insertAfter(list, list.lastNode, newNode)
+</pre>
+<h4><span class="mw-headline" id="Removing_a_node">Removing a node</span><span class="mw-editsection"></span></h4>
+<p>Removal of a node is easier than insertion, but requires special handling if the node to be removed is the <i>firstNode</i> or <i>lastNode</i>:
+</p>
+<pre><b>function</b> remove(<i>List</i> list, <i>Node</i> node)
+    <b>if</b> node.prev == <b>null</b>
+        list.firstNode  := node.next
+    <b>else</b>
+        node.prev.next  := node.next
+    <b>if</b> node.next == <b>null</b>
+        list.lastNode  := node.prev
+    <b>else</b>
+        node.next.prev  := node.prev
+
+</pre>
+<p>One subtle consequence of the above procedure is that deleting the last node of a list sets both <i>firstNode</i> and <i>lastNode</i> to <i>null</i>, and so it handles removing the last node from a one-element list correctly. Notice that we also don't need separate "removeBefore" or "removeAfter" methods, because in a doubly linked list we can just use "remove(node.prev)" or "remove(node.next)" where these are valid. This also assumes that the node being removed is guaranteed to exist. If the node does not exist in this list, then some error handling would be required.
+</p>
+<h3><span class="mw-headline" id="Circular_doubly_linked_lists">Circular doubly linked lists</span><span class="mw-editsection"></span></h3>
+<h4><span class="mw-headline" id="Traversing_the_list_2">Traversing the list</span><span class="mw-editsection"></span></h4>
+<p>Assuming that <i>someNode</i> is some node in a non-empty list, this code traverses through that list starting with <i>someNode</i> (any node will do):
+</p><p><i>Forwards</i>
+</p>
+<pre>node  := someNode
+<b>do</b>
+    do something with node.value
+    node  := node.next
+<b>while</b> node ≠ someNode
+</pre>
+<p><i>Backwards</i>
+</p>
+<pre>node  := someNode
+<b>do</b>
+    do something with node.value
+    node  := node.prev
+<b>while</b> node ≠ someNode
+</pre>
+<p>Notice the postponing of the test to the end of the loop. This is important for the case where the list contains only the single node <i>someNode</i>.
+</p>
+<h4><span class="mw-headline" id="Inserting_a_node_2">Inserting a node</span><span class="mw-editsection"></span></h4>
+<p>This simple function inserts a node into a doubly linked circularly linked list after a given element:
+</p>
+<pre><b>function</b> insertAfter(<i>Node</i> node, <i>Node</i> newNode)
+    newNode.next  := node.next
+    newNode.prev  := node
+    node.next.prev  := newNode
+    node.next       := newNode
+</pre>
+<p>To do an "insertBefore", we can simply "insertAfter(node.prev, newNode)".
+</p><p>Inserting an element in a possibly empty list requires a special function:
+</p>
+<pre><b>function</b> insertEnd(<i>List</i> list, <i>Node</i> node)
+    <b>if</b> list.lastNode == <b>null</b>
+        node.prev := node
+        node.next := node
+    <b>else</b>
+        insertAfter(list.lastNode, node)
+    list.lastNode := node
+</pre>
+<p>To insert at the beginning we simply "insertAfter(list.lastNode, node)".
+</p><p>Finally, removing a node must deal with the case where the list empties:
+</p>
+<pre><b>function</b> remove(<i>List</i> list, <i>Node</i> node);
+    <b>if</b> node.next == node
+        list.lastNode := <i>null</i>
+    <b>else</b>
+        node.next.prev := node.prev
+        node.prev.next := node.next
+        <b>if</b> node == list.lastNode
+            list.lastNode := node.prev;
+    <b>destroy</b> node
+</pre>
+<h4><span class="mw-headline" id="Deleting_a_node">Deleting a node</span><span class="mw-editsection"></span></h4>
+<p>As in doubly linked lists, "removeAfter" and "removeBefore" can be implemented with "remove(list, node.prev)" and "remove(list, node.next)".
+</p>
+<h2><span class="mw-headline" id="Advanced_concepts">Advanced concepts</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Asymmetric_doubly_linked_list">Asymmetric doubly linked list</span><span class="mw-editsection"></span></h3>
+<p>An asymmetric doubly linked list is somewhere between the singly linked list and the regular doubly linked list. It shares some features with the singly linked list (single-direction traversal) and others from the doubly linked list (ease of modification)
+</p><p>It is a list where each node's <i>previous</i> link points not to the previous node, but to the link to itself. While this makes little difference between nodes (it just points to an offset within the previous node), it changes the head of the list: It allows the first node to modify the <i>firstNode</i> link easily.<sup class="reference" id="cite_ref-1">[1]</sup><sup class="reference" id="cite_ref-2">[2]</sup>
+</p><p>As long as a node is in a list, its <i>previous</i> link is never null.
+</p>
+<h4><span class="mw-headline" id="Inserting_a_node_3">Inserting a node</span><span class="mw-editsection"></span></h4>
+<p>To insert a node before another, we change the link that pointed to the old node, using the <i>prev</i> link; then set the new node's <i>next</i> link to point to the old node, and change that node's <i>prev</i> link accordingly.
+</p>
+<pre><b>function</b> insertBefore(<i>Node</i> node, <i>Node</i> newNode)
+    <b>if</b> node.prev == <b>null</b>
+        <b>error</b> "The node is not in a list"
+    newNode.prev  := node.prev
+    atAddress(newNode.prev)  := newNode
+    newNode.next  := node
+    node.prev = addressOf(newNode.next)
+</pre>
+<pre><b>function</b> insertAfter(<i>Node</i> node, <i>Node</i> newNode)
+    newNode.next  := node.next
+    <b>if</b> newNode.next != <b>null</b>
+        newNode.next.prev = addressOf(newNode.next)
+    node.next  := newNode
+    newNode.prev  := addressOf(node.next)
+</pre>
+<h4><span class="mw-headline" id="Deleting_a_node_2">Deleting a node</span><span class="mw-editsection"></span></h4>
+<p>To remove a node, we simply modify the link pointed by <i>prev</i>, regardless of whether the node was the first one of the list.
+</p>
+<pre><b>function</b> remove(<i>Node</i> node)
+    atAddress(node.prev)  := node.next
+    <b>if</b> node.next != <b>null</b>
+        node.next.prev = node.prev
+    <b>destroy</b> node
+</pre>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>XOR linked list</li>
+<li>SLIP (programming language)</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<!-- 
+NewPP limit report
+Parsed by mw2273
+Cached time: 20221224001751
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.171 seconds
+Real time usage: 0.246 seconds
+Preprocessor visited node count: 410/1000000
+Post‐expand include size: 13005/2097152 bytes
+Template argument size: 452/2097152 bytes
+Highest expansion depth: 9/100
+Expensive parser function count: 1/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 7985/5000000 bytes
+Lua time usage: 0.104/10.000 seconds
+Lua memory usage: 3019902/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  218.208      1 -total
+ 39.14%   85.406      1 Template:Reflist
+ 33.37%   72.809      2 Template:Cite_web
+ 30.22%   65.951      1 Template:Refimprove
+ 29.81%   65.056      1 Template:Short_description
+ 27.23%   59.410      1 Template:Ambox
+ 14.82%   32.341      2 Template:Pagetype
+  9.68%   21.125      3 Template:Main_other
+  8.70%   18.986      1 Template:SDcat
+  6.67%   14.553      1 Template:Find_sources_mainspace
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:4731859-0!canonical and timestamp 20221224001751 and revision id 1119732629.
+ -->
+</div></body>
+</html>

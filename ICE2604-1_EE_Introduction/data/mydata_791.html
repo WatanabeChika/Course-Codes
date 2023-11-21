@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>principle_of_optimality</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-More_footnotes plainlinks metadata ambox ambox-style ambox-More_footnotes" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+
+<p>A <b>Bellman equation</b>, named after Richard E. Bellman, is a necessary condition for optimality associated with the mathematical optimization method known as dynamic programming.<sup class="reference" id="cite_ref-1">[1]</sup> It writes the "value" of a decision problem at a certain point in time in terms of the payoff from some initial choices and the "value" of the remaining decision problem that results from those initial choices.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (September 2017)">citation needed</span></i>]</sup> This breaks a dynamic optimization problem into a sequence of simpler subproblems, as Bellman's “principle of optimality" prescribes.<sup class="reference" id="cite_ref-2">[2]</sup>  The equation applies to algebraic structures with a total ordering; for algebraic structures with a partial ordering, the generic Bellman's equation can be used.<sup class="reference" id="cite_ref-Generic_Dijkstra_correctness_3-0">[3]</sup>
+</p><p>The Bellman equation was first applied to engineering control theory and to other topics in applied mathematics, and subsequently became an important tool in economic theory; though the basic concepts of dynamic programming are prefigured in John von Neumann and Oskar Morgenstern's <i>Theory of Games and Economic Behavior</i> and Abraham Wald's <i>sequential analysis</i>.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (September 2017)">citation needed</span></i>]</sup> The term 'Bellman equation' usually refers to the dynamic programming equation associated with discrete-time optimization problems.<sup class="reference" id="cite_ref-4">[4]</sup> In continuous-time optimization problems, the analogous equation is a partial differential equation that is called the Hamilton–Jacobi–Bellman equation.<sup class="reference" id="cite_ref-5">[5]</sup><sup class="reference" id="cite_ref-6">[6]</sup>
+</p><p>In discrete time any multi-stage optimization problem can be solved by analyzing the appropriate Bellman equation. The appropriate Bellman equation can be found by introducing new state variables (state augmentation).<sup class="reference" id="cite_ref-7">[7]</sup> However, the resulting augmented-state multi-stage optimization problem has a higher dimensional state space than the original multi-stage optimization problem - an issue that can potentially render the augmented problem intractable due to the “curse of dimensionality”. Alternatively, it has been shown that if the cost function of the multi-stage optimization problem satisfies a "backward separable" structure, then the appropriate Bellman equation can be found without state augmentation.<sup class="reference" id="cite_ref-8">[8]</sup>
+</p>
+
+<h2><span class="mw-headline" id="Analytical_concepts_in_dynamic_programming">Analytical concepts in dynamic programming</span><span class="mw-editsection"></span></h2>
+<p>To understand the Bellman equation, several underlying concepts must be understood. First, any optimization problem has some objective: minimizing travel time, minimizing cost, maximizing profits, maximizing utility, etc. The mathematical function that describes this objective is called the <i>objective function</i>.
+</p><p>Dynamic programming breaks a multi-period planning problem into simpler steps at different points in time. Therefore, it requires keeping track of how the decision situation is evolving over time. The information about the current situation that is needed to make a correct decision is called the "state".<sup class="reference" id="cite_ref-BellmanDP_9-0">[9]</sup><sup class="reference" id="cite_ref-dreyfus_10-0">[10]</sup> For example, to decide how much to consume and spend at each point in time, people would need to know (among other things) their initial wealth. Therefore, wealth <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (W)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mi>W</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (W)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle (W)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/10b09d230f87ae32d3bb057da77d05639b970a3f" style="vertical-align: -0.838ex; width:4.245ex; height:2.843ex;"/></span> would be one of their <i>state variables</i>, but there would probably be others.
+</p><p>The variables chosen at any given point in time are often called the <i>control variables</i>. For instance, given their current wealth, people might decide how much to consume now. Choosing the control variables now may be equivalent to choosing the next state; more generally, the next state is affected by other factors in addition to the current control. For example, in the simplest case, today's wealth (the state) and consumption (the control) might exactly determine tomorrow's wealth (the new state), though typically other factors will affect tomorrow's wealth too.
+</p><p>The dynamic programming approach describes the optimal plan by finding a rule that tells what the controls should be, given any possible value of the state. For example, if consumption (<i>c</i>) depends <i>only</i> on wealth (<i>W</i>), we would seek a rule  <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c(W)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+<mo stretchy="false">(</mo>
+<mi>W</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c(W)}</annotation>
+</semantics>
+</math></span><img alt="c(W)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b8313cac59117f2e39c6ff70d66864c21a158f8d" style="vertical-align: -0.838ex; width:5.251ex; height:2.843ex;"/></span> that gives consumption as a function of wealth. Such a rule, determining the controls as a function of the states, is called a <i>policy function</i> (See Bellman, 1957, Ch. III.2).<sup class="reference" id="cite_ref-BellmanDP_9-1">[9]</sup>
+</p><p>Finally, by definition, the optimal decision rule is the one that achieves the best possible value of the objective. For example, if someone chooses consumption, given wealth, in order to maximize happiness (assuming happiness <i>H</i> can be represented by a mathematical function, such as a utility function and is something defined by wealth), then each level of wealth will be associated with some highest possible level of happiness, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle H(W)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>H</mi>
+<mo stretchy="false">(</mo>
+<mi>W</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle H(W)}</annotation>
+</semantics>
+</math></span><img alt="H(W)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a3444c0affa6bfdda7e95a66457adeb5bab41bec" style="vertical-align: -0.838ex; width:6.308ex; height:2.843ex;"/></span>. The best possible value of the objective, written as a function of the state, is called the <i>value function</i>.
+</p><p>Bellman showed that a dynamic optimization problem in discrete time can be stated in a recursive, step-by-step form known as backward induction by writing down the relationship between the value function in one period and the value function in the next period. The relationship between these two value functions is called the "Bellman equation". In this approach, the optimal policy in the last time period is specified in advance as a function of the state variable's value at that time, and the resulting optimal value of the objective function is thus expressed in terms of that value of the state variable. Next, the next-to-last period's optimization involves maximizing the sum of that period's period-specific objective function and the optimal value of the future objective function, giving that period's optimal policy contingent upon the value of the state variable as of the next-to-last period decision.<sup class="noprint Inline-Template" style="margin-left:0.1em; white-space:nowrap;">[<i><span title="comment from reader: the last two sentences are too long and ambiguous/confusing (January 2020)">clarification needed</span></i>]</sup> This logic continues recursively back in time, until the first period decision rule is derived, as a function of the initial state variable value, by optimizing the sum of the first-period-specific objective function and the value of the second period's value function, which gives the value for all the future periods. Thus, each period's decision is made by explicitly acknowledging that all future decisions will be optimally made.
+</p>
+<h2><span class="mw-headline" id="Derivation">Derivation</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="A_dynamic_decision_problem">A dynamic decision problem</span><span class="mw-editsection"></span></h3>
+<p>Let the state at time <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle t}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>t</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle t}</annotation>
+</semantics>
+</math></span><img alt="t" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/65658b7b223af9e1acc877d848888ecdb4466560" style="vertical-align: -0.338ex; width:0.84ex; height:2.009ex;"/></span> be <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{t}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{t}}</annotation>
+</semantics>
+</math></span><img alt="x_{t}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f279a30bc8eabc788f3fe81c9cfb674e72e858db" style="vertical-align: -0.671ex; width:2.156ex; height:2.009ex;"/></span>. For a decision that begins at time 0, we take as given the initial state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{0}}</annotation>
+</semantics>
+</math></span><img alt="x_{0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/86f21d0e31751534cd6584264ecf864a6aa792cf" style="vertical-align: -0.671ex; width:2.384ex; height:2.009ex;"/></span>. At any time, the set of possible actions depends on the current state; we can write this as <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a_{t}\in \Gamma (x_{t})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+<mo>∈<!-- ∈ --></mo>
+<mi mathvariant="normal">Γ<!-- Γ --></mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a_{t}\in \Gamma (x_{t})}</annotation>
+</semantics>
+</math></span><img alt="a_{t}\in \Gamma (x_{t})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0e4444c4555e6493f014bd81d85fd3db2144f457" style="vertical-align: -0.838ex; width:10.314ex; height:2.843ex;"/></span>, where the action <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a_{t}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a_{t}}</annotation>
+</semantics>
+</math></span><img alt="a_{t}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/77fce84b535e9e195e3d30ce5ae09b372d87e2e9" style="vertical-align: -0.671ex; width:2.056ex; height:2.009ex;"/></span> represents one or more control variables. We also assume that the state changes from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> to a new state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T(x,a)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo>,</mo>
+<mi>a</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T(x,a)}</annotation>
+</semantics>
+</math></span><img alt="T(x,a)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cc48f9871d98e5995f00de021a7764c3eaa883bd" style="vertical-align: -0.838ex; width:7.039ex; height:2.843ex;"/></span> when action <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a}</annotation>
+</semantics>
+</math></span><img alt="a" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ffd2487510aa438433a2579450ab2b3d557e5edc" style="vertical-align: -0.338ex; width:1.23ex; height:1.676ex;"/></span> is taken, and that the current payoff from taking action <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a}</annotation>
+</semantics>
+</math></span><img alt="a" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ffd2487510aa438433a2579450ab2b3d557e5edc" style="vertical-align: -0.338ex; width:1.23ex; height:1.676ex;"/></span> in state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle F(x,a)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>F</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo>,</mo>
+<mi>a</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle F(x,a)}</annotation>
+</semantics>
+</math></span><img alt="F(x,a)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/449a8505073c069603283dfd843aca82f8da855c" style="vertical-align: -0.838ex; width:7.144ex; height:2.843ex;"/></span>. Finally, we assume impatience, represented by a discount factor <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 0&lt;\beta &lt;1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>0</mn>
+<mo>&lt;</mo>
+<mi>β<!-- β --></mi>
+<mo>&lt;</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 0&lt;\beta &lt;1}</annotation>
+</semantics>
+</math></span><img alt="0&lt;\beta &lt;1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5823463cddbbeea88e7e3a68c879cc6f391f7e4b" style="vertical-align: -0.671ex; width:9.854ex; height:2.509ex;"/></span>.
+</p><p>Under these assumptions, an infinite-horizon decision problem takes the following form:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle V(x_{0})\;=\;\max _{\left\{a_{t}\right\}_{t=0}^{\infty }}\sum _{t=0}^{\infty }\beta ^{t}F(x_{t},a_{t}),}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>V</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mspace width="thickmathspace"></mspace>
+<mo>=</mo>
+<mspace width="thickmathspace"></mspace>
+<munder>
+<mo form="prefix" movablelimits="true">max</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msubsup>
+<mrow>
+<mo>{</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+<mo>}</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mrow>
+</msubsup>
+</mrow>
+</munder>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mrow>
+</munderover>
+<msup>
+<mi>β<!-- β --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msup>
+<mi>F</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle V(x_{0})\;=\;\max _{\left\{a_{t}\right\}_{t=0}^{\infty }}\sum _{t=0}^{\infty }\beta ^{t}F(x_{t},a_{t}),}</annotation>
+</semantics>
+</math></span><img alt="V(x_{0})\;=\;\max _{\left\{a_{t}\right\}_{t=0}^{\infty }}\sum _{t=0}^{\infty }\beta ^{t}F(x_{t},a_{t})," aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f457958c973773cdc8881b7e6d22efaab6c70518" style="vertical-align: -3.005ex; width:31.615ex; height:6.843ex;"/></span></dd></dl>
+<p>subject to the constraints
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a_{t}\in \Gamma (x_{t}),\;x_{t+1}=T(x_{t},a_{t}),\;\forall t=0,1,2,\dots }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+<mo>∈<!-- ∈ --></mo>
+<mi mathvariant="normal">Γ<!-- Γ --></mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<mspace width="thickmathspace"></mspace>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<mspace width="thickmathspace"></mspace>
+<mi mathvariant="normal">∀<!-- ∀ --></mi>
+<mi>t</mi>
+<mo>=</mo>
+<mn>0</mn>
+<mo>,</mo>
+<mn>1</mn>
+<mo>,</mo>
+<mn>2</mn>
+<mo>,</mo>
+<mo>…<!-- … --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a_{t}\in \Gamma (x_{t}),\;x_{t+1}=T(x_{t},a_{t}),\;\forall t=0,1,2,\dots }</annotation>
+</semantics>
+</math></span><img alt="a_{t}\in \Gamma (x_{t}),\;x_{t+1}=T(x_{t},a_{t}),\;\forall t=0,1,2,\dots " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0a791a29677bd909203faa9a1654bb86af21cfbf" style="vertical-align: -0.838ex; width:44.261ex; height:2.843ex;"/></span></dd></dl>
+<p>Notice that we have defined notation <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle V(x_{0})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>V</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle V(x_{0})}</annotation>
+</semantics>
+</math></span><img alt="V(x_{0})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c1e14fd8d981e0c4c50d553845c7af7ed4cf32a6" style="vertical-align: -0.838ex; width:5.98ex; height:2.843ex;"/></span> to denote the optimal value that can be obtained by maximizing this objective function subject to the assumed constraints. This function is the <i>value function</i>. It is a function of the initial state variable <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{0}}</annotation>
+</semantics>
+</math></span><img alt="x_{0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/86f21d0e31751534cd6584264ecf864a6aa792cf" style="vertical-align: -0.671ex; width:2.384ex; height:2.009ex;"/></span>, since the best value obtainable depends on the initial situation.
+</p>
+<h3><span id="Bellman.27s_principle_of_optimality"></span><span class="mw-headline" id="Bellman's_principle_of_optimality">Bellman's principle of optimality</span><span class="mw-editsection"></span></h3><p>
+The dynamic programming method breaks this decision problem into smaller subproblems. Bellman's <i>principle of optimality</i> describes how to do this:</p><blockquote><p>Principle of Optimality: An optimal policy has the property that whatever the initial state and initial decision are, the remaining decisions must constitute an optimal policy with regard to the state resulting from the first decision. (See Bellman, 1957, Chap. III.3.)<sup class="reference" id="cite_ref-BellmanDP_9-2">[9]</sup><sup class="reference" id="cite_ref-dreyfus_10-1">[10]</sup><sup class="reference" id="cite_ref-BellmanTheory_11-0">[11]</sup></p></blockquote>
+<p>In computer science, a problem that can be broken apart like this is said to have optimal substructure. In the context of dynamic game theory, this principle is analogous to the concept of subgame perfect equilibrium, although what constitutes an optimal policy in this case is conditioned on the decision-maker's opponents choosing similarly optimal policies from their points of view.
+</p><p>As suggested by the <i>principle of optimality</i>, we will consider the first decision separately, setting aside all future decisions (we will start afresh from time 1 with the new state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{1}}</annotation>
+</semantics>
+</math></span><img alt="x_{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a8788bf85d532fa88d1fb25eff6ae382a601c308" style="vertical-align: -0.671ex; width:2.384ex; height:2.009ex;"/></span>). Collecting the future decisions in brackets on the right, the above infinite-horizon decision problem is equivalent to:<sup class="noprint Inline-Template" style="margin-left:0.1em; white-space:nowrap;">[<i><span title="The text near this tag may need clarification or removal of jargon. (September 2017)">clarification needed</span></i>]</sup>
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \max _{a_{0}}\left\{F(x_{0},a_{0})+\beta \left[\max _{\left\{a_{t}\right\}_{t=1}^{\infty }}\sum _{t=1}^{\infty }\beta ^{t-1}F(x_{t},a_{t}):a_{t}\in \Gamma (x_{t}),\;x_{t+1}=T(x_{t},a_{t}),\;\forall t\geq 1\right]\right\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<munder>
+<mo form="prefix" movablelimits="true">max</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mrow>
+</munder>
+<mrow>
+<mo>{</mo>
+<mrow>
+<mi>F</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>β<!-- β --></mi>
+<mrow>
+<mo>[</mo>
+<mrow>
+<munder>
+<mo form="prefix" movablelimits="true">max</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msubsup>
+<mrow>
+<mo>{</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+<mo>}</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mrow>
+</msubsup>
+</mrow>
+</munder>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+<mo>=</mo>
+<mn>1</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mrow>
+</munderover>
+<msup>
+<mi>β<!-- β --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mi>F</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>:</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+<mo>∈<!-- ∈ --></mo>
+<mi mathvariant="normal">Γ<!-- Γ --></mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<mspace width="thickmathspace"></mspace>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<mspace width="thickmathspace"></mspace>
+<mi mathvariant="normal">∀<!-- ∀ --></mi>
+<mi>t</mi>
+<mo>≥<!-- ≥ --></mo>
+<mn>1</mn>
+</mrow>
+<mo>]</mo>
+</mrow>
+</mrow>
+<mo>}</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \max _{a_{0}}\left\{F(x_{0},a_{0})+\beta \left[\max _{\left\{a_{t}\right\}_{t=1}^{\infty }}\sum _{t=1}^{\infty }\beta ^{t-1}F(x_{t},a_{t}):a_{t}\in \Gamma (x_{t}),\;x_{t+1}=T(x_{t},a_{t}),\;\forall t\geq 1\right]\right\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \max _{a_{0}}\left\{F(x_{0},a_{0})+\beta \left[\max _{\left\{a_{t}\right\}_{t=1}^{\infty }}\sum _{t=1}^{\infty }\beta ^{t-1}F(x_{t},a_{t}):a_{t}\in \Gamma (x_{t}),\;x_{t+1}=T(x_{t},a_{t}),\;\forall t\geq 1\right]\right\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c5fb8858b12646278efeb36615272a9ee29bb68a" style="vertical-align: -3.171ex; width:85.729ex; height:7.509ex;"/></span></dd></dl>
+<p>subject to the constraints
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a_{0}\in \Gamma (x_{0}),\;x_{1}=T(x_{0},a_{0}).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>∈<!-- ∈ --></mo>
+<mi mathvariant="normal">Γ<!-- Γ --></mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<mspace width="thickmathspace"></mspace>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a_{0}\in \Gamma (x_{0}),\;x_{1}=T(x_{0},a_{0}).}</annotation>
+</semantics>
+</math></span><img alt="a_{0}\in \Gamma (x_{0}),\;x_{1}=T(x_{0},a_{0})." aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6d663c4b2d35ae78e9772e1e61677bb000383a3d" style="vertical-align: -0.838ex; width:27.727ex; height:2.843ex;"/></span></dd></dl>
+<p>Here we are choosing <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a_{0}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a_{0}}</annotation>
+</semantics>
+</math></span><img alt="a_{0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/693ad9f934775838bd72406b41ada4a59785d7ba" style="vertical-align: -0.671ex; width:2.284ex; height:2.009ex;"/></span>, knowing that our choice will cause the time 1 state to be <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{1}=T(x_{0},a_{0})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{1}=T(x_{0},a_{0})}</annotation>
+</semantics>
+</math></span><img alt="x_{1}=T(x_{0},a_{0})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3e8eea16d1529877a5b55849c950ba072ddaa0ae" style="vertical-align: -0.838ex; width:14.63ex; height:2.843ex;"/></span>. That new state will then affect the decision problem from time 1 on. The whole future decision problem appears inside the square brackets on the right.<sup class="noprint Inline-Template" style="margin-left:0.1em; white-space:nowrap;">[<i><span title="The text near this tag may need clarification or removal of jargon. (September 2017)">clarification needed</span></i>]</sup><sup class="noprint Inline-Template" style="white-space:nowrap;">[<i><span title="The text near this tag needs further explanation. (September 2017)">further explanation needed</span></i>]</sup>
+</p>
+<h3><span class="mw-headline" id="The_Bellman_equation">The Bellman equation</span><span class="mw-editsection"></span></h3>
+<p>So far it seems we have only made the problem uglier by separating today's decision from future decisions. But we can simplify by noticing that what is inside the square brackets on the right is <i>the value</i> of the time 1 decision problem, starting from state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x_{1}=T(x_{0},a_{0})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x_{1}=T(x_{0},a_{0})}</annotation>
+</semantics>
+</math></span><img alt="x_{1}=T(x_{0},a_{0})" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3e8eea16d1529877a5b55849c950ba072ddaa0ae" style="vertical-align: -0.838ex; width:14.63ex; height:2.843ex;"/></span>.
+</p><p>Therefore, we can rewrite the problem as a recursive definition of the value function:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle V(x_{0})=\max _{a_{0}}\{F(x_{0},a_{0})+\beta V(x_{1})\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>V</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<munder>
+<mo form="prefix" movablelimits="true">max</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mrow>
+</munder>
+<mo fence="false" stretchy="false">{</mo>
+<mi>F</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>β<!-- β --></mi>
+<mi>V</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle V(x_{0})=\max _{a_{0}}\{F(x_{0},a_{0})+\beta V(x_{1})\}}</annotation>
+</semantics>
+</math></span><img alt="V(x_{0})=\max _{a_{0}}\{F(x_{0},a_{0})+\beta V(x_{1})\}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/81e9d155b6b425067e2655aa560ccc47f79f3b0a" style="vertical-align: -2.338ex; width:35.134ex; height:4.343ex;"/></span>, subject to the constraints: <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a_{0}\in \Gamma (x_{0}),\;x_{1}=T(x_{0},a_{0}).}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>∈<!-- ∈ --></mo>
+<mi mathvariant="normal">Γ<!-- Γ --></mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<mspace width="thickmathspace"></mspace>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>=</mo>
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<msub>
+<mi>x</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a_{0}\in \Gamma (x_{0}),\;x_{1}=T(x_{0},a_{0}).}</annotation>
+</semantics>
+</math></span><img alt="a_{0}\in \Gamma (x_{0}),\;x_{1}=T(x_{0},a_{0})." aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6d663c4b2d35ae78e9772e1e61677bb000383a3d" style="vertical-align: -0.838ex; width:27.727ex; height:2.843ex;"/></span></dd></dl>
+<p>This is the Bellman equation. It can be simplified even further if we drop time subscripts and plug in the value of the next state:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle V(x)=\max _{a\in \Gamma (x)}\{F(x,a)+\beta V(T(x,a))\}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>V</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<munder>
+<mo form="prefix" movablelimits="true">max</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>a</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi mathvariant="normal">Γ<!-- Γ --></mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</munder>
+<mo fence="false" stretchy="false">{</mo>
+<mi>F</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo>,</mo>
+<mi>a</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>β<!-- β --></mi>
+<mi>V</mi>
+<mo stretchy="false">(</mo>
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo>,</mo>
+<mi>a</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+<mo fence="false" stretchy="false">}</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle V(x)=\max _{a\in \Gamma (x)}\{F(x,a)+\beta V(T(x,a))\}.}</annotation>
+</semantics>
+</math></span><img alt="V(x)=\max _{a\in \Gamma (x)}\{F(x,a)+\beta V(T(x,a))\}." aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b4538aab2a60e60f907534e02507bec4d8ecdde0" style="vertical-align: -2.505ex; width:38.161ex; height:4.509ex;"/></span></dd></dl>
+<p>The Bellman equation is classified as a functional equation, because solving it means finding the unknown function <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle V}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>V</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle V}</annotation>
+</semantics>
+</math></span><img alt="V" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/af0f6064540e84211d0ffe4dac72098adfa52845" style="vertical-align: -0.338ex; width:1.787ex; height:2.176ex;"/></span>, which is the <i>value function</i>. Recall that the value function describes the best possible value of the objective, as a function of the state <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x}</annotation>
+</semantics>
+</math></span><img alt="x" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/87f9e315fd7e2ba406057a97300593c4802b53e4" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span>. By calculating the value function, we will also find the function <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle a(x)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>a</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle a(x)}</annotation>
+</semantics>
+</math></span><img alt="a(x)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5d685172ca5d7f10d1e9dfd16cffc5a54bf1301a" style="vertical-align: -0.838ex; width:4.369ex; height:2.843ex;"/></span> that describes the optimal action as a function of the state; this is called the <i>policy function</i>.
+</p>
+<h3><span class="mw-headline" id="In_a_stochastic_problem">In a stochastic problem</span><span class="mw-editsection"></span></h3>
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p>In the deterministic setting, other techniques besides dynamic programming can be used to tackle the above optimal control problem. However, the Bellman Equation is often the most convenient method of solving <i>stochastic</i> optimal control problems.
+</p><p>For a specific example from economics, consider an infinitely-lived consumer with initial wealth endowment <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\color {Red}a_{0}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle mathcolor="#ED1B23">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\color {Red}a_{0}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\color {Red}a_{0}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b0cda5a2f3be0f99a13309ca45b3ec27bd17595d" style="vertical-align: -0.671ex; width:2.284ex; height:2.009ex;"/></span> at period <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2aae8864a3c1fec9585261791a809ddec1489950" style="vertical-align: -0.338ex; width:1.162ex; height:2.176ex;"/></span>. They have an instantaneous utility function <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle u(c)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>u</mi>
+<mo stretchy="false">(</mo>
+<mi>c</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle u(c)}</annotation>
+</semantics>
+</math></span><img alt="u(c)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dec238f49463d03373c7054c95178afa8bad287e" style="vertical-align: -0.838ex; width:4.146ex; height:2.843ex;"/></span> where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle c}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>c</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle c}</annotation>
+</semantics>
+</math></span><img alt="c" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/86a67b81c2de995bd608d5b2df50cd8cd7d92455" style="vertical-align: -0.338ex; width:1.007ex; height:1.676ex;"/></span> denotes consumption and discounts the next period utility at a rate of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 0&lt;\beta &lt;1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>0</mn>
+<mo>&lt;</mo>
+<mi>β<!-- β --></mi>
+<mo>&lt;</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 0&lt;\beta &lt;1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 0&lt;\beta &lt;1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5823463cddbbeea88e7e3a68c879cc6f391f7e4b" style="vertical-align: -0.671ex; width:9.854ex; height:2.509ex;"/></span>. Assume that what is not consumed in period <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle t}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>t</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle t}</annotation>
+</semantics>
+</math></span><img alt="t" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/65658b7b223af9e1acc877d848888ecdb4466560" style="vertical-align: -0.338ex; width:0.84ex; height:2.009ex;"/></span> carries over to the next period with interest rate <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>r</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r}</annotation>
+</semantics>
+</math></span><img alt="r" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0d1ecb613aa2984f0576f70f86650b7c2a132538" style="vertical-align: -0.338ex; width:1.049ex; height:1.676ex;"/></span>. Then the consumer's utility maximization problem is to choose a consumption plan <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \{{\color {OliveGreen}c_{t}}\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">{</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle mathcolor="#3C8031">
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \{{\color {OliveGreen}c_{t}}\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \{{\color {OliveGreen}c_{t}}\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8c78fa53dc00fadba8421489e88debcb14b88911" style="vertical-align: -0.838ex; width:4.158ex; height:2.843ex;"/></span> that solves
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \max \sum _{t=0}^{\infty }\beta ^{t}u({\color {OliveGreen}c_{t}})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo form="prefix" movablelimits="true">max</mo>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mrow>
+</munderover>
+<msup>
+<mi>β<!-- β --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msup>
+<mi>u</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle mathcolor="#3C8031">
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \max \sum _{t=0}^{\infty }\beta ^{t}u({\color {OliveGreen}c_{t}})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \max \sum _{t=0}^{\infty }\beta ^{t}u({\color {OliveGreen}c_{t}})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0bd50342199f6fd9cb477a7ad9307d7403a10381" style="vertical-align: -3.005ex; width:15.59ex; height:6.843ex;"/></span></dd></dl>
+<p>subject to
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\color {Red}a_{t+1}}=(1+r)({\color {Red}a_{t}}-{\color {OliveGreen}c_{t}}),\;{\color {OliveGreen}c_{t}}\geq 0,}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle mathcolor="#ED1B23">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo>+</mo>
+<mi>r</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle mathcolor="#ED1B23">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<mo>−<!-- − --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle mathcolor="#3C8031">
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<mspace width="thickmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle mathcolor="#3C8031">
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<mo>≥<!-- ≥ --></mo>
+<mn>0</mn>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\color {Red}a_{t+1}}=(1+r)({\color {Red}a_{t}}-{\color {OliveGreen}c_{t}}),\;{\color {OliveGreen}c_{t}}\geq 0,}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\color {Red}a_{t+1}}=(1+r)({\color {Red}a_{t}}-{\color {OliveGreen}c_{t}}),\;{\color {OliveGreen}c_{t}}\geq 0,}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/187698457fb85a433e19cb51e15d5d0964d7af78" style="vertical-align: -0.838ex; width:31.073ex; height:2.843ex;"/></span></dd></dl>
+<p>and
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \lim _{t\rightarrow \infty }{\color {Red}a_{t}}\geq 0.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<munder>
+<mo form="prefix" movablelimits="true">lim</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+<mo stretchy="false">→<!-- → --></mo>
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mrow>
+</munder>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle mathcolor="#ED1B23">
+<msub>
+<mi>a</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<mo>≥<!-- ≥ --></mo>
+<mn>0.</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \lim _{t\rightarrow \infty }{\color {Red}a_{t}}\geq 0.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \lim _{t\rightarrow \infty }{\color {Red}a_{t}}\geq 0.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/526a5a1ec6da096c955e84bc9274736d77fec270" style="vertical-align: -2.005ex; width:11.231ex; height:3.843ex;"/></span></dd></dl>
+<p>The first constraint is the capital accumulation/law of motion specified by the problem, while the second constraint is a transversality condition that the consumer does not carry debt at the end of their life. The Bellman equation is
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle V(a)=\max _{0\leq c\leq a}\{u(c)+\beta V((1+r)(a-c))\},}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>V</mi>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<munder>
+<mo form="prefix" movablelimits="true">max</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>c</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>a</mi>
+</mrow>
+</munder>
+<mo fence="false" stretchy="false">{</mo>
+<mi>u</mi>
+<mo stretchy="false">(</mo>
+<mi>c</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>β<!-- β --></mi>
+<mi>V</mi>
+<mo stretchy="false">(</mo>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo>+</mo>
+<mi>r</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>−<!-- − --></mo>
+<mi>c</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+<mo fence="false" stretchy="false">}</mo>
+<mo>,</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle V(a)=\max _{0\leq c\leq a}\{u(c)+\beta V((1+r)(a-c))\},}</annotation>
+</semantics>
+</math></span><img alt="V(a)=\max _{0\leq c\leq a}\{u(c)+\beta V((1+r)(a-c))\}," aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9d542b1a92b9d6e7a831199b550274a5dbd1fa03" style="vertical-align: -2.171ex; width:41.519ex; height:4.176ex;"/></span></dd></dl>
+<p>Alternatively, one can treat the sequence problem directly using, for example, the Hamiltonian equations.
+</p><p>Now, if the interest rate varies from period to period, the consumer is faced with a stochastic optimization problem. Let the interest <i>r</i> follow a Markov process with probability transition function <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Q(r,d\mu _{r})}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>Q</mi>
+<mo stretchy="false">(</mo>
+<mi>r</mi>
+<mo>,</mo>
+<mi>d</mi>
+<msub>
+<mi>μ<!-- μ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>r</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Q(r,d\mu _{r})}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle Q(r,d\mu _{r})}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/870d37c12c252b2ecec136d0033fa7430e6e63ec" style="vertical-align: -0.838ex; width:9.322ex; height:2.843ex;"/></span> where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle d\mu _{r}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>d</mi>
+<msub>
+<mi>μ<!-- μ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>r</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle d\mu _{r}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle d\mu _{r}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/50cac328a130f6ab70bd4ce5c3abe6f0f048b2db" style="vertical-align: -0.838ex; width:3.591ex; height:2.676ex;"/></span> denotes the probability measure governing the distribution of interest rate next period if current interest rate is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle r}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>r</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle r}</annotation>
+</semantics>
+</math></span><img alt="r" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0d1ecb613aa2984f0576f70f86650b7c2a132538" style="vertical-align: -0.338ex; width:1.049ex; height:1.676ex;"/></span>. In this model the consumer decides their current period consumption after the current period interest rate is announced.
+</p><p>Rather than simply choosing a single sequence <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \{{\color {OliveGreen}c_{t}}\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">{</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle mathcolor="#3C8031">
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \{{\color {OliveGreen}c_{t}}\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \{{\color {OliveGreen}c_{t}}\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8c78fa53dc00fadba8421489e88debcb14b88911" style="vertical-align: -0.838ex; width:4.158ex; height:2.843ex;"/></span>, the consumer now must choose a sequence <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \{{\color {OliveGreen}c_{t}}\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">{</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle mathcolor="#3C8031">
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \{{\color {OliveGreen}c_{t}}\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \{{\color {OliveGreen}c_{t}}\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8c78fa53dc00fadba8421489e88debcb14b88911" style="vertical-align: -0.838ex; width:4.158ex; height:2.843ex;"/></span> for each possible realization of a <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \{r_{t}\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">{</mo>
+<msub>
+<mi>r</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \{r_{t}\}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \{r_{t}\}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8ff96e2486b847a69bce26adba893a367b88a4fd" style="vertical-align: -0.838ex; width:4.2ex; height:2.843ex;"/></span> in such a way that their lifetime expected utility is maximized:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \max _{\left\{c_{t}\right\}_{t=0}^{\infty }}\mathbb {E} {\bigg (}\sum _{t=0}^{\infty }\beta ^{t}u({\color {OliveGreen}c_{t}}){\bigg )}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<munder>
+<mo form="prefix" movablelimits="true">max</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msubsup>
+<mrow>
+<mo>{</mo>
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+<mo>}</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mrow>
+</msubsup>
+</mrow>
+</munder>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">E</mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mo maxsize="2.047em" minsize="2.047em">(</mo>
+</mrow>
+</mrow>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mrow>
+</munderover>
+<msup>
+<mi>β<!-- β --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msup>
+<mi>u</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle mathcolor="#3C8031">
+<msub>
+<mi>c</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>t</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mo maxsize="2.047em" minsize="2.047em">)</mo>
+</mrow>
+</mrow>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \max _{\left\{c_{t}\right\}_{t=0}^{\infty }}\mathbb {E} {\bigg (}\sum _{t=0}^{\infty }\beta ^{t}u({\color {OliveGreen}c_{t}}){\bigg )}.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \max _{\left\{c_{t}\right\}_{t=0}^{\infty }}\mathbb {E} {\bigg (}\sum _{t=0}^{\infty }\beta ^{t}u({\color {OliveGreen}c_{t}}){\bigg )}.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5882bbb863eae9a4a9a530bc02305f7c156068ab" style="vertical-align: -3.005ex; width:22.623ex; height:6.843ex;"/></span></dd></dl>
+<p>The expectation <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \mathbb {E} }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="double-struck">E</mi>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \mathbb {E} }</annotation>
+</semantics>
+</math></span><img alt="\mathbb {E} " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ad9faf1fd4a61d36d7f8a2f3204f3805a43c0d4a" style="vertical-align: -0.338ex; width:1.55ex; height:2.176ex;"/></span> is taken with respect to the appropriate probability measure given by <i>Q</i> on the sequences of <i>r</i><span class="nowrap" style="padding-left:0.1em;">'</span>s. Because <i>r</i> is governed by a Markov process, dynamic programming simplifies the problem significantly. Then the Bellman equation is simply:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle V(a,r)=\max _{0\leq c\leq a}\{u(c)+\beta \int V((1+r)(a-c),r')Q(r,d\mu _{r})\}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>V</mi>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>,</mo>
+<mi>r</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<munder>
+<mo form="prefix" movablelimits="true">max</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>0</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>c</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>a</mi>
+</mrow>
+</munder>
+<mo fence="false" stretchy="false">{</mo>
+<mi>u</mi>
+<mo stretchy="false">(</mo>
+<mi>c</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>β<!-- β --></mi>
+<mo>∫<!-- ∫ --></mo>
+<mi>V</mi>
+<mo stretchy="false">(</mo>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo>+</mo>
+<mi>r</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">(</mo>
+<mi>a</mi>
+<mo>−<!-- − --></mo>
+<mi>c</mi>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<msup>
+<mi>r</mi>
+<mo>′</mo>
+</msup>
+<mo stretchy="false">)</mo>
+<mi>Q</mi>
+<mo stretchy="false">(</mo>
+<mi>r</mi>
+<mo>,</mo>
+<mi>d</mi>
+<msub>
+<mi>μ<!-- μ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>r</mi>
+</mrow>
+</msub>
+<mo stretchy="false">)</mo>
+<mo fence="false" stretchy="false">}</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle V(a,r)=\max _{0\leq c\leq a}\{u(c)+\beta \int V((1+r)(a-c),r')Q(r,d\mu _{r})\}.}</annotation>
+</semantics>
+</math></span><img alt="V(a,r)=\max _{0\leq c\leq a}\{u(c)+\beta \int V((1+r)(a-c),r')Q(r,d\mu _{r})\}." aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e27beb20e14f3bf3d70e7f23cff2bf0d78587b9b" style="vertical-align: -2.338ex; width:58.658ex; height:5.676ex;"/></span></dd></dl>
+<p>Under some reasonable assumption, the resulting optimal policy function <i>g</i>(<i>a</i>,<i>r</i>) is measurable.
+</p><p>For a general stochastic sequential optimization problem with Markovian shocks and where the agent is faced with their decision <i>ex-post</i>, the Bellman equation takes a very similar form
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle V(x,z)=\max _{c\in \Gamma (x,z)}\{F(x,c,z)+\beta \int V(T(x,c),z')d\mu _{z}(z')\}.}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>V</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo>,</mo>
+<mi>z</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<munder>
+<mo form="prefix" movablelimits="true">max</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>c</mi>
+<mo>∈<!-- ∈ --></mo>
+<mi mathvariant="normal">Γ<!-- Γ --></mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo>,</mo>
+<mi>z</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+</munder>
+<mo fence="false" stretchy="false">{</mo>
+<mi>F</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo>,</mo>
+<mi>c</mi>
+<mo>,</mo>
+<mi>z</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>β<!-- β --></mi>
+<mo>∫<!-- ∫ --></mo>
+<mi>V</mi>
+<mo stretchy="false">(</mo>
+<mi>T</mi>
+<mo stretchy="false">(</mo>
+<mi>x</mi>
+<mo>,</mo>
+<mi>c</mi>
+<mo stretchy="false">)</mo>
+<mo>,</mo>
+<msup>
+<mi>z</mi>
+<mo>′</mo>
+</msup>
+<mo stretchy="false">)</mo>
+<mi>d</mi>
+<msub>
+<mi>μ<!-- μ --></mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>z</mi>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>z</mi>
+<mo>′</mo>
+</msup>
+<mo stretchy="false">)</mo>
+<mo fence="false" stretchy="false">}</mo>
+<mo>.</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle V(x,z)=\max _{c\in \Gamma (x,z)}\{F(x,c,z)+\beta \int V(T(x,c),z')d\mu _{z}(z')\}.}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle V(x,z)=\max _{c\in \Gamma (x,z)}\{F(x,c,z)+\beta \int V(T(x,c),z')d\mu _{z}(z')\}.}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/401a35a5ab22e207dfffc28218ad94e2dd5b2886" style="vertical-align: -2.505ex; width:56.008ex; height:5.843ex;"/></span></dd></dl>
+<h2><span class="mw-headline" id="Solution_methods">Solution methods</span><span class="mw-editsection"></span></h2>
+<ul><li>The method of undetermined coefficients, also known as 'guess and verify', can be used to solve some infinite-horizon, autonomous Bellman equations.<sup class="reference" id="cite_ref-12">[12]</sup></li>
+<li>The Bellman equation can be solved by backwards induction, either analytically in a few special cases, or numerically on a computer. Numerical backwards induction is applicable to a wide variety of problems, but may be infeasible when there are many state variables, due to the curse of dimensionality. Approximate dynamic programming has been introduced by D. P. Bertsekas and J. N. Tsitsiklis with the use of artificial neural networks (multilayer perceptrons) for approximating the Bellman function.<sup class="reference" id="cite_ref-NeuroDynProg_13-0">[13]</sup> This is an effective mitigation strategy for reducing the impact of dimensionality by replacing the memorization of the complete function mapping for the whole space domain with the memorization of the sole neural network parameters. In particular, for continuous-time systems, an approximate dynamic programming approach that combines both policy iterations with neural networks was introduced.<sup class="reference" id="cite_ref-CTHJB_14-0">[14]</sup> In discrete-time, an approach to solve the HJB equation combining value iterations and neural networks was introduced.<sup class="reference" id="cite_ref-DTHJB_15-0">[15]</sup></li>
+<li>By calculating the first-order conditions associated with the Bellman equation, and then using the envelope theorem to eliminate the derivatives of the value function, it is possible to obtain a system of difference equations or differential equations called the 'Euler equations'.<sup class="reference" id="cite_ref-16">[16]</sup> Standard techniques for the solution of difference or differential equations can then be used to calculate the dynamics of the state variables and the control variables of the optimization problem.</li></ul>
+<h2><span class="mw-headline" id="Applications_in_economics">Applications in economics</span><span class="mw-editsection"></span></h2>
+<p>The first known application of a Bellman equation in economics is due to Martin Beckmann and Richard Muth.<sup class="reference" id="cite_ref-17">[17]</sup> Martin Beckmann also wrote extensively on consumption theory using the Bellman equation in 1959. His work influenced Edmund S. Phelps, among others.
+</p><p>A celebrated economic application of a Bellman equation is Robert C. Merton's seminal 1973 article on the intertemporal capital asset pricing model.<sup class="reference" id="cite_ref-18">[18]</sup> (See also Merton's portfolio problem).The solution to Merton's theoretical model, one in which investors chose between income today and future income or capital gains, is a form of Bellman's equation. Because economic applications of dynamic programming usually result in a Bellman equation that is a difference equation, economists refer to dynamic programming as a "recursive method" and a subfield of recursive economics is now recognized within economics.
+</p><p>Nancy Stokey, Robert E. Lucas, and Edward Prescott describe stochastic and nonstochastic dynamic programming in considerable detail, and develop theorems for the existence of solutions to problems meeting certain conditions. They also describe many examples of modeling theoretical problems in economics using recursive methods.<sup class="reference" id="cite_ref-19">[19]</sup> This book led to dynamic programming being employed to solve a wide range of theoretical problems in economics, including optimal economic growth, resource extraction, principal–agent problems, public finance, business investment, asset pricing, factor supply, and industrial organization. Lars Ljungqvist and Thomas Sargent apply dynamic programming to study a variety of theoretical questions in monetary policy, fiscal policy, taxation, economic growth, search theory, and labor economics.<sup class="reference" id="cite_ref-20">[20]</sup> Avinash Dixit and Robert Pindyck showed the value of the method for thinking about capital budgeting.<sup class="reference" id="cite_ref-21">[21]</sup> Anderson adapted the technique to business valuation, including privately held businesses.<sup class="reference" id="cite_ref-22">[22]</sup>
+</p><p>Using dynamic programming to solve concrete problems is complicated by informational difficulties, such as choosing the unobservable discount rate. There are also computational issues, the main one being the curse of dimensionality arising from the vast number of possible actions and potential state variables that must be considered before an optimal strategy can be selected. For an extensive discussion of computational issues, see Miranda and Fackler,<sup class="reference" id="cite_ref-23">[23]</sup> and Meyn 2007.<sup class="reference" id="cite_ref-24">[24]</sup>
+</p>
+<h2><span class="mw-headline" id="Example">Example</span><span class="mw-editsection"></span></h2>
+<p>In Markov decision processes, a Bellman equation is a recursion for expected rewards. For example, the expected reward for being in a particular state <i>s</i> and following some fixed policy <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \pi }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>π<!-- π --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \pi }</annotation>
+</semantics>
+</math></span><img alt="\pi " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9be4ba0bb8df3af72e90a0535fabcc17431e540a" style="vertical-align: -0.338ex; width:1.332ex; height:1.676ex;"/></span> has the Bellman equation:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle V^{\pi }(s)=R(s,\pi (s))+\gamma \sum _{s'}P(s'|s,\pi (s))V^{\pi }(s').\ }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>π<!-- π --></mi>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>s</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi>R</mi>
+<mo stretchy="false">(</mo>
+<mi>s</mi>
+<mo>,</mo>
+<mi>π<!-- π --></mi>
+<mo stretchy="false">(</mo>
+<mi>s</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>γ<!-- γ --></mi>
+<munder>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mi>s</mi>
+<mo>′</mo>
+</msup>
+</mrow>
+</munder>
+<mi>P</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>s</mi>
+<mo>′</mo>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>s</mi>
+<mo>,</mo>
+<mi>π<!-- π --></mi>
+<mo stretchy="false">(</mo>
+<mi>s</mi>
+<mo stretchy="false">)</mo>
+<mo stretchy="false">)</mo>
+<msup>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>π<!-- π --></mi>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>s</mi>
+<mo>′</mo>
+</msup>
+<mo stretchy="false">)</mo>
+<mo>.</mo>
+<mtext> </mtext>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle V^{\pi }(s)=R(s,\pi (s))+\gamma \sum _{s'}P(s'|s,\pi (s))V^{\pi }(s').\ }</annotation>
+</semantics>
+</math></span><img alt="V^{\pi }(s)=R(s,\pi (s))+\gamma \sum _{s'}P(s'|s,\pi (s))V^{\pi }(s').\ " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0e358db69fc04ad39781acdc8300059e7a93791a" style="vertical-align: -3.338ex; width:47.874ex; height:5.843ex;"/></span></dd></dl>
+<p>This equation describes the expected reward for taking the action prescribed by some policy <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \pi }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>π<!-- π --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \pi }</annotation>
+</semantics>
+</math></span><img alt="\pi " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9be4ba0bb8df3af72e90a0535fabcc17431e540a" style="vertical-align: -0.338ex; width:1.332ex; height:1.676ex;"/></span>.
+</p><p>The equation for the optimal policy is referred to as the <i>Bellman optimality equation</i>:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle V^{\pi *}(s)=\max _{a}\left\{{R(s,a)+\gamma \sum _{s'}P(s'|s,a)V^{\pi *}(s')}\right\}.\ }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>π<!-- π --></mi>
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<mi>s</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<munder>
+<mo form="prefix" movablelimits="true">max</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>a</mi>
+</mrow>
+</munder>
+<mrow>
+<mo>{</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>R</mi>
+<mo stretchy="false">(</mo>
+<mi>s</mi>
+<mo>,</mo>
+<mi>a</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mi>γ<!-- γ --></mi>
+<munder>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<msup>
+<mi>s</mi>
+<mo>′</mo>
+</msup>
+</mrow>
+</munder>
+<mi>P</mi>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>s</mi>
+<mo>′</mo>
+</msup>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>s</mi>
+<mo>,</mo>
+<mi>a</mi>
+<mo stretchy="false">)</mo>
+<msup>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>π<!-- π --></mi>
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>s</mi>
+<mo>′</mo>
+</msup>
+<mo stretchy="false">)</mo>
+</mrow>
+<mo>}</mo>
+</mrow>
+<mo>.</mo>
+<mtext> </mtext>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle V^{\pi *}(s)=\max _{a}\left\{{R(s,a)+\gamma \sum _{s'}P(s'|s,a)V^{\pi *}(s')}\right\}.\ }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle V^{\pi *}(s)=\max _{a}\left\{{R(s,a)+\gamma \sum _{s'}P(s'|s,a)V^{\pi *}(s')}\right\}.\ }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/021fe0c878712cd13f85c3f1c3d0f64ae32fdec7" style="vertical-align: -3.338ex; width:52.36ex; height:7.676ex;"/></span></dd></dl>
+<p>where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\pi *}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mi>π<!-- π --></mi>
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\pi *}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\pi *}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/60dfe77e7451f8c6b619f554b9cfaa43932f36fc" style="vertical-align: -0.338ex; width:2.494ex; height:1.676ex;"/></span> is the optimal policy and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle V^{\pi *}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>π<!-- π --></mi>
+<mo>∗<!-- ∗ --></mo>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle V^{\pi *}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle V^{\pi *}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/52f9ba9ca614ae6ca2546a2c7adba338bea2b9ca" style="vertical-align: -0.338ex; width:3.913ex; height:2.343ex;"/></span> refers to the value function of the optimal policy. The equation above describes the reward for taking the action giving the highest expected return.
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Bellman pseudospectral method</li>
+<li>Dynamic programming – Problem optimization method</li>
+<li>Hamilton–Jacobi–Bellman equation</li>
+<li>Markov decision process</li>
+<li>Optimal control theory – Mathematical way of attaining a desired output from a dynamic system</li>
+<li>Optimal substructure</li>
+<li>Recursive competitive equilibrium</li>
+<li>Stochastic dynamic programming – 1957 technique for modelling problems of decision making under uncertainty</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<!-- 
+NewPP limit report
+Parsed by mw2407
+Cached time: 20221223234748
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.506 seconds
+Real time usage: 0.684 seconds
+Preprocessor visited node count: 3335/1000000
+Post‐expand include size: 64314/2097152 bytes
+Template argument size: 5036/2097152 bytes
+Highest expansion depth: 13/100
+Expensive parser function count: 5/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 80005/5000000 bytes
+Lua time usage: 0.295/10.000 seconds
+Lua memory usage: 8347293/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  505.851      1 -total
+ 45.84%  231.878      1 Template:Reflist
+ 22.00%  111.291     14 Template:Cite_book
+ 18.02%   91.133      8 Template:Annotated_link
+ 15.96%   80.717     19 Template:Template_parameter_value
+ 10.36%   52.417      1 Template:Short_description
+  9.32%   47.146      1 Template:More_footnotes
+  8.69%   43.970      9 Template:Cite_journal
+  8.00%   40.491      1 Template:Ambox
+  6.96%   35.210      2 Template:Harvnb
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:1236458-0!canonical and timestamp 20221223234747 and revision id 1117650362.
+ -->
+</div></body>
+</html>

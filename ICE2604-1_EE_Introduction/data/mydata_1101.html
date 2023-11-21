@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>worst-case_execution_time</title>
+</head>
+<body>
+<div class="mw-parser-output"><p>The <b>worst-case execution time</b> (<b>WCET</b>) of a computational task is the maximum length of time the task could take to execute on a specific hardware platform.
+</p>
+
+<h2><span class="mw-headline" id="What_it_is_used_for">What it is used for</span><span class="mw-editsection"></span></h2>
+<p>Worst case execution time is typically used in reliable real-time systems, where understanding the worst case timing behaviour of software is important for reliability or correct functional behaviour. 
+</p><p>As an example, a computer system that controls the behaviour of an engine in a vehicle might need to respond to inputs within a specific amount of time. One component that makes up the response time is the time spent executing the software – hence if the software worst case execution time can be determined, then the designer of the system can use this with other techniques such as schedulability analysis to ensure that the system responds fast enough.
+</p><p>While WCET is potentially applicable to many real-time systems, in practice an assurance of WCET is mainly used by real-time systems that are related to high reliability or safety. For example, in airborne software some attention to software is required by DO178C section 6.3.4. The increasing use of software in automotive systems is also driving the need to use WCET analysis of software.
+</p><p>In the design of some systems, WCET is often used as an input to schedulability analysis, although a much more common use of WCET in critical systems is to ensure that the pre-allocated timing budgets in a partition-scheduled system such as ARINC 653 are not violated.
+</p>
+<h2><span class="mw-headline" id="Calculation">Calculation</span><span class="mw-editsection"></span></h2>
+<p>Since the early days of embedded computing, embedded software developers have either used:
+</p>
+<ul><li>end-to-end measurements of code, for example performed by setting an I/O pin on the device to high at the start of the task, and to low at the end of the task and using a logic analyzer to measure the longest pulse width, or by measuring within the software itself using the processor clock or instruction count.</li>
+<li>manual static analysis techniques such as counting assembler instructions for each function, loop etc. and then combining them.</li></ul>
+<p>Both of these techniques have limitations. End to end measurements place a high burden on software testing to achieve the longest path; counting instructions is only applicable to simple software and hardware. In both cases, a margin for error is often used to account for untested code, hardware performance approximations or mistakes. A margin of 20% is often used, although there is very little justification used for this figure, save for historical confidence ("it worked last time"). 
+</p><p>As software and hardware have increased in complexity, they have driven the need for tool support.  Complexity is increasingly becoming an issue in both static analysis and measurements. It is difficult to judge how wide the error margin should be and how well tested the software system is. System safety arguments based on a high-water mark achieved during testing are widely used, but become harder to justify as the software and hardware become less predictable.
+</p><p>In the future, it is likely that a requirement for safety critical systems is that they are analyzed using both static and measurement-based approaches.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (September 2012)">citation needed</span></i>]</sup>
+</p>
+<h3><span class="mw-headline" id="Considerations">Considerations</span><span class="mw-editsection"></span></h3>
+<p>The problem of finding WCET by analysis is equivalent to the halting problem and is therefore not solvable in the general. Fortunately, for the kind of systems that engineers typically want to find WCET for, the software is typically well structured, will always terminate and is analyzable.
+</p><p>Most methods for finding a WCET involve approximations (usually a rounding upwards when there are uncertainties) and hence in practice the exact WCET itself is often regarded as unobtainable. Instead, different techniques for finding the WCET produce estimates for the WCET.<sup class="reference" id="cite_ref-1">[1]</sup> Those estimates are typically pessimistic, meaning that the estimated WCET is known to be higher than the real WCET (which is usually what is desired). Much work on WCET analysis is on reducing the pessimism in analysis so that the estimated value is low enough to be valuable to the system designer.
+</p><p>WCET analysis usually refers to the execution time of single thread, task or process.  However, on modern hardware, especially multi-core, other tasks in the system will impact the WCET of a given task if they share cache, memory lines and other hardware features.  Further, task scheduling events such as blocking or to be interruptions should be considered in WCET analysis if they can occur in a particular system.  Therefore, it is important to consider the context in which WCET analysis is applied.
+</p>
+<h3><span class="mw-headline" id="Automated_approaches">Automated approaches</span><span class="mw-editsection"></span></h3>
+<p>There are many automated approaches to calculating WCET beyond the manual techniques above. These include:
+</p>
+<ul><li>analytical techniques to improve test cases to increase confidence in end to end measurements</li>
+<li>static analysis of the software (“static” meaning without executing the software).</li>
+<li>combined approaches, often referred to as “hybrid” analysis, being a combination of measurements and structural analysis</li></ul>
+<h4><span class="mw-headline" id="Static_analysis_techniques">Static analysis techniques</span><span class="mw-editsection"></span></h4>
+<p>A static WCET tool attempts to estimate WCET by examining the computer software without executing it directly on the hardware.  Static analysis techniques have dominated research in the area since the late 1980s, although in an industrial setting, end-to-end measurements approaches were the standard practice.
+</p><p>Static analysis tools work at a high-level to determine the structure of a program's task, working either on a piece of source code or disassembled binary executable. They also work at a low-level, using timing information about the real hardware that the task will execute on, with all its specific features. By combining those two kinds of analysis, the tool attempts to give an upper bound on the time required to execute a given task on a given hardware platform.
+</p><p>At the low-level, static WCET analysis is complicated by the presence of architectural features that improve the average-case performance of the processor: instruction/data caches, branch prediction and instruction pipelines, for example. It is possible, but increasingly difficult, to determine tight WCET bounds if these modern architectural features are taken into account in the timing model used by the analysis.
+</p><p>Certification authorities such as the European Aviation Safety Agency, therefore, rely on model validation suites.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (September 2012)">citation needed</span></i>]</sup>
+</p><p>Static analysis has resulted in good results for simpler hardware, however a possible limitation of static analysis is that the hardware (the CPU in particular) has reached a complexity which is extremely hard to model. In particular, the modelling process can introduce errors from several sources: errors in chip design, lack of documentation, errors in documentation, errors in model creation; all leading to cases where the model predicts a different behavior to that observed on real hardware. Typically, where it is not possible to accurately predict a behavior, a pessimistic result is used, which can lead to the WCET estimate being much larger than anything achieved at run-time. 
+</p><p>Obtaining tight static WCET estimation is particularly difficult on multi-core processors. 
+</p><p>There are a number of commercial and academic tools that implement various forms of static analysis.
+</p>
+<h4><span class="mw-headline" id="Measurement_and_hybrid_techniques">Measurement and hybrid techniques</span><span class="mw-editsection"></span></h4>
+<p>Measurement-based and hybrid approaches usually try to measure the execution times of short code segments on the real hardware, which are then combined in a higher level analysis. Tools take into account the structure of the software (e.g. loops, branches), to produce an estimate of the WCET of the larger program. The rationale is that it's hard to test the longest path in complex software, but it is easier to test the longest path in many smaller components of it. A worst case effect needs only to be seen once during testing for the analysis to be able to combine it with other worst case events in its analysis.
+</p><p>Typically, the small sections of software can be measured automatically using techniques such as instrumentation (adding markers to the software) or with hardware support such as debuggers, and CPU hardware tracing modules. These markers result in a trace of execution, which includes both the path taken through the program and the time at which different points were executed. The trace is then analyzed to determine the maximum time that each part of the program has ever taken to execute, what the maximum observed iteration time of each loop is and whether there are any parts of the software that are untested (Code coverage).
+</p><p>Measurement-based WCET analysis has resulted in good results for both simple and complex hardware, although like static analysis it can suffer excessive pessimism in multi-core situations, where the impact of one core on another is hard to define. A limitation of measurement is that it relies on observing the worst-case effects during testing (although not necessarily at the same time). It can be hard to determine if the worst case effects have necessarily been tested.
+</p><p>There are a number of commercial and academic tools that implement various forms of measurement-based analysis.
+</p>
+<h2><span class="mw-headline" id="Research">Research</span><span class="mw-editsection"></span></h2>
+<p>The most active research groups are in Sweden (Mälardalen, Linköping), Germany (Saarbrücken, Dortmund, Braunschweig), France (Toulouse, Saclay, Rennes), Austria (Vienna), UK (University of York and Rapita Systems Ltd), Italy (Bologna), Spain (Cantabria, Valencia), and Switzerland (Zurich).  Recently, the topic of code-level timing analysis has found more attention outside of Europe by research groups in the US (North Carolina, Florida), Canada, Australia, Bangladesh(MBI LAB and RDS), Kingdom of Saudi Arabia-UQU(HISE LAB) and Singapore.
+</p>
+<h3><span class="mw-headline" id="WCET_Tool_Challenge">WCET Tool Challenge</span><span class="mw-editsection"></span></h3>
+<p>The first international WCET Tool Challenge took place during the autumn of 2006. It was organized by the University of Mälardalen and sponsored by the ARTIST2 Network of Excellence on Embedded Systems Design. The aim of the Challenge was to inspect and to compare different approaches in analyzing the worst-case execution time. All available tools and prototypes able to determine safe upper bounds for the WCET of tasks have participated. The final results<sup class="reference" id="cite_ref-2">[2]</sup> were presented in November 2006 at the ISoLA 2006 International Symposium in Paphos, Cyprus.
+</p><p>A second Challenge took place in 2008.<sup class="reference" id="cite_ref-3">[3]</sup>
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Best and worst cases</li>
+<li>Amortized analysis</li>
+<li>Big O notation</li>
+<li>Optimization (computer science)</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+
+<h3><span class="mw-headline" id="Articles_and_white_papers">Articles and white papers</span><span class="mw-editsection"></span></h3>
+<ul><li>Data-Flow Frameworks for Worst-Case Execution Time Analysis</li>
+<li>Worst-Case Execution Time Prediction by Static Program Analysis (PDF)</li>
+<li>OTAWA, a Framework for Experimenting WCET Computations (PDF)</li>
+<li>WCET Tool Challenge 2006 extended test results analysis of final report (Journal article in Springer)</li>
+<li>WCET Tool Challenge 2006 final report (PDF)<sup class="noprint Inline-Template"><span style="white-space: nowrap;">[<i><span title=" Dead link tagged February 2020">permanent dead link</span></i>]</span></sup></li>
+<li>A compiler framework for the reduction of worst-case execution times (PDF)</li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>CerCo ("Certified Complexity")</li>
+<li>WCET-aware Compilation / The WCET-aware C Compiler WCC</li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw1397
+Cached time: 20221214144623
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.141 seconds
+Real time usage: 0.187 seconds
+Preprocessor visited node count: 627/1000000
+Post‐expand include size: 10234/2097152 bytes
+Template argument size: 2096/2097152 bytes
+Highest expansion depth: 15/100
+Expensive parser function count: 2/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 6422/5000000 bytes
+Lua time usage: 0.090/10.000 seconds
+Lua memory usage: 2841601/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  161.802      1 -total
+ 51.63%   83.546      2 Template:Cite_web
+ 41.78%   67.597      2 Template:Citation_needed
+ 30.31%   49.048      3 Template:Fix
+ 19.27%   31.171      6 Template:Category_handler
+  6.14%    9.942      2 Template:Delink
+  3.03%    4.904      1 Template:Dead_link
+  2.24%    3.621      3 Template:Fix/category
+  1.44%    2.326      4 Template:Main_other
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:1029051-0!canonical and timestamp 20221214144622 and revision id 1105586751.
+ -->
+</div></body>
+</html>

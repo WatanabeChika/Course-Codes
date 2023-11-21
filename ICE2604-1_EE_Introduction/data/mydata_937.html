@@ -1,0 +1,2860 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>sorted_list</title>
+</head>
+<body>
+<div class="mw-parser-output">
+
+<p>In computer science, a <b>sorting algorithm</b> is an algorithm that puts elements of a list into an order. The most frequently used orders are numerical order and lexicographical order, and either ascending or descending. Efficient sorting is important for optimizing the efficiency of other algorithms (such as search and merge algorithms) that require input data to be in sorted lists. Sorting is also often useful for canonicalizing data and for producing human-readable output.
+</p><p>Formally, the output of any sorting algorithm must satisfy two conditions:
+</p>
+<ol><li>The output is in monotonic order (each element is no smaller/larger than the previous element, according to the required order).</li>
+<li>The output is a permutation (a reordering, yet retaining all of the original elements) of the input.</li></ol>
+<p>For optimum efficiency, the input data should be stored in a data structure which allows random access rather than one that allows only sequential access.
+</p>
+
+<h2><span class="mw-headline" id="History_and_concepts">History and concepts</span><span class="mw-editsection"></span></h2>
+<p>From the beginning of computing, the sorting problem has attracted a great deal of research, perhaps due to the complexity of solving it efficiently despite its simple, familiar statement. Among the authors of early sorting algorithms around 1951 was Betty Holberton, who worked on ENIAC and UNIVAC.<sup class="reference" id="cite_ref-refrigerator_1-0">[1]</sup><sup class="reference" id="cite_ref-NYTimes_2-0">[2]</sup> Bubble sort was analyzed as early as 1956.<sup class="reference" id="cite_ref-3">[3]</sup> Asymptotically optimal algorithms have been known since the mid-20th century –  new algorithms are still being invented, with the widely used Timsort dating to 2002, and the library sort being first published in 2006.
+</p><p>Comparison sorting algorithms have a fundamental requirement of Ω(<i>n</i> log <i>n</i>) comparisons (some input sequences will require a multiple of <i>n</i> log <i>n</i> comparisons, where n is the number of elements in the array to be sorted). Algorithms not based on comparisons, such as counting sort, can have better performance.
+</p><p>Sorting algorithms are prevalent in introductory computer science classes, where the abundance of algorithms for the problem provides a gentle introduction to a variety of core algorithm concepts, such as big O notation, divide-and-conquer algorithms, data structures such as heaps and binary trees, randomized algorithms, best, worst and average case analysis, time–space tradeoffs, and upper and lower bounds.
+</p><p>Sorting small arrays optimally (in fewest comparisons and swaps) or fast (i.e. taking into account machine specific details) is still an open research problem, with solutions only known for very small arrays (&lt;20 elements). Similarly optimal (by various definitions) sorting on a parallel machine is an open research topic.
+</p>
+<h2><span class="mw-headline" id="Classification">Classification</span><span class="mw-editsection"></span></h2>
+<p>Sorting algorithms can be classified by:
+</p>
+<ul><li>Computational complexity
+<ul><li>Best, worst and average case behavior in terms of the size of the list. For typical serial sorting algorithms, good behavior is O(<i>n</i> log <i>n</i>), with parallel sort in O(log<sup>2</sup> <i>n</i>), and bad behavior is O(<i>n</i><sup>2</sup>). Ideal behavior for a serial sort is O(<i>n</i>), but this is not possible in the average case. Optimal parallel sorting is O(log <i>n</i>).</li>
+<li>Swaps for "in-place" algorithms.</li></ul></li>
+<li>Memory usage (and use of other computer resources). In particular, some sorting algorithms are "in-place". Strictly, an in-place sort needs only O(1) memory beyond the items being sorted; sometimes O(log <i>n</i>) additional memory is considered "in-place".</li>
+<li>Recursion: Some algorithms are either recursive or non-recursive, while others may be both (e.g., merge sort).</li>
+<li>Stability: stable sorting algorithms maintain the relative order of records with equal keys (i.e., values).</li>
+<li>Whether or not they are a comparison sort. A comparison sort examines the data only by comparing two elements with a comparison operator.</li>
+<li>General method: insertion, exchange, selection, merging, <i>etc.</i> Exchange sorts include bubble sort and quicksort. Selection sorts include cycle sort and heapsort.</li>
+<li>Whether the algorithm is serial or parallel. The remainder of this discussion almost exclusively concentrates upon serial algorithms and assumes serial operation.</li>
+<li>Adaptability: Whether or not the presortedness of the input affects the running time.  Algorithms that take this into account are known to be adaptive.</li>
+<li>Online: An algorithm such as Insertion Sort that is online can sort a constant stream of input.</li></ul>
+<h3><span class="mw-headline" id="Stability">Stability</span><span class="mw-editsection"></span></h3>
+
+<p>Stable sort algorithms sort equal elements in the same order that they appear in the input. For example, in the card sorting example to the right, the cards are being sorted by their rank, and their suit is being ignored. This allows the possibility of multiple different correctly sorted versions of the original list. Stable sorting algorithms choose one of these, according to the following rule: if two items compare as equal (like the two 5 cards), then their relative order will be preserved, i.e. if one comes before the other in the input, it will come before the other in the output.
+</p><p>Stability is important to preserve order over multiple sorts on the same data set. For example, say that student records consisting of name and class section are sorted dynamically, first by name, then by class section. If a stable sorting algorithm is used in both cases, the sort-by-class-section operation will not change the name order; with an unstable sort, it could be that sorting by section shuffles the name order, resulting in a nonalphabetical list of students.
+</p><p>More formally, the data being sorted can be represented as a record or tuple of values, and the part of the data that is used for sorting is called the <i>key</i>. In the card example, cards are represented as a record (rank, suit), and the key is the rank. A sorting algorithm is stable if whenever there are two records R and S with the same key, and R appears before S in the original list, then R will always appear before S in the sorted list.
+</p><p>When equal elements are indistinguishable, such as with integers, or more generally, any data where the entire element is the key, stability is not an issue. Stability is also not an issue if all keys are different.
+</p><p>Unstable sorting algorithms can be specially implemented to be stable. One way of doing this is to artificially extend the key comparison, so that comparisons between two objects with otherwise equal keys are decided using the order of the entries in the original input list as a tie-breaker. Remembering this order, however, may require additional time and space.
+</p><p>One application for stable sorting algorithms is sorting a list using a primary and secondary key. For example, suppose we wish to sort a hand of cards such that the suits are in the order clubs (♣), diamonds (<span style="color:#ff0000">♦</span>), hearts (<span style="color:#ff0000">♥</span>), spades (♠), and within each suit, the cards are sorted by rank. This can be done by first sorting the cards by rank (using any sort), and then doing a stable sort by suit:
+</p><p><img alt="Sorting playing cards using stable sort.svg" data-file-height="367" data-file-width="585" decoding="async" height="251" src="//upload.wikimedia.org/wikipedia/commons/thumb/7/79/Sorting_playing_cards_using_stable_sort.svg/400px-Sorting_playing_cards_using_stable_sort.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/7/79/Sorting_playing_cards_using_stable_sort.svg/600px-Sorting_playing_cards_using_stable_sort.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/7/79/Sorting_playing_cards_using_stable_sort.svg/800px-Sorting_playing_cards_using_stable_sort.svg.png 2x" width="400"/>
+</p><p>Within each suit, the stable sort preserves the ordering by rank that was already done. This idea can be extended to any number of keys and is utilised by radix sort. The same effect can be achieved with an unstable sort by using a lexicographic key comparison, which, e.g., compares first by suit, and then compares by rank if the suits are the same.
+</p>
+<h2><span class="mw-headline" id="Comparison_of_algorithms">Comparison of algorithms</span><span class="mw-editsection"></span></h2>
+<p>In these tables, <span class="texhtml mvar" style="font-style:italic;">n</span> is the number of records to be sorted. The columns "Best", "Average" and "Worst" give the time complexity in each case, under the assumption that the length of each key is constant, and therefore that all comparisons, swaps and other operations can proceed in constant time. "Memory" denotes the amount of extra storage needed additionally to that used by the list itself, under the same assumption. The run times and the memory requirements listed are inside big O notation, hence the base of the logarithms does not matter. The notation <span class="texhtml">log<sup>2</sup> <i>n</i></span> means <span class="texhtml">(log <i>n</i>)<sup>2</sup></span>.
+</p>
+<h3><span class="mw-headline" id="Comparison_sorts">Comparison sorts</span><span class="mw-editsection"></span></h3>
+<p>Below is a table of comparison sorts. A comparison sort cannot perform better than <span class="texhtml"><i>O</i>(<i>n</i> log <i>n</i>)</span> on average.<sup class="reference" id="cite_ref-4">[4]</sup>
+</p>
+<table class="wikitable sortable">
+<caption>Comparison sorts
+</caption>
+<tbody><tr>
+<th>Name</th>
+<th>Best</th>
+<th>Average</th>
+<th>Worst</th>
+<th>Memory</th>
+<th>Stable</th>
+<th>Method</th>
+<th>Other notes
+</th></tr>
+<tr align="center">
+<td>Quicksort
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#ffd"><span data-sort-value="05 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \log n}</annotation>
+</semantics>
+</math></span><img alt="\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/317ab5292da7c7935aec01a570461fe0613b21d5" style="vertical-align: -0.671ex; width:4.754ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#fdd">No
+</td>
+<td>Partitioning
+</td>
+<td align="left">Quicksort is usually done in-place with <span class="texhtml"><i>O</i>(log <i>n</i>)</span> stack space.<sup class="reference" id="cite_ref-5">[5]</sup><sup class="reference" id="cite_ref-sedgewickQsortPaper_6-0">[6]</sup>
+</td></tr>
+<tr align="center">
+<td>Merge sort
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;">n</span></span>
+</td>
+<td style="background:#dfd">Yes
+</td>
+<td>Merging
+</td>
+<td align="left">Highly parallelizable (up to <span class="texhtml"><i>O</i>(log <i>n</i>)</span> using the Three Hungarians' Algorithm).<sup class="reference" id="cite_ref-7">[7]</sup>
+</td></tr>
+<tr align="center">
+<td nowrap="">In-place merge sort
+</td>
+<td>—
+</td>
+<td>—
+</td>
+<td style="background:#ffd"><span data-sort-value="23 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log ^{2}n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<msup>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log ^{2}n}</annotation>
+</semantics>
+</math></span><img alt="n\log ^{2}n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8dcc3d3ab4d647731efd75119a13e8febd1a7e44" style="vertical-align: -0.671ex; width:7.59ex; height:3.009ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="00 !">1</span>
+</td>
+<td style="background:#dfd">Yes
+</td>
+<td>Merging
+</td>
+<td align="left">Can be implemented as a stable sort based on stable in-place merging.<sup class="reference" id="cite_ref-8">[8]</sup>
+</td></tr>
+<tr align="center">
+<td>Introsort
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#ffd"><span data-sort-value="05 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \log n}</annotation>
+</semantics>
+</math></span><img alt="\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/317ab5292da7c7935aec01a570461fe0613b21d5" style="vertical-align: -0.671ex; width:4.754ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#fdd">No
+</td>
+<td>Partitioning &amp; Selection
+</td>
+<td align="left">Used in several STL implementations.
+</td></tr>
+<tr align="center">
+<td>Heapsort
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="00 !">1</span>
+</td>
+<td style="background:#fdd">No
+</td>
+<td>Selection
+</td>
+<td align="left">
+</td></tr>
+<tr align="center">
+<td>Insertion sort
+</td>
+<td style="background:#dfd"><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;">n</span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="00 !">1</span>
+</td>
+<td style="background:#dfd">Yes
+</td>
+<td>Insertion
+</td>
+<td align="left"><span class="texhtml"><i>O</i>(<i>n</i> + <i>d</i>)</span>, in the worst case over sequences that have <i>d</i> inversions.
+</td></tr>
+<tr align="center">
+<td>Block sort
+</td>
+<td style="background:#dfd"><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;">n</span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="00 !">1</span>
+</td>
+<td style="background:#dfd">Yes
+</td>
+<td>Insertion &amp; Merging
+</td>
+<td align="left">Combine a block-based <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n)}</annotation>
+</semantics>
+</math></span><img alt="O(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34109fe397fdcff370079185bfdb65826cb5565a" style="vertical-align: -0.838ex; width:4.977ex; height:2.843ex;"/></span> in-place merge algorithm<sup class="reference" id="cite_ref-9">[9]</sup> with a bottom-up merge sort.
+</td></tr>
+<tr align="center">
+<td>Timsort
+</td>
+<td style="background:#dfd"><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;">n</span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;">n</span></span>
+</td>
+<td style="background:#dfd">Yes
+</td>
+<td>Insertion &amp; Merging
+</td>
+<td align="left">Makes <i>n-1</i> comparisons when the data is already sorted or reverse sorted.
+</td></tr>
+<tr align="center">
+<td>Selection sort
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="00 !">1</span>
+</td>
+<td style="background:#fdd">No
+</td>
+<td>Selection
+</td>
+<td align="left">Stable with <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n)}</annotation>
+</semantics>
+</math></span><img alt="O(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34109fe397fdcff370079185bfdb65826cb5565a" style="vertical-align: -0.838ex; width:4.977ex; height:2.843ex;"/></span> extra space, when using linked lists, or when made as a variant of Insertion Sort instead of swapping the two items.<sup class="reference" id="cite_ref-10">[10]</sup>
+</td></tr>
+<tr align="center">
+<td>Cubesort
+</td>
+<td style="background:#dfd"><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;">n</span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;">n</span></span>
+</td>
+<td style="background:#dfd">Yes
+</td>
+<td>Insertion
+</td>
+<td align="left">Makes <i>n-1</i> comparisons when the data is already sorted or reverse sorted.
+</td></tr>
+<tr align="center">
+<td>Shellsort
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#ffd"><span data-sort-value="23 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{4/3}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>4</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>3</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{4/3}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n^{4/3}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/58700f91e1128751a77a128ffa8c515747cd671d" style="vertical-align: -0.338ex; width:4.093ex; height:2.843ex;"/></span></span>
+</td>
+<td style="background:#ffd"><span data-sort-value="23 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{3/2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{3/2}}</annotation>
+</semantics>
+</math></span><img alt="n^{3/2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7101d69221defce7e4590ac55cfb4f22ea1732b2" style="vertical-align: -0.338ex; width:4.093ex; height:2.843ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="00 !">1</span>
+</td>
+<td style="background:#fdd">No
+</td>
+<td>Insertion
+</td>
+<td align="left">Small code size.
+</td></tr>
+<tr align="center">
+<td>Bubble sort
+</td>
+<td style="background:#dfd"><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;">n</span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="00 !">1</span>
+</td>
+<td style="background:#dfd">Yes
+</td>
+<td>Exchanging
+</td>
+<td align="left">Tiny code size.
+</td></tr>
+<tr align="center">
+<td>Exchange sort
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="00 !">1</span>
+</td>
+<td style="background:#fdd">No
+</td>
+<td>Exchanging
+</td>
+<td align="left">Tiny code size.
+</td></tr>
+<tr align="center">
+<td>Tree sort
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span><wbr/>(balanced)</span>
+</td>
+<td style="background:#fdd"><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;">n</span></span>
+</td>
+<td style="background:#dfd">Yes
+</td>
+<td>Insertion
+</td>
+<td align="left">When using a self-balancing binary search tree.
+</td></tr>
+<tr align="center">
+<td>Cycle sort
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="00 !">1</span>
+</td>
+<td style="background:#fdd">No
+</td>
+<td>Selection
+</td>
+<td align="left">In-place with theoretically optimal number of writes.
+</td></tr>
+<tr align="center">
+<td>Library sort
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;">n</span></span>
+</td>
+<td style="background:#fdd">No
+</td>
+<td>Insertion
+</td>
+<td align="left">Similar to a gapped insertion sort. It requires randomly permuting the input to warrant with-high-probability time bounds, which makes it not stable.
+</td></tr>
+<tr align="center">
+<td>Patience sorting
+</td>
+<td style="background:#dfd"><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;">n</span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;">n</span></span>
+</td>
+<td style="background:#fdd">No
+</td>
+<td>Insertion &amp; Selection
+</td>
+<td align="left">Finds all the longest increasing subsequences in <span class="texhtml"><i>O</i>(<i>n</i> log <i>n</i>)</span>.
+</td></tr>
+<tr align="center">
+<td>Smoothsort
+</td>
+<td style="background:#dfd"><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;">n</span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="00 !">1</span>
+</td>
+<td style="background:#fdd">No
+</td>
+<td>Selection
+</td>
+<td align="left">An adaptive variant of heapsort based upon the Leonardo sequence rather than a traditional binary heap.
+</td></tr>
+<tr align="center">
+<td>Strand sort
+</td>
+<td style="background:#dfd"><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;">n</span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;">n</span></span>
+</td>
+<td style="background:#dfd">Yes
+</td>
+<td>Selection
+</td>
+<td align="left">
+</td></tr>
+<tr align="center">
+<td>Tournament sort
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;">n</span><sup class="reference" id="cite_ref-11">[11]</sup></span>
+</td>
+<td style="background:#fdd">No
+</td>
+<td>Selection
+</td>
+<td align="left">Variation of Heapsort.
+</td></tr>
+<tr align="center">
+<td>Cocktail shaker sort
+</td>
+<td style="background:#dfd"><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;">n</span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="00 !">1</span>
+</td>
+<td style="background:#dfd">Yes
+</td>
+<td>Exchanging
+</td>
+<td align="left">A variant of Bubblesort which deals well with small values at end of list
+</td></tr>
+<tr align="center">
+<td>Comb sort
+</td>
+<td style="background:#dfd"><span data-sort-value="20 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log n}</annotation>
+</semantics>
+</math></span><img alt="n\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/560dfdce0353a330e03e4b3e0b7ca6e484bb40fb" style="vertical-align: -0.671ex; width:6.535ex; height:2.509ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="00 !">1</span>
+</td>
+<td style="background:#fdd">No
+</td>
+<td>Exchanging
+</td>
+<td align="left">Faster than bubble sort on average.
+</td></tr>
+<tr align="center">
+<td>Gnome sort
+</td>
+<td style="background:#dfd"><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;">n</span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="00 !">1</span>
+</td>
+<td style="background:#dfd">Yes
+</td>
+<td>Exchanging
+</td>
+<td align="left">Tiny code size.
+</td></tr>
+<tr align="center">
+<td>Odd–even sort
+</td>
+<td style="background:#dfd"><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;">n</span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="00 !">1</span>
+</td>
+<td style="background:#dfd">Yes
+</td>
+<td>Exchanging
+</td>
+<td align="left">Can be run on parallel processors easily.
+</td></tr></tbody></table>
+<h3><span class="mw-headline" id="Non-comparison_sorts">Non-comparison sorts</span><span class="mw-editsection"></span></h3>
+<p>The following table describes integer sorting algorithms and other sorting algorithms that are not comparison sorts. As such, they are not limited to <i>Ω</i>(<i>n</i> log <i>n</i>).<sup class="reference" id="cite_ref-12">[12]</sup> Complexities below assume <span class="texhtml mvar" style="font-style:italic;">n</span> items to be sorted, with keys of size <span class="texhtml mvar" style="font-style:italic;">k</span>, digit size <span class="texhtml mvar" style="font-style:italic;">d</span>, and <span class="texhtml mvar" style="font-style:italic;">r</span> the range of numbers to be sorted. Many of them are based on the assumption that the key size is large enough that all entries have unique key values, and hence that <span class="texhtml"><i>n</i> ≪ 2<sup><i>k</i></sup></span>, where ≪ means "much less than". In the unit-cost random-access machine model, algorithms with running time of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \scriptstyle n\cdot {\frac {k}{d}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mstyle displaystyle="false" scriptlevel="1">
+<mi>n</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>k</mi>
+<mi>d</mi>
+</mfrac>
+</mrow>
+</mstyle>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \scriptstyle n\cdot {\frac {k}{d}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \scriptstyle n\cdot {\frac {k}{d}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fde9067848dc805f3496c950bc42e0b5d2c447c8" style="vertical-align: -1.171ex; width:2.978ex; height:3.176ex;"/></span>, such as radix sort, still take time proportional to <span class="texhtml">Θ(<i>n</i> log <i>n</i>)</span>, because <span class="texhtml mvar" style="font-style:italic;">n</span> is limited to be not more than <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{\frac {k}{d}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>k</mi>
+<mi>d</mi>
+</mfrac>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{\frac {k}{d}}}</annotation>
+</semantics>
+</math></span><img alt="2^{\frac {k}{d}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6c2794020402241e71c6f34e7b8ee37c363c2426" style="vertical-align: -0.338ex; width:2.929ex; height:3.676ex;"/></span>, and a larger number of elements to sort would require a bigger <span class="texhtml mvar" style="font-style:italic;">k</span> in order to store them in the memory.<sup class="reference" id="cite_ref-13">[13]</sup>
+</p>
+<table class="wikitable sortable">
+<caption>Non-comparison sorts
+</caption>
+<tbody><tr>
+<th>Name</th>
+<th>Best</th>
+<th>Average</th>
+<th>Worst</th>
+<th>Memory</th>
+<th>Stable</th>
+<th><span class="texhtml"><i>n</i> ≪ 2<sup><i>k</i></sup></span></th>
+<th>Notes
+</th></tr>
+<tr align="center">
+<td>Pigeonhole sort
+</td>
+<td>—
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n+2^{k}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>+</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n+2^{k}}</annotation>
+</semantics>
+</math></span><img alt="n+2^{k}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec2a3b940ba9a9ad932d9ae1c0206ae0ceab86dc" style="vertical-align: -0.505ex; width:6.486ex; height:2.843ex;"/></span>
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n+2^{k}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>+</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n+2^{k}}</annotation>
+</semantics>
+</math></span><img alt="n+2^{k}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec2a3b940ba9a9ad932d9ae1c0206ae0ceab86dc" style="vertical-align: -0.505ex; width:6.486ex; height:2.843ex;"/></span>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{k}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{k}}</annotation>
+</semantics>
+</math></span><img alt="2^{k}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2d82641ae2702b0db07dd11830af27b9ee0cd196" style="vertical-align: -0.338ex; width:2.251ex; height:2.676ex;"/></span>
+</td>
+<td class="table-yes" style="background:#9EFF9E;vertical-align:middle;text-align:center;">Yes
+</td>
+<td class="table-yes" style="background:#9EFF9E;vertical-align:middle;text-align:center;">Yes
+</td>
+<td align="left">Cannot sort non-integers.
+</td></tr>
+<tr align="center">
+<td>Bucket sort (uniform keys)
+</td>
+<td>—
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n+k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>+</mo>
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n+k}</annotation>
+</semantics>
+</math></span><img alt="n+k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/94ccf8f07ceddde4d06fab179c36ccd2c264c243" style="vertical-align: -0.505ex; width:5.446ex; height:2.343ex;"/></span>
+</td>
+<td style="background:#fdd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}\cdot k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>⋅<!-- ⋅ --></mo>
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}\cdot k}</annotation>
+</semantics>
+</math></span><img alt="n^{2}\cdot k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1a8e12aa598dc98f2fa9f5dcbb0f473710d35e41" style="vertical-align: -0.338ex; width:5.339ex; height:2.676ex;"/></span>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\cdot k}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<mi>k</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\cdot k}</annotation>
+</semantics>
+</math></span><img alt="n\cdot k" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c6fba7993eed5a22ecab0c0008a16e2f81f260af" style="vertical-align: -0.338ex; width:4.285ex; height:2.176ex;"/></span>
+</td>
+<td class="table-yes" style="background:#9EFF9E;vertical-align:middle;text-align:center;">Yes
+</td>
+<td class="table-no" style="background:#FFC7C7;vertical-align:middle;text-align:center;">No
+</td>
+<td align="left">Assumes uniform distribution of elements from the domain in the array.<sup class="reference" id="cite_ref-clrs_14-0">[14]</sup>
+<p>Also cannot sort non-integers
+</p>
+</td></tr>
+<tr align="center">
+<td>Bucket sort (integer keys)
+</td>
+<td>—
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n+r}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>+</mo>
+<mi>r</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n+r}</annotation>
+</semantics>
+</math></span><img alt="n+r" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d6a5e6925440ca0c67b8608c15b3fc842d6b3199" style="vertical-align: -0.505ex; width:5.284ex; height:2.176ex;"/></span>
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n+r}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>+</mo>
+<mi>r</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n+r}</annotation>
+</semantics>
+</math></span><img alt="n+r" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d6a5e6925440ca0c67b8608c15b3fc842d6b3199" style="vertical-align: -0.505ex; width:5.284ex; height:2.176ex;"/></span>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n+r}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>+</mo>
+<mi>r</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n+r}</annotation>
+</semantics>
+</math></span><img alt="n+r" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d6a5e6925440ca0c67b8608c15b3fc842d6b3199" style="vertical-align: -0.505ex; width:5.284ex; height:2.176ex;"/></span>
+</td>
+<td class="table-yes" style="background:#9EFF9E;vertical-align:middle;text-align:center;">Yes
+</td>
+<td class="table-yes" style="background:#9EFF9E;vertical-align:middle;text-align:center;">Yes
+</td>
+<td align="left">If <i>r</i> is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n)}</annotation>
+</semantics>
+</math></span><img alt="O(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34109fe397fdcff370079185bfdb65826cb5565a" style="vertical-align: -0.838ex; width:4.977ex; height:2.843ex;"/></span>, then average time complexity is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n)}</annotation>
+</semantics>
+</math></span><img alt="O(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34109fe397fdcff370079185bfdb65826cb5565a" style="vertical-align: -0.838ex; width:4.977ex; height:2.843ex;"/></span>.<sup class="reference" id="cite_ref-gt_15-0">[15]</sup>
+</td></tr>
+<tr align="center">
+<td>Counting sort
+</td>
+<td>—
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n+r}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>+</mo>
+<mi>r</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n+r}</annotation>
+</semantics>
+</math></span><img alt="n+r" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d6a5e6925440ca0c67b8608c15b3fc842d6b3199" style="vertical-align: -0.505ex; width:5.284ex; height:2.176ex;"/></span>
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n+r}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>+</mo>
+<mi>r</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n+r}</annotation>
+</semantics>
+</math></span><img alt="n+r" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d6a5e6925440ca0c67b8608c15b3fc842d6b3199" style="vertical-align: -0.505ex; width:5.284ex; height:2.176ex;"/></span>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n+r}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>+</mo>
+<mi>r</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n+r}</annotation>
+</semantics>
+</math></span><img alt="n+r" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d6a5e6925440ca0c67b8608c15b3fc842d6b3199" style="vertical-align: -0.505ex; width:5.284ex; height:2.176ex;"/></span>
+</td>
+<td class="table-yes" style="background:#9EFF9E;vertical-align:middle;text-align:center;">Yes
+</td>
+<td class="table-yes" style="background:#9EFF9E;vertical-align:middle;text-align:center;">Yes
+</td>
+<td align="left">If <i>r</i> is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n)}</annotation>
+</semantics>
+</math></span><img alt="O(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34109fe397fdcff370079185bfdb65826cb5565a" style="vertical-align: -0.838ex; width:4.977ex; height:2.843ex;"/></span>, then average time complexity is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n)}</annotation>
+</semantics>
+</math></span><img alt="O(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34109fe397fdcff370079185bfdb65826cb5565a" style="vertical-align: -0.838ex; width:4.977ex; height:2.843ex;"/></span>.<sup class="reference" id="cite_ref-clrs_14-1">[14]</sup>
+</td></tr>
+<tr align="center">
+<td>LSD Radix Sort
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span>
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\cdot {\frac {k}{d}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>k</mi>
+<mi>d</mi>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\cdot {\frac {k}{d}}}</annotation>
+</semantics>
+</math></span><img alt="n\cdot {\frac {k}{d}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/53166c305a8b1af047f2e4c916c4fd8a304d40d0" style="vertical-align: -2.005ex; width:5.126ex; height:5.509ex;"/></span>
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\cdot {\frac {k}{d}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>k</mi>
+<mi>d</mi>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\cdot {\frac {k}{d}}}</annotation>
+</semantics>
+</math></span><img alt="n\cdot {\frac {k}{d}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/53166c305a8b1af047f2e4c916c4fd8a304d40d0" style="vertical-align: -2.005ex; width:5.126ex; height:5.509ex;"/></span>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n+2^{d}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>+</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n+2^{d}}</annotation>
+</semantics>
+</math></span><img alt="n+2^{d}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9b4a94f070d68b2a9f060bc5fd2baab07f1f1a94" style="vertical-align: -0.505ex; width:6.49ex; height:2.843ex;"/></span>
+</td>
+<td class="table-yes" style="background:#9EFF9E;vertical-align:middle;text-align:center;">Yes
+</td>
+<td class="table-no" style="background:#FFC7C7;vertical-align:middle;text-align:center;">No
+</td>
+<td align="left"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\frac {k}{d}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>k</mi>
+<mi>d</mi>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\frac {k}{d}}}</annotation>
+</semantics>
+</math></span><img alt="{\frac {k}{d}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1d93e141787926c8c6b7834db7efaf75512bdd14" style="vertical-align: -2.005ex; width:2.052ex; height:5.509ex;"/></span> recursion levels, 2<sup><i>d</i></sup> for count array.<sup class="reference" id="cite_ref-clrs_14-2">[14]</sup><sup class="reference" id="cite_ref-gt_15-1">[15]</sup>
+<p>Unlike most distribution sorts, this can sort Floating point numbers, negative numbers and more.
+</p>
+</td></tr>
+<tr align="center">
+<td>MSD Radix Sort
+</td>
+<td>—
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\cdot {\frac {k}{d}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>k</mi>
+<mi>d</mi>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\cdot {\frac {k}{d}}}</annotation>
+</semantics>
+</math></span><img alt="n\cdot {\frac {k}{d}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/53166c305a8b1af047f2e4c916c4fd8a304d40d0" style="vertical-align: -2.005ex; width:5.126ex; height:5.509ex;"/></span>
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\cdot {\frac {k}{d}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>k</mi>
+<mi>d</mi>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\cdot {\frac {k}{d}}}</annotation>
+</semantics>
+</math></span><img alt="n\cdot {\frac {k}{d}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/53166c305a8b1af047f2e4c916c4fd8a304d40d0" style="vertical-align: -2.005ex; width:5.126ex; height:5.509ex;"/></span>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n+2^{d}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>+</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n+2^{d}}</annotation>
+</semantics>
+</math></span><img alt="n+2^{d}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9b4a94f070d68b2a9f060bc5fd2baab07f1f1a94" style="vertical-align: -0.505ex; width:6.49ex; height:2.843ex;"/></span>
+</td>
+<td class="table-yes" style="background:#9EFF9E;vertical-align:middle;text-align:center;">Yes
+</td>
+<td class="table-no" style="background:#FFC7C7;vertical-align:middle;text-align:center;">No
+</td>
+<td align="left">Stable version uses an external array of size <span class="texhtml mvar" style="font-style:italic;">n</span> to hold all of the bins.
+<p>Same as the LSD variant, it can sort non-integers.
+</p>
+</td></tr>
+<tr align="center">
+<td>MSD Radix Sort (in-place)
+</td>
+<td>—
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\cdot {\frac {k}{1}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>k</mi>
+<mn>1</mn>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\cdot {\frac {k}{1}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n\cdot {\frac {k}{1}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/68ed9a5fb48a08a64d0625217519af56a134ac8d" style="vertical-align: -1.838ex; width:5.121ex; height:5.343ex;"/></span>
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\cdot {\frac {k}{1}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>k</mi>
+<mn>1</mn>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\cdot {\frac {k}{1}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n\cdot {\frac {k}{1}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/68ed9a5fb48a08a64d0625217519af56a134ac8d" style="vertical-align: -1.838ex; width:5.121ex; height:5.343ex;"/></span>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{1}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{1}}</annotation>
+</semantics>
+</math></span><img alt="2^{1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f990b8febae3ab32d873486ee5c343e8db92ceca" style="vertical-align: -0.338ex; width:2.217ex; height:2.676ex;"/></span>
+</td>
+<td class="table-no" style="background:#FFC7C7;vertical-align:middle;text-align:center;">No
+</td>
+<td class="table-no" style="background:#FFC7C7;vertical-align:middle;text-align:center;">No
+</td>
+<td align="left">d=1 for in-place, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle k/1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>k</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle k/1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle k/1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e1645e49f80e180ba2f7e4cec4a67607cd86e93c" style="vertical-align: -0.838ex; width:3.536ex; height:2.843ex;"/></span> recursion levels, no count array.
+</td></tr>
+<tr align="center">
+<td>Spreadsort
+</td>
+<td style="background:#dfd"><span class="texhtml mvar" style="font-style:italic;">n</span>
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\cdot {\frac {k}{d}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>k</mi>
+<mi>d</mi>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\cdot {\frac {k}{d}}}</annotation>
+</semantics>
+</math></span><img alt="n\cdot {\frac {k}{d}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/53166c305a8b1af047f2e4c916c4fd8a304d40d0" style="vertical-align: -2.005ex; width:5.126ex; height:5.509ex;"/></span>
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\cdot \left({{\frac {k}{s}}+d}\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<mrow>
+<mo>(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>k</mi>
+<mi>s</mi>
+</mfrac>
+</mrow>
+<mo>+</mo>
+<mi>d</mi>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\cdot \left({{\frac {k}{s}}+d}\right)}</annotation>
+</semantics>
+</math></span><img alt="n\cdot \left({{\frac {k}{s}}+d}\right)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2d48358944f0a173009b508f8e9699c87b382e86" style="vertical-align: -2.505ex; width:12.599ex; height:6.176ex;"/></span>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\frac {k}{d}}\cdot 2^{d}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>k</mi>
+<mi>d</mi>
+</mfrac>
+</mrow>
+<mo>⋅<!-- ⋅ --></mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\frac {k}{d}}\cdot 2^{d}}</annotation>
+</semantics>
+</math></span><img alt="{\frac {k}{d}}\cdot 2^{d}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bd0c10465a6c1dbad72bbbf80315ea93de959895" style="vertical-align: -2.005ex; width:5.986ex; height:5.509ex;"/></span>
+</td>
+<td class="table-no" style="background:#FFC7C7;vertical-align:middle;text-align:center;">No
+</td>
+<td class="table-no" style="background:#FFC7C7;vertical-align:middle;text-align:center;">No
+</td>
+<td align="left">Asymptotic are based on the assumption that <span class="texhtml"><i>n</i> ≪ 2<sup><i>k</i></sup></span>, but the algorithm does not require this.
+</td></tr>
+<tr align="center">
+<td>Burstsort
+</td>
+<td>—
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\cdot {\frac {k}{d}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>k</mi>
+<mi>d</mi>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\cdot {\frac {k}{d}}}</annotation>
+</semantics>
+</math></span><img alt="n\cdot {\frac {k}{d}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/53166c305a8b1af047f2e4c916c4fd8a304d40d0" style="vertical-align: -2.005ex; width:5.126ex; height:5.509ex;"/></span>
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\cdot {\frac {k}{d}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>k</mi>
+<mi>d</mi>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\cdot {\frac {k}{d}}}</annotation>
+</semantics>
+</math></span><img alt="n\cdot {\frac {k}{d}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/53166c305a8b1af047f2e4c916c4fd8a304d40d0" style="vertical-align: -2.005ex; width:5.126ex; height:5.509ex;"/></span>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\cdot {\frac {k}{d}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>k</mi>
+<mi>d</mi>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\cdot {\frac {k}{d}}}</annotation>
+</semantics>
+</math></span><img alt="n\cdot {\frac {k}{d}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/53166c305a8b1af047f2e4c916c4fd8a304d40d0" style="vertical-align: -2.005ex; width:5.126ex; height:5.509ex;"/></span>
+</td>
+<td class="table-no" style="background:#FFC7C7;vertical-align:middle;text-align:center;">No
+</td>
+<td class="table-no" style="background:#FFC7C7;vertical-align:middle;text-align:center;">No
+</td>
+<td align="left">Has better constant factor than radix sort for sorting strings. Though relies somewhat on specifics of commonly encountered strings.
+</td></tr>
+<tr align="center">
+<td>Flashsort
+</td>
+<td style="background:#dfd"><span class="texhtml mvar" style="font-style:italic;">n</span>
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n+r}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>+</mo>
+<mi>r</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n+r}</annotation>
+</semantics>
+</math></span><img alt="n+r" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d6a5e6925440ca0c67b8608c15b3fc842d6b3199" style="vertical-align: -0.505ex; width:5.284ex; height:2.176ex;"/></span>
+</td>
+<td style="background:#fdd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span>
+</td>
+<td><span class="texhtml mvar" style="font-style:italic;">n</span>
+</td>
+<td class="table-no" style="background:#FFC7C7;vertical-align:middle;text-align:center;">No
+</td>
+<td class="table-no" style="background:#FFC7C7;vertical-align:middle;text-align:center;">No
+</td>
+<td align="left">Requires uniform distribution of elements from the domain in the array to run in linear time. If distribution is extremely skewed then it can go quadratic if underlying sort is quadratic (it is usually an insertion sort). In-place version is not stable.
+</td></tr>
+<tr align="center">
+<td>Postman sort
+</td>
+<td>—
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\cdot {\frac {k}{d}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>k</mi>
+<mi>d</mi>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\cdot {\frac {k}{d}}}</annotation>
+</semantics>
+</math></span><img alt="n\cdot {\frac {k}{d}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/53166c305a8b1af047f2e4c916c4fd8a304d40d0" style="vertical-align: -2.005ex; width:5.126ex; height:5.509ex;"/></span>
+</td>
+<td style="background:#dfd"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\cdot {\frac {k}{d}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>⋅<!-- ⋅ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>k</mi>
+<mi>d</mi>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\cdot {\frac {k}{d}}}</annotation>
+</semantics>
+</math></span><img alt="n\cdot {\frac {k}{d}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/53166c305a8b1af047f2e4c916c4fd8a304d40d0" style="vertical-align: -2.005ex; width:5.126ex; height:5.509ex;"/></span>
+</td>
+<td><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n+2^{d}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>+</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>d</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n+2^{d}}</annotation>
+</semantics>
+</math></span><img alt="n+2^{d}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9b4a94f070d68b2a9f060bc5fd2baab07f1f1a94" style="vertical-align: -0.505ex; width:6.49ex; height:2.843ex;"/></span>
+</td>
+<td>—
+</td>
+<td class="table-no" style="background:#FFC7C7;vertical-align:middle;text-align:center;">No
+</td>
+<td align="left">A variation of bucket sort, which works very similarly to MSD Radix Sort. Specific to post service needs.
+</td></tr></tbody></table>
+<p>Samplesort can be used to parallelize any of the non-comparison sorts, by efficiently distributing data into several buckets and then passing down sorting to several processors, with no need to merge as buckets are already sorted between each other.
+</p>
+<h3><span class="mw-headline" id="Others">Others</span><span class="mw-editsection"></span></h3>
+<p>Some algorithms are slow compared to those discussed above, such as the bogosort with unbounded run time and the stooge sort which has <i>O</i>(<i>n</i><sup>2.7</sup>) run time. These sorts are usually described for educational purposes in order to demonstrate how run time of algorithms is estimated. The following table describes some sorting algorithms that are impractical for real-life use in traditional software contexts due to extremely poor performance or specialized hardware requirements.
+</p>
+<table class="wikitable sortable">
+<tbody><tr>
+<th>Name</th>
+<th>Best</th>
+<th>Average</th>
+<th>Worst</th>
+<th>Memory</th>
+<th>Stable</th>
+<th>Comparison</th>
+<th>Other notes
+</th></tr>
+<tr align="center">
+<td>Bead sort
+</td>
+<td style="background:#dfd"><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;">n</span></span>
+</td>
+<td style="background:#ffd"><span data-sort-value="23 !"><span class="texhtml mvar" style="font-style:italic;">S</span></span>
+</td>
+<td style="background:#ffd"><span data-sort-value="23 !"><span class="texhtml mvar" style="font-style:italic;">S</span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td class="table-na" data-sort-value="" style="background: #ececec; color: #2C2C2C; vertical-align: middle; text-align: center;">—
+</td>
+<td class="table-no" style="background:#FFC7C7;vertical-align:middle;text-align:center;">No
+</td>
+<td align="left">Works only with positive integers. Requires specialized hardware for it to run in guaranteed <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(n)}</annotation>
+</semantics>
+</math></span><img alt="O(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34109fe397fdcff370079185bfdb65826cb5565a" style="vertical-align: -0.838ex; width:4.977ex; height:2.843ex;"/></span> time. There is a possibility for software implementation, but running time will be <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(S)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>S</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(S)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O(S)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ebb7fa41b252b80e5c9b7c86087194abf8d06837" style="vertical-align: -0.838ex; width:5.082ex; height:2.843ex;"/></span>, where <span class="texhtml mvar" style="font-style:italic;">S</span> is sum of all integers to be sorted, in case of small integers it can be considered to be linear.
+</td></tr>
+<tr align="center">
+<td>Simple pancake sort
+</td>
+<td>—
+</td>
+<td><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span></span>
+</td>
+<td><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span></span>
+</td>
+<td><span data-sort-value="05 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \log n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \log n}</annotation>
+</semantics>
+</math></span><img alt="\log n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/317ab5292da7c7935aec01a570461fe0613b21d5" style="vertical-align: -0.671ex; width:4.754ex; height:2.509ex;"/></span></span>
+</td>
+<td class="table-no" style="background:#FFC7C7;vertical-align:middle;text-align:center;">No
+</td>
+<td class="table-yes" style="background:#9EFF9E;vertical-align:middle;text-align:center;">Yes
+</td>
+<td align="left">Count is number of flips.
+</td></tr>
+<tr align="center">
+<td>"I Can't Believe It Can Sort"<sup class="reference" id="cite_ref-16">[16]</sup>
+</td>
+<td><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span></span>
+</td>
+<td><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span></span>
+</td>
+<td><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="00 !">1</span>
+</td>
+<td class="table-no" style="background:#FFC7C7;vertical-align:middle;text-align:center;">No
+</td>
+<td class="table-yes" style="background:#9EFF9E;vertical-align:middle;text-align:center;">Yes
+</td>
+<td align="left">Notable primarily for appearing to be an erroneous implementation of either Insertion Sort or Exchange Sort.
+</td></tr>
+<tr align="center">
+<td>Spaghetti (Poll) sort
+</td>
+<td style="background:#dfd"><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;">n</span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;">n</span></span>
+</td>
+<td style="background:#dfd"><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;">n</span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="25 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{2}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{2}}</annotation>
+</semantics>
+</math></span><img alt="n^{2}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ac9810bbdafe4a6a8061338db0f74e25b7952620" style="vertical-align: -0.338ex; width:2.449ex; height:2.676ex;"/></span></span>
+</td>
+<td class="table-yes" style="background:#9EFF9E;vertical-align:middle;text-align:center;">Yes
+</td>
+<td>Polling
+</td>
+<td align="left">This is a linear-time, analog algorithm for sorting a sequence of items, requiring <i>O</i>(<i>n</i>) stack space, and the sort is stable. This requires <i>n</i> parallel processors. See spaghetti sort#Analysis.
+</td></tr>
+<tr align="center">
+<td>Sorting network
+</td>
+<td><span data-sort-value="06 !">Varies</span>
+</td>
+<td><span data-sort-value="06 !">Varies</span>
+</td>
+<td><span data-sort-value="06 !">Varies</span>
+</td>
+<td><span data-sort-value="21 !">Varies</span>
+</td>
+<td class="table-na" data-sort-value="" style="background: #EEE; vertical-align: middle; text-align: center;">Varies (stable sorting networks require more comparisons)
+</td>
+<td class="table-yes" style="background:#9EFF9E;vertical-align:middle;text-align:center;">Yes
+</td>
+<td align="left">Order of comparisons are set in advance based on a fixed network size.<sup class="noprint Inline-Template" style="white-space:nowrap;">[<i><span title="This claim has reliable sources with contradicting facts (November 2015)">disputed</span> <span class="metadata"> – discuss</span></i>]</sup>
+</td></tr>
+<tr align="center">
+<td>Bitonic sorter
+</td>
+<td><span data-sort-value="06 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \log ^{2}n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \log ^{2}n}</annotation>
+</semantics>
+</math></span><img alt="\log ^{2}n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e34157f19d9344c513937dadab5cdc8fd86731dd" style="vertical-align: -0.671ex; width:5.808ex; height:3.009ex;"/></span> parallel</span>
+</td>
+<td><span data-sort-value="06 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \log ^{2}n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \log ^{2}n}</annotation>
+</semantics>
+</math></span><img alt="\log ^{2}n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e34157f19d9344c513937dadab5cdc8fd86731dd" style="vertical-align: -0.671ex; width:5.808ex; height:3.009ex;"/></span> parallel</span>
+</td>
+<td><span data-sort-value="06 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n\log ^{2}n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<msup>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n\log ^{2}n}</annotation>
+</semantics>
+</math></span><img alt="n\log ^{2}n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8dcc3d3ab4d647731efd75119a13e8febd1a7e44" style="vertical-align: -0.671ex; width:7.59ex; height:3.009ex;"/></span> non-parallel</span>
+</td>
+<td style="background:#dfd"><span data-sort-value="00 !">1</span>
+</td>
+<td class="table-no" style="background:#FFC7C7;vertical-align:middle;text-align:center;">No
+</td>
+<td class="table-yes" style="background:#9EFF9E;vertical-align:middle;text-align:center;">Yes
+</td>
+<td align="left">An effective variation of Sorting networks.<sup class="noprint Inline-Template" style="white-space:nowrap;">[<i><span title="This claim has reliable sources with contradicting facts (June 2021)">disputed</span> <span class="metadata"> – discuss</span></i>]</sup>
+</td></tr>
+<tr align="center">
+<td>Bogosort
+</td>
+<td style="background:#dfd"><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;">n</span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="99 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (n\times n!)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>×<!-- × --></mo>
+<mi>n</mi>
+<mo>!</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (n\times n!)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle (n\times n!)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dbae6d0fe4f4f73c8e3261b474927a92ac9fd9b9" style="vertical-align: -0.838ex; width:8.086ex; height:2.843ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="99 !">unbounded (certain), <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (n\times n!)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo>×<!-- × --></mo>
+<mi>n</mi>
+<mo>!</mo>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (n\times n!)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle (n\times n!)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dbae6d0fe4f4f73c8e3261b474927a92ac9fd9b9" style="vertical-align: -0.838ex; width:8.086ex; height:2.843ex;"/></span> (expected)</span>
+</td>
+<td style="background:#dfd"><span data-sort-value="00 !">1</span>
+</td>
+<td class="table-no" style="background:#FFC7C7;vertical-align:middle;text-align:center;">No
+</td>
+<td class="table-yes" style="background:#9EFF9E;vertical-align:middle;text-align:center;">Yes
+</td>
+<td align="left">Random shuffling. Used for example purposes only, as even the expected best-case runtime is awful.<sup class="reference" id="cite_ref-Fun07_17-0">[17]</sup>
+</td></tr>
+<tr align="center">
+<td>Stooge sort
+</td>
+<td style="background:#fdd"><span data-sort-value="30 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{\log 3/\log 1.5}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mn>3</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mn>1.5</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{\log 3/\log 1.5}}</annotation>
+</semantics>
+</math></span><img alt="n^{{\log 3/\log 1.5}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4de187624d1b78cfc152f4b1fd4eb669c4f5a9fe" style="vertical-align: -0.338ex; width:10.736ex; height:2.843ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="30 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{\log 3/\log 1.5}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mn>3</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mn>1.5</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{\log 3/\log 1.5}}</annotation>
+</semantics>
+</math></span><img alt="n^{{\log 3/\log 1.5}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4de187624d1b78cfc152f4b1fd4eb669c4f5a9fe" style="vertical-align: -0.338ex; width:10.736ex; height:2.843ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="30 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{\log 3/\log 1.5}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mn>3</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mn>1.5</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{\log 3/\log 1.5}}</annotation>
+</semantics>
+</math></span><img alt="n^{{\log 3/\log 1.5}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4de187624d1b78cfc152f4b1fd4eb669c4f5a9fe" style="vertical-align: -0.338ex; width:10.736ex; height:2.843ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;">n</span></span>
+</td>
+<td class="table-no" style="background:#FFC7C7;vertical-align:middle;text-align:center;">No
+</td>
+<td class="table-yes" style="background:#9EFF9E;vertical-align:middle;text-align:center;">Yes
+</td>
+<td align="left">Slower than most of the sorting algorithms (even naive ones) with a time complexity of <span class="texhtml"><i>O</i>(<i>n</i><sup>log 3 / log 1.5 </sup>) = <i>O</i>(<i>n</i><sup>2.7095...</sup>)</span> Can be made stable, and is also a sorting network.
+</td></tr>
+<tr align="center">
+<td>Slowsort
+</td>
+<td style="background:#fdd"><span data-sort-value="30 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{\log n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{\log n}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n^{\log n}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c403a7c02eceb7217e79eafa65de2554c56ebb02" style="vertical-align: -0.338ex; width:5.102ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="30 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{\log n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{\log n}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n^{\log n}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c403a7c02eceb7217e79eafa65de2554c56ebb02" style="vertical-align: -0.338ex; width:5.102ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="30 !"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n^{\log n}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n^{\log n}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle n^{\log n}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c403a7c02eceb7217e79eafa65de2554c56ebb02" style="vertical-align: -0.338ex; width:5.102ex; height:2.676ex;"/></span></span>
+</td>
+<td style="background:#fdd"><span data-sort-value="15 !"><span class="texhtml mvar" style="font-style:italic;">n</span></span>
+</td>
+<td class="table-no" style="background:#FFC7C7;vertical-align:middle;text-align:center;">No
+</td>
+<td class="table-yes" style="background:#9EFF9E;vertical-align:middle;text-align:center;">Yes
+</td>
+<td align="left">A multiply and surrender algorithm, antonymous with divide-and-conquer algorithm.
+</td></tr></tbody></table>
+<p>Theoretical computer scientists have detailed other sorting algorithms that provide better than <i>O</i>(<i>n</i> log <i>n</i>) time complexity assuming additional constraints, including:
+</p>
+<ul><li><b>Thorup's algorithm</b>, a randomized algorithm for sorting keys from a domain of finite size, taking <span class="texhtml"><i>O</i>(<i>n</i> log log <i>n</i>)</span> time and <i>O</i>(<i>n</i>) space.<sup class="reference" id="cite_ref-18">[18]</sup></li>
+<li>A randomized integer sorting algorithm taking <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O\left(n{\sqrt {\log \log n}}\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</msqrt>
+</mrow>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O\left(n{\sqrt {\log \log n}}\right)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O\left(n{\sqrt {\log \log n}}\right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d2991c1899c53d189273f14cd055a14cf5d7f70e" style="vertical-align: -1.171ex; width:16.121ex; height:3.509ex;"/></span> expected time and <i>O</i>(<i>n</i>) space.<sup class="reference" id="cite_ref-19">[19]</sup></li>
+<li>One of the authers of the previously mentioned algorithm also claims to have discovered an algorithm taking <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O\left(n{\sqrt {\log n}}\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</msqrt>
+</mrow>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O\left(n{\sqrt {\log n}}\right)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O\left(n{\sqrt {\log n}}\right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a7841a151472e26bf12b3a48d88017da2b3a194c" style="vertical-align: -1.171ex; width:12.762ex; height:3.509ex;"/></span> time and <i>O</i>(<i>n</i>) space, sorting real numbers.<sup class="reference" id="cite_ref-20">[20]</sup> Further claiming that, without any added assumptions on the input, it can be modified to achieve <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O\left(n\log n/{\sqrt {\log \log n}}\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<msqrt>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+</msqrt>
+</mrow>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O\left(n\log n/{\sqrt {\log \log n}}\right)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle O\left(n\log n/{\sqrt {\log \log n}}\right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c11834288abd5ff41bfa531311913f0b916028e7" style="vertical-align: -1.171ex; width:22.424ex; height:3.509ex;"/></span> time and <i>O</i>(<i>n</i>) space.</li></ul>
+<h2><span class="mw-headline" id="Popular_sorting_algorithms">Popular sorting algorithms</span><span class="mw-editsection"></span></h2>
+<p>While there are a large number of sorting algorithms, in practical implementations a few algorithms predominate. Insertion sort is widely used for small data sets, while for large data sets an asymptotically efficient sort is used, primarily heapsort, merge sort, or quicksort. Efficient implementations generally use a hybrid algorithm, combining an asymptotically efficient algorithm for the overall sort with insertion sort for small lists at the bottom of a recursion. Highly tuned implementations use more sophisticated variants, such as Timsort (merge sort, insertion sort, and additional logic), used in Android, Java, and Python, and introsort (quicksort and heapsort), used (in variant forms) in some C++ sort implementations and in .NET.
+</p><p>For more restricted data, such as numbers in a fixed interval, distribution sorts such as counting sort or radix sort are widely used. Bubble sort and variants are rarely used in practice, but are commonly found in teaching and theoretical discussions.
+</p><p>When physically sorting objects (such as alphabetizing papers, tests or books) people intuitively generally use insertion sorts for small sets. For larger sets, people often first bucket, such as by initial letter, and multiple bucketing allows practical sorting of very large sets. Often space is relatively cheap, such as by spreading objects out on the floor or over a large area, but operations are expensive, particularly moving an object a large distance – locality of reference is important. Merge sorts are also practical for physical objects, particularly as two hands can be used, one for each list to merge, while other algorithms, such as heapsort or quicksort, are poorly suited for human use. Other algorithms, such as library sort, a variant of insertion sort that leaves spaces, are also practical for physical use.
+</p>
+<h3><span class="mw-headline" id="Simple_sorts">Simple sorts</span><span class="mw-editsection"></span></h3>
+<p>Two of the simplest sorts are insertion sort and selection sort, both of which are efficient on small data, due to low overhead, but not efficient on large data. Insertion sort is generally faster than selection sort in practice, due to fewer comparisons and good performance on almost-sorted data, and thus is preferred in practice, but selection sort uses fewer writes, and thus is used when write performance is a limiting factor.
+</p>
+<h4><span class="mw-headline" id="Insertion_sort">Insertion sort</span><span class="mw-editsection"></span></h4>
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p><i>Insertion sort</i> is a simple sorting algorithm that is relatively efficient for small lists and mostly sorted lists, and is often used as part of more sophisticated algorithms. It works by taking elements from the list one by one and inserting them in their correct position into a new sorted list similar to how we put money in our wallet.<sup class="reference" id="cite_ref-21">[21]</sup> In arrays, the new list and the remaining elements can share the array's space, but insertion is expensive, requiring shifting all following elements over by one. Shellsort is a variant of insertion sort that is more efficient for larger lists.
+</p>
+<h4><span class="mw-headline" id="Selection_sort">Selection sort</span><span class="mw-editsection"></span></h4>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p><i>Selection sort</i> is an in-place comparison sort. It has O(<i>n</i><sup>2</sup>) complexity, making it inefficient on large lists, and generally performs worse than the similar insertion sort. Selection sort is noted for its simplicity, and also has performance advantages over more complicated algorithms in certain situations.
+</p><p>The algorithm finds the minimum value, swaps it with the value in the first position, and repeats these steps for the remainder of the list.<sup class="reference" id="cite_ref-22">[22]</sup> It does no more than <i>n</i> swaps, and thus is useful where swapping is very expensive.
+</p>
+<h3><span class="mw-headline" id="Efficient_sorts">Efficient sorts</span><span class="mw-editsection"></span></h3>
+<p>Practical general sorting algorithms are almost always based on an algorithm with average time complexity (and generally worst-case complexity) O(<i>n</i> log <i>n</i>), of which the most common are heapsort, merge sort, and quicksort. Each has advantages and drawbacks, with the most significant being that simple implementation of merge sort uses O(<i>n</i>) additional space, and simple implementation of quicksort has O(<i>n</i><sup>2</sup>) worst-case complexity. These problems can be solved or ameliorated at the cost of a more complex algorithm.
+</p><p>While these algorithms are asymptotically efficient on random data, for practical efficiency on real-world data various modifications are used. First, the overhead of these algorithms becomes significant on smaller data, so often a hybrid algorithm is used, commonly switching to insertion sort once the data is small enough. Second, the algorithms often perform poorly on already sorted data or almost sorted data – these are common in real-world data, and can be sorted in O(<i>n</i>) time by appropriate algorithms. Finally, they may also be unstable, and stability is often a desirable property in a sort. Thus more sophisticated algorithms are often employed, such as Timsort (based on merge sort) or introsort (based on quicksort, falling back to heapsort).
+</p>
+<h4><span class="mw-headline" id="Merge_sort">Merge sort</span><span class="mw-editsection"></span></h4>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p><i>Merge sort</i> takes advantage of the ease of merging already sorted lists into a new sorted list. It starts by comparing every two elements (i.e., 1 with 2, then 3 with 4...) and swapping them if the first should come after the second. It then merges each of the resulting lists of two into lists of four, then merges those lists of four, and so on; until at last two lists are merged into the final sorted list.<sup class="reference" id="cite_ref-23">[23]</sup> Of the algorithms described here, this is the first that scales well to very large lists, because its worst-case running time is O(<i>n</i> log <i>n</i>). It is also easily applied to lists, not only arrays, as it only requires sequential access, not random access. However, it has additional O(<i>n</i>) space complexity, and involves a large number of copies in simple implementations.
+</p><p>Merge sort has seen a relatively recent surge in popularity for practical implementations, due to its use in the sophisticated algorithm Timsort, which is used for the standard sort routine in the programming languages Python<sup class="reference" id="cite_ref-24">[24]</sup> and Java (as of JDK7<sup class="reference" id="cite_ref-25">[25]</sup>). Merge sort itself is the standard routine in Perl,<sup class="reference" id="cite_ref-26">[26]</sup> among others, and has been used in Java at least since 2000 in JDK1.3.<sup class="reference" id="cite_ref-mergesort_in_jdk13_27-0">[27]</sup>
+</p>
+<h4><span class="mw-headline" id="Heapsort">Heapsort</span><span class="mw-editsection"></span></h4>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p><i>Heapsort</i> is a much more efficient version of selection sort. It also works by determining the largest (or smallest) element of the list, placing that at the end (or beginning) of the list, then continuing with the rest of the list, but accomplishes this task efficiently by using a data structure called a heap, a special type of binary tree.<sup class="reference" id="cite_ref-28">[28]</sup> Once the data list has been made into a heap, the root node is guaranteed to be the largest (or smallest) element. When it is removed and placed at the end of the list, the heap is rearranged so the largest element remaining moves to the root. Using the heap, finding the next largest element takes O(log <i>n</i>) time, instead of O(<i>n</i>) for a linear scan as in simple selection sort. This allows Heapsort to run in O(<i>n</i> log <i>n</i>) time, and this is also the worst case complexity.
+</p>
+<h4><span class="mw-headline" id="Quicksort">Quicksort</span><span class="mw-editsection"></span></h4>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p><i>Quicksort</i> is a divide-and-conquer algorithm which relies on a <i>partition</i> operation: to partition an array, an element called a <i>pivot</i> is selected.<sup class="reference" id="cite_ref-29">[29]</sup><sup class="reference" id="cite_ref-30">[30]</sup> All elements smaller than the pivot are moved before it and all greater elements are moved after it. This can be done efficiently in linear time and in-place. The lesser and greater sublists are then recursively sorted. This yields average time complexity of O(<i>n</i> log <i>n</i>), with low overhead, and thus this is a popular algorithm. Efficient implementations of quicksort (with in-place partitioning) are typically unstable sorts and somewhat complex, but are among the fastest sorting algorithms in practice. Together with its modest O(log <i>n</i>) space usage, quicksort is one of the most popular sorting algorithms and is available in many standard programming libraries.
+</p><p>The important caveat about quicksort is that its worst-case performance is O(<i>n</i><sup>2</sup>); while this is rare, in naive implementations (choosing the first or last element as pivot) this occurs for sorted data, which is a common case. The most complex issue in quicksort is thus choosing a good pivot element, as consistently poor choices of pivots can result in drastically slower O(<i>n</i><sup>2</sup>) performance, but good choice of pivots yields O(<i>n</i> log <i>n</i>) performance, which is asymptotically optimal. For example, if at each step the median is chosen as the pivot then the algorithm works in O(<i>n</i> log <i>n</i>). Finding the median, such as by the median of medians selection algorithm is however an O(<i>n</i>) operation on unsorted lists and therefore exacts significant overhead with sorting. In practice choosing a random pivot almost certainly yields O(<i>n</i> log <i>n</i>) performance.
+</p><p>If a guarantee of O(<i>n</i> log <i>n</i>) performance is important, there is a simple modification to achieve that. The idea, due to Musser, is to set a limit on the maximum depth of recursion.<sup class="reference" id="cite_ref-31">[31]</sup> If that limit is exceeded, then sorting is continued using the heapsort algorithm. Musser proposed that the limit should be <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1+2\lfloor \log _{2}(n)\rfloor }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mo>+</mo>
+<mn>2</mn>
+<mo fence="false" stretchy="false">⌊<!-- ⌊ --></mo>
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo fence="false" stretchy="false">⌋<!-- ⌋ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1+2\lfloor \log _{2}(n)\rfloor }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 1+2\lfloor \log _{2}(n)\rfloor }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c143f3d80f13928534fa8c5837e42bd4e9a2bd58" style="vertical-align: -0.838ex; width:14.46ex; height:2.843ex;"/></span>, which is approximately twice the maximum recursion depth one would expect on average with a randomly ordered array.
+</p>
+<h4><span class="mw-headline" id="Shellsort">Shellsort</span><span class="mw-editsection"></span></h4>
+
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p><i>Shellsort</i> was invented by Donald Shell in 1959.<sup class="reference" id="cite_ref-Shell_32-0">[32]</sup> It improves upon insertion sort by moving out of order elements more than one position at a time. The concept behind Shellsort is that insertion sort performs in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(kn)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(kn)}</annotation>
+</semantics>
+</math></span><img alt="O(kn)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6ef610f176fc2b47d4e52605ae0a86d0a16cb67f" style="vertical-align: -0.838ex; width:6.189ex; height:2.843ex;"/></span> time, where k is the greatest distance between two out-of-place elements. This means that generally, they perform in <i>O</i>(<i>n</i><sup>2</sup>), but for data that is mostly sorted, with only a few elements out of place, they perform faster. So, by first sorting elements far away, and progressively shrinking the gap between the elements to sort, the final sort computes much faster. One implementation can be described as arranging the data sequence in a two-dimensional array and then sorting the columns of the array using insertion sort.
+</p><p>The worst-case time complexity of Shellsort is an open problem and depends on the gap sequence used, with known complexities ranging from <i>O</i>(<i>n</i><sup>2</sup>) to <i>O</i>(<i>n</i><sup>4/3</sup>) and Θ(<i>n</i> log<sup>2</sup> <i>n</i>). This, combined with the fact that Shellsort is in-place, only needs a relatively small amount of code, and does not require use of the call stack, makes it is useful in situations where memory is at a premium, such as in embedded systems and operating system kernels.
+</p>
+<h3><span class="mw-headline" id="Bubble_sort_and_variants">Bubble sort and variants</span><span class="mw-editsection"></span></h3>
+<p>Bubble sort, and variants such as the Comb sort and cocktail sort, are simple, highly inefficient sorting algorithms. They are frequently seen in introductory texts due to ease of analysis, but they are rarely used in practice.
+</p>
+<h4><span class="mw-headline" id="Bubble_sort">Bubble sort</span><span class="mw-editsection"></span></h4>
+
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p><i>Bubble sort</i> is a simple sorting algorithm. The algorithm starts at the beginning of the data set. It compares the first two elements, and if the first is greater than the second, it swaps them. It continues doing this for each pair of adjacent elements to the end of the data set. It then starts again with the first two elements, repeating until no swaps have occurred on the last pass.<sup class="reference" id="cite_ref-33">[33]</sup> This algorithm's average time and worst-case performance is O(<i>n</i><sup>2</sup>), so it is rarely used to sort large, unordered data sets. Bubble sort can be used to sort a small number of items (where its asymptotic inefficiency is not a high penalty). Bubble sort can also be used efficiently on a list of any length that is nearly sorted (that is, the elements are not significantly out of place). For example, if any number of elements are out of place by only one position (e.g. 0123546789 and 1032547698), bubble sort's exchange will get them in order on the first pass, the second pass will find all elements in order, so the sort will take only 2<i>n</i> time.
+</p><p><sup class="reference" id="cite_ref-34">[34]</sup>
+</p>
+<h4><span class="mw-headline" id="Comb_sort">Comb sort</span><span class="mw-editsection"></span></h4>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p><i>Comb sort</i> is a relatively simple sorting algorithm based on bubble sort and originally designed by Włodzimierz Dobosiewicz in 1980.<sup class="reference" id="cite_ref-BB_35-0">[35]</sup> It was later rediscovered and popularized by Stephen Lacey and Richard Box with a <i>Byte</i> Magazine article published in April 1991. The basic idea is to eliminate <i>turtles</i>, or small values near the end of the list, since in a bubble sort these slow the sorting down tremendously. (<i>Rabbits</i>, large values around the beginning of the list, do not pose a problem in bubble sort) It accomplishes this by initially swapping elements that are a certain distance from one another in the array, rather than only swapping elements if they are adjacent to one another, and then shrinking the chosen distance until it is operating as a normal bubble sort. Thus, if Shellsort can be thought of as a generalized version of insertion sort that swaps elements spaced a certain distance away from one another, comb sort can be thought of as the same generalization applied to bubble sort.
+</p>
+<h4><span class="mw-headline" id="Exchange_sort">Exchange sort</span><span class="mw-editsection"></span></h4>
+<p><i>Exchange sort</i> is sometimes confused with bubble sort, although the algorithms are in fact distinct.<sup class="reference" id="cite_ref-36">[36]</sup><sup class="reference" id="cite_ref-37">[37]</sup> Exchange sort works by comparing the first element with all elements above it, swapping where needed, thereby guaranteeing that the first element is correct for the final sort order; it then proceeds to do the same for the second element, and so on. It lacks the advantage which bubble sort has of detecting in one pass if the list is already sorted, but it can be faster than bubble sort by a constant factor (one less pass over the data to be sorted; half as many total comparisons) in worst case situations. Like any simple O(<i>n</i><sup>2</sup>) sort it can be reasonably fast over very small data sets, though in general insertion sort will be faster.
+</p>
+<h3><span class="mw-headline" id="Distribution_sorts">Distribution sorts</span><span class="mw-editsection"></span></h3>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p><i>Distribution sort</i> refers to any sorting algorithm where data is distributed from their input to multiple intermediate structures which are then gathered and placed on the output. For example, both bucket sort and flashsort are distribution based sorting algorithms. Distribution sorting algorithms can be used on a single processor, or they can be a distributed algorithm, where individual subsets are separately sorted on different processors, then combined. This allows external sorting of data too large to fit into a single computer's memory.
+</p>
+<h4><span class="mw-headline" id="Counting_sort">Counting sort</span><span class="mw-editsection"></span></h4>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>Counting sort is applicable when each input is known to belong to a particular set, <i>S</i>, of possibilities.  The algorithm runs in O(|<i>S</i>| + <i>n</i>) time and O(|<i>S</i>|) memory where <i>n</i> is the length of the input.  It works by creating an integer array of size |<i>S</i>| and using the <i>i</i>th bin to count the occurrences of the <i>i</i>th member of <i>S</i> in the input.  Each input is then counted by incrementing the value of its corresponding bin.  Afterward, the counting array is looped through to arrange all of the inputs in order.  This sorting algorithm often cannot be used because <i>S</i> needs to be reasonably small for the algorithm to be efficient, but it is extremely fast and demonstrates great asymptotic behavior as <i>n</i> increases.  It also can be modified to provide stable behavior.
+</p>
+<h4><span class="mw-headline" id="Bucket_sort">Bucket sort</span><span class="mw-editsection"></span></h4>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p>Bucket sort is a divide-and-conquer sorting algorithm that generalizes counting sort by partitioning an array into a finite number of buckets.  Each bucket is then sorted individually, either using a different sorting algorithm, or by recursively applying the bucket sorting algorithm.
+</p><p>A bucket sort works best when the elements of the data set are evenly distributed across all buckets.
+</p>
+<h4><span class="mw-headline" id="Radix_sort">Radix sort</span><span class="mw-editsection"></span></h4>
+<link href="mw-data:TemplateStyles:r1033289096" rel="mw-deduplicated-inline-style"/>
+<p><i>Radix sort</i> is an algorithm that sorts numbers by processing individual digits. <i>n</i> numbers consisting of <i>k</i> digits each are sorted in O(<i>n</i> · <i>k</i>) time.  Radix sort can process digits of each number either starting from the least significant digit (LSD) or starting from the most significant digit (MSD).  The LSD algorithm first sorts the list by the least significant digit while preserving their relative order using a stable sort. Then it sorts them by the next digit, and so on from the least significant to the most significant, ending up with a sorted list. While the LSD radix sort requires the use of a stable sort, the MSD radix sort algorithm does not (unless stable sorting is desired).  In-place MSD radix sort is not stable.  It is common for the counting sort algorithm to be used internally by the radix sort.  A hybrid sorting approach, such as using insertion sort for small bins, improves performance of radix sort significantly.
+</p>
+<h2><span class="mw-headline" id="Memory_usage_patterns_and_index_sorting">Memory usage patterns and index sorting</span><span class="mw-editsection"></span></h2>
+<p>When the size of the array to be sorted approaches or exceeds the available primary memory, so that (much slower) disk or swap space must be employed, the memory usage pattern of a sorting algorithm becomes important, and an algorithm that might have been fairly efficient when the array fit easily in RAM may become impractical. In this scenario, the total number of comparisons becomes (relatively) less important, and the number of times sections of memory must be copied or swapped to and from the disk can dominate the performance characteristics of an algorithm. Thus, the number of passes and the localization of comparisons can be more important than the raw number of comparisons, since comparisons of nearby elements to one another happen at system bus speed (or, with caching, even at CPU speed), which, compared to disk speed, is virtually instantaneous.
+</p><p>For example, the popular recursive quicksort algorithm provides quite reasonable performance with adequate RAM, but due to the recursive way that it copies portions of the array it becomes much less practical when the array does not fit in RAM, because it may cause a number of slow copy or move operations to and from disk. In that scenario, another algorithm may be preferable even if it requires more total comparisons.
+</p><p>One way to work around this problem, which works well when complex records (such as in a relational database) are being sorted by a relatively small key field, is to create an index into the array and then sort the index, rather than the entire array. (A sorted version of the entire array can then be produced with one pass, reading from the index, but often even that is unnecessary, as having the sorted index is adequate.)  Because the index is much smaller than the entire array, it may fit easily in memory where the entire array would not, effectively eliminating the disk-swapping problem. This procedure is sometimes called "tag sort".<sup class="reference" id="cite_ref-38">[38]</sup>
+</p><p>Another technique for overcoming the memory-size problem is using external sorting, for example one of the ways is to combine two algorithms in a way that takes advantage of the strength of each to improve overall performance. For instance, the array might be subdivided into chunks of a size that will fit in RAM, the contents of each chunk sorted using an efficient algorithm (such as quicksort), and the results merged using a <i>k</i>-way merge similar to that used in merge sort. This is faster than performing either merge sort or quicksort over the entire list.<sup class="reference" id="cite_ref-39">[39]</sup><sup class="reference" id="cite_ref-40">[40]</sup>
+</p><p>Techniques can also be combined. For sorting very large sets of data that vastly exceed system memory, even the index may need to be sorted using an algorithm or combination of algorithms designed to perform reasonably with virtual memory, i.e., to reduce the amount of swapping required.
+</p>
+<h2><span class="mw-headline" id="Related_algorithms">Related algorithms</span><span class="mw-editsection"></span></h2>
+<p>Related problems include approximate sorting (sorting a sequence to within a certain amount of the correct order), partial sorting (sorting only the <i>k</i> smallest elements of a list, or finding the <i>k</i> smallest elements, but unordered) and selection (computing the <i>k</i>th smallest element). These can be solved inefficiently by a total sort, but more efficient algorithms exist, often derived by generalizing a sorting algorithm. The most notable example is quickselect, which is related to quicksort. Conversely, some sorting algorithms can be derived by repeated application of a selection algorithm; quicksort and quickselect can be seen as the same pivoting move, differing only in whether one recurses on both sides (quicksort, divide-and-conquer) or one side (quickselect, decrease-and-conquer).
+</p><p>A kind of opposite of a sorting algorithm is a shuffling algorithm. These are fundamentally different because they require a source of random numbers. Shuffling can also be implemented by a sorting algorithm, namely by a random sort: assigning a random number to each element of the list and then sorting based on the random numbers. This is generally not done in practice, however, and there is a well-known simple and efficient algorithm for shuffling: the Fisher–Yates shuffle.
+</p><p>Sorting algorithms are ineffective for finding an order in many situations. Usually when elements have no reliable comparison function (crowdsourced preferences like voting systems), comparisons are very costly (sports), or when it would be impossible to pairwise compare all elements for all criteria (search engines). In these cases, the problem is usually referred to as <i>ranking</i> and the goal is to find the "best" result for some criteria according to probabilities inferred from comparisons or rankings. A common example is in chess, where players are ranked with the Elo rating system, and rankings are determined by a tournament system instead of a sorting algorithm.
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Collation – Assembly of written information into a standard order</li>
+<li>K-sorted sequence</li>
+<li>Pairwise comparison</li>
+<li>Schwartzian transform – Programming idiom for efficiently sorting a list by a computed key</li>
+<li>Search algorithm – Any algorithm which solves the search problem</li>
+<li>Quantum sort – Sorting algorithms for quantum computers</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="Further_reading">Further reading</span><span class="mw-editsection"></span></h2>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2">Knuth, Donald E. (1998), <i>Sorting and Searching</i>, The Art of Computer Programming, vol. 3 (2nd ed.), Boston: Addison-Wesley, ISBN <bdi>0-201-89685-0</bdi></cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Sorting+and+Searching&amp;rft.place=Boston&amp;rft.series=The+Art+of+Computer+Programming&amp;rft.edition=2nd&amp;rft.pub=Addison-Wesley&amp;rft.date=1998&amp;rft.isbn=0-201-89685-0&amp;rft.aulast=Knuth&amp;rft.aufirst=Donald+E.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASorting+algorithm"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation cs2">Sedgewick, Robert (1980), "Efficient Sorting by Computer: An Introduction", <i>Computational Probability</i>, New York: Academic Press, pp. 101–130, ISBN <bdi>0-12-394680-8</bdi></cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Efficient+Sorting+by+Computer%3A+An+Introduction&amp;rft.btitle=Computational+Probability&amp;rft.place=New+York&amp;rft.pages=101-130&amp;rft.pub=Academic+Press&amp;rft.date=1980&amp;rft.isbn=0-12-394680-8&amp;rft.aulast=Sedgewick&amp;rft.aufirst=Robert&amp;rft_id=https%3A%2F%2Farchive.org%2Fdetails%2Fcomputationalpro00actu%2Fpage%2F101&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASorting+algorithm"></span></li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097025294">.mw-parser-output .side-box{margin:4px 0;box-sizing:border-box;border:1px solid #aaa;font-size:88%;line-height:1.25em;background-color:#f9f9f9}.mw-parser-output .side-box-abovebelow,.mw-parser-output .side-box-text{padding:0.25em 0.9em}.mw-parser-output .side-box-image{padding:2px 0 2px 0.9em;text-align:center}.mw-parser-output .side-box-imageright{padding:2px 0.9em 2px 0;text-align:center}@media(min-width:500px){.mw-parser-output .side-box-flex{display:flex;align-items:center}.mw-parser-output .side-box-text{flex:1}}@media(min-width:720px){.mw-parser-output .side-box{width:238px}.mw-parser-output .side-box-right{clear:right;float:right;margin-left:1em}.mw-parser-output .side-box-left{margin-right:1em}}</style>
+<link href="mw-data:TemplateStyles:r1097025294" rel="mw-deduplicated-inline-style"/>
+<link href="mw-data:TemplateStyles:r1097025294" rel="mw-deduplicated-inline-style"/>
+<ul><li>Sorting Algorithm Animations at the Wayback Machine (archived 3 March 2015).</li>
+<li>Sequential and parallel sorting algorithms – Explanations and analyses of many sorting algorithms.</li>
+<li>Dictionary of Algorithms, Data Structures, and Problems – Dictionary of algorithms, techniques, common functions, and problems.</li>
+<li>Slightly Skeptical View on Sorting Algorithms – Discusses several classic algorithms and promotes alternatives to the quicksort algorithm.</li>
+<li>15 Sorting Algorithms in 6 Minutes (Youtube) – Visualization and "audibilization" of 15 Sorting Algorithms in 6 Minutes.</li>
+<li>A036604 sequence in OEIS database titled "Sorting numbers: minimal number of comparisons needed to sort n elements" – Performed by Ford–Johnson algorithm.</li>
+<li>Sorting Algorithms Used on Famous Paintings (Youtube) – Visualization of Sorting Algorithms on Many Famous Paintings.</li>
+<li>A Comparison of Sorting Algorithms – Runs a series of tests of 9 of the main sorting algorithms using Python timeit and Google Colab.</li></ul>
+
+
+<!-- 
+NewPP limit report
+Parsed by mw2303
+Cached time: 20221224002709
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.863 seconds
+Real time usage: 1.130 seconds
+Preprocessor visited node count: 7064/1000000
+Post‐expand include size: 124690/2097152 bytes
+Template argument size: 10206/2097152 bytes
+Highest expansion depth: 16/100
+Expensive parser function count: 14/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 126855/5000000 bytes
+Lua time usage: 0.429/10.000 seconds
+Lua memory usage: 7801375/52428800 bytes
+Number of Wikibase entities loaded: 1/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  760.401      1 -total
+ 43.43%  330.207      1 Template:Reflist
+ 12.83%   97.596     10 Template:Cite_web
+ 11.33%   86.137    129 Template:Sort
+  8.61%   65.437      5 Template:Harvnb
+  7.88%   59.898      2 Template:Navbox
+  7.41%   56.359      1 Template:Algorithmic_paradigms
+  6.50%   49.421      1 Template:Short_description
+  6.04%   45.931      3 Template:Sister_project
+  5.79%   44.030      4 Template:Annotated_link
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:28442-0!canonical and timestamp 20221224002708 and revision id 1127430716.
+ -->
+</div></body>
+</html>

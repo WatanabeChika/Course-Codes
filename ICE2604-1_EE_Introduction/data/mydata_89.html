@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bellman-Ford_algorithm</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1066479718">.mw-parser-output .infobox-subbox{padding:0;border:none;margin:-3px;width:auto;min-width:100%;font-size:100%;clear:none;float:none;background-color:transparent}.mw-parser-output .infobox-3cols-child{margin:auto}.mw-parser-output .infobox .navbar{font-size:100%}body.skin-minerva .mw-parser-output .infobox-header,body.skin-minerva .mw-parser-output .infobox-subheader,body.skin-minerva .mw-parser-output .infobox-above,body.skin-minerva .mw-parser-output .infobox-title,body.skin-minerva .mw-parser-output .infobox-image,body.skin-minerva .mw-parser-output .infobox-full-data,body.skin-minerva .mw-parser-output .infobox-below{text-align:center}</style><table class="infobox"><caption class="infobox-title">Bellman–Ford algorithm</caption><tbody><tr><td class="infobox-image" colspan="2"><img alt="Bellman–Ford algorithm example.gif" data-file-height="578" data-file-width="800" decoding="async" height="159" src="//upload.wikimedia.org/wikipedia/commons/thumb/7/77/Bellman%E2%80%93Ford_algorithm_example.gif/220px-Bellman%E2%80%93Ford_algorithm_example.gif" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/7/77/Bellman%E2%80%93Ford_algorithm_example.gif/330px-Bellman%E2%80%93Ford_algorithm_example.gif 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/7/77/Bellman%E2%80%93Ford_algorithm_example.gif/440px-Bellman%E2%80%93Ford_algorithm_example.gif 2x" width="220"/></td></tr><tr><th class="infobox-label" scope="row">Class</th><td class="infobox-data">Single-source shortest path problem (for weighted directed graphs)</td></tr><tr><th class="infobox-label" scope="row">Data structure</th><td class="infobox-data">Graph</td></tr><tr><th class="infobox-label" scope="row">Worst-case performance</th><td class="infobox-data"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta (|V||E|)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta (|V||E|)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \Theta (|V||E|)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0465422c67bedf2d1659571f5797b3c9c54ed9ad" style="vertical-align: -0.838ex; width:9.768ex; height:2.843ex;"/></span></td></tr><tr><th class="infobox-label" scope="row">Best-case performance</th><td class="infobox-data"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta (|E|)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta (|E|)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \Theta (|E|)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fee8b4657c1eb491bc9d05378522ddc12ddac5fc" style="vertical-align: -0.838ex; width:6.687ex; height:2.843ex;"/></span></td></tr><tr><th class="infobox-label" scope="row">Worst-case space complexity</th><td class="infobox-data"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta (|V|)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta (|V|)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \Theta (|V|)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d6859084635373622fc54329d559928d0d564d42" style="vertical-align: -0.838ex; width:6.698ex; height:2.843ex;"/></span></td></tr></tbody></table>
+<style data-mw-deduplicate="TemplateStyles:r1045330069">.mw-parser-output .sidebar{width:22em;float:right;clear:right;margin:0.5em 0 1em 1em;background:#f8f9fa;border:1px solid #aaa;padding:0.2em;text-align:center;line-height:1.4em;font-size:88%;border-collapse:collapse;display:table}body.skin-minerva .mw-parser-output .sidebar{display:table!important;float:right!important;margin:0.5em 0 1em 1em!important}.mw-parser-output .sidebar-subgroup{width:100%;margin:0;border-spacing:0}.mw-parser-output .sidebar-left{float:left;clear:left;margin:0.5em 1em 1em 0}.mw-parser-output .sidebar-none{float:none;clear:both;margin:0.5em 1em 1em 0}.mw-parser-output .sidebar-outer-title{padding:0 0.4em 0.2em;font-size:125%;line-height:1.2em;font-weight:bold}.mw-parser-output .sidebar-top-image{padding:0.4em}.mw-parser-output .sidebar-top-caption,.mw-parser-output .sidebar-pretitle-with-top-image,.mw-parser-output .sidebar-caption{padding:0.2em 0.4em 0;line-height:1.2em}.mw-parser-output .sidebar-pretitle{padding:0.4em 0.4em 0;line-height:1.2em}.mw-parser-output .sidebar-title,.mw-parser-output .sidebar-title-with-pretitle{padding:0.2em 0.8em;font-size:145%;line-height:1.2em}.mw-parser-output .sidebar-title-with-pretitle{padding:0.1em 0.4em}.mw-parser-output .sidebar-image{padding:0.2em 0.4em 0.4em}.mw-parser-output .sidebar-heading{padding:0.1em 0.4em}.mw-parser-output .sidebar-content{padding:0 0.5em 0.4em}.mw-parser-output .sidebar-content-with-subgroup{padding:0.1em 0.4em 0.2em}.mw-parser-output .sidebar-above,.mw-parser-output .sidebar-below{padding:0.3em 0.8em;font-weight:bold}.mw-parser-output .sidebar-collapse .sidebar-above,.mw-parser-output .sidebar-collapse .sidebar-below{border-top:1px solid #aaa;border-bottom:1px solid #aaa}.mw-parser-output .sidebar-navbar{text-align:right;font-size:115%;padding:0 0.4em 0.4em}.mw-parser-output .sidebar-list-title{padding:0 0.4em;text-align:left;font-weight:bold;line-height:1.6em;font-size:105%}.mw-parser-output .sidebar-list-title-c{padding:0 0.4em;text-align:center;margin:0 3.3em}@media(max-width:720px){body.mediawiki .mw-parser-output .sidebar{width:100%!important;clear:both;float:none!important;margin-left:0!important;margin-right:0!important}}</style><table class="sidebar nomobile nowraplinks hlist"><tbody><tr><th class="sidebar-title">Graph and tree<br/>search algorithms</th></tr><tr><td class="sidebar-content">
+<ul><li>α–β pruning</li>
+<li>Backtracking</li>
+<li>Beam search</li>
+<li>Best-first search</li>
+<li>Branch &amp; bound</li>
+<li>Breadth-First Search (<b>BFS</b>)</li>
+<li>British Museum</li>
+<li>Depth-First Search (<b>DFS</b>)</li>
+<li>Hill climbing</li>
+<li>Iterative Deepening DFS (IDDFS)</li>
+<li>Lexicographic BFS</li></ul></td>
+</tr><tr><th class="sidebar-heading">
+Shortest path</th></tr><tr><td class="sidebar-content">
+<ul><li><b>A*</b></li>
+<li>B*</li>
+<li>Bellman–Ford</li>
+<li>Bidirectional search</li>
+<li>D*</li>
+<li><b>Dijkstra's</b></li>
+<li>Floyd–Warshall</li>
+<li>Fringe search</li>
+<li>Iterative Deepening (IDA*)</li>
+<li>Johnson's</li>
+<li>Jump point search</li>
+<li>Kruskal's</li>
+<li>Lifelong Planning A* (LPA*)</li>
+<li>Pathfinding</li>
+<li>SMA*</li></ul></td>
+</tr><tr><th class="sidebar-heading">
+Lists</th></tr><tr><td class="sidebar-content">
+<ul><li><i>Graph algorithms</i></li>
+<li><i>Search algorithms</i></li>
+<li><i>List of graph algorithms</i></li></ul></td>
+</tr><tr><th class="sidebar-heading">
+Related topics</th></tr><tr><td class="sidebar-content">
+<ul><li>Dynamic programming</li>
+<li>Graph coloring</li>
+<li>Graph traversal</li>
+<li>Minimum spanning tree</li>
+<li>Search games</li>
+<li>Threaded binary tree</li>
+<li>Tree traversal</li></ul></td>
+</tr><tr><td class="sidebar-navbar"><style data-mw-deduplicate="TemplateStyles:r1063604349">.mw-parser-output .navbar{display:inline;font-size:88%;font-weight:normal}.mw-parser-output .navbar-collapse{float:left;text-align:left}.mw-parser-output .navbar-boxtext{word-spacing:0}.mw-parser-output .navbar ul{display:inline-block;white-space:nowrap;line-height:inherit}.mw-parser-output .navbar-brackets::before{margin-right:-0.125em;content:"[ "}.mw-parser-output .navbar-brackets::after{margin-left:-0.125em;content:" ]"}.mw-parser-output .navbar li{word-spacing:-0.125em}.mw-parser-output .navbar a>span,.mw-parser-output .navbar a>abbr{text-decoration:inherit}.mw-parser-output .navbar-mini abbr{font-variant:small-caps;border-bottom:none;text-decoration:none;cursor:inherit}.mw-parser-output .navbar-ct-full{font-size:114%;margin:0 7em}.mw-parser-output .navbar-ct-mini{font-size:114%;margin:0 4em}</style></td></tr></tbody></table>
+<p>The <b>Bellman–Ford algorithm</b> is an algorithm that computes shortest paths from a single source vertex to all of the other vertices in a weighted digraph.<sup class="reference" id="cite_ref-Bang_1-0">[1]</sup>
+It is slower than Dijkstra's algorithm for the same problem, but more versatile, as it is capable of handling graphs in which some of the edge weights are negative numbers.
+The algorithm was first proposed by Alfonso Shimbel (1955), but is instead named after Richard Bellman and Lester Ford Jr., who published it in 1958 and 1956, respectively.<sup class="reference" id="cite_ref-Schrijver_2-0">[2]</sup> Edward F. Moore also published a variation of the algorithm in 1959, and for this reason it is also sometimes called the <b>Bellman–Ford–Moore algorithm</b>.<sup class="reference" id="cite_ref-Bang_1-1">[1]</sup>
+</p><p>Negative edge weights are found in various applications of graphs, hence the usefulness of this algorithm.<sup class="reference" id="cite_ref-FOOTNOTESedgewick2002_3-0">[3]</sup>
+If a graph contains a "negative cycle" (i.e. a cycle whose edges sum to a negative value) that is reachable from the source, then there is no <i>cheapest</i> path: any path that has a point on the negative cycle can be made cheaper by one more walk around the negative cycle. In such a case, the Bellman–Ford algorithm can detect and report the negative cycle.<sup class="reference" id="cite_ref-Bang_1-2">[1]</sup><sup class="reference" id="cite_ref-FOOTNOTEKleinbergTardos2006_4-0">[4]</sup>
+</p>
+
+<h2><span class="mw-headline" id="Algorithm">Algorithm</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097763485">.mw-parser-output .ambox{border:1px solid #a2a9b1;border-left:10px solid #36c;background-color:#fbfbfb;box-sizing:border-box}.mw-parser-output .ambox+link+.ambox,.mw-parser-output .ambox+link+style+.ambox,.mw-parser-output .ambox+link+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+style+.ambox,.mw-parser-output .ambox+.mw-empty-elt+link+link+.ambox{margin-top:-1px}html body.mediawiki .mw-parser-output .ambox.mbox-small-left{margin:4px 1em 4px 0;overflow:hidden;width:238px;border-collapse:collapse;font-size:88%;line-height:1.25em}.mw-parser-output .ambox-speedy{border-left:10px solid #b32424;background-color:#fee7e6}.mw-parser-output .ambox-delete{border-left:10px solid #b32424}.mw-parser-output .ambox-content{border-left:10px solid #f28500}.mw-parser-output .ambox-style{border-left:10px solid #fc3}.mw-parser-output .ambox-move{border-left:10px solid #9932cc}.mw-parser-output .ambox-protection{border-left:10px solid #a2a9b1}.mw-parser-output .ambox .mbox-text{border:none;padding:0.25em 0.5em;width:100%}.mw-parser-output .ambox .mbox-image{border:none;padding:2px 0 2px 0.5em;text-align:center}.mw-parser-output .ambox .mbox-imageright{border:none;padding:2px 0.5em 2px 0;text-align:center}.mw-parser-output .ambox .mbox-empty-cell{border:none;padding:0;width:1px}.mw-parser-output .ambox .mbox-image-div{width:52px}html.client-js body.skin-minerva .mw-parser-output .mbox-text-span{margin-left:23px!important}@media(min-width:720px){.mw-parser-output .ambox{margin:0 10%}}</style><table class="box-Unreferenced_section plainlinks metadata ambox ambox-content ambox-Unreferenced" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+
+<p>Like Dijkstra's algorithm, Bellman–Ford proceeds by relaxation, in which approximations to the correct distance are replaced by better ones until they eventually reach the solution. In both algorithms, the approximate distance to each vertex is always an overestimate of the true distance, and is replaced by the minimum of its old value and the length of a newly found path.
+However, Dijkstra's algorithm uses a priority queue to greedily select the closest vertex that has not yet been processed, and performs this relaxation process on all of its outgoing edges; by contrast, the Bellman–Ford algorithm simply relaxes <i>all</i> the edges, and does this <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |V|-1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |V|-1}</annotation>
+</semantics>
+</math></span><img alt="|V|-1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6407482f919e956e1d22eb304c73a841e395e436" style="vertical-align: -0.838ex; width:7.084ex; height:2.843ex;"/></span> times, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |V|}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |V|}</annotation>
+</semantics>
+</math></span><img alt="|V|" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9ddcffc28643ac01a14dd0fb32c3157859e365a7" style="vertical-align: -0.838ex; width:3.081ex; height:2.843ex;"/></span> is the number of vertices in the graph. In each of these repetitions, the number of vertices with correctly calculated distances grows, from which it follows that eventually all vertices will have their correct distances. This method allows the Bellman–Ford algorithm to be applied to a wider class of inputs than Dijkstra. The intermediate answers depend on the order of edges relaxed, but the final answer remains the same.
+</p><p>Bellman–Ford runs in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(|V|\cdot |E|)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>⋅<!-- ⋅ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(|V|\cdot |E|)}</annotation>
+</semantics>
+</math></span><img alt="O(|V|\cdot |E|)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/93b30ae8ec84ab14193f0b6a384c39e796c80545" style="vertical-align: -0.838ex; width:11.412ex; height:2.843ex;"/></span> time, where <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |V|}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |V|}</annotation>
+</semantics>
+</math></span><img alt="|V|" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9ddcffc28643ac01a14dd0fb32c3157859e365a7" style="vertical-align: -0.838ex; width:3.081ex; height:2.843ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |E|}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |E|}</annotation>
+</semantics>
+</math></span><img alt="|E|" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d8c2b9637808cf805d411190b4ae017dbd4ef8d8" style="vertical-align: -0.838ex; width:3.069ex; height:2.843ex;"/></span> are the number of vertices and edges respectively.
+</p>
+<pre><b>function</b> BellmanFord(<i>list</i> vertices, <i>list</i> edges, <i>vertex</i> source) <b>is</b>
+
+    <i>// This implementation takes in a graph, represented as</i>
+    <i>// lists of vertices (represented as integers [0..n-1]) and edges,</i>
+    <i>// and fills two arrays (distance and predecessor) holding</i>
+    <i>// the shortest path from the source to each vertex</i>
+
+    distance := <i>list</i> of size <i>n</i>
+    predecessor := <i>list</i> of size <i>n</i>
+
+    <i>// Step 1: initialize graph</i>
+    <b>for each</b> vertex v <b>in</b> vertices <b>do</b>
+
+        distance[v] := <b>inf</b>             // Initialize the distance to all vertices to infinity
+        predecessor[v] := <b>null</b>         // And having a null predecessor
+    
+    distance[source] := 0              // The distance from the source to itself is, of course, zero
+
+    <i>// Step 2: relax edges repeatedly</i>
+    
+    <b>repeat</b> |V|−1 <b>times</b>:
+         <b>for each</b> edge (u, v) <b>with</b> weight w <b>in</b> edges <b>do</b>
+             <b>if</b> distance[u] + w &lt; distance[v] <b>then</b>
+                 distance[v] := distance[u] + w
+                 predecessor[v] := u
+
+    <i>// Step 3: check for negative-weight cycles</i>
+    <b>for each</b> edge (u, v) <b>with</b> weight w <b>in</b> edges <b>do</b>
+        <b>if</b> distance[u] + w &lt; distance[v] <b>then</b>
+            <i>// Step 4: find a negative-weight cycle</i>
+            negativeloop := [v, u]
+            <b>repeat</b> |V|−1 <b>times</b>:
+                u := negativeloop[0]
+                <b>for each</b> edge (u, v) <b>with</b> weight w <b>in</b> edges <b>do</b>
+                    <b>if</b> distance[u] + w &lt; distance[v] <b>then</b>
+                        negativeloop := concatenate([v], negativeloop)
+            find a cycle in negativeloop, let it be ncycle
+            // use any cycle detection algorithm here
+            <b>error</b> "Graph contains a negative-weight cycle", ncycle
+
+    <b>return</b> distance, predecessor
+</pre>
+<p>Simply put, the algorithm initializes the distance to the source to 0 and all other nodes to infinity. Then for all edges, if the distance to the destination can be shortened by taking the edge, the distance is updated to the new lower value. 
+</p><p>The core of the algorithm is a loop that scans across all edges at every loop. For every <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i\leq |V|-1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+<mo>≤<!-- ≤ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i\leq |V|-1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle i\leq |V|-1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/56990c69f013b51549590f36f24e4ca6ef9e9226" style="vertical-align: -0.838ex; width:10.985ex; height:2.843ex;"/></span>, at the end of the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span>-th iteration, from any vertex <span class="texhtml mvar" style="font-style:italic;">v</span>, following the predecessor trail recorded in <span class="texhtml mvar" style="font-style:italic;">predecessor</span> yields a path that has a total weight that is at most <span class="texhtml mvar" style="font-style:italic;">distance[v]</span>, and further, <span class="texhtml mvar" style="font-style:italic;">distance[v]</span> is a lower bound to the length of any path from source to <span class="texhtml mvar" style="font-style:italic;">v</span> that uses  at most <span class="texhtml mvar" style="font-style:italic;">i</span> edges.
+</p><p>Since the longest possible path without a cycle can be <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |V|-1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |V|-1}</annotation>
+</semantics>
+</math></span><img alt="|V|-1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6407482f919e956e1d22eb304c73a841e395e436" style="vertical-align: -0.838ex; width:7.084ex; height:2.843ex;"/></span> edges, the edges must be scanned <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |V|-1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |V|-1}</annotation>
+</semantics>
+</math></span><img alt="|V|-1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6407482f919e956e1d22eb304c73a841e395e436" style="vertical-align: -0.838ex; width:7.084ex; height:2.843ex;"/></span> times to ensure the shortest path has been found for all nodes. A final scan of all the edges is performed and if any distance is updated, then a path of length <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |V|}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |V|}</annotation>
+</semantics>
+</math></span><img alt="|V|" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9ddcffc28643ac01a14dd0fb32c3157859e365a7" style="vertical-align: -0.838ex; width:3.081ex; height:2.843ex;"/></span> edges has been found which can only occur if at least one negative cycle exists in the graph.
+</p>
+<h2><span class="mw-headline" id="Proof_of_correctness">Proof of correctness</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1097763485" rel="mw-deduplicated-inline-style"/><table class="box-Unreferenced_section plainlinks metadata ambox ambox-content ambox-Unreferenced" role="presentation"><tbody><tr><td class="mbox-image"></td><td class="mbox-text"></td></tr></tbody></table>
+<p>The correctness of the algorithm can be shown by induction:
+</p><p><b>Lemma</b>. After <i>i</i> repetitions of <i>for</i> loop,
+</p>
+<ul><li>if Distance(<i>u</i>) is not infinity, it is equal to the length of some path from <i>s</i> to <i>u</i>; and</li>
+<li>if there is a path from <i>s</i> to <i>u</i> with at most <i>i</i> edges, then Distance(u) is at most the length of the shortest path from <i>s</i> to <i>u</i> with at most <i>i</i> edges.</li></ul>
+<p><b>Proof</b>. For the base case of induction, consider <code>i=0</code> and the moment before <i>for</i> loop is executed for the first time. Then, for the source vertex, <code>source.distance = 0</code>, which is correct. For other vertices <i>u</i>, <code>u.distance = <b>infinity</b></code>, which is also correct because there is no path from <i>source</i> to <i>u</i> with 0 edges.
+</p><p>For the inductive case, we first prove the first part. Consider a moment when a vertex's distance is updated by
+<code>v.distance := u.distance + uv.weight</code>. By inductive assumption, <code>u.distance</code> is the length of some path from <i>source</i> to <i>u</i>. Then <code>u.distance + uv.weight</code> is the length of the path from <i>source</i> to <i>v</i> that follows the path from  <i>source</i> to <i>u</i> and then goes to <i>v</i>.
+</p><p>For the second part, consider a shortest path <i>P</i> (there may be more than one) from <i>source</i> to <i>v</i> with at most <i>i</i> edges. Let <i>u</i> be the last vertex before <i>v</i> on this path. Then, the part of the path from <i>source</i> to <i>u</i> is a shortest path from <i>source</i> to <i>u</i> with at most <i>i-1</i> edges, since if it were not, then there must be some strictly shorter path from <i>source</i> to <i>u</i> with at most <i>i-1</i> edges, and we could then append the edge <i>uv</i> to this path to obtain a path with at most <i>i</i> edges that is strictly shorter than <i>P</i>—a contradiction. By inductive assumption, <code>u.distance</code> after <i>i</i>−1 iterations is at most the length of this path from <i>source</i> to <i>u</i>. Therefore, <code>uv.weight + u.distance</code> is at most the length of <i>P</i>. In the <i>i<sup>th</sup></i> iteration, <code>v.distance</code> gets compared with <code>uv.weight + u.distance</code>, and is set equal to it if <code>uv.weight + u.distance</code> is smaller. Therefore, after <i>i</i> iterations, <code>v.distance</code> is at most the length of <i>P</i>, i.e., the length of the shortest path from <i>source</i> to <i>v</i> that uses at most <i>i</i> edges.
+</p><p>If there are no negative-weight cycles, then every shortest path visits each vertex at most once, so at step 3 no further improvements can be made. Conversely, suppose no improvement can be made. Then for any cycle with vertices <i>v</i>[0], ..., <i>v</i>[<i>k</i>−1],
+</p><p><code>v[i].distance &lt;= v[i-1 (mod k)].distance + v[i-1 (mod k)]v[i].weight</code>
+</p><p>Summing around the cycle, the <i>v</i>[<i>i</i>].distance and <i>v</i>[<i>i</i>−1 (mod <i>k</i>)].distance terms cancel, leaving
+</p><p><code>0 &lt;= sum from 1 to k of v[i-1 (mod k)]v[i].weight</code>
+</p><p>I.e., every cycle has nonnegative weight.
+</p>
+<h2><span class="mw-headline" id="Finding_negative_cycles">Finding negative cycles</span><span class="mw-editsection"></span></h2>
+<p>When the algorithm is used to find shortest paths, the existence of negative cycles is a problem, preventing the algorithm from finding a correct answer. However, since it terminates upon finding a negative cycle, the Bellman–Ford algorithm can be used for applications in which this is the target to be sought – for example in cycle-cancelling techniques in network flow analysis.<sup class="reference" id="cite_ref-Bang_1-3">[1]</sup>
+</p>
+<h2><span class="mw-headline" id="Applications_in_routing">Applications in routing</span><span class="mw-editsection"></span></h2>
+<p>A distributed variant of the Bellman–Ford algorithm is used in distance-vector routing protocols, for example the Routing Information Protocol (RIP). The algorithm is distributed because it involves a number of nodes (routers) within an Autonomous system (AS), a collection of IP networks typically owned by an ISP.
+It consists of the following steps:
+</p>
+<ol><li>Each node calculates the distances between itself and all other nodes within the AS and stores this information as a table.</li>
+<li>Each node sends its table to all neighboring nodes.</li>
+<li>When a node receives distance tables from its neighbors, it calculates the shortest routes to all other nodes and updates its own table to reflect any changes.</li></ol>
+<p>The main disadvantages of the Bellman–Ford algorithm in this setting are as follows:
+</p>
+<ul><li>It does not scale well.</li>
+<li>Changes in network topology are not reflected quickly since updates are spread node-by-node.</li>
+<li>Count to infinity if link or node failures render a node unreachable from some set of other nodes, those nodes may spend forever gradually increasing their estimates of the distance to it, and in the meantime there may be routing loops.</li></ul>
+<h2><span class="mw-headline" id="Improvements">Improvements</span><span class="mw-editsection"></span></h2>
+<p>The Bellman–Ford algorithm may be improved in practice (although not in the worst case) by the observation that, if an iteration of the main loop of the algorithm terminates without making any changes, the algorithm can be immediately terminated, as subsequent iterations will not make any more changes. With this early termination condition, the main loop may in some cases use many fewer than <span class="texhtml">|<span class="nowrap" style="padding-left:0.1em; padding-right:0.1em;"><i>V</i></span>| − 1</span> iterations, even though the worst case of the algorithm remains unchanged. The following improvements all maintain the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(|V|\cdot |E|)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo>⋅<!-- ⋅ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>E</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(|V|\cdot |E|)}</annotation>
+</semantics>
+</math></span><img alt="O(|V|\cdot |E|)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/93b30ae8ec84ab14193f0b6a384c39e796c80545" style="vertical-align: -0.838ex; width:11.412ex; height:2.843ex;"/></span> worst-case time complexity.
+</p><p>A variation of the Bellman-Ford algorithm known as Shortest Path Faster Algorithm, first described by Moore (1959), reduces the number of relaxation steps that need to be performed within each iteration of the algorithm. If a vertex <i>v</i> has a distance value that has not changed since the last time the edges out of <i>v</i> were relaxed, then there is no need to relax the edges out of <i>v</i> a second time. In this way, as the number of vertices with correct distance values grows, the number whose outgoing edges that need to be relaxed in each iteration shrinks, leading to a constant-factor savings in time for dense graphs. 
+</p><p>Yen (1970) described another improvement to the Bellman–Ford algorithm. His improvement first assigns some arbitrary linear order on all vertices and then partitions the set of all edges into two subsets. The first subset, <i>E<sub>f</sub></i>, contains all edges (<i>v<sub>i</sub></i>, <i>v<sub>j</sub></i>) such that <i>i</i> &lt; <i>j</i>; the second, <i>E<sub>b</sub></i>, contains edges (<i>v<sub>i</sub></i>, <i>v<sub>j</sub></i>) such that <i>i</i> &gt; <i>j</i>. Each vertex is visited in the order <span class="texhtml"><i>v<sub>1</sub></i>, <i>v<sub>2</sub></i>, ..., <i>v</i><sub>|<i>V</i>|</sub></span>, relaxing each outgoing edge from that vertex in <i>E<sub>f</sub></i>. Each vertex is then visited in the order <span class="texhtml"><i>v</i><sub>|<i>V</i>|</sub>, <i>v</i><sub>|<i>V</i>|−1</sub>, ..., <i>v</i><sub>1</sub></span>, relaxing each outgoing edge from that vertex in <i>E<sub>b</sub></i>. Each iteration of the main loop of the algorithm, after the first one, adds at least two edges to the set of edges whose relaxed distances match the correct shortest path distances: one from <i>E<sub>f</sub></i> and one from <i>E<sub>b</sub></i>. This modification reduces the worst-case number of iterations of the main loop of the algorithm from <span class="texhtml">|<span class="nowrap" style="padding-left:0.1em; padding-right:0.1em;"><i>V</i></span>| − 1</span> to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |V|/2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |V|/2}</annotation>
+</semantics>
+</math></span><img alt="|V|/2" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/969159a4606100e8bf46319874300f27fc64c9d9" style="vertical-align: -0.838ex; width:5.406ex; height:2.843ex;"/></span>.<sup class="reference" id="cite_ref-5">[5]</sup><sup class="reference" id="cite_ref-Sedweb_6-0">[6]</sup>
+</p><p>Another improvement, by Bannister &amp; Eppstein (2012), replaces the arbitrary linear order of the vertices used in Yen's second improvement by a random permutation. This change makes the worst case for Yen's improvement (in which the edges of a shortest path strictly alternate between the two subsets <i>E<sub>f</sub></i> and <i>E<sub>b</sub></i>) very unlikely to happen. With a randomly permuted vertex ordering, the expected number of iterations needed in the main loop is at most <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle |V|/3}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mi>V</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo stretchy="false">|</mo>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<mn>3</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle |V|/3}</annotation>
+</semantics>
+</math></span><img alt="|V|/3" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e464851c4b44de4d198e82c9aae50766e3b6a88c" style="vertical-align: -0.838ex; width:5.406ex; height:2.843ex;"/></span>.<sup class="reference" id="cite_ref-Sedweb_6-1">[6]</sup>
+</p>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Original_sources">Original sources</span><span class="mw-editsection"></span></h3>
+<ul><li><style data-mw-deduplicate="TemplateStyles:r1067248974">.mw-parser-output cite.citation{font-style:inherit;word-wrap:break-word}.mw-parser-output .citation q{quotes:"\"""\"""'""'"}.mw-parser-output .citation:target{background-color:rgba(0,127,255,0.133)}.mw-parser-output .id-lock-free a,.mw-parser-output .citation .cs1-lock-free a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/6/65/Lock-green.svg")right 0.1em center/9px no-repeat}.mw-parser-output .id-lock-limited a,.mw-parser-output .id-lock-registration a,.mw-parser-output .citation .cs1-lock-limited a,.mw-parser-output .citation .cs1-lock-registration a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/d/d6/Lock-gray-alt-2.svg")right 0.1em center/9px no-repeat}.mw-parser-output .id-lock-subscription a,.mw-parser-output .citation .cs1-lock-subscription a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/a/aa/Lock-red-alt-2.svg")right 0.1em center/9px no-repeat}.mw-parser-output .cs1-ws-icon a{background:linear-gradient(transparent,transparent),url("//upload.wikimedia.org/wikipedia/commons/4/4c/Wikisource-logo.svg")right 0.1em center/12px no-repeat}.mw-parser-output .cs1-code{color:inherit;background:inherit;border:none;padding:inherit}.mw-parser-output .cs1-hidden-error{display:none;color:#d33}.mw-parser-output .cs1-visible-error{color:#d33}.mw-parser-output .cs1-maint{display:none;color:#3a3;margin-left:0.3em}.mw-parser-output .cs1-format{font-size:95%}.mw-parser-output .cs1-kern-left{padding-left:0.2em}.mw-parser-output .cs1-kern-right{padding-right:0.2em}.mw-parser-output .citation .mw-selflink{font-weight:inherit}</style><cite class="citation conference cs1" id="CITEREFShimbel1955">Shimbel, A. (1955). <i>Structure in communication nets</i>. Proceedings of the Symposium on Information Networks. New York, New York: Polytechnic Press of the Polytechnic Institute of Brooklyn. pp. 199–203.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=conference&amp;rft.btitle=Structure+in+communication+nets&amp;rft.place=New+York%2C+New+York&amp;rft.pages=199-203&amp;rft.pub=Polytechnic+Press+of+the+Polytechnic+Institute+of+Brooklyn&amp;rft.date=1955&amp;rft.aulast=Shimbel&amp;rft.aufirst=A.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ABellman%E2%80%93Ford+algorithm"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFBellman1958">Bellman, Richard (1958). "On a routing problem". <i>Quarterly of Applied Mathematics</i>. <b>16</b>: 87–90. doi:<span class="cs1-lock-free" title="Freely accessible">10.1090/qam/102435</span>. MR 0102435.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Quarterly+of+Applied+Mathematics&amp;rft.atitle=On+a+routing+problem&amp;rft.volume=16&amp;rft.pages=87-90&amp;rft.date=1958&amp;rft_id=info%3Adoi%2F10.1090%2Fqam%2F102435&amp;rft_id=%2F%2Fmathscinet.ams.org%2Fmathscinet-getitem%3Fmr%3D0102435%23id-name%3DMR&amp;rft.aulast=Bellman&amp;rft.aufirst=Richard&amp;rft_id=%2F%2Fdoi.org%2F10.1090%252Fqam%252F102435&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ABellman%E2%80%93Ford+algorithm"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFFord1956">Ford, Lester R. Jr. (August 14, 1956). <i>Network Flow Theory</i>. Paper P-923. Santa Monica, California: RAND Corporation.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Network+Flow+Theory&amp;rft.place=Santa+Monica%2C+California&amp;rft.series=Paper+P-923&amp;rft.pub=RAND+Corporation&amp;rft.date=1956-08-14&amp;rft.aulast=Ford&amp;rft.aufirst=Lester+R.+Jr.&amp;rft_id=http%3A%2F%2Fwww.rand.org%2Fpubs%2Fpapers%2FP923.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ABellman%E2%80%93Ford+algorithm"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation conference cs1" id="CITEREFMoore1959">Moore, Edward F. (1959). <i>The shortest path through a maze</i>. Proc. Internat. Sympos. Switching Theory 1957, Part II. Cambridge, Massachusetts: Harvard Univ. Press. pp. 285–292. MR 0114710.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=conference&amp;rft.btitle=The+shortest+path+through+a+maze&amp;rft.place=Cambridge%2C+Massachusetts&amp;rft.pages=285-292&amp;rft.pub=Harvard+Univ.+Press&amp;rft.date=1959&amp;rft_id=%2F%2Fmathscinet.ams.org%2Fmathscinet-getitem%3Fmr%3D0114710%23id-name%3DMR&amp;rft.aulast=Moore&amp;rft.aufirst=Edward+F.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ABellman%E2%80%93Ford+algorithm"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFYen1970">Yen, Jin Y. (1970). "An algorithm for finding shortest routes from all source nodes to a given destination in general networks". <i>Quarterly of Applied Mathematics</i>. <b>27</b> (4): 526–530. doi:<span class="cs1-lock-free" title="Freely accessible">10.1090/qam/253822</span>. MR 0253822.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Quarterly+of+Applied+Mathematics&amp;rft.atitle=An+algorithm+for+finding+shortest+routes+from+all+source+nodes+to+a+given+destination+in+general+networks&amp;rft.volume=27&amp;rft.issue=4&amp;rft.pages=526-530&amp;rft.date=1970&amp;rft_id=info%3Adoi%2F10.1090%2Fqam%2F253822&amp;rft_id=%2F%2Fmathscinet.ams.org%2Fmathscinet-getitem%3Fmr%3D0253822%23id-name%3DMR&amp;rft.aulast=Yen&amp;rft.aufirst=Jin+Y.&amp;rft_id=%2F%2Fdoi.org%2F10.1090%252Fqam%252F253822&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ABellman%E2%80%93Ford+algorithm"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation conference cs1" id="CITEREFBannisterEppstein2012">Bannister, M. J.; Eppstein, D. (2012). <i>Randomized speedup of the Bellman–Ford algorithm</i>. Analytic Algorithmics and Combinatorics (ANALCO12), Kyoto, Japan. pp. 41–47. arXiv:<span class="cs1-lock-free" title="Freely accessible">1111.5414</span>. doi:10.1137/1.9781611973020.6.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=conference&amp;rft.btitle=Randomized+speedup+of+the+Bellman%E2%80%93Ford+algorithm&amp;rft.pages=41-47&amp;rft.date=2012&amp;rft_id=info%3Aarxiv%2F1111.5414&amp;rft_id=info%3Adoi%2F10.1137%2F1.9781611973020.6&amp;rft.aulast=Bannister&amp;rft.aufirst=M.+J.&amp;rft.au=Eppstein%2C+D.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ABellman%E2%80%93Ford+algorithm"></span></li></ul>
+<h3><span class="mw-headline" id="Secondary_sources">Secondary sources</span><span class="mw-editsection"></span></h3>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFBang-JensenGutin2000">Bang-Jensen, Jørgen; Gutin, Gregory (2000). "Section 2.3.4: The Bellman-Ford-Moore algorithm". <i>Digraphs: Theory, Algorithms and Applications</i> (First ed.). ISBN <bdi>978-1-84800-997-4</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Section+2.3.4%3A+The+Bellman-Ford-Moore+algorithm&amp;rft.btitle=Digraphs%3A+Theory%2C+Algorithms+and+Applications&amp;rft.edition=First&amp;rft.date=2000&amp;rft.isbn=978-1-84800-997-4&amp;rft.aulast=Bang-Jensen&amp;rft.aufirst=J%C3%B8rgen&amp;rft.au=Gutin%2C+Gregory&amp;rft_id=http%3A%2F%2Fwww.cs.rhul.ac.uk%2Fbooks%2Fdbook%2F&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ABellman%E2%80%93Ford+algorithm"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFSchrijver2005">Schrijver, Alexander (2005). "On the history of combinatorial optimization (till 1960)" <span class="cs1-format">(PDF)</span>. <i>Handbook of Discrete Optimization</i>. Elsevier: 1–68.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Handbook+of+Discrete+Optimization&amp;rft.atitle=On+the+history+of+combinatorial+optimization+%28till+1960%29&amp;rft.pages=1-68&amp;rft.date=2005&amp;rft.aulast=Schrijver&amp;rft.aufirst=Alexander&amp;rft_id=http%3A%2F%2Fhomepages.cwi.nl%2F~lex%2Ffiles%2Fhistco.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ABellman%E2%80%93Ford+algorithm"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFCormenLeisersonRivest">Cormen, Thomas H.; Leiserson, Charles E.; Rivest, Ronald L. <i>Introduction to Algorithms</i>. MIT Press and McGraw-Hill.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Introduction+to+Algorithms&amp;rft.pub=MIT+Press+and+McGraw-Hill&amp;rft.aulast=Cormen&amp;rft.aufirst=Thomas+H.&amp;rft.au=Leiserson%2C+Charles+E.&amp;rft.au=Rivest%2C+Ronald+L.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ABellman%E2%80%93Ford+algorithm"></span>, Second Edition. MIT Press and McGraw-Hill, 2001. <link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/>ISBN 0-262-03293-7. Section 24.1: The Bellman–Ford algorithm, pp. 588–592. Problem 24-1, pp. 614–615. Third Edition. MIT Press, 2009. <link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/>ISBN 978-0-262-53305-8. Section 24.1: The Bellman–Ford algorithm, pp. 651–655.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFHeinemanPolliceSelkow2008">Heineman, George T.; Pollice, Gary; Selkow, Stanley (2008). "Chapter 6: Graph Algorithms". <i>Algorithms in a Nutshell</i>. O'Reilly Media. pp. 160–164. ISBN <bdi>978-0-596-51624-6</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Chapter+6%3A+Graph+Algorithms&amp;rft.btitle=Algorithms+in+a+Nutshell&amp;rft.pages=160-164&amp;rft.pub=O%27Reilly+Media&amp;rft.date=2008&amp;rft.isbn=978-0-596-51624-6&amp;rft.aulast=Heineman&amp;rft.aufirst=George+T.&amp;rft.au=Pollice%2C+Gary&amp;rft.au=Selkow%2C+Stanley&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ABellman%E2%80%93Ford+algorithm"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFKleinbergTardos2006">Kleinberg, Jon; Tardos, Éva (2006). <i>Algorithm Design</i>. New York: Pearson Education, Inc.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=book&amp;rft.btitle=Algorithm+Design&amp;rft.place=New+York&amp;rft.pub=Pearson+Education%2C+Inc.&amp;rft.date=2006&amp;rft.aulast=Kleinberg&amp;rft.aufirst=Jon&amp;rft.au=Tardos%2C+%C3%89va&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ABellman%E2%80%93Ford+algorithm"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1" id="CITEREFSedgewick2002">Sedgewick, Robert (2002). "Section 21.7: Negative Edge Weights". <i>Algorithms in Java</i> (3rd ed.). ISBN <bdi>0-201-36121-3</bdi>. Archived from the original on 2008-05-31<span class="reference-accessdate">. Retrieved <span class="nowrap">2007-05-28</span></span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Section+21.7%3A+Negative+Edge+Weights&amp;rft.btitle=Algorithms+in+Java&amp;rft.edition=3rd&amp;rft.date=2002&amp;rft.isbn=0-201-36121-3&amp;rft.aulast=Sedgewick&amp;rft.aufirst=Robert&amp;rft_id=http%3A%2F%2Fsafari.oreilly.com%2F0201361213%2Fch21lev1sec7&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ABellman%E2%80%93Ford+algorithm"></span></li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw2389
+Cached time: 20221224000212
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.350 seconds
+Real time usage: 0.502 seconds
+Preprocessor visited node count: 2427/1000000
+Post‐expand include size: 51588/2097152 bytes
+Template argument size: 2060/2097152 bytes
+Highest expansion depth: 14/100
+Expensive parser function count: 2/500
+Unstrip recursion depth: 0/20
+Unstrip post‐expand size: 36685/5000000 bytes
+Lua time usage: 0.204/10.000 seconds
+Lua memory usage: 6772505/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  382.783      1 -total
+ 18.58%   71.132      3 Template:Cite_conference
+ 15.30%   58.576      1 Template:Short_description
+ 12.08%   46.240      2 Template:Unreferenced_section
+ 10.83%   41.441      2 Template:Unreferenced
+ 10.75%   41.144      1 Template:Tree_search_algorithm
+ 10.03%   38.398      2 Template:Ambox
+  9.94%   38.046      1 Template:Sidebar
+  8.49%   32.485      2 Template:Pagetype
+  7.81%   29.896      1 Template:Infobox_Algorithm
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:221244-0!canonical and timestamp 20221224000211 and revision id 1088801570.
+ -->
+</div></body>
+</html>

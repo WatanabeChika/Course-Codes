@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>process_algebra</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p>In computer science, the <b>process calculi</b> (or <b>process algebras</b>) are a diverse family of related approaches for formally modelling concurrent systems. Process calculi provide a tool for the high-level description of interactions, communications, and synchronizations between a collection of independent agents or processes. They also provide algebraic laws that allow process descriptions to be manipulated and analyzed, and permit formal reasoning about equivalences between processes (e.g., using bisimulation). Leading examples of process calculi include  CSP, CCS, ACP, and LOTOS.<sup class="reference" id="cite_ref-baeten2004_1-0">[1]</sup> More recent additions to the family include the π-calculus, the ambient calculus, PEPA, the fusion calculus and the join-calculus.
+</p>
+
+<h2><span class="mw-headline" id="Essential_features">Essential features</span><span class="mw-editsection"></span></h2>
+<p>While the variety of existing process calculi is very large (including variants that incorporate stochastic behaviour, timing information, and specializations for studying molecular interactions), there are several features that all process calculi have in common:<sup class="reference" id="cite_ref-2">[2]</sup>
+</p>
+<ul><li>Representing interactions between independent processes as communication (message-passing), rather than as modification of shared variables.</li>
+<li>Describing processes and systems using a small collection of primitives, and operators for combining those primitives.</li>
+<li>Defining algebraic laws for the process operators, which allow process expressions to be manipulated using equational reasoning.</li></ul>
+<h2><span class="mw-headline" id="Mathematics_of_processes">Mathematics of processes</span><span class="mw-editsection"></span></h2>
+<p>To define a <b>process calculus</b>, one starts with a set of <i>names</i> (or <i>channels</i>) whose purpose is to provide means of communication.  In many implementations, channels have rich internal structure to improve efficiency, but this is abstracted away in  most theoretic models.  In addition to names, one needs a means to form new processes from old ones. The basic operators, always present in some form or other, allow:<sup class="reference" id="cite_ref-3">[3]</sup>
+</p>
+<ul><li>parallel composition of processes</li>
+<li>specification of which channels to use for sending and receiving data</li>
+<li>sequentialization of interactions</li>
+<li>hiding of interaction points</li>
+<li>recursion or process replication</li></ul>
+<h3><span class="mw-headline" id="Parallel_composition">Parallel composition</span><span class="mw-editsection"></span></h3>
+<p>Parallel composition of two processes <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {P}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">P</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {P}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {P}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2d6cbe0a3152c08703dd4078f974bd0cb5a9e0e6" style="vertical-align: -0.338ex; margin-right: -0.118ex; width:1.694ex; height:2.176ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {Q}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">Q</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {Q}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {Q}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a776927f2082b76964e24774f21e84769c82fefe" style="vertical-align: -0.671ex; margin-right: -0.049ex; width:1.831ex; height:2.509ex;"/></span>, usually written <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P\vert Q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+<mo fence="false" stretchy="false">|</mo>
+<mi>Q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P\vert Q}</annotation>
+</semantics>
+</math></span><img alt="P\vert Q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cf91483b23452851b39148efe5afb61685766d8e" style="vertical-align: -0.838ex; width:4.231ex; height:2.843ex;"/></span>, is the key primitive distinguishing the process calculi from sequential models of computation. Parallel composition allows computation in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {P}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">P</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {P}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {P}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2d6cbe0a3152c08703dd4078f974bd0cb5a9e0e6" style="vertical-align: -0.338ex; margin-right: -0.118ex; width:1.694ex; height:2.176ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {Q}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">Q</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {Q}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {Q}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a776927f2082b76964e24774f21e84769c82fefe" style="vertical-align: -0.671ex; margin-right: -0.049ex; width:1.831ex; height:2.509ex;"/></span> to proceed simultaneously and independently. But it also allows interaction, that is synchronisation and flow of information from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {P}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">P</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {P}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {P}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2d6cbe0a3152c08703dd4078f974bd0cb5a9e0e6" style="vertical-align: -0.338ex; margin-right: -0.118ex; width:1.694ex; height:2.176ex;"/></span> to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {Q}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">Q</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {Q}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {Q}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a776927f2082b76964e24774f21e84769c82fefe" style="vertical-align: -0.671ex; margin-right: -0.049ex; width:1.831ex; height:2.509ex;"/></span> (or vice versa) on a channel shared by both. Crucially, an agent or process can be connected to more than one channel at a time.
+</p><p>Channels may be synchronous or asynchronous. In the case of a synchronous channel, the agent sending a message waits until another agent has received the message. Asynchronous channels do not require any such synchronization.  In some process calculi (notably the π-calculus) channels themselves can be sent in messages through (other) channels, allowing the topology of process interconnections to change. Some process calculi also allow channels to be <i>created</i> during the execution of a computation.
+</p>
+<h3><span class="mw-headline" id="Communication">Communication</span><span class="mw-editsection"></span></h3>
+<p>Interaction can be (but isn't always) a <i>directed</i> flow of information.  That is, input and output can be distinguished as dual interaction primitives. Process calculi that make such distinctions typically define an input operator (<i>e.g.</i> <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x(v)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+<mo stretchy="false">(</mo>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x(v)}</annotation>
+</semantics>
+</math></span><img alt="x(v)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/46e92de4f8fc3cd5a4c4ae37a27b3cb9c0ca7f60" style="vertical-align: -0.838ex; width:4.267ex; height:2.843ex;"/></span>) and an output operator (<i>e.g.</i> <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x\langle y\rangle }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+<mo fence="false" stretchy="false">⟨<!-- ⟨ --></mo>
+<mi>y</mi>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x\langle y\rangle }</annotation>
+</semantics>
+</math></span><img alt="x\langle y\rangle " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/330b5d0e50ebbf4191e9da92c5cbd1d64b62199d" style="vertical-align: -0.838ex; width:4.294ex; height:2.843ex;"/></span>), both of which name an interaction point (here <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {x}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">x</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {x}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {x}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7aaa5b3f48ac71c8b33508e2a9645bbb7e72ae" style="vertical-align: -0.338ex; margin-right: -0.114ex; width:1.193ex; height:1.676ex;"/></span>) that is used to synchronise with a dual interaction primitive.
+</p><p>Should information be exchanged, it will flow from the outputting to the inputting process. The output primitive will specify the data to be sent. In <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x\langle y\rangle }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+<mo fence="false" stretchy="false">⟨<!-- ⟨ --></mo>
+<mi>y</mi>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x\langle y\rangle }</annotation>
+</semantics>
+</math></span><img alt="x\langle y\rangle " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/330b5d0e50ebbf4191e9da92c5cbd1d64b62199d" style="vertical-align: -0.838ex; width:4.294ex; height:2.843ex;"/></span>, this data is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle y}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>y</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle y}</annotation>
+</semantics>
+</math></span><img alt="y" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b8a6208ec717213d4317e666f1ae872e00620a0d" style="vertical-align: -0.671ex; width:1.155ex; height:2.009ex;"/></span>.  Similarly, if an input expects to receive data, one or more bound variables will act as place-holders to be substituted by data, when it arrives. In <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x(v)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+<mo stretchy="false">(</mo>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x(v)}</annotation>
+</semantics>
+</math></span><img alt="x(v)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/46e92de4f8fc3cd5a4c4ae37a27b3cb9c0ca7f60" style="vertical-align: -0.838ex; width:4.267ex; height:2.843ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle v}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>v</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle v}</annotation>
+</semantics>
+</math></span><img alt="v" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e07b00e7fc0847fbd16391c778d65bc25c452597" style="vertical-align: -0.338ex; width:1.128ex; height:1.676ex;"/></span> plays that role. The choice of the kind of data that can be exchanged in an interaction is one of the key features that distinguishes different process calculi.
+</p>
+<h3><span class="mw-headline" id="Sequential_composition">Sequential composition</span><span class="mw-editsection"></span></h3>
+<p>Sometimes interactions must be temporally ordered. For example, it might be desirable to specify algorithms such as: <i>first receive some data on <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {x}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">x</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {x}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {x}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7aaa5b3f48ac71c8b33508e2a9645bbb7e72ae" style="vertical-align: -0.338ex; margin-right: -0.114ex; width:1.193ex; height:1.676ex;"/></span> and then send that data on <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {y}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">y</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {y}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {y}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/793901ca1cf3c961523e93950cecf6b1efdbe18b" style="vertical-align: -0.671ex; margin-right: -0.084ex; width:1.214ex; height:2.009ex;"/></span></i>.  <i>Sequential composition</i> can be used for such purposes. It is well known from other models of computation. In process calculi, the sequentialisation operator is usually integrated with input or output, or both. For example, the process <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x(v)\cdot P}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+<mo stretchy="false">(</mo>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+<mo>⋅<!-- ⋅ --></mo>
+<mi>P</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x(v)\cdot P}</annotation>
+</semantics>
+</math></span><img alt="x(v)\cdot P" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d14adf2c16b68ef7cbf67792a45fca9b3c7c674c" style="vertical-align: -0.838ex; width:7.691ex; height:2.843ex;"/></span> will wait for an input on <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {x}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">x</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {x}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {x}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7aaa5b3f48ac71c8b33508e2a9645bbb7e72ae" style="vertical-align: -0.338ex; margin-right: -0.114ex; width:1.193ex; height:1.676ex;"/></span>. Only when this input has occurred will the process <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {P}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">P</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {P}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {P}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2d6cbe0a3152c08703dd4078f974bd0cb5a9e0e6" style="vertical-align: -0.338ex; margin-right: -0.118ex; width:1.694ex; height:2.176ex;"/></span> be activated, with the received data through <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {x}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">x</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {x}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {x}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7aaa5b3f48ac71c8b33508e2a9645bbb7e72ae" style="vertical-align: -0.338ex; margin-right: -0.114ex; width:1.193ex; height:1.676ex;"/></span> substituted for identifier <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {v}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">v</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {v}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {v}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6ba00a6583a83da6af464db396e096c126b686d6" style="vertical-align: -0.338ex; margin-right: -0.074ex; width:1.144ex; height:1.676ex;"/></span>.
+</p>
+<h3><span class="mw-headline" id="Reduction_semantics">Reduction semantics</span><span class="mw-editsection"></span></h3>
+<p>The key operational reduction rule, containing the computational essence of process calculi, can be given solely in terms of parallel composition, sequentialization, input, and output. The details of this reduction vary among the calculi, but the essence remains roughly the same. The reduction rule is:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x\langle y\rangle \cdot P\;\vert \;x(v)\cdot Q\longrightarrow P\;\vert \;Q[^{y}\!/\!_{v}]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+<mo fence="false" stretchy="false">⟨<!-- ⟨ --></mo>
+<mi>y</mi>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo>⋅<!-- ⋅ --></mo>
+<mi>P</mi>
+<mspace width="thickmathspace"></mspace>
+<mo fence="false" stretchy="false">|</mo>
+<mspace width="thickmathspace"></mspace>
+<mi>x</mi>
+<mo stretchy="false">(</mo>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+<mo>⋅<!-- ⋅ --></mo>
+<mi>Q</mi>
+<mo stretchy="false">⟶<!-- ⟶ --></mo>
+<mi>P</mi>
+<mspace width="thickmathspace"></mspace>
+<mo fence="false" stretchy="false">|</mo>
+<mspace width="thickmathspace"></mspace>
+<mi>Q</mi>
+<msup>
+<mo stretchy="false">[</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>y</mi>
+</mrow>
+</msup>
+<mspace width="negativethinmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<msub>
+<mspace width="negativethinmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>v</mi>
+</mrow>
+</msub>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x\langle y\rangle \cdot P\;\vert \;x(v)\cdot Q\longrightarrow P\;\vert \;Q[^{y}\!/\!_{v}]}</annotation>
+</semantics>
+</math></span><img alt="x\langle y\rangle \cdot P\;\vert \;x(v)\cdot Q\longrightarrow P\;\vert \;Q[^{y}\!/\!_{v}]" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d48113431d20c5b1d6cdb71de661eee533178735" style="vertical-align: -0.838ex; width:31.818ex; height:2.843ex;"/></span></dd></dl>
+<p>The interpretation to this reduction rule is:
+</p>
+<ol><li>The process <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x\langle y\rangle \cdot P}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+<mo fence="false" stretchy="false">⟨<!-- ⟨ --></mo>
+<mi>y</mi>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo>⋅<!-- ⋅ --></mo>
+<mi>P</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x\langle y\rangle \cdot P}</annotation>
+</semantics>
+</math></span><img alt="x\langle y\rangle \cdot P" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34f08b543af248ea7d426e950f30e9152cb14816" style="vertical-align: -0.838ex; width:7.719ex; height:2.843ex;"/></span> sends a message, here <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {y}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">y</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {y}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {y}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/793901ca1cf3c961523e93950cecf6b1efdbe18b" style="vertical-align: -0.671ex; margin-right: -0.084ex; width:1.214ex; height:2.009ex;"/></span>, along the channel <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {x}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">x</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {x}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {x}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7aaa5b3f48ac71c8b33508e2a9645bbb7e72ae" style="vertical-align: -0.338ex; margin-right: -0.114ex; width:1.193ex; height:1.676ex;"/></span>. Dually, the process <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x(v)\cdot Q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+<mo stretchy="false">(</mo>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+<mo>⋅<!-- ⋅ --></mo>
+<mi>Q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x(v)\cdot Q}</annotation>
+</semantics>
+</math></span><img alt="x(v)\cdot Q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0f43b637898472ecf97416d06835030849210ec5" style="vertical-align: -0.838ex; width:7.784ex; height:2.843ex;"/></span> receives that message on channel <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {x}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">x</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {x}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {x}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7aaa5b3f48ac71c8b33508e2a9645bbb7e72ae" style="vertical-align: -0.338ex; margin-right: -0.114ex; width:1.193ex; height:1.676ex;"/></span>.</li>
+<li>Once the message has been sent, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x\langle y\rangle \cdot P}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+<mo fence="false" stretchy="false">⟨<!-- ⟨ --></mo>
+<mi>y</mi>
+<mo fence="false" stretchy="false">⟩<!-- ⟩ --></mo>
+<mo>⋅<!-- ⋅ --></mo>
+<mi>P</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x\langle y\rangle \cdot P}</annotation>
+</semantics>
+</math></span><img alt="x\langle y\rangle \cdot P" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/34f08b543af248ea7d426e950f30e9152cb14816" style="vertical-align: -0.838ex; width:7.719ex; height:2.843ex;"/></span> becomes the process <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {P}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">P</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {P}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {P}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2d6cbe0a3152c08703dd4078f974bd0cb5a9e0e6" style="vertical-align: -0.338ex; margin-right: -0.118ex; width:1.694ex; height:2.176ex;"/></span>, while <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle x(v)\cdot Q}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>x</mi>
+<mo stretchy="false">(</mo>
+<mi>v</mi>
+<mo stretchy="false">)</mo>
+<mo>⋅<!-- ⋅ --></mo>
+<mi>Q</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle x(v)\cdot Q}</annotation>
+</semantics>
+</math></span><img alt="x(v)\cdot Q" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0f43b637898472ecf97416d06835030849210ec5" style="vertical-align: -0.838ex; width:7.784ex; height:2.843ex;"/></span> becomes the process <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle Q[^{y}\!/\!_{v}]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>Q</mi>
+<msup>
+<mo stretchy="false">[</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>y</mi>
+</mrow>
+</msup>
+<mspace width="negativethinmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<msub>
+<mspace width="negativethinmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>v</mi>
+</mrow>
+</msub>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle Q[^{y}\!/\!_{v}]}</annotation>
+</semantics>
+</math></span><img alt="Q[^{y}\!/\!_{v}]" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/40a439550b43a097e6e44eff671a8e60cd9ca961" style="vertical-align: -0.838ex; width:5.599ex; height:2.843ex;"/></span>, which is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {Q}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">Q</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {Q}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {Q}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a776927f2082b76964e24774f21e84769c82fefe" style="vertical-align: -0.671ex; margin-right: -0.049ex; width:1.831ex; height:2.509ex;"/></span> with the place-holder <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {v}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">v</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {v}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {v}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/6ba00a6583a83da6af464db396e096c126b686d6" style="vertical-align: -0.338ex; margin-right: -0.074ex; width:1.144ex; height:1.676ex;"/></span> substituted by <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {y}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">y</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {y}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {y}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/793901ca1cf3c961523e93950cecf6b1efdbe18b" style="vertical-align: -0.671ex; margin-right: -0.084ex; width:1.214ex; height:2.009ex;"/></span>, the data received on <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {x}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">x</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {x}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {x}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7aaa5b3f48ac71c8b33508e2a9645bbb7e72ae" style="vertical-align: -0.338ex; margin-right: -0.114ex; width:1.193ex; height:1.676ex;"/></span>.</li></ol>
+<p>The class of processes that <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {P}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">P</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {P}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {P}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2d6cbe0a3152c08703dd4078f974bd0cb5a9e0e6" style="vertical-align: -0.338ex; margin-right: -0.118ex; width:1.694ex; height:2.176ex;"/></span> is allowed to range over as the continuation of the output operation substantially influences the properties of the calculus.
+</p>
+<h3><span class="mw-headline" id="Hiding">Hiding</span><span class="mw-editsection"></span></h3>
+<p>Processes do not limit the number of connections that can be made at a given interaction point. But interaction points allow interference (i.e. interaction). For the
+synthesis of compact, minimal and compositional systems, the ability to restrict interference is crucial. <i>Hiding</i> operations allow control of the connections made between interaction points when composing
+agents in parallel. Hiding can be denoted in a variety of ways. For example, in the π-calculus the hiding of a name <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {x}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">x</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {x}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {x}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ec7aaa5b3f48ac71c8b33508e2a9645bbb7e72ae" style="vertical-align: -0.338ex; margin-right: -0.114ex; width:1.193ex; height:1.676ex;"/></span> in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {P}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">P</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {P}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {P}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2d6cbe0a3152c08703dd4078f974bd0cb5a9e0e6" style="vertical-align: -0.338ex; margin-right: -0.118ex; width:1.694ex; height:2.176ex;"/></span> can be expressed as <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (\nu \;x)P}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mi>ν<!-- ν --></mi>
+<mspace width="thickmathspace"></mspace>
+<mi>x</mi>
+<mo stretchy="false">)</mo>
+<mi>P</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (\nu \;x)P}</annotation>
+</semantics>
+</math></span><img alt="(\nu \;x)P" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dfc63066ca313c0770a286185acaba456f9b36af" style="vertical-align: -0.838ex; width:6.762ex; height:2.843ex;"/></span>, while in CSP it might be written as <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P\setminus \{x\}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+<mo class="MJX-variant">∖<!-- ∖ --></mo>
+<mo fence="false" stretchy="false">{</mo>
+<mi>x</mi>
+<mo fence="false" stretchy="false">}</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P\setminus \{x\}}</annotation>
+</semantics>
+</math></span><img alt="P\setminus \{x\}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f60a3121231f4a415a9bbaade8bb9e97df7073e6" style="vertical-align: -0.838ex; width:7.595ex; height:2.843ex;"/></span>.
+</p>
+<h3><span class="mw-headline" id="Recursion_and_replication">Recursion and replication</span><span class="mw-editsection"></span></h3>
+<p>The operations presented so far describe only finite interaction and are consequently insufficient for full computability, which includes non-terminating behaviour. <i>Recursion</i> and <i>replication</i> are operations that allow finite descriptions of infinite behaviour.  Recursion is well known from the sequential world. Replication <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle !P}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>!</mo>
+<mi>P</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle !P}</annotation>
+</semantics>
+</math></span><img alt="!P" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0855d143dcb6e9609e2d071c2a87923c1c057539" style="vertical-align: -0.338ex; width:2.392ex; height:2.176ex;"/></span> can be understood as abbreviating the parallel composition of a countably infinite number of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {P}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">P</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {P}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {P}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2d6cbe0a3152c08703dd4078f974bd0cb5a9e0e6" style="vertical-align: -0.338ex; margin-right: -0.118ex; width:1.694ex; height:2.176ex;"/></span> processes:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle !P=P\mid !P}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>!</mo>
+<mi>P</mi>
+<mo>=</mo>
+<mi>P</mi>
+<mo>∣<!-- ∣ --></mo>
+<mo>!</mo>
+<mi>P</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle !P=P\mid !P}</annotation>
+</semantics>
+</math></span><img alt="!P=P\mid !P" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/70641b6fe22b2a2c7369f476f2f282bc30fc5570" style="vertical-align: -0.838ex; width:10.92ex; height:2.843ex;"/></span></dd></dl>
+<h3><span class="mw-headline" id="Null_process">Null process</span><span class="mw-editsection"></span></h3>
+<p>Process calculi generally also include a <i>null process</i> (variously denoted as <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {nil}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">n</mi>
+<mi class="MJX-tex-mathit" mathvariant="italic">i</mi>
+<mi class="MJX-tex-mathit" mathvariant="italic">l</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {nil}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {nil}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3f11f5aeb7c51c4b63818eaac46c3937573f6651" style="vertical-align: -0.338ex; margin-right: -0.13ex; width:2.746ex; height:2.176ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 0}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle 0}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2aae8864a3c1fec9585261791a809ddec1489950" style="vertical-align: -0.338ex; width:1.162ex; height:2.176ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathit {STOP}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-mathit" mathvariant="italic">S</mi>
+<mi class="MJX-tex-mathit" mathvariant="italic">T</mi>
+<mi class="MJX-tex-mathit" mathvariant="italic">O</mi>
+<mi class="MJX-tex-mathit" mathvariant="italic">P</mi>
+</mrow>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathit {STOP}}}</annotation>
+</semantics>
+</math></span><img alt="{\mathit {STOP}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c40c3af424a8537caed17bc4479bc0ef29e04d53" style="vertical-align: -0.338ex; margin-right: -0.118ex; width:6.448ex; height:2.176ex;"/></span>, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \delta }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>δ<!-- δ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \delta }</annotation>
+</semantics>
+</math></span><img alt="\delta " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c5321cfa797202b3e1f8620663ff43c4660ea03a" style="vertical-align: -0.338ex; width:1.049ex; height:2.343ex;"/></span>, or some other appropriate symbol) which has no interaction points. It is utterly inactive and its sole purpose is to act as the inductive anchor on top of which more interesting processes can be generated.
+</p>
+<h2><span class="mw-headline" id="Discrete_and_continuous_process_algebra">Discrete and continuous process algebra</span><span class="mw-editsection"></span></h2>
+<p>Process algebra has been studied for discrete time and continuous time (real time or dense time).<sup class="reference" id="cite_ref-4">[4]</sup>
+</p>
+<h2><span class="mw-headline" id="History">History</span><span class="mw-editsection"></span></h2>
+<p>In the first half of the 20th century, various formalisms were proposed to capture the informal concept of a <i>computable function</i>, with μ-recursive functions, Turing machines  and the lambda calculus possibly being the best-known  examples today.  The surprising fact that they are essentially equivalent, in the sense that they are all encodable into each other, supports the Church-Turing thesis.  Another shared feature is more rarely commented on: they all are most readily understood as models of <i>sequential</i> computation. The subsequent consolidation of computer science required a more subtle formulation of the notion of computation, in particular explicit representations of concurrency and communication. Models of concurrency such as the process calculi, Petri nets in 1962, and the actor model in 1973 emerged from this line of inquiry.
+</p><p>Research on process calculi began in earnest with Robin Milner's seminal work on the Calculus of Communicating Systems (CCS) during the period from 1973 to 1980. C.A.R. Hoare's Communicating Sequential Processes (CSP) first appeared in 1978, and was subsequently developed into a full-fledged process calculus during the early 1980s. There was much cross-fertilization of ideas between CCS and CSP as they developed. In 1982 Jan Bergstra and Jan Willem Klop began work on what came to be known as the Algebra of Communicating Processes (ACP), and introduced the term <i>process algebra</i> to describe their work.<sup class="reference" id="cite_ref-baeten2004_1-1">[1]</sup> CCS, CSP, and ACP constitute the three major branches of the process calculi family: the majority of the other process calculi can trace their roots to one of these three calculi.
+</p>
+<h2><span class="mw-headline" id="Current_research">Current research</span><span class="mw-editsection"></span></h2>
+<p>Various process calculi have been studied and not all of them fit the paradigm sketched here. The most prominent example may be the ambient calculus. This is to be expected as process calculi are an active field of study. Currently research on process calculi focuses on the following problems.
+</p>
+<ul><li>Developing new process calculi for better modeling of computational phenomena.</li>
+<li>Finding well-behaved subcalculi of a given process calculus. This is valuable because (1) most calculi are fairly <i>wild</i> in the sense that they are rather general and not much can be said about arbitrary processes; and (2) computational applications rarely exhaust the whole of a calculus. Rather they use only processes that are very constrained in form. Constraining the shape of processes is mostly studied by way of type systems.</li>
+<li>Logics for processes that allow one to reason about (essentially) arbitrary properties of processes, following the ideas of Hoare logic.</li>
+<li>Behavioural theory: what does it mean for two processes to be the same? How can we decide whether two processes are different or not? Can we find representatives for equivalence classes of processes? Generally, processes are considered to be the same if no context, that is other processes running in parallel, can detect a  difference. Unfortunately, making this intuition precise is subtle and mostly yields unwieldy characterisations of equality (which in most cases must also be undecidable, as a consequence of the halting problem). Bisimulations are a technical tool that aids reasoning about process equivalences.</li>
+<li>Expressivity of calculi. Programming experience shows that certain problems are easier to solve in some languages than in others. This phenomenon calls for a more precise characterisation of the expressivity of calculi modeling computation than that afforded by the Church-Turing thesis. One way of doing this is to consider encodings between two formalisms and see what properties encodings can potentially preserve. The more properties can be preserved, the more expressive the target of the encoding is said to be. For process calculi, the celebrated results are that the synchronous π-calculus is more expressive than its asynchronous variant, has the same expressive power as the higher-order π-calculus,<sup class="reference" id="cite_ref-5">[5]</sup> but is less than the ambient calculus.<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="This claim needs references to reliable sources. (December 2011)">citation needed</span></i>]</sup></li>
+<li>Using process calculus to model biological systems (stochastic π-calculus, BioAmbients, Beta Binders, BioPEPA, Brane calculus). It is thought by some that the compositionality offered by process-theoretic tools can help biologists to organise their knowledge more formally.</li></ul>
+<h2><span class="mw-headline" id="Software_implementations">Software implementations</span><span class="mw-editsection"></span></h2>
+<p>The ideas behind process algebra have given rise to several tools including:
+</p>
+<ul><li>CADP</li>
+<li>Concurrency Workbench</li>
+<li>mCRL2 toolset</li></ul>
+<h2><span class="mw-headline" id="Relationship_to_other_models_of_concurrency">Relationship to other models of concurrency</span><span class="mw-editsection"></span></h2>
+<p>The history monoid is the free object that is generically able to represent the histories of individual communicating processes. A process calculus is then a formal language imposed on a history monoid in a consistent fashion.<sup class="reference" id="cite_ref-6">[6]</sup> That is, a history monoid can only record a sequence of events, with synchronization, but does not specify the allowed state transitions. Thus, a process calculus is to a history monoid what a formal language is to a free monoid (a formal language is a subset of the set of all possible finite-length strings of an alphabet generated by the Kleene star).
+</p><p>The use of channels for communication is one of the features distinguishing the process calculi from other models of concurrency, such as Petri nets and the actor model (see Actor model and process calculi). One of the fundamental motivations for including channels in the process calculi was to enable certain algebraic techniques, thereby making it easier to reason about processes algebraically.
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Communicating sequential processes</li>
+<li>ProVerif</li>
+<li>Stochastic probe</li>
+<li>Tamarin Prover</li>
+<li>Temporal Process Language</li>
+<li>π-calculus</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="Further_reading">Further reading</span><span class="mw-editsection"></span></h2>
+<ul><li>Matthew Hennessy: <i>Algebraic Theory of Processes</i>, The MIT Press, <link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/>ISBN 0-262-08171-7.</li>
+<li>C. A. R. Hoare: <i>Communicating Sequential Processes</i>, Prentice Hall, <link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/>ISBN 0-13-153289-8.
+<ul><li>This book has been updated by Jim Davies at the Oxford University Computing Laboratory and the new edition is available for download as a PDF file at the <i>Using CSP</i> website.</li></ul></li>
+<li>Robin Milner: <i>A Calculus of Communicating Systems</i>, Springer Verlag, <link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/>ISBN 0-387-10235-3.</li>
+<li>Robin Milner: <i>Communicating and Mobile Systems: the Pi-Calculus</i>, Springer Verlag, <link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/>ISBN 0-521-65869-1.</li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation book cs1 cs1-prop-long-vol cs1-prop-foreign-lang-source" id="CITEREFValkMoldtKöhler-Bußmeier2011">Valk, Rüdiger; Moldt, Daniel; Köhler-Bußmeier, Michael, eds. (2011). "Chapter 5: Prozessalgebra - Parallele und kommunizierende Prozesse" <span class="cs1-format">(PDF)</span>. <i>Formale Grundlagen der Informatik II: Modellierung und Analyse von Informatiksystemen</i>. <i>Theoretische Grundlagen der Informatik</i> (in German). Vol. Part 2. University of Hamburg. FGI2. Archived <span class="cs1-format">(PDF)</span> from the original on 2019-07-09<span class="reference-accessdate">. Retrieved <span class="nowrap">2019-07-13</span></span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=bookitem&amp;rft.atitle=Chapter+5%3A+Prozessalgebra+-+Parallele+und+kommunizierende+Prozesse&amp;rft.btitle=Formale+Grundlagen+der+Informatik+II%3A+Modellierung+und+Analyse+von+Informatiksystemen&amp;rft.pub=University+of+Hamburg&amp;rft.date=2011&amp;rft_id=https%3A%2F%2Fwww.informatik.uni-hamburg.de%2FTGI%2Flehre%2Fvl%2FWS1011%2FFGI2%2Fsec%2FFGI2_kap5_2%28pa-parallel%29.pdf&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AProcess+calculus"></span></li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2387
+Cached time: 20221224021653
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.265 seconds
+Real time usage: 0.485 seconds
+Preprocessor visited node count: 1960/1000000
+Post‐expand include size: 30071/2097152 bytes
+Template argument size: 1856/2097152 bytes
+Highest expansion depth: 14/100
+Expensive parser function count: 1/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 33385/5000000 bytes
+Lua time usage: 0.127/10.000 seconds
+Lua memory usage: 5271881/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  263.340      1 -total
+ 39.75%  104.678      1 Template:Reflist
+ 27.26%   71.790      3 Template:Cite_journal
+ 18.24%   48.035      1 Template:Short_description
+ 17.51%   46.111      1 Template:Concurrent_computing
+ 16.80%   44.240      1 Template:Navbox
+ 11.41%   30.038      1 Template:Citation_needed
+ 10.02%   26.390      2 Template:Pagetype
+  9.57%   25.198      1 Template:Fix
+  9.39%   24.720      4 Template:ISBN
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:853240-0!canonical and timestamp 20221224021653 and revision id 1098551908.
+ -->
+</div></body>
+</html>

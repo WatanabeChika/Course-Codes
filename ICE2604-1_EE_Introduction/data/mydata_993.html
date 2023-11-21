@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>suffix_array</title>
+</head>
+<body>
+<div class="mw-parser-output"><style data-mw-deduplicate="TemplateStyles:r1066479718">.mw-parser-output .infobox-subbox{padding:0;border:none;margin:-3px;width:auto;min-width:100%;font-size:100%;clear:none;float:none;background-color:transparent}.mw-parser-output .infobox-3cols-child{margin:auto}.mw-parser-output .infobox .navbar{font-size:100%}body.skin-minerva .mw-parser-output .infobox-header,body.skin-minerva .mw-parser-output .infobox-subheader,body.skin-minerva .mw-parser-output .infobox-above,body.skin-minerva .mw-parser-output .infobox-title,body.skin-minerva .mw-parser-output .infobox-image,body.skin-minerva .mw-parser-output .infobox-full-data,body.skin-minerva .mw-parser-output .infobox-below{text-align:center}</style><table class="infobox"><tbody><tr><th class="infobox-above" colspan="2">Suffix array</th></tr><tr><th class="infobox-label" scope="row">Type</th><td class="infobox-data">Array</td></tr><tr><th class="infobox-label" scope="row">Invented by</th><td class="infobox-data">Manber &amp; Myers (1990)</td></tr><tr><th class="infobox-header" colspan="2" style="background:lavender">Time complexity<br/>in big O notation</th></tr><tr><td class="infobox-full-data" colspan="2"><table style="width:100%;border-collapse:collapse;border-spacing:0px 0px;border:none"><tbody><tr style="vertical-align:top"><th scope="col"></th><th scope="col"> Average</th><th scope="col"> Worst case</th></tr><tr style="vertical-align:top"><th scope="row"> Space</th><td> <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {O}}(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">O</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {O}}(n)}</annotation>
+</semantics>
+</math></span><img alt="{\mathcal {O}}(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3c7bbe0124ae81792773344bc8709fc2f9c9910d" style="vertical-align: -0.838ex; width:5.054ex; height:2.843ex;"/></span></td><td> <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {O}}(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">O</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {O}}(n)}</annotation>
+</semantics>
+</math></span><img alt="{\mathcal {O}}(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3c7bbe0124ae81792773344bc8709fc2f9c9910d" style="vertical-align: -0.838ex; width:5.054ex; height:2.843ex;"/></span></td></tr><tr style="vertical-align:top"><th scope="row"> Construction</th><td> <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {O}}(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">O</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {O}}(n)}</annotation>
+</semantics>
+</math></span><img alt="{\mathcal {O}}(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3c7bbe0124ae81792773344bc8709fc2f9c9910d" style="vertical-align: -0.838ex; width:5.054ex; height:2.843ex;"/></span></td><td> <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {O}}(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">O</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {O}}(n)}</annotation>
+</semantics>
+</math></span><img alt="{\mathcal {O}}(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3c7bbe0124ae81792773344bc8709fc2f9c9910d" style="vertical-align: -0.838ex; width:5.054ex; height:2.843ex;"/></span></td></tr></tbody></table></td></tr></tbody></table>
+<p>In computer science, a <b>suffix array</b> is a sorted array of all suffixes of a string. It is a data structure used in, among others, full-text indices, data-compression algorithms, and the field of bibliometrics.
+</p><p>Suffix arrays were introduced by Manber &amp; Myers (1990) as a simple, space efficient alternative to suffix trees. They had independently been discovered by Gaston Gonnet in 1987 under the name <i>PAT array</i> (Gonnet, Baeza-Yates &amp; Snider 1992).
+</p><p>Li, Li &amp; Huo (2016) gave the first in-place <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {O}}(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">O</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {O}}(n)}</annotation>
+</semantics>
+</math></span><img alt="{\mathcal {O}}(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3c7bbe0124ae81792773344bc8709fc2f9c9910d" style="vertical-align: -0.838ex; width:5.054ex; height:2.843ex;"/></span> time suffix array construction algorithm that is optimal both in time and space, where <i>in-place</i> means that the algorithm only needs <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {O}}(1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">O</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {O}}(1)}</annotation>
+</semantics>
+</math></span><img alt="{\mathcal {O}}(1)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5aeb15c854068604d35a2dd82a925899fafd3690" style="vertical-align: -0.838ex; width:4.822ex; height:2.843ex;"/></span> additional space beyond the input string and the output suffix array.
+</p><p>Enhanced suffix arrays (ESAs) are suffix arrays with additional tables that reproduce the full functionality of suffix trees preserving the same time and memory complexity.<sup class="reference" id="cite_ref-FOOTNOTEAbouelhodaKurtzOhlebusch2004_1-0">[1]</sup>
+The suffix array for a subset of all suffixes of a string is called sparse suffix array.<sup class="reference" id="cite_ref-FOOTNOTEIKärkkäinenKempa2014_2-0">[2]</sup> Multiple probabilistic algorithms have been developed to minimize the additional memory usage including an optimal time and memory algorithm.<sup class="reference" id="cite_ref-FOOTNOTEGawrychowskiKociumaka2017_3-0">[3]</sup>
+</p>
+
+<h2><span class="mw-headline" id="Definition">Definition</span><span class="mw-editsection"></span></h2>
+<p>Let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S=S[1]S[2]...S[n]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>S</mi>
+<mo>=</mo>
+<mi>S</mi>
+<mo stretchy="false">[</mo>
+<mn>1</mn>
+<mo stretchy="false">]</mo>
+<mi>S</mi>
+<mo stretchy="false">[</mo>
+<mn>2</mn>
+<mo stretchy="false">]</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mi>S</mi>
+<mo stretchy="false">[</mo>
+<mi>n</mi>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S=S[1]S[2]...S[n]}</annotation>
+</semantics>
+</math></span><img alt="S=S[1]S[2]...S[n]" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7368634286bb954c1f6acb4885bbb21d0b779cda" style="vertical-align: -0.838ex; width:19.798ex; height:2.843ex;"/></span> be an <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle n}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cc6e1f880981346a604257ebcacdef24c0aca2d6" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span>-string and let <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S[i,j]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>S</mi>
+<mo stretchy="false">[</mo>
+<mi>i</mi>
+<mo>,</mo>
+<mi>j</mi>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S[i,j]}</annotation>
+</semantics>
+</math></span><img alt="S[i,j]" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/38fe7fdd57ab786563cca51767a3b9717fc63f92" style="vertical-align: -0.838ex; width:5.587ex; height:2.843ex;"/></span> denote the substring of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>S</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S}</annotation>
+</semantics>
+</math></span><img alt="S" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4611d85173cd3b508e67077d4a1252c9c05abca2" style="vertical-align: -0.338ex; width:1.499ex; height:2.176ex;"/></span> ranging from <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span> to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle j}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>j</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle j}</annotation>
+</semantics>
+</math></span><img alt="j" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2f461e54f5c093e92a55547b9764291390f0b5d0" style="vertical-align: -0.671ex; margin-left: -0.027ex; width:0.985ex; height:2.509ex;"/></span> inclusive.
+</p><p>The suffix array <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A}</annotation>
+</semantics>
+</math></span><img alt="A" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7daff47fa58cdfd29dc333def748ff5fa4c923e3" style="vertical-align: -0.338ex; width:1.743ex; height:2.176ex;"/></span> of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>S</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S}</annotation>
+</semantics>
+</math></span><img alt="S" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4611d85173cd3b508e67077d4a1252c9c05abca2" style="vertical-align: -0.338ex; width:1.499ex; height:2.176ex;"/></span> is now defined to be an array of integers providing the starting positions of suffixes of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>S</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S}</annotation>
+</semantics>
+</math></span><img alt="S" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4611d85173cd3b508e67077d4a1252c9c05abca2" style="vertical-align: -0.338ex; width:1.499ex; height:2.176ex;"/></span> in lexicographical order. This means, an entry <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A[i]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+<mo stretchy="false">[</mo>
+<mi>i</mi>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A[i]}</annotation>
+</semantics>
+</math></span><img alt="A[i]" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2a0d7a8a3371fad84f7032042e8d1e1caf6aa15e" style="vertical-align: -0.838ex; width:3.839ex; height:2.843ex;"/></span> contains the starting position of the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span>-th smallest suffix in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>S</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S}</annotation>
+</semantics>
+</math></span><img alt="S" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4611d85173cd3b508e67077d4a1252c9c05abca2" style="vertical-align: -0.338ex; width:1.499ex; height:2.176ex;"/></span> and thus for all <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 1\leq i\leq n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>1</mn>
+<mo>≤<!-- ≤ --></mo>
+<mi>i</mi>
+<mo>≤<!-- ≤ --></mo>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 1\leq i\leq n}</annotation>
+</semantics>
+</math></span><img alt="1\leq i\leq n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/abbe58b9b83f8b6ec0da570e2249323a8930ef1e" style="vertical-align: -0.505ex; width:9.557ex; height:2.343ex;"/></span>: <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S[A[i-1],n]&lt;S[A[i],n]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>S</mi>
+<mo stretchy="false">[</mo>
+<mi>A</mi>
+<mo stretchy="false">[</mo>
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo stretchy="false">]</mo>
+<mo>,</mo>
+<mi>n</mi>
+<mo stretchy="false">]</mo>
+<mo>&lt;</mo>
+<mi>S</mi>
+<mo stretchy="false">[</mo>
+<mi>A</mi>
+<mo stretchy="false">[</mo>
+<mi>i</mi>
+<mo stretchy="false">]</mo>
+<mo>,</mo>
+<mi>n</mi>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S[A[i-1],n]&lt;S[A[i],n]}</annotation>
+</semantics>
+</math></span><img alt="S[A[i-1],n]&lt;S[A[i],n]" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fa1a146c60a150fd6201ad6370e818bdc45f1cb4" style="vertical-align: -0.838ex; width:25.223ex; height:2.843ex;"/></span>.
+</p><p>Each suffix of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>S</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S}</annotation>
+</semantics>
+</math></span><img alt="S" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4611d85173cd3b508e67077d4a1252c9c05abca2" style="vertical-align: -0.338ex; width:1.499ex; height:2.176ex;"/></span> shows up in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A}</annotation>
+</semantics>
+</math></span><img alt="A" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7daff47fa58cdfd29dc333def748ff5fa4c923e3" style="vertical-align: -0.338ex; width:1.743ex; height:2.176ex;"/></span> exactly once. Suffixes are simple strings. These strings are sorted (as in a paper dictionary), before their starting positions (integer indices) are saved in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A}</annotation>
+</semantics>
+</math></span><img alt="A" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7daff47fa58cdfd29dc333def748ff5fa4c923e3" style="vertical-align: -0.338ex; width:1.743ex; height:2.176ex;"/></span>.
+</p>
+<h2><span class="mw-headline" id="Example">Example</span><span class="mw-editsection"></span></h2>
+<p>Consider the text <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>S</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S}</annotation>
+</semantics>
+</math></span><img alt="S" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4611d85173cd3b508e67077d4a1252c9c05abca2" style="vertical-align: -0.338ex; width:1.499ex; height:2.176ex;"/></span>=<code>banana$</code> to be indexed:
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th scope="row" style="text-align:left;">i
+</th>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>5</td>
+<td>6</td>
+<td>7
+</td></tr>
+<tr>
+<th scope="row" style="text-align:left;"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S[i]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>S</mi>
+<mo stretchy="false">[</mo>
+<mi>i</mi>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S[i]}</annotation>
+</semantics>
+</math></span><img alt="S[i]" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/bcac18d365382145819781be2eb59d84dd8b4496" style="vertical-align: -0.838ex; width:3.595ex; height:2.843ex;"/></span>
+</th>
+<td>b</td>
+<td>a</td>
+<td>n</td>
+<td>a</td>
+<td>n</td>
+<td>a</td>
+<td>$
+</td></tr></tbody></table>
+<p>The text ends with the special sentinel letter <code>$</code> that is unique and lexicographically smaller than any other character. The text has the following suffixes:
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th align="left">Suffix</th>
+<th align="left">i
+</th></tr>
+<tr class="odd">
+<td align="left">banana$</td>
+<td align="left">1
+</td></tr>
+<tr class="even">
+<td align="left">anana$</td>
+<td align="left">2
+</td></tr>
+<tr class="odd">
+<td align="left">nana$</td>
+<td align="left">3
+</td></tr>
+<tr class="even">
+<td align="left">ana$</td>
+<td align="left">4
+</td></tr>
+<tr class="odd">
+<td align="left">na$</td>
+<td align="left">5
+</td></tr>
+<tr class="even">
+<td align="left">a$</td>
+<td align="left">6
+</td></tr>
+<tr class="odd">
+<td align="left">$</td>
+<td align="left">7
+</td></tr></tbody></table>
+<p>These suffixes can be sorted in ascending order:
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th align="left">Suffix</th>
+<th align="left">i
+</th></tr>
+<tr class="odd">
+<td align="left">$</td>
+<td align="left">7
+</td></tr>
+<tr class="even">
+<td align="left">a$</td>
+<td align="left">6
+</td></tr>
+<tr class="even">
+<td align="left">ana$</td>
+<td align="left">4
+</td></tr>
+<tr class="even">
+<td align="left">anana$</td>
+<td align="left">2
+</td></tr>
+<tr class="odd">
+<td align="left">banana$</td>
+<td align="left">1
+</td></tr>
+<tr class="odd">
+<td align="left">na$</td>
+<td align="left">5
+</td></tr>
+<tr class="odd">
+<td align="left">nana$</td>
+<td align="left">3
+</td></tr></tbody></table>
+<p>The suffix array <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A}</annotation>
+</semantics>
+</math></span><img alt="A" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/7daff47fa58cdfd29dc333def748ff5fa4c923e3" style="vertical-align: -0.338ex; width:1.743ex; height:2.176ex;"/></span> contains the starting positions of these sorted suffixes:
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th scope="row" style="text-align:left;">i =
+</th>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>5</td>
+<td>6</td>
+<td>7
+</td></tr>
+<tr>
+<th scope="row" style="text-align:left;"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A[i]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+<mo stretchy="false">[</mo>
+<mi>i</mi>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A[i]}</annotation>
+</semantics>
+</math></span><img alt="A[i]" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2a0d7a8a3371fad84f7032042e8d1e1caf6aa15e" style="vertical-align: -0.838ex; width:3.839ex; height:2.843ex;"/></span> =
+</th>
+<td>7</td>
+<td>6</td>
+<td>4</td>
+<td>2</td>
+<td>1</td>
+<td>5</td>
+<td>3
+</td></tr></tbody></table>
+<p>The suffix array with the suffixes written out vertically underneath for clarity:
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th scope="row" style="text-align:left;">i =
+</th>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>5</td>
+<td>6</td>
+<td>7
+</td></tr>
+<tr>
+<th scope="row" style="text-align:left;"><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A[i]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+<mo stretchy="false">[</mo>
+<mi>i</mi>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A[i]}</annotation>
+</semantics>
+</math></span><img alt="A[i]" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2a0d7a8a3371fad84f7032042e8d1e1caf6aa15e" style="vertical-align: -0.838ex; width:3.839ex; height:2.843ex;"/></span> =
+</th>
+<td>7</td>
+<td>6</td>
+<td>4</td>
+<td>2</td>
+<td>1</td>
+<td>5</td>
+<td>3
+</td></tr>
+<tr>
+<th scope="row" style="text-align:left;">1
+</th>
+<td>$</td>
+<td>a</td>
+<td>a</td>
+<td>a</td>
+<td>b</td>
+<td>n</td>
+<td>n
+</td></tr>
+<tr>
+<th scope="row" style="text-align:left;">2
+</th>
+<td></td>
+<td>$</td>
+<td>n</td>
+<td>n</td>
+<td>a</td>
+<td>a</td>
+<td>a
+</td></tr>
+<tr>
+<th scope="row" style="text-align:left;">3
+</th>
+<td></td>
+<td></td>
+<td>a</td>
+<td>a</td>
+<td>n</td>
+<td>$</td>
+<td>n
+</td></tr>
+<tr>
+<th scope="row" style="text-align:left;">4
+</th>
+<td></td>
+<td></td>
+<td>$</td>
+<td>n</td>
+<td>a</td>
+<td></td>
+<td>a
+</td></tr>
+<tr>
+<th scope="row" style="text-align:left;">5
+</th>
+<td></td>
+<td></td>
+<td></td>
+<td>a</td>
+<td>n</td>
+<td></td>
+<td>$
+</td></tr>
+<tr>
+<th scope="row" style="text-align:left;">6
+</th>
+<td></td>
+<td></td>
+<td></td>
+<td>$</td>
+<td>a</td>
+<td></td>
+<td>
+</td></tr>
+<tr>
+<th scope="row" style="text-align:left;">7
+</th>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>$</td>
+<td></td>
+<td>
+</td></tr></tbody></table>
+<p>So for example, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle A[3]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>A</mi>
+<mo stretchy="false">[</mo>
+<mn>3</mn>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle A[3]}</annotation>
+</semantics>
+</math></span><img alt="A[3]" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fad3f1cbea6f7cb9b43da98cb6c31e0043e47713" style="vertical-align: -0.838ex; width:4.199ex; height:2.843ex;"/></span> contains the value 4, and therefore refers to the suffix starting at position 4 within <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>S</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S}</annotation>
+</semantics>
+</math></span><img alt="S" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4611d85173cd3b508e67077d4a1252c9c05abca2" style="vertical-align: -0.338ex; width:1.499ex; height:2.176ex;"/></span>, which is the suffix <code>ana$</code>.
+</p>
+<h2><span class="mw-headline" id="Correspondence_to_suffix_trees">Correspondence to suffix trees</span><span class="mw-editsection"></span></h2>
+<p>Suffix arrays are closely related to suffix trees:
+</p>
+<ul><li>Suffix arrays can be constructed by performing a depth-first traversal of a suffix tree. The suffix array corresponds to the leaf-labels given in the order in which these are visited during the traversal, if edges are visited in the lexicographical order of their first character.</li>
+<li>A suffix tree can be constructed in linear time by using a combination of suffix array and LCP array. For a description of the algorithm, see the corresponding section in the LCP array article.</li></ul>
+<p>It has been shown that every suffix tree algorithm can be systematically replaced with an algorithm that uses a suffix array enhanced with additional information (such as the LCP array) and solves the same problem in the same time complexity.<sup class="reference" id="cite_ref-FOOTNOTEAbouelhodaKurtzOhlebusch2004_1-1">[1]</sup>
+Advantages of suffix arrays over suffix trees include improved space requirements, simpler linear time construction algorithms (e.g., compared to Ukkonen's algorithm) and improved cache locality.<sup class="reference" id="cite_ref-FOOTNOTEAbouelhodaKurtzOhlebusch2002_4-0">[4]</sup>
+</p>
+<h2><span class="mw-headline" id="Space_efficiency">Space efficiency</span><span class="mw-editsection"></span></h2>
+<p>Suffix arrays were introduced by Manber &amp; Myers (1990) in order to improve over the space requirements of suffix trees: Suffix arrays store <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span> integers. Assuming an integer requires <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 4}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>4</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 4}</annotation>
+</semantics>
+</math></span><img alt="4" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/295b4bf1de7cd3500e740e0f4f0635db22d87b42" style="vertical-align: -0.338ex; width:1.162ex; height:2.176ex;"/></span> bytes, a suffix array requires <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 4n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>4</mn>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 4n}</annotation>
+</semantics>
+</math></span><img alt="4n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/42d3d982c0a63d59f04a9ea9aecec75fb107f6a3" style="vertical-align: -0.338ex; width:2.557ex; height:2.176ex;"/></span> bytes in total. This is significantly less than the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 20n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>20</mn>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 20n}</annotation>
+</semantics>
+</math></span><img alt="20n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3f9ea64e079f0a3871c95d013ad60fba3aecdddf" style="vertical-align: -0.338ex; width:3.72ex; height:2.176ex;"/></span> bytes which are required by a careful suffix tree implementation.<sup class="reference" id="cite_ref-FOOTNOTEKurtz1999_5-0">[5]</sup>
+</p><p>However, in certain applications, the space requirements of suffix arrays may still be prohibitive. Analyzed in bits, a suffix array requires <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {O}}(n\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">O</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {O}}(n\log n)}</annotation>
+</semantics>
+</math></span><img alt="{\mathcal {O}}(n\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9981ede263cbf28215d3a70bf30f55db41a6e692" style="vertical-align: -0.838ex; width:10.195ex; height:2.843ex;"/></span> space, whereas the original text over an alphabet of size <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sigma }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>σ<!-- σ --></mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sigma }</annotation>
+</semantics>
+</math></span><img alt="\sigma " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/59f59b7c3e6fdb1d0365a494b81fb9a696138c36" style="vertical-align: -0.338ex; width:1.33ex; height:1.676ex;"/></span> only requires <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {O}}(n\log \sigma )}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">O</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>σ<!-- σ --></mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {O}}(n\log \sigma )}</annotation>
+</semantics>
+</math></span><img alt="{\mathcal  {O}}(n\log \sigma )" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/92ec16b663d24328da1ccb87aa0403aae0a52569" style="vertical-align: -0.838ex; width:10.13ex; height:2.843ex;"/></span> bits.
+For a human genome with <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \sigma =4}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>σ<!-- σ --></mi>
+<mo>=</mo>
+<mn>4</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \sigma =4}</annotation>
+</semantics>
+</math></span><img alt="\sigma =4" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b0175571ddfca9b707979289129dd7a499a5b25e" style="vertical-align: -0.338ex; width:5.591ex; height:2.176ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n=3.4\times 10^{9}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+<mo>=</mo>
+<mn>3.4</mn>
+<mo>×<!-- × --></mo>
+<msup>
+<mn>10</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>9</mn>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n=3.4\times 10^{9}}</annotation>
+</semantics>
+</math></span><img alt="n=3.4\times 10^{9}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2043f775ca7a7041e7e566c67a40d080ff76187e" style="vertical-align: -0.338ex; width:13.684ex; height:2.676ex;"/></span> the suffix array would therefore occupy about 16 times more memory than the genome itself.
+</p><p>Such discrepancies motivated a trend towards compressed suffix arrays and BWT-based compressed full-text indices such as the FM-index. These data structures require only space within the size of the text or even less.
+</p>
+<h2><span class="mw-headline" id="Construction_algorithms">Construction algorithms</span><span class="mw-editsection"></span></h2>
+<p>A suffix tree can be built in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {O}}(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">O</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {O}}(n)}</annotation>
+</semantics>
+</math></span><img alt="{\mathcal {O}}(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3c7bbe0124ae81792773344bc8709fc2f9c9910d" style="vertical-align: -0.838ex; width:5.054ex; height:2.843ex;"/></span> and can be converted into a suffix array by traversing the tree depth-first also in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {O}}(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">O</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {O}}(n)}</annotation>
+</semantics>
+</math></span><img alt="{\mathcal {O}}(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3c7bbe0124ae81792773344bc8709fc2f9c9910d" style="vertical-align: -0.838ex; width:5.054ex; height:2.843ex;"/></span>, so there exist algorithms that can build a suffix array in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {O}}(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">O</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {O}}(n)}</annotation>
+</semantics>
+</math></span><img alt="{\mathcal {O}}(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3c7bbe0124ae81792773344bc8709fc2f9c9910d" style="vertical-align: -0.838ex; width:5.054ex; height:2.843ex;"/></span>.
+</p><p>A naive approach to construct a suffix array is to use a comparison-based sorting algorithm. These algorithms require <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {O}}(n\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">O</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {O}}(n\log n)}</annotation>
+</semantics>
+</math></span><img alt="{\mathcal {O}}(n\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9981ede263cbf28215d3a70bf30f55db41a6e692" style="vertical-align: -0.838ex; width:10.195ex; height:2.843ex;"/></span> suffix comparisons, but a suffix comparison runs in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {O}}(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">O</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {O}}(n)}</annotation>
+</semantics>
+</math></span><img alt="{\mathcal {O}}(n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/3c7bbe0124ae81792773344bc8709fc2f9c9910d" style="vertical-align: -0.838ex; width:5.054ex; height:2.843ex;"/></span> time, so the overall runtime of this approach is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {O}}(n^{2}\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">O</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<msup>
+<mi>n</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {O}}(n^{2}\log n)}</annotation>
+</semantics>
+</math></span><img alt="{\mathcal  {O}}(n^{2}\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ff9d8247a11fce04adfd903d817db246a6d3d44b" style="vertical-align: -0.838ex; width:11.249ex; height:3.176ex;"/></span>.
+</p><p>More advanced algorithms take advantage of the fact that the suffixes to be sorted are not arbitrary strings but related to each other. These algorithms strive to achieve the following goals:<sup class="reference" id="cite_ref-FOOTNOTEPuglisiSmythTurpin2007_6-0">[6]</sup>
+</p>
+<ul><li>minimal asymptotic complexity <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta (n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta (n)}</annotation>
+</semantics>
+</math></span><img alt="\Theta (n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a6351206e27071559aa4472579095994f650d76b" style="vertical-align: -0.838ex; width:5.012ex; height:2.843ex;"/></span></li>
+<li>lightweight in space, meaning little or no working memory beside the text and the suffix array itself is needed</li>
+<li>fast in practice</li></ul>
+<p>One of the first algorithms to achieve all goals is the SA-IS algorithm of Nong, Zhang &amp; Chan (2009). The algorithm is also rather simple (&lt; 100 LOC) and can be enhanced to simultaneously construct the LCP array.<sup class="reference" id="cite_ref-FOOTNOTEFischer2011_7-0">[7]</sup> The SA-IS algorithm is one of the fastest known suffix array construction algorithms. A careful implementation by Yuta Mori outperforms most other linear or super-linear construction approaches.
+</p><p>Beside time and space requirements, suffix array construction algorithms are also differentiated by their supported alphabet:  <i>constant alphabets</i> where the alphabet size is bound by a constant, <i>integer alphabets</i> where characters are integers in a range depending on <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span> and <i>general alphabets</i> where only character comparisons are allowed.<sup class="reference" id="cite_ref-FOOTNOTEBurkhardtKärkkäinen2003_8-0">[8]</sup>
+</p><p>Most suffix array construction algorithms are based on one of the following approaches:<sup class="reference" id="cite_ref-FOOTNOTEPuglisiSmythTurpin2007_6-1">[6]</sup>
+</p>
+<ul><li><i>Prefix doubling</i> algorithms are based on a strategy of Karp, Miller &amp; Rosenberg (1972). The idea is to find prefixes that honor the lexicographic ordering of suffixes. The assessed prefix length doubles in each iteration of the algorithm until a prefix is unique and provides the rank of the associated suffix.</li>
+<li><i>Recursive</i> algorithms follow the approach of the suffix tree construction algorithm by Farach (1997) to recursively sort a subset of suffixes. This subset is then used to infer a suffix array of the remaining suffixes. Both of these suffix arrays are then merged to compute the final suffix array.</li>
+<li><i>Induced copying</i> algorithms are similar to recursive algorithms in the sense that they use an already sorted subset to induce a fast sort of the remaining suffixes. The difference is that these algorithms favor iteration over recursion to sort the selected suffix subset. A survey of this diverse group of algorithms has been put together by Puglisi, Smyth &amp; Turpin (2007).</li></ul>
+<p>A well-known recursive algorithm for integer alphabets is the <i>DC3 / skew</i> algorithm of Kärkkäinen &amp; Sanders (2003). It runs in linear time and has successfully been used as the basis for parallel<sup class="reference" id="cite_ref-FOOTNOTEKullaSanders2007_9-0">[9]</sup> and external memory<sup class="reference" id="cite_ref-FOOTNOTEDementievKärkkäinenMehnertSanders2008_10-0">[10]</sup> suffix array construction algorithms.
+</p><p>Recent work by Salson et al. (2010) proposes an algorithm for updating the suffix array of a text that has been edited instead of rebuilding a new suffix array from scratch. Even if the theoretical worst-case time complexity is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {O}}(n\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">O</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {O}}(n\log n)}</annotation>
+</semantics>
+</math></span><img alt="{\mathcal {O}}(n\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9981ede263cbf28215d3a70bf30f55db41a6e692" style="vertical-align: -0.838ex; width:10.195ex; height:2.843ex;"/></span>, it appears to perform well in practice: experimental results from the authors showed that their implementation of dynamic suffix arrays is generally more efficient than rebuilding when considering the insertion of a reasonable number of letters in the original text.
+</p><p>In practical open source work, a commonly used routine for suffix array construction was qsufsort, based on the 1999 Larsson-Sadakane algorithm.<sup class="reference" id="cite_ref-11">[11]</sup> This routine has been superseded by Yuta Mori's DivSufSort, "the fastest known suffix sorting algorithm in main memory" as of 2017. It too can be modified to compute an LCP array. It uses a induced copying combined with Itoh-Tanaka.<sup class="reference" id="cite_ref-12">[12]</sup> In 2021 a faster implementation of the algorithm was presented by Ilya Grebnov <sup class="reference" id="cite_ref-13">[13]</sup> which in average showed 65% performance improvement over DivSufSort implementation on Silesia Corpus.<sup class="reference" id="cite_ref-14">[14]</sup>
+</p>
+<h2><span class="mw-headline" id="Generalized_Suffix_Array">Generalized Suffix Array</span><span class="mw-editsection"></span></h2>
+<p>The concept of a suffix array can be extended to more than one string. This is called a generalized suffix array (or GSA), a suffix array that contains all suffixes for a set of strings (for example, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S=S_{1},S_{2},S_{3},...,S_{k}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>S</mi>
+<mo>=</mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>1</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>3</mn>
+</mrow>
+</msub>
+<mo>,</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>.</mo>
+<mo>,</mo>
+<msub>
+<mi>S</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>k</mi>
+</mrow>
+</msub>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S=S_{1},S_{2},S_{3},...,S_{k}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle S=S_{1},S_{2},S_{3},...,S_{k}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/510e5c211d900936d1a79954c45482699b5384f6" style="vertical-align: -0.671ex; width:21.786ex; height:2.509ex;"/></span> and is lexicographically sorted with all suffixes of each string.<sup class="reference" id="cite_ref-FOOTNOTEShi1996_15-0">[15]</sup>
+</p>
+<h2><span class="mw-headline" id="Applications">Applications</span><span class="mw-editsection"></span></h2>
+<p>The suffix array of a string can be used as an index to quickly locate every occurrence of a substring pattern <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P}</annotation>
+</semantics>
+</math></span><img alt="P" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b4dc73bf40314945ff376bd363916a738548d40a" style="vertical-align: -0.338ex; width:1.745ex; height:2.176ex;"/></span> within the string <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>S</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S}</annotation>
+</semantics>
+</math></span><img alt="S" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4611d85173cd3b508e67077d4a1252c9c05abca2" style="vertical-align: -0.338ex; width:1.499ex; height:2.176ex;"/></span>. Finding every occurrence of the pattern is equivalent to finding every suffix that begins with the substring. Thanks to the lexicographical ordering, these suffixes will be grouped together in the suffix array and can be found efficiently with two binary searches. The first search locates the starting position of the interval, and the second one determines the end position:<sup class="noprint Inline-Template Template-Fact" style="white-space:nowrap;">[<i><span title="Citation needed for the code (August 2020)">citation needed</span></i>]</sup>
+</p>
+
+<p>Finding the substring pattern <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle P}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>P</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle P}</annotation>
+</semantics>
+</math></span><img alt="P" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b4dc73bf40314945ff376bd363916a738548d40a" style="vertical-align: -0.338ex; width:1.745ex; height:2.176ex;"/></span> of length <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle m}</annotation>
+</semantics>
+</math></span><img alt="m" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0a07d98bb302f3856cbabc47b2b9016692e3f7bc" style="vertical-align: -0.338ex; width:2.04ex; height:1.676ex;"/></span> in the string <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle S}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>S</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle S}</annotation>
+</semantics>
+</math></span><img alt="S" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4611d85173cd3b508e67077d4a1252c9c05abca2" style="vertical-align: -0.338ex; width:1.499ex; height:2.176ex;"/></span> of length <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle n}</annotation>
+</semantics>
+</math></span><img alt="n" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b" style="vertical-align: -0.338ex; width:1.395ex; height:1.676ex;"/></span> takes <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {O}}(m\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">O</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>m</mi>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {O}}(m\log n)}</annotation>
+</semantics>
+</math></span><img alt="{\mathcal  {O}}(m\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/4c8701e5543dcc0eced4426296c6d67db31db5bb" style="vertical-align: -0.838ex; width:10.84ex; height:2.843ex;"/></span> time, given that a single suffix comparison needs to compare <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle m}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>m</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle m}</annotation>
+</semantics>
+</math></span><img alt="m" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0a07d98bb302f3856cbabc47b2b9016692e3f7bc" style="vertical-align: -0.338ex; width:2.04ex; height:1.676ex;"/></span> characters. Manber &amp; Myers (1990) describe how this bound can be improved to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {O}}(m+\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">O</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>m</mi>
+<mo>+</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {O}}(m+\log n)}</annotation>
+</semantics>
+</math></span><img alt="{\mathcal  {O}}(m+\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c33048ecbc367c7aa852f6e354e69f48844b5ac1" style="vertical-align: -0.838ex; width:13.294ex; height:2.843ex;"/></span> time using LCP information. The idea is that a pattern comparison does not need to re-compare certain characters, when it is already known that these are part of the longest common prefix of the pattern and the current search interval. Abouelhoda, Kurtz &amp; Ohlebusch (2004) improve the bound even further and achieve a search time of <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\mathcal {O}}(m)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mi class="MJX-tex-caligraphic" mathvariant="script">O</mi>
+</mrow>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>m</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\mathcal {O}}(m)}</annotation>
+</semantics>
+</math></span><img alt="{\mathcal  {O}}(m)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/089694843af30c69c8b1d6287c3d8f0e2868499c" style="vertical-align: -0.838ex; width:5.7ex; height:2.843ex;"/></span> as known from suffix trees.
+</p><p>Suffix sorting algorithms can be used to compute the Burrows–Wheeler transform (BWT). The BWT requires sorting of all cyclic permutations of a string. If this string ends in a special end-of-string character that is lexicographically smaller than all other character (i.e., $), then the order of the sorted rotated BWT matrix corresponds to the order of suffixes in a suffix array. The BWT can therefore be computed in linear time by first constructing a suffix array of the text and then deducing the BWT string: <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle BWT[i]=S[A[i]-1]}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>B</mi>
+<mi>W</mi>
+<mi>T</mi>
+<mo stretchy="false">[</mo>
+<mi>i</mi>
+<mo stretchy="false">]</mo>
+<mo>=</mo>
+<mi>S</mi>
+<mo stretchy="false">[</mo>
+<mi>A</mi>
+<mo stretchy="false">[</mo>
+<mi>i</mi>
+<mo stretchy="false">]</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo stretchy="false">]</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle BWT[i]=S[A[i]-1]}</annotation>
+</semantics>
+</math></span><img alt="BWT[i]=S[A[i]-1]" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a461b668e8ffa1c9fcf4dff9aae56e57bdbd1937" style="vertical-align: -0.838ex; width:21.665ex; height:2.843ex;"/></span>.
+</p><p>Suffix arrays can also be used to look up substrings in example-based machine translation, demanding much less storage than a full phrase table as used in Statistical machine translation.
+</p><p>Many additional applications of the suffix array require the LCP array. Some of these are detailed in the application section of the latter.
+</p>
+<h2><span class="mw-headline" id="Enhanced_Suffix_Arrays">Enhanced Suffix Arrays</span><span class="mw-editsection"></span></h2>
+<p>Suffix trees are powerful data structures that have wide application in areas of pattern and string matching, indexing and textual statistics. However, it occupies a significant amount of space and thus has a drawback in many real-time applications that requires processing a considerably large amount of data like genome analysis. To overcome this drawback, Enhanced Suffix Arrays were developed that are data structures consisting of suffix arrays and an additional table called the child table that contains the information about the parent-child relationship between the nodes in the suffix tree. The node branching data structure for this tree is a linked list. Enhanced suffix trees are superior in terms of both space efficiency and time complexity and are easy to implement. Moreover, they can be applied to any algorithm that uses a suffix tree by using an abstract concept lcp-interval trees. The time complexity for searching a pattern in an enhanced suffix array is O(m|Σ|).
+</p><p>The suffix array of the string is an array of n integers in the range of 0 to n that represents the n+1 suffixes of the string including the special character #.
+</p><p>The suffix array is composed of two arrays:
+</p>
+<ol><li>pos array pos[1,...n]: It represents a sorted list of all S suffixes. Only the initial positions of the suffixes are stored in the array to reduce the space complexity since the suffixes are too large.</li>
+<li>lcp array lcp[1,...n]: It is an array of n integers that maintains the lengths of the longest common prefix of two consecutive suffixes stored in the pos array.</li></ol>
+<h2><span class="mw-headline" id="Constructing_the_lcp-interval">Constructing the lcp-interval</span><span class="mw-editsection"></span></h2>
+<p>For a suffix array of S, the lcp-interval associated with the corresponding node of suffix tree of S can be defined as:
+</p><p><i>Interval [i,..j], 0 ≤ i ≤ j ≤ n is an lcp-interval of lcp-value, if</i>
+</p><p><i>1. lcptab[i] &lt; l,</i>
+</p><p><i>2. lcptab[k] ≥ l for all i + 1 ≤ k ≤ j,</i>
+</p><p><i>3. lcptab[k] = l for some i + 1 ≤ k ≤ j if i ≠ j and l = n − i + 1 if i = j,</i>
+</p><p><i>4. lcptab[j + 1] &lt; l.</i>
+</p><p>The length of the longest common prefix of pos[i − 1] and pos[i] is stored in lcp[i],where 2 ≤ i ≤ n. The lcp-interval portrays the same parent-child relationship as that among the associated nodes in the suffix tree of S.This shows that if the corresponding node of [i..j] is a child of the corresponding node of [k..l], a lcp-interval [i..j] is a child interval of another lcp-interval [k..l]. If [k..l] is a child interval of [i..j], a lcp-interval [i..j] is the parent interval of a lcp-interval [k..l].
+</p>
+<h2><span class="mw-headline" id="Constructing_a_Child_Table">Constructing a Child Table</span><span class="mw-editsection"></span></h2>
+<p>The child table <i>cldtab</i> is composed of three n arrays, <i>up</i>, <i>down</i> and <i>nextlIndex</i>.The information about the edges of the corresponding suffix tree is stored in maintained by the <i>up</i> and <i>down</i> array. The <i>nextlIndexarray</i> stores the links in the linked list used for node branching the suffix tree.
+</p><p>The <i>up</i>, <i>down</i> and <i>nextlIndex</i> array are defined as follows:
+</p>
+<ol><li>The element <i>up[i]</i>records the starting index of the longest lcp-second interval’s child interval, which ends at index <i>i-1</i>.</li>
+<li>The initial index of the second child interval of the longest lcp-interval, starting at index <i>i</i> is stored in the element <i>down[i]</i>.</li>
+<li>If and only if the interval is neither the first child nor the final child of its parent, the element <i>nextlIndex[i]</i> contains the first index of the next sibling interval of the longest lcp-interval, starting at index <i>i</i>.</li></ol>
+<p>By performing a bottom-up traversal of the lcp-interval of the tree, the child table can be constructed in linear time. The <i>up/down</i> values and the <i>nextlIndex</i> values can be computed separately by using two distinct algorithms.
+</p>
+<h2><span class="mw-headline" id="Constructing_a_Suffix_Link_Table">Constructing a Suffix Link Table</span><span class="mw-editsection"></span></h2>
+<p>The suffix links for an enhanced suffix array can be computed by generating the suffix link interval [<i>1,..,r</i>] for each [i,..j] interval during the preprocessing. The left and right elements l and r of the interval are maintained in the first index of [i,..,j]. The table for this interval ranges from 0 to n. The suffix link table is constructed by the left-to-right breadth-first traversal of the lcp-interval tree. Every time an <i>l</i>-interval is computed, it is added to the list of l-intervals, which is referred to as the l-list. When the lcp-value &gt; 0, for every <i>l</i>-interval[i,..,j] in the list, link[i] is calculated. The interval [<i>l</i>,..,<i>r</i>] is computed by a binary search in(<i>l</i>-1)-list, where <i>l</i> is the largest left boundary amongst all the <i>l</i>-1 intervals. The suffix link interval of [i,..j] is represented by this interval[<i>l,..,r</i>]. The values <i>l</i> and <i>r</i> are ultimately stored in the first index of [i,..,j].
+</p>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation conference cs1" id="CITEREFManberMyers1990">Manber, Udi; Myers, Gene (1990). <i>Suffix arrays: a new method for on-line string searches</i>. First Annual ACM-SIAM Symposium on Discrete Algorithms. pp. 319–327.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=conference&amp;rft.btitle=Suffix+arrays%3A+a+new+method+for+on-line+string+searches&amp;rft.pages=319-327&amp;rft.date=1990&amp;rft.aulast=Manber&amp;rft.aufirst=Udi&amp;rft.au=Myers%2C+Gene&amp;rft_id=http%3A%2F%2Fdl.acm.org%2Fcitation.cfm%3Fid%3D320176.320218&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASuffix+array"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFManberMyers1993">Manber, Udi; Myers, Gene (1993). "Suffix arrays: a new method for on-line string searches". <i>SIAM Journal on Computing</i>. <b>22</b> (5): 935–948. doi:10.1137/0222058. S2CID 5074629.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=SIAM+Journal+on+Computing&amp;rft.atitle=Suffix+arrays%3A+a+new+method+for+on-line+string+searches&amp;rft.volume=22&amp;rft.issue=5&amp;rft.pages=935-948&amp;rft.date=1993&amp;rft_id=info%3Adoi%2F10.1137%2F0222058&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A5074629%23id-name%3DS2CID&amp;rft.aulast=Manber&amp;rft.aufirst=Udi&amp;rft.au=Myers%2C+Gene&amp;rft_id=http%3A%2F%2Fdl.acm.org%2Fcitation.cfm%3Fid%3D320176.320218&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASuffix+array"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFGawrychowskiKociumaka2017">Gawrychowski, Paweł; Kociumaka, Tomasz (January 2017). "Sparse Suffix Tree Construction in Optimal Time and Space". <i>Proceedings of the Twenty-Eighth Annual ACM-SIAM Symposium on Discrete Algorithms</i>. Philadelphia, PA: Society for Industrial and Applied Mathematics: 425–439. arXiv:<span class="cs1-lock-free" title="Freely accessible">1608.00865</span>. doi:10.1137/1.9781611974782.27. ISBN <bdi>9781611974782</bdi>. S2CID 6608776.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Proceedings+of+the+Twenty-Eighth+Annual+ACM-SIAM+Symposium+on+Discrete+Algorithms&amp;rft.atitle=Sparse+Suffix+Tree+Construction+in+Optimal+Time+and+Space&amp;rft.pages=425-439&amp;rft.date=2017-01&amp;rft_id=info%3Aarxiv%2F1608.00865&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A6608776%23id-name%3DS2CID&amp;rft_id=info%3Adoi%2F10.1137%2F1.9781611974782.27&amp;rft.isbn=9781611974782&amp;rft.aulast=Gawrychowski&amp;rft.aufirst=Pawe%C5%82&amp;rft.au=Kociumaka%2C+Tomasz&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASuffix+array"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation conference cs1" id="CITEREFLiLiHuo2016">Li, Zhize; Li, Jian; Huo, Hongwei (2016). <i>Optimal In-Place Suffix Sorting</i>. Proceedings of the 25th International Symposium on String Processing and Information Retrieval (SPIRE). Lecture Notes in Computer Science. Vol. 11147. Springer. pp. 268–284. arXiv:<span class="cs1-lock-free" title="Freely accessible">1610.08305</span>. doi:10.1007/978-3-030-00479-8_22. ISBN <bdi>978-3-030-00478-1</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=conference&amp;rft.btitle=Optimal+In-Place+Suffix+Sorting&amp;rft.series=Lecture+Notes+in+Computer+Science&amp;rft.pages=268-284&amp;rft.pub=Springer&amp;rft.date=2016&amp;rft_id=info%3Aarxiv%2F1610.08305&amp;rft_id=info%3Adoi%2F10.1007%2F978-3-030-00479-8_22&amp;rft.isbn=978-3-030-00478-1&amp;rft.aulast=Li&amp;rft.aufirst=Zhize&amp;rft.au=Li%2C+Jian&amp;rft.au=Huo%2C+Hongwei&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASuffix+array"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation conference cs1" id="CITEREFShi1996">Shi, Fei (1996). <i>Suffix arrays for multiple strings: A method for on-line multiple string searches</i>. Lecture Notes in Computer Science. Vol. 1179. Springer Berlin Heidelberg. pp. 11–22. doi:10.1007/BFb0027775. ISBN <bdi>978-3-540-62031-0</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=conference&amp;rft.btitle=Suffix+arrays+for+multiple+strings%3A+A+method+for+on-line+multiple+string+searches&amp;rft.series=Lecture+Notes+in+Computer+Science&amp;rft.pages=11-22&amp;rft.pub=Springer+Berlin+Heidelberg&amp;rft.date=1996&amp;rft_id=info%3Adoi%2F10.1007%2FBFb0027775&amp;rft.isbn=978-3-540-62031-0&amp;rft.aulast=Shi&amp;rft.aufirst=Fei&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASuffix+array"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation conference cs1" id="CITEREFAbouelhodaKurtzOhlebusch2002">Abouelhoda, Mohamed Ibrahim; Kurtz, Stefan; Ohlebusch, Enno (2002). <i>The Enhanced Suffix Array and Its Applications to Genome Analysis</i>. Algorithms in Bioinformatics. Lecture Notes in Computer Science. Vol. 2452. doi:10.1007/3-540-45784-4_35. ISBN <bdi>978-3-540-44211-0</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=conference&amp;rft.btitle=The+Enhanced+Suffix+Array+and+Its+Applications+to+Genome+Analysis&amp;rft.series=Lecture+Notes+in+Computer+Science&amp;rft.date=2002&amp;rft_id=info%3Adoi%2F10.1007%2F3-540-45784-4_35&amp;rft.isbn=978-3-540-44211-0&amp;rft.aulast=Abouelhoda&amp;rft.aufirst=Mohamed+Ibrahim&amp;rft.au=Kurtz%2C+Stefan&amp;rft.au=Ohlebusch%2C+Enno&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASuffix+array"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFAbouelhodaKurtzOhlebusch2004">Abouelhoda, Mohamed Ibrahim; Kurtz, Stefan; Ohlebusch, Enno (March 2004). "Replacing suffix trees with enhanced suffix arrays". <i>Journal of Discrete Algorithms</i>. <b>2</b> (1): 53–86. doi:<span class="cs1-lock-free" title="Freely accessible">10.1016/S1570-8667(03)00065-0</span>. ISSN 1570-8667.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Journal+of+Discrete+Algorithms&amp;rft.atitle=Replacing+suffix+trees+with+enhanced+suffix+arrays&amp;rft.volume=2&amp;rft.issue=1&amp;rft.pages=53-86&amp;rft.date=2004-03&amp;rft_id=info%3Adoi%2F10.1016%2FS1570-8667%2803%2900065-0&amp;rft.issn=1570-8667&amp;rft.aulast=Abouelhoda&amp;rft.aufirst=Mohamed+Ibrahim&amp;rft.au=Kurtz%2C+Stefan&amp;rft.au=Ohlebusch%2C+Enno&amp;rft_id=%2F%2Fdoi.org%2F10.1016%252FS1570-8667%252803%252900065-0&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASuffix+array"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFGonnetBaeza-YatesSnider1992">Gonnet, G.H.; Baeza-Yates, R.A.; Snider, T. (1992). "New indices for text: PAT trees and PAT arrays". <i>Information Retrieval: Data Structures and Algorithms</i>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Information+Retrieval%3A+Data+Structures+and+Algorithms&amp;rft.atitle=New+indices+for+text%3A+PAT+trees+and+PAT+arrays&amp;rft.date=1992&amp;rft.aulast=Gonnet&amp;rft.aufirst=G.H.&amp;rft.au=Baeza-Yates%2C+R.A.&amp;rft.au=Snider%2C+T.&amp;rft_id=http%3A%2F%2Forion.lcg.ufrj.br%2FDr.Dobbs%2Fbooks%2Fbook5%2Fchap05.htm&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASuffix+array"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFKurtz1999">Kurtz, S (1999). "Reducing the space requirement of suffix trees". <i>Software: Practice and Experience</i>. <b>29</b> (13): 1149–1171. doi:10.1002/(SICI)1097-024X(199911)29:13&lt;1149::AID-SPE274&gt;3.0.CO;2-O. hdl:<span class="cs1-lock-free" title="Freely accessible">10338.dmlcz/135448</span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Software%3A+Practice+and+Experience&amp;rft.atitle=Reducing+the+space+requirement+of+suffix+trees&amp;rft.volume=29&amp;rft.issue=13&amp;rft.pages=1149-1171&amp;rft.date=1999&amp;rft_id=info%3Ahdl%2F10338.dmlcz%2F135448&amp;rft_id=info%3Adoi%2F10.1002%2F%28SICI%291097-024X%28199911%2929%3A13%3C1149%3A%3AAID-SPE274%3E3.0.CO%3B2-O&amp;rft.aulast=Kurtz&amp;rft.aufirst=S&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASuffix+array"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFPuglisiSmythTurpin2007">Puglisi, Simon J.; Smyth, W. F.; Turpin, Andrew H. (2007). "A taxonomy of suffix array construction algorithms". <i>ACM Computing Surveys</i>. <b>39</b> (2): 4. doi:10.1145/1242471.1242472. S2CID 2653529.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=ACM+Computing+Surveys&amp;rft.atitle=A+taxonomy+of+suffix+array+construction+algorithms&amp;rft.volume=39&amp;rft.issue=2&amp;rft.pages=4&amp;rft.date=2007&amp;rft_id=info%3Adoi%2F10.1145%2F1242471.1242472&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A2653529%23id-name%3DS2CID&amp;rft.aulast=Puglisi&amp;rft.aufirst=Simon+J.&amp;rft.au=Smyth%2C+W.+F.&amp;rft.au=Turpin%2C+Andrew+H.&amp;rft_id=http%3A%2F%2Fresearchrepository.murdoch.edu.au%2Fid%2Feprint%2F27889%2F&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASuffix+array"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation conference cs1" id="CITEREFNongZhangChan2009">Nong, Ge; Zhang, Sen; Chan, Wai Hong (2009). <i>Linear Suffix Array Construction by Almost Pure Induced-Sorting</i>. 2009 Data Compression Conference. p. 193. doi:10.1109/DCC.2009.42. ISBN <bdi>978-0-7695-3592-0</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=conference&amp;rft.btitle=Linear+Suffix+Array+Construction+by+Almost+Pure+Induced-Sorting&amp;rft.pages=193&amp;rft.date=2009&amp;rft_id=info%3Adoi%2F10.1109%2FDCC.2009.42&amp;rft.isbn=978-0-7695-3592-0&amp;rft.aulast=Nong&amp;rft.aufirst=Ge&amp;rft.au=Zhang%2C+Sen&amp;rft.au=Chan%2C+Wai+Hong&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASuffix+array"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation conference cs1" id="CITEREFFischer2011">Fischer, Johannes (2011). <i>Inducing the LCP-Array</i>. Algorithms and Data Structures. Lecture Notes in Computer Science. Vol. 6844. pp. 374–385. arXiv:<span class="cs1-lock-free" title="Freely accessible">1101.3448</span>. doi:10.1007/978-3-642-22300-6_32. ISBN <bdi>978-3-642-22299-3</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=conference&amp;rft.btitle=Inducing+the+LCP-Array&amp;rft.series=Lecture+Notes+in+Computer+Science&amp;rft.pages=374-385&amp;rft.date=2011&amp;rft_id=info%3Aarxiv%2F1101.3448&amp;rft_id=info%3Adoi%2F10.1007%2F978-3-642-22300-6_32&amp;rft.isbn=978-3-642-22299-3&amp;rft.aulast=Fischer&amp;rft.aufirst=Johannes&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASuffix+array"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFSalsonLecroqLéonardMouchard2010">Salson, M.; Lecroq, T.; Léonard, M.; Mouchard, L. (2010). "Dynamic extended suffix arrays". <i>Journal of Discrete Algorithms</i>. <b>8</b> (2): 241. doi:<span class="cs1-lock-free" title="Freely accessible">10.1016/j.jda.2009.02.007</span>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Journal+of+Discrete+Algorithms&amp;rft.atitle=Dynamic+extended+suffix+arrays&amp;rft.volume=8&amp;rft.issue=2&amp;rft.pages=241&amp;rft.date=2010&amp;rft_id=info%3Adoi%2F10.1016%2Fj.jda.2009.02.007&amp;rft.aulast=Salson&amp;rft.aufirst=M.&amp;rft.au=Lecroq%2C+T.&amp;rft.au=L%C3%A9onard%2C+M.&amp;rft.au=Mouchard%2C+L.&amp;rft_id=%2F%2Fdoi.org%2F10.1016%252Fj.jda.2009.02.007&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASuffix+array"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation conference cs1" id="CITEREFBurkhardtKärkkäinen2003">Burkhardt, Stefan; Kärkkäinen, Juha (2003). <i>Fast Lightweight Suffix Array Construction and Checking</i>. Combinatorial Pattern Matching. Lecture Notes in Computer Science. Vol. 2676. pp. 55–69. doi:10.1007/3-540-44888-8_5. ISBN <bdi>978-3-540-40311-1</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=conference&amp;rft.btitle=Fast+Lightweight+Suffix+Array+Construction+and+Checking&amp;rft.series=Lecture+Notes+in+Computer+Science&amp;rft.pages=55-69&amp;rft.date=2003&amp;rft_id=info%3Adoi%2F10.1007%2F3-540-44888-8_5&amp;rft.isbn=978-3-540-40311-1&amp;rft.aulast=Burkhardt&amp;rft.aufirst=Stefan&amp;rft.au=K%C3%A4rkk%C3%A4inen%2C+Juha&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASuffix+array"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation conference cs1" id="CITEREFKarpMillerRosenberg1972">Karp, Richard M.; Miller, Raymond E.; Rosenberg, Arnold L. (1972). <i>Rapid identification of repeated patterns in strings, trees and arrays</i>. Proceedings of the fourth annual ACM symposium on Theory of computing - STOC '72. pp. 125–136. doi:10.1145/800152.804905.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=conference&amp;rft.btitle=Rapid+identification+of+repeated+patterns+in+strings%2C+trees+and+arrays&amp;rft.pages=125-136&amp;rft.date=1972&amp;rft_id=info%3Adoi%2F10.1145%2F800152.804905&amp;rft.aulast=Karp&amp;rft.aufirst=Richard+M.&amp;rft.au=Miller%2C+Raymond+E.&amp;rft.au=Rosenberg%2C+Arnold+L.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASuffix+array"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation conference cs1" id="CITEREFFarach1997">Farach, M. (1997). <i>Optimal suffix tree construction with large alphabets</i>. Proceedings 38th Annual Symposium on Foundations of Computer Science. doi:10.1109/SFCS.1997.646102. ISBN <bdi>0-8186-8197-7</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=conference&amp;rft.btitle=Optimal+suffix+tree+construction+with+large+alphabets&amp;rft.date=1997&amp;rft_id=info%3Adoi%2F10.1109%2FSFCS.1997.646102&amp;rft.isbn=0-8186-8197-7&amp;rft.aulast=Farach&amp;rft.aufirst=M.&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASuffix+array"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation conference cs1" id="CITEREFIKärkkäinenKempa2014">I, Tomohiro; Kärkkäinen, Juha; Kempa, Dominik (2014). <i>Faster Sparse Suffix Sorting</i>. Leibniz International Proceedings in Informatics (LIPIcs). Vol. 25. Schloss Dagstuhl – Leibniz-Zentrum fuer Informatik. pp. 386–396. doi:10.4230/LIPIcs.STACS.2014.386. ISBN <bdi>978-3-939897-65-1</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=conference&amp;rft.btitle=Faster+Sparse+Suffix+Sorting&amp;rft.series=Leibniz+International+Proceedings+in+Informatics+%28LIPIcs%29&amp;rft.pages=386-396&amp;rft.pub=Schloss+Dagstuhl+%E2%80%93+Leibniz-Zentrum+fuer+Informatik&amp;rft.date=2014&amp;rft_id=info%3Adoi%2F10.4230%2FLIPIcs.STACS.2014.386&amp;rft.isbn=978-3-939897-65-1&amp;rft.aulast=I&amp;rft.aufirst=Tomohiro&amp;rft.au=K%C3%A4rkk%C3%A4inen%2C+Juha&amp;rft.au=Kempa%2C+Dominik&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASuffix+array"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation conference cs1" id="CITEREFKärkkäinenSanders2003">Kärkkäinen, Juha; Sanders, Peter (2003). <i>Simple Linear Work Suffix Array Construction</i>. Automata, Languages and Programming. Lecture Notes in Computer Science. Vol. 2719. doi:10.1007/3-540-45061-0_73. ISBN <bdi>978-3-540-40493-4</bdi>.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=conference&amp;rft.btitle=Simple+Linear+Work+Suffix+Array+Construction&amp;rft.series=Lecture+Notes+in+Computer+Science&amp;rft.date=2003&amp;rft_id=info%3Adoi%2F10.1007%2F3-540-45061-0_73&amp;rft.isbn=978-3-540-40493-4&amp;rft.aulast=K%C3%A4rkk%C3%A4inen&amp;rft.aufirst=Juha&amp;rft.au=Sanders%2C+Peter&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASuffix+array"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFDementievKärkkäinenMehnertSanders2008">Dementiev, Roman; Kärkkäinen, Juha; Mehnert, Jens; Sanders, Peter (2008). "Better external memory suffix array construction". <i>Journal of Experimental Algorithmics</i>. <b>12</b>: 1–24. doi:10.1145/1227161.1402296. S2CID 12296500.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Journal+of+Experimental+Algorithmics&amp;rft.atitle=Better+external+memory+suffix+array+construction&amp;rft.volume=12&amp;rft.pages=1-24&amp;rft.date=2008&amp;rft_id=info%3Adoi%2F10.1145%2F1227161.1402296&amp;rft_id=https%3A%2F%2Fapi.semanticscholar.org%2FCorpusID%3A12296500%23id-name%3DS2CID&amp;rft.aulast=Dementiev&amp;rft.aufirst=Roman&amp;rft.au=K%C3%A4rkk%C3%A4inen%2C+Juha&amp;rft.au=Mehnert%2C+Jens&amp;rft.au=Sanders%2C+Peter&amp;rft_id=https%3A%2F%2Fpublikationen.bibliothek.kit.edu%2F1000009446&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASuffix+array"></span></li>
+<li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFKullaSanders2007">Kulla, Fabian; Sanders, Peter (2007). "Scalable parallel suffix array construction". <i>Parallel Computing</i>. <b>33</b> (9). doi:10.1016/j.parco.2007.06.004.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Parallel+Computing&amp;rft.atitle=Scalable+parallel+suffix+array+construction&amp;rft.volume=33&amp;rft.issue=9&amp;rft.date=2007&amp;rft_id=info%3Adoi%2F10.1016%2Fj.parco.2007.06.004&amp;rft.aulast=Kulla&amp;rft.aufirst=Fabian&amp;rft.au=Sanders%2C+Peter&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ASuffix+array"></span></li>
+<li>Mohamed Ibrahim Abouelhoda, Stefan Kurtz, and Enno Ohlebusch. "Replacing suffix trees with enhanced suffix arrays." <i>Journal of Discrete Algorithms</i>, 2(1):53–86, 2004.</li>
+<li>Dong Kyue Kim, Jeong Eun Jeon, and Heejin Park. "An efficient index data structure with the capabilities of suffix trees and suffix arrays for alphabets of non-negligible size." <i>String Processing and Information Retrieval Lecture Notes in Computer Science</i>, page138–149, 2004.</li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097025294">.mw-parser-output .side-box{margin:4px 0;box-sizing:border-box;border:1px solid #aaa;font-size:88%;line-height:1.25em;background-color:#f9f9f9}.mw-parser-output .side-box-abovebelow,.mw-parser-output .side-box-text{padding:0.25em 0.9em}.mw-parser-output .side-box-image{padding:2px 0 2px 0.9em;text-align:center}.mw-parser-output .side-box-imageright{padding:2px 0.9em 2px 0;text-align:center}@media(min-width:500px){.mw-parser-output .side-box-flex{display:flex;align-items:center}.mw-parser-output .side-box-text{flex:1}}@media(min-width:720px){.mw-parser-output .side-box{width:238px}.mw-parser-output .side-box-right{clear:right;float:right;margin-left:1em}.mw-parser-output .side-box-left{margin-right:1em}}</style>
+<ul><li>Suffix Array in Java</li>
+<li>Suffix sorting module for BWT in C code</li>
+<li>Suffix Array Implementation in Ruby</li>
+<li>Suffix array library and tools</li>
+<li>Project containing various Suffix Array c/c++ Implementations with a unified interface</li>
+<li>A fast, lightweight, and robust C API library to construct the suffix array</li>
+<li>Suffix Array implementation in Python</li>
+<li>Linear Time Suffix Array implementation in C using suffix tree</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw1453
+Cached time: 20221220211038
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.498 seconds
+Real time usage: 0.632 seconds
+Preprocessor visited node count: 3058/1000000
+Post‐expand include size: 72046/2097152 bytes
+Template argument size: 1868/2097152 bytes
+Highest expansion depth: 14/100
+Expensive parser function count: 2/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 64107/5000000 bytes
+Lua time usage: 0.287/10.000 seconds
+Lua memory usage: 8419755/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  458.056      1 -total
+ 24.97%  114.392     11 Template:Cite_journal
+ 22.89%  104.869      1 Template:Reflist
+ 16.38%   75.032      1 Template:Infobox
+ 11.62%   53.221     11 Template:Cite_conference
+ 11.43%   52.340     12 Template:Harvtxt
+  9.13%   41.809      1 Template:Citation_needed
+  9.00%   41.234      1 Template:Strings
+  8.69%   39.823      1 Template:Commons_category
+  8.55%   39.173      1 Template:Navbox
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:1303494-0!canonical and timestamp 20221220211037 and revision id 1108415443.
+ -->
+</div></body>
+</html>
