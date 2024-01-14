@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>biconnected_component</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+
+<p>In graph theory, a <b>biconnected component</b> (sometimes known as a <b>2-connected component</b>) is a maximal biconnected subgraph.  Any connected graph decomposes into a tree of biconnected components called the <b>block-cut tree</b> of the graph. The blocks are attached to each other at shared vertices called <b>cut vertices</b> or <b>separating vertices</b> or <b>articulation points</b>.  Specifically, a <b>cut vertex</b> is any vertex whose removal increases the number of connected components.<sup class="reference" id="cite_ref-AL-TAIE_p._1-0">[1]</sup>
+</p>
+
+<h2><span class="mw-headline" id="Algorithms">Algorithms</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Linear_time_depth-first_search">Linear time depth-first search</span><span class="mw-editsection"></span></h3>
+<p>The classic sequential algorithm for computing biconnected components in a connected undirected graph is due to John Hopcroft and Robert Tarjan (1973).<sup class="reference" id="cite_ref-2">[2]</sup> It runs in linear time, and is based on depth-first search. This algorithm is also outlined as Problem 22-2 of Introduction to Algorithms (both 2nd and 3rd editions).
+</p><p>The idea is to run a depth-first search while maintaining the following information:
+</p>
+<ol><li>the depth of each vertex in the depth-first-search tree (once it gets visited), and</li>
+<li>for each vertex <span class="texhtml mvar" style="font-style:italic;">v</span>, the lowest depth of neighbors of all descendants of <span class="texhtml mvar" style="font-style:italic;">v</span> (including <span class="texhtml mvar" style="font-style:italic;">v</span> itself) in the depth-first-search tree, called the <span class="texhtml"><b>lowpoint</b></span>.</li></ol>
+<p>The depth is standard to maintain during a depth-first search.  The low point of <span class="texhtml mvar" style="font-style:italic;">v</span> can be computed after visiting all descendants of <span class="texhtml mvar" style="font-style:italic;">v</span> (i.e., just before <span class="texhtml mvar" style="font-style:italic;">v</span> gets popped off the depth-first-search stack) as the minimum of the depth of <span class="texhtml mvar" style="font-style:italic;">v</span>, the depth of all neighbors of <span class="texhtml mvar" style="font-style:italic;">v</span> (other than the parent of <span class="texhtml mvar" style="font-style:italic;">v</span> in the depth-first-search tree) and the lowpoint of all children of <span class="texhtml mvar" style="font-style:italic;">v</span> in the depth-first-search tree.
+</p><p>The key fact is that a nonroot vertex <span class="texhtml mvar" style="font-style:italic;">v</span> is a cut vertex (or articulation point) separating two biconnected components if and only if there is a child <span class="texhtml mvar" style="font-style:italic;">y</span> of <span class="texhtml mvar" style="font-style:italic;">v</span> such that <span class="texhtml">lowpoint(<i>y</i>) ≥ depth(<i>v</i>)</span>. This property can be tested once the depth-first search returned from every child of <span class="texhtml mvar" style="font-style:italic;">v</span> (i.e., just before <span class="texhtml mvar" style="font-style:italic;">v</span> gets popped off the depth-first-search stack), and if <b>true</b>, <span class="texhtml mvar" style="font-style:italic;">v</span> separates the graph into different biconnected components. This can be represented by computing one biconnected component out of every such <span class="texhtml mvar" style="font-style:italic;">y</span> (a component which contains <span class="texhtml mvar" style="font-style:italic;">y</span> will contain the subtree of <span class="texhtml mvar" style="font-style:italic;">y</span>, plus <span class="texhtml mvar" style="font-style:italic;">v</span>), and then erasing the subtree of <span class="texhtml mvar" style="font-style:italic;">y</span> from the tree.
+</p><p>The root vertex must be handled separately: it is a cut vertex if and only if it has at least two children in the DFS tree.  Thus, it suffices to simply build one component out of each child subtree of the root (including the root).
+</p>
+<h3><span class="mw-headline" id="Pseudocode">Pseudocode</span><span class="mw-editsection"></span></h3>
+<pre><u>GetArticulationPoints(i, d)</u>
+    visited[i] := <b>true</b>
+    depth[i] := d
+    low[i] := d
+    childCount := 0
+    isArticulation := <b>false</b>
+
+    <b>for each</b> ni <b>in</b> adj[i] <b>do</b>
+        <b>if</b> <b>not</b> visited[ni] <b>then</b>
+            parent[ni] := i
+            GetArticulationPoints(ni, d + 1)
+            childCount := childCount + 1
+            <b>if</b> low[ni] ≥ depth[i] <b>then</b>
+                isArticulation := <b>true</b>
+            low[i] := Min (low[i], low[ni])
+        <b>else if</b> ni ≠ parent[i] <b>then</b>
+            low[i] := Min (low[i], depth[ni])
+    <b>if</b> (parent[i] ≠ <b>null</b> <b>and</b> isArticulation) <b>or</b> (parent[i] = <b>null</b> <b>and</b> childCount &gt; 1) <b>then</b>
+        Output i as articulation point
+</pre>
+<p>Note that the terms child and parent denote the relations in the DFS tree, not the original graph.
+</p>
+
+<p><br/>
+</p>
+<h3><span class="mw-headline" id="Other_algorithms">Other algorithms</span><span class="mw-editsection"></span></h3>
+<p>A simple alternative to the above algorithm uses chain decompositions, which are special ear decompositions depending on DFS-trees.<sup class="reference" id="cite_ref-Schmidt_3-0">[3]</sup> Chain decompositions can be computed in linear time by this traversing rule. Let <span class="texhtml mvar" style="font-style:italic;">C</span> be a chain decomposition of <span class="texhtml mvar" style="font-style:italic;">G</span>. Then <span class="texhtml mvar" style="font-style:italic;">G</span> is 2-vertex-connected if and only if <span class="texhtml mvar" style="font-style:italic;">G</span> has minimum degree 2 and <span class="texhtml"><i>C</i><sub>1</sub></span> is the only cycle in <span class="texhtml mvar" style="font-style:italic;">C</span>. This gives immediately a linear-time 2-connectivity test and can be extended to list all cut vertices of <span class="texhtml mvar" style="font-style:italic;">G</span> in linear time using the following statement: A vertex <span class="texhtml mvar" style="font-style:italic;">v</span> in a connected graph <span class="texhtml mvar" style="font-style:italic;">G</span> (with minimum degree 2) is a cut vertex if and only if <span class="texhtml mvar" style="font-style:italic;">v</span> is incident to a bridge or <span class="texhtml mvar" style="font-style:italic;">v</span> is the first vertex of a cycle in <span class="texhtml"><i>C</i> – <i>C</i><sub>1</sub></span>. The list of cut vertices can be used to create the block-cut tree of <span class="texhtml mvar" style="font-style:italic;">G</span> in linear time.
+</p><p>In the online version of the problem, vertices and edges are added (but not removed) dynamically, and a data structure must maintain the biconnected components.  Jeffery Westbrook and Robert Tarjan (1992) <sup class="reference" id="cite_ref-4">[4]</sup> developed an efficient data structure for this problem based on disjoint-set data structures.  Specifically, it processes <span class="texhtml mvar" style="font-style:italic;">n</span> vertex additions and <span class="texhtml mvar" style="font-style:italic;">m</span> edge additions in <span class="texhtml"><i>O</i>(<i>m</i> <i>α</i>(<i>m</i>, <i>n</i>))</span> total time, where <span class="texhtml mvar" style="font-style:italic;">α</span> is the inverse Ackermann function.  This time bound is proved to be optimal.
+</p><p>Uzi Vishkin and Robert Tarjan (1985) <sup class="reference" id="cite_ref-5">[5]</sup> designed a parallel algorithm on CRCW PRAM that runs in <span class="texhtml"><i>O</i>(log <i>n</i>)</span> time with <span class="texhtml"><i>n</i> + <i>m</i></span> processors.
+</p>
+<h2><span class="mw-headline" id="Related_structures">Related structures</span><span class="mw-editsection"></span></h2>
+<h3><span class="mw-headline" id="Equivalence_relation">Equivalence relation</span><span class="mw-editsection"></span></h3>
+<p>One can define a binary relation on the edges of an arbitrary undirected graph, according to which two edges <span class="texhtml mvar" style="font-style:italic;">e</span> and <span class="texhtml mvar" style="font-style:italic;">f</span> are related if and only if either <span class="texhtml"><i>e</i> = <i>f</i></span> or the graph contains a simple cycle through both <span class="texhtml mvar" style="font-style:italic;">e</span> and <span class="texhtml mvar" style="font-style:italic;">f</span>. Every edge is related to itself, and an edge <span class="texhtml mvar" style="font-style:italic;">e</span> is related to another edge <span class="texhtml mvar" style="font-style:italic;">f</span> if and only if <span class="texhtml mvar" style="font-style:italic;">f</span> is related in the same way to <span class="texhtml mvar" style="font-style:italic;">e</span>. Less obviously, this is a transitive relation: if there exists a simple cycle containing edges <span class="texhtml mvar" style="font-style:italic;">e</span> and <span class="texhtml mvar" style="font-style:italic;">f</span>, and another simple cycle containing edges <span class="texhtml mvar" style="font-style:italic;">f</span> and <span class="texhtml mvar" style="font-style:italic;">g</span>, then one can combine these two cycles to find a simple cycle through <span class="texhtml mvar" style="font-style:italic;">e</span> and <span class="texhtml mvar" style="font-style:italic;">g</span>. Therefore, this is an equivalence relation, and it can be used to partition the edges into equivalence classes, subsets of edges with the property that two edges are related to each other if and only if they belong to the same equivalence class. The subgraphs formed by the edges in each equivalence class are the biconnected components of the given graph. Thus, the biconnected components partition the edges of the graph; however, they may share vertices with each other.<sup class="reference" id="cite_ref-6">[6]</sup>
+</p>
+<h3><span class="mw-headline" id="Block_graph">Block graph</span><span class="mw-editsection"></span></h3>
+<p>The <b>block graph</b> of a given graph <span class="texhtml mvar" style="font-style:italic;">G</span> is the intersection graph of its blocks. Thus, it has one vertex for each block of <span class="texhtml mvar" style="font-style:italic;">G</span>, and an edge between two vertices whenever the corresponding two blocks share a vertex.
+A graph <span class="texhtml mvar" style="font-style:italic;">H</span> is the block graph of another graph <span class="texhtml mvar" style="font-style:italic;">G</span> exactly when all the blocks of <span class="texhtml mvar" style="font-style:italic;">H</span> are complete subgraphs. The graphs <span class="texhtml mvar" style="font-style:italic;">H</span> with this property are known as the block graphs.<sup class="reference" id="cite_ref-7">[7]</sup>
+</p>
+<h3><span class="mw-headline" id="Block-cut_tree">Block-cut tree</span><span class="mw-editsection"></span></h3>
+<p>A <b>cutpoint</b>, <b>cut vertex</b>, or <b>articulation point</b> of a graph <span class="texhtml mvar" style="font-style:italic;">G</span> is a vertex that is shared by two or more blocks. The structure of the blocks and cutpoints of a connected graph can be described by a tree called the <b>block-cut tree</b> or <b>BC-tree</b>. This tree has a vertex for each block and for each articulation point of the given graph. There is an edge in the block-cut tree for each pair of a block and an articulation point that belongs to that block.<sup class="reference" id="cite_ref-8">[8]</sup>
+</p>
+
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Triconnected component</li>
+<li>Bridge (graph theory)</li>
+<li>Single-entry single-exit Counter part of biconnected components in directed graphs</li></ul>
+<h2><span class="mw-headline" id="Notes">Notes</span><span class="mw-editsection"></span></h2>
+
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation journal cs1" id="CITEREFEugene_C._Freuder1985">Eugene C. Freuder (1985). "A Sufficient Condition for Backtrack-Bounded Search". <i>Journal of the Association for Computing Machinery</i>. <b>32</b> (4): 755–761. doi:10.1145/4221.4225.</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft.genre=article&amp;rft.jtitle=Journal+of+the+Association+for+Computing+Machinery&amp;rft.atitle=A+Sufficient+Condition+for+Backtrack-Bounded+Search&amp;rft.volume=32&amp;rft.issue=4&amp;rft.pages=755-761&amp;rft.date=1985&amp;rft_id=info%3Adoi%2F10.1145%2F4221.4225&amp;rft.au=Eugene+C.+Freuder&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3ABiconnected+component"></span></li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>C++ implementation of Biconnected Components</li></ul>
+<!-- 
+NewPP limit report
+Parsed by mw2339
+Cached time: 20221224050652
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.189 seconds
+Real time usage: 0.259 seconds
+Preprocessor visited node count: 1969/1000000
+Post‐expand include size: 20203/2097152 bytes
+Template argument size: 2052/2097152 bytes
+Highest expansion depth: 8/100
+Expensive parser function count: 1/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 20658/5000000 bytes
+Lua time usage: 0.109/10.000 seconds
+Lua memory usage: 6110173/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  221.809      1 -total
+ 28.86%   64.017      1 Template:Cite_book
+ 21.31%   47.268      1 Template:Short_description
+ 12.40%   27.509      3 Template:Harvtxt
+ 11.26%   24.976      2 Template:Pagetype
+  9.16%   20.319      1 Template:Confused
+  9.06%   20.086     19 Template:Math
+  7.80%   17.296      4 Template:Cite_journal
+  6.41%   14.224     21 Template:Main_other
+  4.67%   10.367      1 Template:SDcat
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:4842394-0!canonical and timestamp 20221224050652 and revision id 1105335346.
+ -->
+</div></body>
+</html>

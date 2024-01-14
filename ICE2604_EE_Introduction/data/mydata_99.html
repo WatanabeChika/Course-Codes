@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>binary_heap</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<style data-mw-deduplicate="TemplateStyles:r1066479718">.mw-parser-output .infobox-subbox{padding:0;border:none;margin:-3px;width:auto;min-width:100%;font-size:100%;clear:none;float:none;background-color:transparent}.mw-parser-output .infobox-3cols-child{margin:auto}.mw-parser-output .infobox .navbar{font-size:100%}body.skin-minerva .mw-parser-output .infobox-header,body.skin-minerva .mw-parser-output .infobox-subheader,body.skin-minerva .mw-parser-output .infobox-above,body.skin-minerva .mw-parser-output .infobox-title,body.skin-minerva .mw-parser-output .infobox-image,body.skin-minerva .mw-parser-output .infobox-full-data,body.skin-minerva .mw-parser-output .infobox-below{text-align:center}</style><table class="infobox"><tbody><tr><th class="infobox-above" colspan="2">Binary (min) heap</th></tr><tr><th class="infobox-label" scope="row">Type</th><td class="infobox-data">binary tree/heap</td></tr><tr><th class="infobox-label" scope="row">Invented</th><td class="infobox-data">1964</td></tr><tr><th class="infobox-label" scope="row">Invented by</th><td class="infobox-data">J. W. J. Williams</td></tr><tr><th class="infobox-header" colspan="2">Time complexity in big O notation</th></tr><tr><td class="infobox-full-data" colspan="2"><link href="mw-data:TemplateStyles:r1066479718" rel="mw-deduplicated-inline-style"/><table class="infobox-subbox infobox-3cols-child"><tbody><tr><th class="infobox-label" scope="row" style="white-space:nowrap;">Algorithm</th><td class="infobox-data infobox-data-a">
+<b>Average</b></td><td class="infobox-data infobox-data-b">
+<b>Worst case</b></td></tr><tr><th class="infobox-label" scope="row" style="white-space:nowrap;">Space</th><td class="infobox-data infobox-data-a">
+O(n)</td><td class="infobox-data infobox-data-b">
+O(n)</td></tr><tr><th class="infobox-label" scope="row" style="white-space:nowrap;">Search</th><td class="infobox-data infobox-data-a">
+O(n)</td><td class="infobox-data infobox-data-b">
+O(n)</td></tr><tr><th class="infobox-label" scope="row" style="white-space:nowrap;">Insert</th><td class="infobox-data infobox-data-a">
+O(1)</td><td class="infobox-data infobox-data-b">
+O(log n)</td></tr><tr><th class="infobox-label" scope="row" style="white-space:nowrap;">Find-min</th><td class="infobox-data infobox-data-a">
+O(1)</td><td class="infobox-data infobox-data-b">
+O(1)</td></tr><tr><th class="infobox-label" scope="row" style="white-space:nowrap;">Delete-min</th><td class="infobox-data infobox-data-a">
+O(log n)</td><td class="infobox-data infobox-data-b">
+O(log n)</td></tr></tbody></table></td></tr></tbody></table>
+
+
+<p>A <b>binary heap</b> is a heap data structure that takes the form of a binary tree. Binary heaps are a common way of implementing priority queues.<sup class="reference" id="cite_ref-clrs_1-0">[1]</sup><sup class="reference nowrap"><span title="Pages: 162–163">: 162–163 </span></sup> The binary heap was introduced by J. W. J. Williams in 1964, as a data structure for heapsort.<sup class="reference" id="cite_ref-2">[2]</sup>
+</p><p>A binary heap is defined as a binary tree with two additional constraints:<sup class="reference" id="cite_ref-3">[3]</sup>
+</p>
+<ul><li>Shape property: a binary heap is a <i>complete binary tree</i>; that is, all levels of the tree, except possibly the last one (deepest) are fully filled, and, if the last level of the tree is not complete, the nodes of that level are filled from left to right.</li>
+<li>Heap property: the key stored in each node is either greater than or equal to (≥) or less than or equal to (≤) the keys in the node's children, according to some total order.</li></ul>
+<p>Heaps where the parent key is greater than or equal to (≥) the child keys are called <i>max-heaps</i>; those where it is less than or equal to (≤) are called <i>min-heaps</i>. Efficient (logarithmic time) algorithms are known for the two operations needed to implement a priority queue on a binary heap: inserting an element, and removing the smallest or largest element from a min-heap or max-heap, respectively. Binary heaps are also commonly employed in the heapsort sorting algorithm, which is an in-place algorithm because binary heaps can be implemented as an implicit data structure, storing keys in an array and using their relative positions within that array to represent child–parent relationships.
+</p>
+
+<h2><span class="mw-headline" id="Heap_operations">Heap operations</span><span class="mw-editsection"></span></h2>
+<p>Both the insert and remove operations modify the heap to conform to the shape property first, by adding or removing from the end of the heap. Then the heap property is restored by traversing up or down the heap. Both operations take <span class="nowrap">O(log <i>n</i>)</span> time.
+</p>
+<h3><span class="mw-headline" id="Insert">Insert</span><span class="mw-editsection"></span></h3>
+<p>To add an element to a heap, we can perform this algorithm:
+</p>
+<ol><li>Add the element to the bottom level of the heap at the leftmost open space.</li>
+<li>Compare the added element with its parent; if they are in the correct order, stop.</li>
+<li>If not, swap the element with its parent and return to the previous step.</li></ol>
+<p>Steps 2 and 3, which restore the heap property by comparing and possibly swapping a node with its parent, are called <i>the up-heap</i> operation (also known as <i>bubble-up</i>, <i>percolate-up</i>, <i>sift-up</i>, <i>trickle-up</i>, <i>swim-up</i>, <i>heapify-up</i>, or <i>cascade-up</i>).
+</p><p>The number of operations required depends only on the number of levels the new element must rise to satisfy the heap property. Thus, the insertion operation has a worst-case time complexity of <span class="nowrap">O(log <i>n</i>)</span>. For a random heap, and for repeated insertions, the insertion operation has an average-case complexity of O(1).<sup class="reference" id="cite_ref-4">[4]</sup><sup class="reference" id="cite_ref-5">[5]</sup>
+</p><p>As an example of binary heap insertion, say we have a max-heap
+</p>
+<dl><dd><dl><dd><img alt="Heap add step1.svg" data-file-height="150" data-file-width="250" decoding="async" height="90" src="//upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Heap_add_step1.svg/150px-Heap_add_step1.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Heap_add_step1.svg/225px-Heap_add_step1.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Heap_add_step1.svg/300px-Heap_add_step1.svg.png 2x" width="150"/></dd></dl></dd></dl>
+<p>and we want to add the number 15 to the heap. We first place the 15 in the position marked by the X. However, the heap property is violated since <span class="nowrap">15 &gt; 8</span>, so we need to swap the 15 and the 8. So, we have the heap looking as follows after the first swap:
+</p>
+<dl><dd><dl><dd><img alt="Heap add step2.svg" data-file-height="150" data-file-width="250" decoding="async" height="90" src="//upload.wikimedia.org/wikipedia/commons/thumb/1/16/Heap_add_step2.svg/150px-Heap_add_step2.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/1/16/Heap_add_step2.svg/225px-Heap_add_step2.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/1/16/Heap_add_step2.svg/300px-Heap_add_step2.svg.png 2x" width="150"/></dd></dl></dd></dl>
+<p>However the heap property is still violated since <span class="nowrap">15 &gt; 11</span>, so we need to swap again:
+</p>
+<dl><dd><dl><dd><img alt="Heap add step3.svg" data-file-height="150" data-file-width="250" decoding="async" height="90" src="//upload.wikimedia.org/wikipedia/commons/thumb/5/51/Heap_add_step3.svg/150px-Heap_add_step3.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/5/51/Heap_add_step3.svg/225px-Heap_add_step3.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/5/51/Heap_add_step3.svg/300px-Heap_add_step3.svg.png 2x" width="150"/></dd></dl></dd></dl>
+<p>which is a valid max-heap. There is no need to check the left child after this final step: at the start, the max-heap was valid, meaning the root was already greater than its left child, so replacing the root with an even greater value will maintain the property that each node is greater than its children (<span class="nowrap">11 &gt; 5</span>; if <span class="nowrap">15 &gt; 11</span>, and <span class="nowrap">11 &gt; 5</span>, then <span class="nowrap">15 &gt; 5</span>, because of the transitive relation).
+</p>
+<h3><span class="mw-headline" id="Extract">Extract</span><span class="mw-editsection"></span></h3>
+<p>The procedure for deleting the root from the heap (effectively extracting the maximum element in a max-heap or the minimum element in a min-heap) while retaining the heap property is as follows:
+</p>
+<ol><li>Replace the root of the heap with the last element on the last level.</li>
+<li>Compare the new root with its children; if they are in the correct order, stop.</li>
+<li>If not, swap the element with one of its children and return to the previous step. (Swap with its smaller child in a min-heap and its larger child in a max-heap.)</li></ol>
+<p>Steps 2 and 3, which restore the heap property by comparing and possibly swapping a node with one of its children, are called the <i>down-heap</i> (also known as <i>bubble-down</i>, <i>percolate-down</i>, <i>sift-down</i>, <i>sink-down</i>, <i>trickle down</i>, <i>heapify-down</i>, <i>cascade-down</i>, <i>extract-min</i> or <i>extract-max</i>, or simply <i>heapify</i>) operation.
+</p><p>So, if we have the same max-heap as before
+</p>
+<dl><dd><dl><dd><img alt="Heap delete step0.svg" data-file-height="150" data-file-width="250" decoding="async" height="90" src="//upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Heap_delete_step0.svg/150px-Heap_delete_step0.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Heap_delete_step0.svg/225px-Heap_delete_step0.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Heap_delete_step0.svg/300px-Heap_delete_step0.svg.png 2x" width="150"/></dd></dl></dd></dl>
+<p>We remove the 11 and replace it with the 4.
+</p>
+<dl><dd><dl><dd><img alt="Heap remove step1.svg" data-file-height="150" data-file-width="250" decoding="async" height="90" src="//upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Heap_remove_step1.svg/150px-Heap_remove_step1.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Heap_remove_step1.svg/225px-Heap_remove_step1.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Heap_remove_step1.svg/300px-Heap_remove_step1.svg.png 2x" width="150"/></dd></dl></dd></dl>
+<p>Now the heap property is violated since 8 is greater than 4. In this case, swapping the two elements, 4 and 8, is enough to restore the heap property and we need not swap elements further:
+</p>
+<dl><dd><dl><dd><img alt="Heap remove step2.svg" data-file-height="150" data-file-width="250" decoding="async" height="90" src="//upload.wikimedia.org/wikipedia/commons/thumb/2/22/Heap_remove_step2.svg/150px-Heap_remove_step2.svg.png" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/2/22/Heap_remove_step2.svg/225px-Heap_remove_step2.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/2/22/Heap_remove_step2.svg/300px-Heap_remove_step2.svg.png 2x" width="150"/></dd></dl></dd></dl>
+<p>The downward-moving node is swapped with the <i>larger</i> of its children in a max-heap (in a min-heap it would be swapped with its smaller child), until it satisfies the heap property in its new position. This functionality is achieved by the <b>Max-Heapify</b> function as defined below in pseudocode for an array-backed heap <i>A</i> of length <i>length</i>(<i>A</i>). <i>A</i> is indexed starting at 1.
+</p>
+<pre>// Perform a down-heap or heapify-down operation for a max-heap
+// <i>A</i>: an array representing the heap, indexed starting at 1
+// <i>i</i>: the index to start at when heapifying down
+<b>Max-Heapify</b>(<i>A</i>, <i>i</i>):
+    <i>left</i> ← 2×<i>i</i>
+    <i>right</i> ← 2×<i>i</i> + 1
+    <i>largest</i> ← <i>i</i>
+    
+    <b>if</b> <i>left</i> ≤ <i>length</i>(<i>A</i>) <b>and</b> <i>A</i>[<i>left</i>] &gt; A[<i>largest</i>] <b>then</b>:
+        <i>largest</i> ← <i>left</i><br/>
+    <b>if</b> <i>right</i> ≤ <i>length</i>(<i>A</i>) <b>and</b> <i>A</i>[<i>right</i>] &gt; <i>A</i>[<i>largest</i>] <b>then</b>:
+        <i>largest</i> ← <i>right</i>
+    
+    <b>if</b> <i>largest</i> ≠ <i>i</i> <b>then</b>:
+        <b>swap</b> <i>A</i>[<i>i</i>] and <i>A</i>[<i>largest</i>]
+        <b>Max-Heapify</b>(<i>A</i>, <i>largest</i>)
+</pre>
+<p>For the above algorithm to correctly re-heapify the array, no nodes besides the node at index <i>i</i> and its two direct children can violate the heap property. The down-heap operation (without the preceding swap) can also be used to modify the value of the root, even when an element is not being deleted.
+</p><p>In the worst case, the new root has to be swapped with its child on each level until it reaches the bottom level of the heap, meaning that the delete operation has a time complexity relative to the height of the tree, or O(log <i>n</i>).
+</p>
+<h3><span class="mw-headline" id="Insert_then_extract">Insert then extract</span><span class="mw-editsection"></span></h3>
+<p>Inserting an element then extracting from the heap can be done more efficiently than simply calling the insert and extract functions defined above, which would involve both an upheap and downheap operation. Instead, we can do just a downheap operation, as follows:
+</p>
+<ol><li>Compare whether the item we're pushing or the peeked top of the heap is greater (assuming a max heap)</li>
+<li>If the root of the heap is greater:
+<ol><li>Replace the root with the new item</li>
+<li>Down-heapify starting from the root</li></ol></li>
+<li>Else, return the item we're pushing</li></ol>
+<p>Python provides such a function for insertion then extraction called "heappushpop", which is paraphrased below.<sup class="reference" id="cite_ref-6">[6]</sup><sup class="reference" id="cite_ref-7">[7]</sup> The heap array is assumed to have its first element at index 1.
+</p>
+<pre>// Push a new item to a (max) heap and then extract the root of the resulting heap. 
+// <i>heap</i>: an array representing the heap, indexed at 1
+// <i>item</i>: an element to insert
+// Returns the greater of the two between <i>item</i> and the root of <i>heap</i>.
+<b>Push-Pop</b>(<i>heap</i>: List&lt;T&gt;, <i>item</i>: T) -&gt; T:
+    <b>if</b> <i>heap</i> is not empty <b>and</b> heap[1] &gt; <i>item</i> <b>then</b>:  // &lt; if min heap
+        <b>swap</b> <i>heap</i>[1] and <i>item</i>
+        _downheap(<i>heap</i> starting from index 1)
+    <b>return</b> <i>item</i>
+</pre>
+<p>A similar function can be defined for popping and then inserting, which in Python is called "heapreplace":
+</p>
+<pre>// Extract the root of the heap, and push a new item 
+// <i>heap</i>: an array representing the heap, indexed at 1
+// <i>item</i>: an element to insert
+// Returns the current root of <i>heap</i>
+<b>Replace</b>(<i>heap</i>: List&lt;T&gt;, <i>item</i>: T) -&gt; T:
+    <b>swap</b> <i>heap</i>[1] and <i>item</i>
+    _downheap(<i>heap</i> starting from index 1)
+    <b>return</b> <i>item</i>
+</pre>
+<h3><span class="mw-headline" id="Search">Search</span><span class="mw-editsection"></span></h3>
+<p>Finding an arbitrary element takes O(n) time.
+</p>
+<h3><span class="mw-headline" id="Delete">Delete</span><span class="mw-editsection"></span></h3>
+<p>Deleting an arbitrary element can be done as follows:
+</p>
+<ol><li>Find the index <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span> of the element we want to delete</li>
+<li>Swap this element with the last element</li>
+<li>Down-heapify or up-heapify to restore the heap property. In a max-heap (min-heap), up-heapify is only required when the new key of element <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span> is greater (smaller) than the previous one because only the heap-property of the parent element might be violated. Assuming that the heap-property was valid between element <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span> and its children before the element swap, it can't be violated by a now larger (smaller) key value. When the new key is less (greater) than the previous one then only a down-heapify is required because the heap-property might only be violated in the child elements.</li></ol>
+<h3><span class="mw-headline" id="Decrease_or_increase_key">Decrease or increase key</span><span class="mw-editsection"></span></h3>
+<p>The decrease key operation replaces the value of a node with a given value with a lower value, and the increase key operation does the same but with a higher value. This involves finding the node with the given value, changing the value, and then down-heapifying or up-heapifying to restore the heap property.
+</p><p>Decrease key can be done as follows:
+</p>
+<ol><li>Find the index of the element we want to modify</li>
+<li>Decrease the value of the node</li>
+<li>Down-heapify (assuming a max heap) to restore the heap property</li></ol>
+<p>Increase key can be done as follows:
+</p>
+<ol><li>Find the index of the element we want to modify</li>
+<li>Increase the value of the node</li>
+<li>Up-heapify (assuming a max heap) to restore the heap property</li></ol>
+<h2><span class="mw-headline" id="Building_a_heap">Building a heap</span><span class="mw-editsection"></span></h2>
+<p>Building a heap from an array of <span class="texhtml mvar" style="font-style:italic;">n</span> input elements can be done by starting with an empty heap, then successively inserting each element. This approach, called Williams' method after the inventor of binary heaps, is easily seen to run in <span class="texhtml"><i>O</i>(<i>n</i> log <i>n</i>)</span> time: it performs <span class="texhtml mvar" style="font-style:italic;">n</span> insertions at <span class="texhtml"><i>O</i>(log <i>n</i>)</span> cost each.<sup class="reference" id="cite_ref-9">[a]</sup>
+</p><p>However, Williams' method is suboptimal. A faster method (due to Floyd<sup class="reference" id="cite_ref-heapbuildjalg_8-1">[8]</sup>) starts by arbitrarily putting the elements on a binary tree, respecting the shape property (the tree could be represented by an array, see below). Then starting from the lowest level and moving upwards, sift the root of each subtree downward as in the deletion algorithm until the heap property is restored. More specifically if all the subtrees starting at some height <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h}</annotation>
+</semantics>
+</math></span><img alt="h" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b26be3e694314bc90c3215047e4a2010c6ee184a" style="vertical-align: -0.338ex; width:1.339ex; height:2.176ex;"/></span> have already been "heapified" (the bottommost level corresponding to <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h=0}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h=0}</annotation>
+</semantics>
+</math></span><img alt="h=0" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ffe239e1050529410001cc1c0b3245945bc69709" style="vertical-align: -0.338ex; width:5.6ex; height:2.176ex;"/></span>), the trees at height <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h+1}</annotation>
+</semantics>
+</math></span><img alt="h+1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d6bdac90f1b229b8d6c70a3f207926e61c5c68f3" style="vertical-align: -0.505ex; width:5.342ex; height:2.343ex;"/></span> can be heapified by sending their root down along the path of maximum valued children when building a max-heap, or minimum valued children when building a min-heap. This process takes <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O(h)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>h</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O(h)}</annotation>
+</semantics>
+</math></span><img alt="O(h)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/08b2b7b64f0a9e9848ecd3a114cc7dcc8ca6179d" style="vertical-align: -0.838ex; width:4.922ex; height:2.843ex;"/></span> operations (swaps) per node. In this method most of the heapification takes place in the lower levels. Since the height of the heap is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \lfloor \log n\rfloor }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo fence="false" stretchy="false">⌊<!-- ⌊ --></mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo fence="false" stretchy="false">⌋<!-- ⌋ --></mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \lfloor \log n\rfloor }</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \lfloor \log n\rfloor }" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2691a5620da37c1f740a04a8fd226072143455c9" style="vertical-align: -0.838ex; width:6.818ex; height:2.843ex;"/></span>, the number of nodes at height <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle h}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>h</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle h}</annotation>
+</semantics>
+</math></span><img alt="h" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b26be3e694314bc90c3215047e4a2010c6ee184a" style="vertical-align: -0.338ex; width:1.339ex; height:2.176ex;"/></span> is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \leq {\frac {2^{\lfloor \log n\rfloor }}{2^{h}}}\leq {\frac {n}{2^{h}}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo>≤<!-- ≤ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mo fence="false" stretchy="false">⌊<!-- ⌊ --></mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo fence="false" stretchy="false">⌋<!-- ⌋ --></mo>
+</mrow>
+</msup>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>h</mi>
+</mrow>
+</msup>
+</mfrac>
+</mrow>
+<mo>≤<!-- ≤ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>n</mi>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>h</mi>
+</mrow>
+</msup>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \leq {\frac {2^{\lfloor \log n\rfloor }}{2^{h}}}\leq {\frac {n}{2^{h}}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \leq {\frac {2^{\lfloor \log n\rfloor }}{2^{h}}}\leq {\frac {n}{2^{h}}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5051ad1ea862f8357779fc9ad08e03be88ec7fbf" style="vertical-align: -2.338ex; width:15.895ex; height:6.343ex;"/></span>. Therefore, the cost of heapifying all subtrees is:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{aligned}\sum _{h=0}^{\lfloor \log n\rfloor }{\frac {n}{2^{h}}}O(h)&amp;=O\left(n\sum _{h=0}^{\lfloor \log n\rfloor }{\frac {h}{2^{h}}}\right)\\&amp;=O\left(n\sum _{h=0}^{\infty }{\frac {h}{2^{h}}}\right)\\&amp;=O(n)\end{aligned}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="right left right left right left right left right left right left" columnspacing="0em 2em 0em 2em 0em 2em 0em 2em 0em 2em 0em" displaystyle="true" rowspacing="3pt">
+<mtr>
+<mtd>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>h</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo fence="false" stretchy="false">⌊<!-- ⌊ --></mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo fence="false" stretchy="false">⌋<!-- ⌋ --></mo>
+</mrow>
+</munderover>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>n</mi>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>h</mi>
+</mrow>
+</msup>
+</mfrac>
+</mrow>
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>h</mi>
+<mo stretchy="false">)</mo>
+</mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mi>O</mi>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mi>n</mi>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>h</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mo fence="false" stretchy="false">⌊<!-- ⌊ --></mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo fence="false" stretchy="false">⌋<!-- ⌋ --></mo>
+</mrow>
+</munderover>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>h</mi>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>h</mi>
+</mrow>
+</msup>
+</mfrac>
+</mrow>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mi>O</mi>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mi>n</mi>
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>h</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mrow>
+</munderover>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mi>h</mi>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>h</mi>
+</mrow>
+</msup>
+</mfrac>
+</mrow>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd></mtd>
+<mtd>
+<mi></mi>
+<mo>=</mo>
+<mi>O</mi>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{aligned}\sum _{h=0}^{\lfloor \log n\rfloor }{\frac {n}{2^{h}}}O(h)&amp;=O\left(n\sum _{h=0}^{\lfloor \log n\rfloor }{\frac {h}{2^{h}}}\right)\\&amp;=O\left(n\sum _{h=0}^{\infty }{\frac {h}{2^{h}}}\right)\\&amp;=O(n)\end{aligned}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\begin{aligned}\sum _{h=0}^{\lfloor \log n\rfloor }{\frac {n}{2^{h}}}O(h)&amp;=O\left(n\sum _{h=0}^{\lfloor \log n\rfloor }{\frac {h}{2^{h}}}\right)\\&amp;=O\left(n\sum _{h=0}^{\infty }{\frac {h}{2^{h}}}\right)\\&amp;=O(n)\end{aligned}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/2b1f5dac83f79e16b8794611e4b4a91594c422d8" style="vertical-align: -8.671ex; width:33.394ex; height:18.509ex;"/></span></dd></dl>
+<p>This uses the fact that the given infinite series <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle \sum _{i=0}^{\infty }i/2^{i}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<munderover>
+<mo>∑<!-- ∑ --></mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+<mo>=</mo>
+<mn>0</mn>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mrow>
+</munderover>
+<mi>i</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mo>/</mo>
+</mrow>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>i</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle \sum _{i=0}^{\infty }i/2^{i}}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle \sum _{i=0}^{\infty }i/2^{i}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/c346abeef6557578d06d71e709ff29c9e96a6f49" style="vertical-align: -1.005ex; width:9.668ex; height:3.343ex;"/></span> converges.
+</p><p>The exact value of the above (the worst-case number of comparisons during the heap construction) is known to be equal to:
+</p>
+<dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2n-2s_{2}(n)-e_{2}(n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>2</mn>
+<mi>n</mi>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<msub>
+<mi>s</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<msub>
+<mi>e</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2n-2s_{2}(n)-e_{2}(n)}</annotation>
+</semantics>
+</math></span><img alt=" 2 n - 2 s_2 (n) - e_2 (n) " aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/0134cac877b68b92f3c460708a5a2f4466d1ef86" style="vertical-align: -0.838ex; width:20.091ex; height:2.843ex;"/></span>,<sup class="reference" id="cite_ref-10">[9]</sup><sup class="reference" id="cite_ref-11">[b]</sup></dd></dl>
+<p>where <span class="texhtml"><i>s</i><sub>2</sub>(<i>n</i>)</span> is the sum of all digits of the binary representation of <span class="texhtml mvar" style="font-style:italic;">n</span> and <span class="texhtml"><i>e</i><sub>2</sub>(<i>n</i>)</span> is the exponent of <span class="texhtml">2</span> in the prime factorization of <span class="texhtml mvar" style="font-style:italic;">n</span>.
+</p><p>The average case is more complex to analyze, but it can be shown to asymptotically approach <span class="texhtml">1.8814 <i>n</i> − 2 log<sub>2</sub><i>n</i> + <i>O</i>(1)</span> comparisons.<sup class="reference" id="cite_ref-12">[10]</sup><sup class="reference" id="cite_ref-13">[11]</sup>
+</p><p>The <b>Build-Max-Heap</b> function that follows, converts an array <i>A</i> which stores a complete
+binary tree with <i>n</i> nodes to a max-heap by repeatedly using <b>Max-Heapify</b> (down-heapify for a max-heap) in a bottom-up manner.
+The array elements indexed by
+<span class="nowrap"><i>floor</i>(<i>n</i>/2) + 1</span>, <span class="nowrap"><i>floor</i>(<i>n</i>/2) + 2</span>, ..., <i>n</i>
+are all leaves for the tree (assuming that indices start at 1)—thus each is a one-element heap, and does not need to be down-heapified. <b>Build-Max-Heap</b> runs
+<b>Max-Heapify</b> on each of the remaining tree nodes.
+</p>
+<pre><b>Build-Max-Heap</b> (<i>A</i>):
+    <b>for each</b> index <i>i</i> <b>from</b> <i>floor</i>(<i>length</i>(<i>A</i>)/2) <b>downto</b> 1 <b>do:</b>
+        <b>Max-Heapify</b>(<i>A</i>, <i>i</i>)
+</pre>
+<h2><span class="mw-headline" id="Heap_implementation">Heap implementation</span><span class="mw-editsection"></span></h2>
+
+
+<p>Heaps are commonly implemented with an array. Any binary tree can be stored in an array, but because a binary heap is always a complete binary tree, it can be stored compactly. No space is required for pointers; instead, the parent and children of each node can be found by arithmetic on array indices. These properties make this heap implementation a simple example of an implicit data structure or Ahnentafel list. Details depend on the root position, which in turn may depend on constraints of a programming language used for implementation, or programmer preference. Specifically, sometimes the root is placed at index 1, in order to simplify arithmetic.
+</p><p>Let <i>n</i> be the number of elements in the heap and <i>i</i> be an arbitrary valid index of the array storing the heap. If the tree root is at index 0, with valid indices 0 through <i>n − </i>1, then each element <i>a</i> at index <i>i</i> has
+</p>
+<ul><li>children at indices 2<i>i </i>+ 1 and 2<i>i </i>+ 2</li>
+<li>its parent at index <i>floor</i>((<i>i</i> − 1) / 2).</li></ul>
+<p>Alternatively, if the tree root is at index 1, with valid indices 1 through <i>n</i>, then each element <i>a</i> at index <i>i</i> has
+</p>
+<ul><li>children at indices 2<i>i</i> and 2<i>i </i>+1</li>
+<li>its parent at index <i>floor</i>(<i>i</i> / 2).</li></ul>
+<p>This implementation is used in the heapsort algorithm which reuses the space allocated to the input array to store the heap (i.e. the algorithm is done in-place). This implementation is also useful as a Priority queue.  When a dynamic array is used, insertion of an unbounded number of items is possible.
+</p><p>The upheap/downheap operations can then be stated in terms of an array as follows: suppose that the heap property holds for the indices <i>b</i>, <i>b</i>+1, ..., <i>e</i>. The sift-down function extends the heap property to <i>b</i>−1, <i>b</i>, <i>b</i>+1, ..., <i>e</i>.
+Only index <i>i</i> = <i>b</i>−1 can violate the heap property.
+Let <i>j</i> be the index of the largest child of <i>a</i>[<i>i</i>] (for a max-heap, or the smallest child for a min-heap) within the range <i>b</i>, ..., <i>e</i>.
+(If no such index exists because <span class="nowrap">2<i>i</i> &gt; <i>e</i></span> then the heap property holds for the newly extended range and nothing needs to be done.)
+By swapping the values <i>a</i>[<i>i</i>] and <i>a</i>[<i>j</i>] the heap property for position <i>i</i> is established.
+At this point, the only problem is that the heap property might not hold for index <i>j</i>.
+The sift-down function is applied tail-recursively to index <i>j</i> until the heap property is established for all elements.
+</p><p>The sift-down function is fast. In each step it only needs two comparisons and one swap. The index value where it is working doubles in each iteration, so that at most log<sub>2</sub> <i>e</i> steps are required.
+</p><p>For big heaps and using virtual memory, storing elements in an array according to the above scheme is inefficient: (almost) every level is in a different page.  B-heaps are binary heaps that keep subtrees in a single page, reducing the number of pages accessed by up to a factor of ten.<sup class="reference" id="cite_ref-14">[12]</sup>
+</p><p>The operation of merging two binary heaps takes Θ(<i>n</i>) for equal-sized heaps. The best you can do is (in case of array implementation) simply concatenating the two heap arrays and build a heap of the result.<sup class="reference" id="cite_ref-15">[13]</sup> A heap on <i>n</i> elements can be merged with a heap on <i>k</i> elements using O(log <i>n</i> log <i>k</i>) key comparisons, or, in case of a pointer-based implementation, in O(log <i>n</i> log <i>k</i>) time.<sup class="reference" id="cite_ref-16">[14]</sup> An algorithm for splitting a heap on <i>n</i> elements into two heaps on <i>k</i> and <i>n-k</i> elements, respectively, based on a new view
+of heaps as an ordered collections of subheaps was presented in.<sup class="reference" id="cite_ref-17">[15]</sup> The algorithm requires O(log <i>n</i> * log <i>n</i>)  comparisons. The view also presents a new and conceptually simple algorithm for merging heaps. When merging is a common task, a different heap implementation is recommended, such as binomial heaps, which can be merged in O(log <i>n</i>).
+</p><p>Additionally, a binary heap can be implemented with a traditional binary tree data structure, but there is an issue with finding the adjacent element on the last level on the binary heap when adding an element. This element can be determined algorithmically or by adding extra data to the nodes, called "threading" the tree—instead of merely storing references to the children, we store the inorder successor of the node as well.
+</p><p>It is possible to modify the heap structure to make the extraction of both the smallest and largest element possible in <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle O}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>O</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle O}</annotation>
+</semantics>
+</math></span><img alt="O" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/9d70e1d0d87e2ef1092ea1ffe2923d9933ff18fc" style="vertical-align: -0.338ex; width:1.773ex; height:2.176ex;"/></span><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (\log n)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (\log n)}</annotation>
+</semantics>
+</math></span><img alt="(\log n)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f92166a0c67bebc0d93429917673f7d73ea420b1" style="vertical-align: -0.838ex; width:6.563ex; height:2.843ex;"/></span> time.<sup class="reference" id="cite_ref-sym_18-0">[16]</sup>  To do this, the rows alternate between min heap and max-heap.  The algorithms are roughly the same, but, in each step, one must consider the alternating rows with alternating comparisons.  The performance is roughly the same as a normal single direction heap. This idea can be generalized to a min-max-median heap.
+</p>
+<h2><span class="mw-headline" id="Derivation_of_index_equations">Derivation of index equations</span><span class="mw-editsection"></span></h2>
+<p>In an array-based heap, the children and parent of a node can be located via simple arithmetic on the node's index. This section derives the relevant equations for heaps with their root at index 0, with additional notes on heaps with their root at index 1.
+</p><p>To avoid confusion, we'll define the <b>level</b> of a node as its distance from the root, such that the root itself occupies level 0.
+</p>
+<h3><span class="mw-headline" id="Child_nodes">Child nodes</span><span class="mw-editsection"></span></h3>
+<p>For a general node located at index <span class="texhtml mvar" style="font-style:italic;">i</span> (beginning from 0), we will first derive the index of its right child, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\text{right}}=2i+2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>right</mtext>
+</mrow>
+<mo>=</mo>
+<mn>2</mn>
+<mi>i</mi>
+<mo>+</mo>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\text{right}}=2i+2}</annotation>
+</semantics>
+</math></span><img alt="\text{right} = 2i + 2" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/32ca8eccdc7c16039f885cdf9ec831e5eed514c5" style="vertical-align: -0.671ex; width:13.984ex; height:2.509ex;"/></span>.
+</p><p>Let node <span class="texhtml mvar" style="font-style:italic;">i</span> be located in level <span class="texhtml mvar" style="font-style:italic;">L</span>, and note that any level <span class="texhtml mvar" style="font-style:italic;">l</span> contains exactly <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{l}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>l</mi>
+</mrow>
+</msup>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{l}}</annotation>
+</semantics>
+</math></span><img alt="2^l" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/d99018c1b3139cf29ec7d875e018f3188350ada1" style="vertical-align: -0.338ex; width:1.885ex; height:2.676ex;"/></span> nodes. Furthermore, there are exactly <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{l+1}-1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>l</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{l+1}-1}</annotation>
+</semantics>
+</math></span><img alt="2^{l + 1} - 1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dfad4341ad1c847177c6d3ea1ff22dca4245c55c" style="vertical-align: -0.505ex; width:7.988ex; height:2.843ex;"/></span> nodes contained in the layers up to and including layer <span class="texhtml mvar" style="font-style:italic;">l</span> (think of binary arithmetic; 0111...111 = 1000...000 - 1). Because the root is stored at 0, the <span class="texhtml mvar" style="font-style:italic;">k</span>th node will be stored at index <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (k-1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mi>k</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (k-1)}</annotation>
+</semantics>
+</math></span><img alt="(k - 1)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e69f74fa2adbbab50f6969acb2af719045435461" style="vertical-align: -0.838ex; width:7.023ex; height:2.843ex;"/></span>. Putting these observations together yields the following expression for the <b>index of the last node in layer <span class="texhtml mvar" style="font-style:italic;">l</span></b>.
+</p>
+<dl><dd><dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\text{last}}(l)=(2^{l+1}-1)-1=2^{l+1}-2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>last</mtext>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>l</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mo stretchy="false">(</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>l</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo>=</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>l</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\text{last}}(l)=(2^{l+1}-1)-1=2^{l+1}-2}</annotation>
+</semantics>
+</math></span><img alt="\text{last}(l) = (2^{l + 1} - 1) - 1 = 2^{l + 1} - 2" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/039261a4e9a7f0988db871983f9af657972dc1d1" style="vertical-align: -0.838ex; width:34.119ex; height:3.176ex;"/></span></dd></dl></dd></dl>
+<p>Let there be <span class="texhtml mvar" style="font-style:italic;">j</span> nodes after node <span class="texhtml mvar" style="font-style:italic;">i</span> in layer L, such that
+</p>
+<dl><dd><dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{alignedat}{2}i=&amp;\quad {\text{last}}(L)-j\\=&amp;\quad (2^{L+1}-2)-j\\\end{alignedat}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="right left right left" columnspacing="0em 0em 0em 0em" displaystyle="true" rowspacing="3pt">
+<mtr>
+<mtd>
+<mi>i</mi>
+<mo>=</mo>
+</mtd>
+<mtd>
+<mspace width="1em"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>last</mtext>
+</mrow>
+<mo stretchy="false">(</mo>
+<mi>L</mi>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mi>j</mi>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mo>=</mo>
+</mtd>
+<mtd>
+<mi></mi>
+<mspace width="1em"></mspace>
+<mo stretchy="false">(</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>L</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mi>j</mi>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{alignedat}{2}i=&amp;\quad {\text{last}}(L)-j\\=&amp;\quad (2^{L+1}-2)-j\\\end{alignedat}}}</annotation>
+</semantics>
+</math></span><img alt="\begin{alignat}{2}
+i = &amp; \quad \text{last}(L) - j\\
+  = &amp; \quad (2^{L + 1} -2) - j\\
+\end{alignat}
+" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/150fed76d084262c71f1b74a12ce89f2e7f2286e" style="vertical-align: -2.505ex; width:20.555ex; height:6.176ex;"/></span></dd></dl></dd></dl>
+<p>Each of these <span class="texhtml mvar" style="font-style:italic;">j</span> nodes must have exactly 2 children, so there must be <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2j}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mn>2</mn>
+<mi>j</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2j}</annotation>
+</semantics>
+</math></span><img alt="2j" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a031183edfcba17a64f7bad6f0f3da15bf1b0b99" style="vertical-align: -0.671ex; width:2.121ex; height:2.509ex;"/></span> nodes separating <span class="texhtml mvar" style="font-style:italic;">i</span>'s right child from the end of its layer (<span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle L+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>L</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle L+1}</annotation>
+</semantics>
+</math></span><img alt="L + 1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/75933f53b57abd647b7e539c51c4f90fd122bb63" style="vertical-align: -0.505ex; width:5.586ex; height:2.343ex;"/></span>).
+</p>
+<dl><dd><dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{alignedat}{2}{\text{right}}=&amp;\quad {\text{last(L + 1)}}-2j\\=&amp;\quad (2^{L+2}-2)-2j\\=&amp;\quad 2(2^{L+1}-2-j)+2\\=&amp;\quad 2i+2\end{alignedat}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="right left right left" columnspacing="0em 0em 0em 0em" displaystyle="true" rowspacing="3pt">
+<mtr>
+<mtd>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>right</mtext>
+</mrow>
+<mo>=</mo>
+</mtd>
+<mtd>
+<mspace width="1em"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>last(L + 1)</mtext>
+</mrow>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<mi>j</mi>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mo>=</mo>
+</mtd>
+<mtd>
+<mi></mi>
+<mspace width="1em"></mspace>
+<mo stretchy="false">(</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>L</mi>
+<mo>+</mo>
+<mn>2</mn>
+</mrow>
+</msup>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<mo stretchy="false">)</mo>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<mi>j</mi>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mo>=</mo>
+</mtd>
+<mtd>
+<mspace width="1em"></mspace>
+<mn>2</mn>
+<mo stretchy="false">(</mo>
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>L</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<mo>−<!-- − --></mo>
+<mi>j</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mn>2</mn>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mo>=</mo>
+</mtd>
+<mtd>
+<mspace width="1em"></mspace>
+<mn>2</mn>
+<mi>i</mi>
+<mo>+</mo>
+<mn>2</mn>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{alignedat}{2}{\text{right}}=&amp;\quad {\text{last(L + 1)}}-2j\\=&amp;\quad (2^{L+2}-2)-2j\\=&amp;\quad 2(2^{L+1}-2-j)+2\\=&amp;\quad 2i+2\end{alignedat}}}</annotation>
+</semantics>
+</math></span><img alt="\begin{alignat}{2}
+\text{right} = &amp; \quad \text{last(L + 1)} -2j\\
+             = &amp; \quad (2^{L + 2} -2) -2j\\
+             = &amp; \quad 2(2^{L + 1} -2 -j) + 2\\
+             = &amp; \quad 2i + 2
+\end{alignat}
+" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/f68925f3a3bffafa2879240c2a0f26c6f850406e" style="vertical-align: -5.838ex; width:29.836ex; height:12.843ex;"/></span></dd></dl></dd></dl>
+<p>As required.
+</p><p>Noting that the left child of any node is always 1 place before its right child, we get <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\text{left}}=2i+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>left</mtext>
+</mrow>
+<mo>=</mo>
+<mn>2</mn>
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\text{left}}=2i+1}</annotation>
+</semantics>
+</math></span><img alt="\text{left} = 2i + 1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/38f41c3c5f13acfd82b321f265b7f80ce236e75b" style="vertical-align: -0.505ex; width:12.362ex; height:2.343ex;"/></span>.
+</p><p>If the root is located at index 1 instead of 0, the last node in each level is instead at index <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle 2^{l+1}-1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msup>
+<mn>2</mn>
+<mrow class="MJX-TeXAtom-ORD">
+<mi>l</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mrow>
+</msup>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle 2^{l+1}-1}</annotation>
+</semantics>
+</math></span><img alt="2^{l + 1} - 1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/dfad4341ad1c847177c6d3ea1ff22dca4245c55c" style="vertical-align: -0.505ex; width:7.988ex; height:2.843ex;"/></span>. Using this throughout yields <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\text{left}}=2i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>left</mtext>
+</mrow>
+<mo>=</mo>
+<mn>2</mn>
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\text{left}}=2i}</annotation>
+</semantics>
+</math></span><img alt="\text{left} = 2i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cbc36e0d7f83009322861ddecd75efee1bce3def" style="vertical-align: -0.338ex; width:8.359ex; height:2.176ex;"/></span> and <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\text{right}}=2i+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>right</mtext>
+</mrow>
+<mo>=</mo>
+<mn>2</mn>
+<mi>i</mi>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\text{right}}=2i+1}</annotation>
+</semantics>
+</math></span><img alt="\text{right} = 2i + 1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/a912711b9fc45d9ced00bb90446c9531ecd2f7fc" style="vertical-align: -0.671ex; width:13.984ex; height:2.509ex;"/></span> for heaps with their root at 1.
+</p>
+<h3><span class="mw-headline" id="Parent_node">Parent node</span><span class="mw-editsection"></span></h3>
+<p>Every node is either the left or right child of its parent, so we know that either of the following is true.
+</p>
+<ol><li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i=2\times ({\text{parent}})+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+<mo>=</mo>
+<mn>2</mn>
+<mo>×<!-- × --></mo>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>parent</mtext>
+</mrow>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i=2\times ({\text{parent}})+1}</annotation>
+</semantics>
+</math></span><img alt="i = 2 \times (\text{parent}) + 1" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/00f553a10e4625564819c5f2dc550428e7da23df" style="vertical-align: -0.838ex; width:20.312ex; height:2.843ex;"/></span></li>
+<li><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i=2\times ({\text{parent}})+2}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+<mo>=</mo>
+<mn>2</mn>
+<mo>×<!-- × --></mo>
+<mo stretchy="false">(</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>parent</mtext>
+</mrow>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mn>2</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i=2\times ({\text{parent}})+2}</annotation>
+</semantics>
+</math></span><img alt="i = 2 \times (\text{parent}) + 2" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/5e01b57bbdebebb1bd20a7ea35ab3d5d3d966974" style="vertical-align: -0.838ex; width:20.312ex; height:2.843ex;"/></span></li></ol>
+<p>Hence,
+</p>
+<dl><dd><dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\text{parent}}={\frac {i-1}{2}}\;{\textrm {or}}\;{\frac {i-2}{2}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>parent</mtext>
+</mrow>
+<mo>=</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+<mn>2</mn>
+</mfrac>
+</mrow>
+<mspace width="thickmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>or</mtext>
+</mrow>
+</mrow>
+<mspace width="thickmathspace"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+</mrow>
+<mn>2</mn>
+</mfrac>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\text{parent}}={\frac {i-1}{2}}\;{\textrm {or}}\;{\frac {i-2}{2}}}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle {\text{parent}}={\frac {i-1}{2}}\;{\textrm {or}}\;{\frac {i-2}{2}}}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/01c4fb2151973555b629c2eb95b71e994a5f8adf" style="vertical-align: -1.838ex; width:24.342ex; height:5.176ex;"/></span></dd></dl></dd></dl>
+<p>Now consider the expression <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \left\lfloor {\dfrac {i-1}{2}}\right\rfloor }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow>
+<mo>⌊</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mfrac>
+<mrow>
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+<mn>2</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mo>⌋</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \left\lfloor {\dfrac {i-1}{2}}\right\rfloor }</annotation>
+</semantics>
+</math></span><img alt="\left\lfloor \dfrac{i - 1}{2} \right\rfloor" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/ffd7bea3d8291201eb4a4297dc225e096f71b4ec" style="vertical-align: -2.505ex; width:8.352ex; height:6.176ex;"/></span>.
+</p><p>If node <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span> is a left child, this gives the result immediately, however, it also gives the correct result if node <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle i}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi>i</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle i}</annotation>
+</semantics>
+</math></span><img alt="i" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/add78d8608ad86e54951b8c8bd6c8d8416533d20" style="vertical-align: -0.338ex; width:0.802ex; height:2.176ex;"/></span> is a right child. In this case, <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (i-2)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (i-2)}</annotation>
+</semantics>
+</math></span><img alt="(i - 2)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/e72fd36b5107b350f88b400dab8de091cbb79e04" style="vertical-align: -0.838ex; width:6.615ex; height:2.843ex;"/></span> must be even, and hence <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle (i-1)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mo stretchy="false">(</mo>
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+<mo stretchy="false">)</mo>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle (i-1)}</annotation>
+</semantics>
+</math></span><img alt="(i - 1)" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/cb6858c31c116f58a5c51345a12ea06e83a3d4e9" style="vertical-align: -0.838ex; width:6.615ex; height:2.843ex;"/></span> must be odd.
+</p>
+<dl><dd><dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\begin{alignedat}{2}\left\lfloor {\dfrac {i-1}{2}}\right\rfloor =&amp;\quad \left\lfloor {\dfrac {i-2}{2}}+{\dfrac {1}{2}}\right\rfloor \\=&amp;\quad {\frac {i-2}{2}}\\=&amp;\quad {\text{parent}}\end{alignedat}}}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtable columnalign="right left right left" columnspacing="0em 0em 0em 0em" displaystyle="true" rowspacing="3pt">
+<mtr>
+<mtd>
+<mrow>
+<mo>⌊</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mfrac>
+<mrow>
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+<mn>2</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mo>⌋</mo>
+</mrow>
+<mo>=</mo>
+</mtd>
+<mtd>
+<mspace width="1em"></mspace>
+<mrow>
+<mo>⌊</mo>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mfrac>
+<mrow>
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+</mrow>
+<mn>2</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mo>+</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mfrac>
+<mn>1</mn>
+<mn>2</mn>
+</mfrac>
+</mstyle>
+</mrow>
+</mrow>
+<mo>⌋</mo>
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mo>=</mo>
+</mtd>
+<mtd>
+<mspace width="1em"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mrow>
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>2</mn>
+</mrow>
+<mn>2</mn>
+</mfrac>
+</mrow>
+</mtd>
+</mtr>
+<mtr>
+<mtd>
+<mo>=</mo>
+</mtd>
+<mtd>
+<mspace width="1em"></mspace>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>parent</mtext>
+</mrow>
+</mtd>
+</mtr>
+</mtable>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\begin{alignedat}{2}\left\lfloor {\dfrac {i-1}{2}}\right\rfloor =&amp;\quad \left\lfloor {\dfrac {i-2}{2}}+{\dfrac {1}{2}}\right\rfloor \\=&amp;\quad {\frac {i-2}{2}}\\=&amp;\quad {\text{parent}}\end{alignedat}}}</annotation>
+</semantics>
+</math></span><img alt="\begin{alignat}{2}
+\left\lfloor \dfrac{i - 1}{2} \right\rfloor = &amp; \quad \left\lfloor \dfrac{i - 2}{2} + \dfrac{1}{2} \right\rfloor\\
+= &amp; \quad \frac{i - 2}{2}\\
+= &amp; \quad \text{parent}
+\end{alignat}
+" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/28959d1675c247656687d3deb7cf359ed2280aed" style="vertical-align: -6.671ex; width:27.07ex; height:14.509ex;"/></span></dd></dl></dd></dl>
+<p>Therefore, irrespective of whether a node is a left or right child, its parent can be found by the expression:
+</p>
+<dl><dd><dl><dd><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle {\text{parent}}=\left\lfloor {\dfrac {i-1}{2}}\right\rfloor }" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>parent</mtext>
+</mrow>
+<mo>=</mo>
+<mrow>
+<mo>⌊</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mfrac>
+<mrow>
+<mi>i</mi>
+<mo>−<!-- − --></mo>
+<mn>1</mn>
+</mrow>
+<mn>2</mn>
+</mfrac>
+</mstyle>
+</mrow>
+<mo>⌋</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle {\text{parent}}=\left\lfloor {\dfrac {i-1}{2}}\right\rfloor }</annotation>
+</semantics>
+</math></span><img alt="\text{parent} = \left\lfloor \dfrac{i - 1}{2} \right\rfloor" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/8a39ac09ebd3525dd701af2b20bd8bff6b71413e" style="vertical-align: -2.505ex; width:18.047ex; height:6.176ex;"/></span></dd></dl></dd></dl>
+<h2><span class="mw-headline" id="Related_structures">Related structures</span><span class="mw-editsection"></span></h2>
+<p>Since the ordering of siblings in a heap is not specified by the heap property, a single node's two children can be freely interchanged unless doing so violates the shape property (compare with treap). Note, however, that in the common array-based heap, simply swapping the children might also necessitate moving the children's sub-tree nodes to retain the heap property.
+</p><p>The binary heap is a special case of the d-ary heap in which d = 2.
+</p>
+<h2><span class="mw-headline" id="Summary_of_running_times">Summary of running times</span><span class="mw-editsection"></span></h2>
+<p>Here are time complexities<sup class="reference" id="cite_ref-CLRS_19-0">[17]</sup> of various heap data structures. Function names assume a min-heap.  For the meaning of "<i>O</i>(<i>f</i>)" and "<i>Θ</i>(<i>f</i>)" see Big O notation.
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>Operation
+</th>
+<th>find-min
+</th>
+<th>delete-min
+</th>
+<th>insert
+</th>
+<th>decrease-key
+</th>
+<th>meld
+</th></tr>
+<tr>
+<th>Binary<sup class="reference" id="cite_ref-CLRS_19-1">[17]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>Θ</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)
+</td>
+<td style="background:#ffdddd"><i>Θ</i>(<i>n</i>)
+</td></tr>
+<tr>
+<th>Leftist
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>Θ</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>Θ</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>Θ</i>(log <i>n</i>)
+</td></tr>
+<tr>
+<th>Binomial<sup class="reference" id="cite_ref-CLRS_19-2">[17]</sup><sup class="reference" id="cite_ref-20">[18]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>Θ</i>(log <i>n</i>)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)<sup class="reference" id="cite_ref-amortized_21-0">[c]</sup>
+</td>
+<td style="background:#ffffdd"><i>Θ</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)<sup class="reference" id="cite_ref-meld_22-0">[d]</sup>
+</td></tr>
+<tr>
+<th>Fibonacci<sup class="reference" id="cite_ref-CLRS_19-3">[17]</sup><sup class="reference" id="cite_ref-Fredman_And_Tarjan_23-0">[19]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)<sup class="reference" id="cite_ref-amortized_21-1">[c]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)<sup class="reference" id="cite_ref-amortized_21-2">[c]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td></tr>
+<tr>
+<th>Pairing<sup class="reference" id="cite_ref-Iacono_24-0">[20]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)<sup class="reference" id="cite_ref-amortized_21-3">[c]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>o</i>(log <i>n</i>)<sup class="reference" id="cite_ref-amortized_21-4">[c]</sup><sup class="reference" id="cite_ref-pairingdecreasekey_27-0">[e]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td></tr>
+<tr>
+<th>Brodal<sup class="reference" id="cite_ref-28">[23]</sup><sup class="reference" id="cite_ref-brodal_30-0">[f]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td></tr>
+<tr>
+<th>Rank-pairing<sup class="reference" id="cite_ref-31">[25]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)<sup class="reference" id="cite_ref-amortized_21-5">[c]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)<sup class="reference" id="cite_ref-amortized_21-6">[c]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td></tr>
+<tr>
+<th>Strict Fibonacci<sup class="reference" id="cite_ref-32">[26]</sup>
+</th>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td></tr>
+<tr>
+<th>2–3 heap<sup class="reference" id="cite_ref-33">[27]</sup>
+</th>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)<sup class="reference" id="cite_ref-amortized_21-7">[c]</sup>
+</td>
+<td style="background:#ffffdd"><i>O</i>(log <i>n</i>)<sup class="reference" id="cite_ref-amortized_21-8">[c]</sup>
+</td>
+<td style="background:#ddffdd"><i>Θ</i>(1)
+</td>
+<td style="background:#ffffdd"><i>?</i>
+</td></tr></tbody></table>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Heap</li>
+<li>Heapsort</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<link href="mw-data:TemplateStyles:r1011085734" rel="mw-deduplicated-inline-style"/>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>Open Data Structures - Section 10.1 - BinaryHeap: An Implicit Binary Tree, Pat Morin</li>
+<li>Implementation of binary max heap in C by Robin Thomas</li>
+<li>Implementation of binary min heap in C by Robin Thomas</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2379
+Cached time: 20221220211603
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.458 seconds
+Real time usage: 0.635 seconds
+Preprocessor visited node count: 4150/1000000
+Post‐expand include size: 84277/2097152 bytes
+Template argument size: 3246/2097152 bytes
+Highest expansion depth: 20/100
+Expensive parser function count: 0/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 93030/5000000 bytes
+Lua time usage: 0.218/10.000 seconds
+Lua memory usage: 7247444/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  435.612      1 -total
+ 50.77%  221.144      2 Template:Reflist
+ 18.31%   79.761      3 Template:Cite_book
+ 17.80%   77.528      2 Template:Introduction_to_Algorithms
+ 10.80%   47.065      1 Template:Short_description
+  9.76%   42.505      1 Template:Data_structures
+  9.23%   40.219      1 Template:Navbox
+  8.92%   38.853      8 Template:Cite_journal
+  8.30%   36.171      2 Template:R
+  8.06%   35.089      1 Template:Infobox_data_structure
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:69890-0!canonical and timestamp 20221220211602 and revision id 1106700121.
+ -->
+</div></body>
+</html>

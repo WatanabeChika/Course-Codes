@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>balanced_k-way_merge_sort</title>
+</head>
+<body>
+<div class="mw-parser-output">
+<p><b>Merge algorithms</b> are a family of algorithms that take multiple sorted lists as input and produce a single list as output, containing all the elements of the inputs lists in sorted order. These algorithms are used as subroutines in various sorting algorithms, most famously merge sort.
+</p>
+
+<h2><span class="mw-headline" id="Application">Application</span><span class="mw-editsection"></span></h2>
+
+<p>The merge algorithm plays a critical role in the merge sort algorithm, a comparison-based sorting algorithm. Conceptually, the merge sort algorithm consists of two steps:
+</p>
+<ol><li>Recursively divide the list into sublists of (roughly) equal length, until each sublist contains only one element, or in the case of iterative (bottom up) merge sort, consider a list of <i>n</i> elements as <i>n</i> sub-lists of size 1. A list containing a single element is, by definition, sorted.</li>
+<li>Repeatedly merge sublists to create a new sorted sublist until the single list contains all elements. The single list is the sorted list.</li></ol>
+<p>The merge algorithm is used repeatedly in the merge sort algorithm.
+</p><p>An example merge sort is given in the illustration. It starts with an unsorted array of 7 integers. The array is divided into 7 partitions; each partition contains 1 element and is sorted. The sorted partitions are then merged to produce larger, sorted, partitions, until 1 partition, the sorted array, is left.
+</p>
+<h2><span class="mw-headline" id="Merging_two_lists">Merging two lists</span><span class="mw-editsection"></span></h2>
+<p>Merging two sorted lists into one can be done in linear time and linear or constant space (depending on the data access model). The following pseudocode demonstrates an algorithm that merges input lists (either linked lists or arrays) <span class="texhtml mvar" style="font-style:italic;">A</span> and <span class="texhtml mvar" style="font-style:italic;">B</span> into a new list <span class="texhtml mvar" style="font-style:italic;">C</span>.<sup class="reference" id="cite_ref-skiena_1-0">[1]</sup><sup class="reference" id="cite_ref-toolbox_2-0">[2]</sup><sup class="reference nowrap"><span title="Page / location: 104">: 104 </span></sup> The function <style data-mw-deduplicate="TemplateStyles:r886049734">.mw-parser-output .monospaced{font-family:monospace,monospace}</style><span class="monospaced">head</span> yields the first element of a list; "dropping" an element means removing it from its list, typically by incrementing a pointer or index.
+</p>
+<pre><b>algorithm</b> merge(A, B) <b>is</b>
+    <b>inputs</b> A, B : list
+    <b>returns</b> list
+
+    C := new empty list
+    <b>while</b> A is not empty and B is not empty <b>do</b>
+        <b>if</b> head(A) ≤ head(B) <b>then</b>
+            append head(A) to C
+            drop the head of A
+        <b>else</b>
+            append head(B) to C
+            drop the head of B
+
+    <i>// By now, either A or B is empty. It remains to empty the other input list.</i>
+    <b>while</b> A is not empty <b>do</b>
+        append head(A) to C
+        drop the head of A
+    <b>while</b> B is not empty <b>do</b>
+        append head(B) to C
+        drop the head of B
+
+    <b>return</b> C
+</pre>
+<p>When the inputs are linked lists, this algorithm can be implemented to use only a constant amount of working space; the pointers in the lists' nodes can be reused for bookkeeping and for constructing the final merged list.
+</p><p>In the merge sort algorithm, this subroutine is typically used to merge two sub-arrays <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">A[lo..mid]</span>, <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">A[mid+1..hi]</span> of a single array <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">A</span>. This can be done by copying the sub-arrays into a temporary array, then applying the merge algorithm above.<sup class="reference" id="cite_ref-skiena_1-1">[1]</sup> The allocation of a temporary array can be avoided, but at the expense of speed and programming ease. Various in-place merge algorithms have been devised,<sup class="reference" id="cite_ref-3">[3]</sup> sometimes sacrificing the linear-time bound to produce an <span class="texhtml"><i>O</i>(<i>n</i> log <i>n</i>)</span> algorithm;<sup class="reference" id="cite_ref-4">[4]</sup> see Merge sort § Variants for discussion.
+</p>
+<h2><span class="mw-headline" id="K-way_merging">K-way merging</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1033289096">.mw-parser-output .hatnote{font-style:italic}.mw-parser-output div.hatnote{padding-left:1.6em;margin-bottom:0.5em}.mw-parser-output .hatnote i{font-style:normal}.mw-parser-output .hatnote+link+.hatnote{margin-top:-0.5em}</style>
+<p><span class="texhtml mvar" style="font-style:italic;">k</span>-way merging generalizes binary merging to an arbitrary number <span class="texhtml mvar" style="font-style:italic;">k</span> of sorted input lists. Applications of <span class="texhtml mvar" style="font-style:italic;">k</span>-way merging arise in various sorting algorithms, including patience sorting<sup class="reference" id="cite_ref-Chandramouli_5-0">[5]</sup> and an external sorting algorithm that divides its input into <span class="texhtml"><i>k</i> = <style data-mw-deduplicate="TemplateStyles:r1050945101">.mw-parser-output .sfrac{white-space:nowrap}.mw-parser-output .sfrac.tion,.mw-parser-output .sfrac .tion{display:inline-block;vertical-align:-0.5em;font-size:85%;text-align:center}.mw-parser-output .sfrac .num,.mw-parser-output .sfrac .den{display:block;line-height:1em;margin:0 0.1em}.mw-parser-output .sfrac .den{border-top:1px solid}.mw-parser-output .sr-only{border:0;clip:rect(0,0,0,0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px}</style><span class="sfrac tion" role="math"><span class="num">1</span><span class="sr-only">/</span><span class="den"><i>M</i></span></span> − 1</span> blocks that fit in memory, sorts these one by one, then merges these blocks.<sup class="reference" id="cite_ref-toolbox_2-1">[2]</sup><sup class="reference nowrap"><span title="Page / location: 119–120">: 119–120 </span></sup>
+</p><p>Several solutions to this problem exist. A naive solution is to do a loop over the <span class="texhtml mvar" style="font-style:italic;">k</span> lists to pick off the minimum element each time, and repeat this loop until all lists are empty:
+</p>
+
+<p>In the worst case, this algorithm performs <span class="texhtml">(<i>k</i>−1)(<i>n</i>−<link href="mw-data:TemplateStyles:r1050945101" rel="mw-deduplicated-inline-style"/><span class="sfrac tion" role="math"><span class="num"><i>k</i></span><span class="sr-only">/</span><span class="den">2</span></span>)</span> element comparisons to perform its work if there are a total of <span class="texhtml mvar" style="font-style:italic;">n</span> elements in the lists.<sup class="reference" id="cite_ref-greene_6-0">[6]</sup>
+It can be improved by storing the lists in a priority queue (min-heap) keyed by their first element:
+</p>
+
+<p>Searching for the next smallest element to be output (find-min) and restoring heap order can now be done in <span class="texhtml"><i>O</i>(log <i>k</i>)</span> time (more specifically, <span class="texhtml">2⌊log <i>k</i>⌋</span> comparisons<sup class="reference" id="cite_ref-greene_6-1">[6]</sup>), and the full problem can be solved in <span class="texhtml"><i>O</i>(<i>n</i> log <i>k</i>)</span> time (approximately <span class="texhtml">2<i>n</i>⌊log <i>k</i>⌋</span> comparisons).<sup class="reference" id="cite_ref-greene_6-2">[6]</sup><sup class="reference" id="cite_ref-toolbox_2-2">[2]</sup><sup class="reference nowrap"><span title="Page / location: 119–120">: 119–120 </span></sup>
+</p><p>A third algorithm for the problem is a divide and conquer solution that builds on the binary merge algorithm:
+</p>
+
+<p>When the input lists to this algorithm are ordered by length, shortest first, it requires fewer than <span class="texhtml"><i>n</i>⌈log <i>k</i>⌉</span> comparisons, i.e., less than half the number used by the heap-based algorithm; in practice, it may be about as fast or slow as the heap-based algorithm.<sup class="reference" id="cite_ref-greene_6-3">[6]</sup>
+</p>
+<h2><span class="mw-headline" id="Parallel_merge">Parallel merge</span><span class="mw-editsection"></span></h2>
+<p>A parallel version of the binary merge algorithm can serve as a building block of a parallel merge sort. The following pseudocode demonstrates this algorithm in a parallel divide-and-conquer style (adapted from Cormen <i>et al.</i><sup class="reference" id="cite_ref-clrs_7-0">[7]</sup><sup class="reference nowrap"><span title="Page / location: 800">: 800 </span></sup>). It operates on two sorted arrays <span class="texhtml mvar" style="font-style:italic;">A</span> and <span class="texhtml mvar" style="font-style:italic;">B</span> and writes the sorted output to array <span class="texhtml mvar" style="font-style:italic;">C</span>. The notation <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">A[i...j]</span> denotes the part of <span class="texhtml mvar" style="font-style:italic;">A</span> from index <span class="texhtml mvar" style="font-style:italic;">i</span> through <span class="texhtml mvar" style="font-style:italic;">j</span>, exclusive.
+</p>
+<pre><b>algorithm</b> merge(A[i...j], B[k...ℓ], C[p...q]) <b>is</b>
+    <b>inputs</b> A, B, C : array
+           i, j, k, ℓ, p, q : indices
+
+    <b>let</b> m = j - i,
+        n = ℓ - k
+
+    <b>if</b> m &lt; n <b>then</b>
+        swap A and B  <i>// ensure that A is the larger array: i, j still belong to A; k, ℓ to B</i>
+        swap m and n
+
+    <b>if</b> m ≤ 0 <b>then</b>
+        <b>return</b>  <i>// base case, nothing to merge</i>
+
+    <b>let</b> r = ⌊(i + j)/2⌋
+    <b>let</b> s = binary-search(A[r], B[k...ℓ])
+    <b>let</b> t = p + (r - i) + (s - k)
+    C[t] = A[r]
+
+    <b>in parallel do</b>
+        merge(A[i...r], B[k...s], C[p...t])
+        merge(A[r+1...j], B[s...ℓ], C[t+1...q])
+</pre>
+<p>The algorithm operates by splitting either <span class="texhtml mvar" style="font-style:italic;">A</span> or <span class="texhtml mvar" style="font-style:italic;">B</span>, whichever is larger, into (nearly) equal halves. It then splits the other array into a part with values smaller than the midpoint of the first, and a part with larger or equal values. (The binary search subroutine returns the index in <span class="texhtml mvar" style="font-style:italic;">B</span> where <span class="texhtml"><i>A</i>[<i>r</i>]</span> would be, if it were in <span class="texhtml mvar" style="font-style:italic;">B</span>; that this always a number between <span class="texhtml mvar" style="font-style:italic;">k</span> and <span class="texhtml mvar" style="font-style:italic;">ℓ</span>.) Finally, each pair of halves is merged recursively, and since the recursive calls are independent of each other, they can be done in parallel. Hybrid approach, where serial algorithm is used for recursion base case has been shown to perform well in practice <sup class="reference" id="cite_ref-vjd_8-0">[8]</sup>
+</p><p>The work performed by the algorithm for two arrays holding a total of <span class="texhtml mvar" style="font-style:italic;">n</span> elements, i.e., the running time of a serial version of it, is <span class="texhtml"><i>O</i>(<i>n</i>)</span>. This is optimal since <span class="texhtml mvar" style="font-style:italic;">n</span> elements need to be copied into <span class="texhtml mvar" style="font-style:italic;">C</span>. To calculate the span of the algorithm, it is necessary to derive a Recurrence relation. Since the two recursive calls of <i>merge</i> are in parallel, only the costlier of the two calls needs to be considered. In the worst case, the maximum number of elements in one of the recursive calls is at most <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\textstyle {\frac {3}{4}}n}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="false" scriptlevel="0">
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>3</mn>
+<mn>4</mn>
+</mfrac>
+</mrow>
+<mi>n</mi>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\textstyle {\frac {3}{4}}n}</annotation>
+</semantics>
+</math></span><img alt="{\textstyle {\frac {3}{4}}n}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/03cdd03b9c94dc357866fff19b30d76b704a7cc3" style="vertical-align: -1.171ex; width:3.053ex; height:3.509ex;"/></span> since the array with more elements is perfectly split in half. Adding the <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \Theta \left(\log(n)\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \Theta \left(\log(n)\right)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \Theta \left(\log(n)\right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/fe781b85fbecb5ad666c8633a9c44597e40e43a0" style="vertical-align: -0.838ex; width:10.18ex; height:2.843ex;"/></span> cost of the Binary Search, we obtain this recurrence as an upper bound:
+</p><p><span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{\infty }^{\text{merge}}(n)=T_{\infty }^{\text{merge}}\left({\frac {3}{4}}n\right)+\Theta \left(\log(n)\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msubsup>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>merge</mtext>
+</mrow>
+</msubsup>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<msubsup>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>merge</mtext>
+</mrow>
+</msubsup>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mfrac>
+<mn>3</mn>
+<mn>4</mn>
+</mfrac>
+</mrow>
+<mi>n</mi>
+</mrow>
+<mo>)</mo>
+</mrow>
+<mo>+</mo>
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T_{\infty }^{\text{merge}}(n)=T_{\infty }^{\text{merge}}\left({\frac {3}{4}}n\right)+\Theta \left(\log(n)\right)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle T_{\infty }^{\text{merge}}(n)=T_{\infty }^{\text{merge}}\left({\frac {3}{4}}n\right)+\Theta \left(\log(n)\right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/eae1486f7fdf8b173059cc917ef07035fe91b211" style="vertical-align: -2.505ex; width:39.02ex; height:6.176ex;"/></span>
+</p><p>The solution is <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle T_{\infty }^{\text{merge}}(n)=\Theta \left(\log(n)^{2}\right)}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msubsup>
+<mi>T</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mi mathvariant="normal">∞<!-- ∞ --></mi>
+</mrow>
+<mrow class="MJX-TeXAtom-ORD">
+<mtext>merge</mtext>
+</mrow>
+</msubsup>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<mo stretchy="false">)</mo>
+<mo>=</mo>
+<mi mathvariant="normal">Θ<!-- Θ --></mi>
+<mrow>
+<mo>(</mo>
+<mrow>
+<mi>log</mi>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>n</mi>
+<msup>
+<mo stretchy="false">)</mo>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msup>
+</mrow>
+<mo>)</mo>
+</mrow>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle T_{\infty }^{\text{merge}}(n)=\Theta \left(\log(n)^{2}\right)}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle T_{\infty }^{\text{merge}}(n)=\Theta \left(\log(n)^{2}\right)}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/44290693b0162c2cc31186bf74e6ed618da209ab" style="vertical-align: -1.005ex; width:24.105ex; height:3.343ex;"/></span>, meaning that it takes that much time on an ideal machine with an unbounded number of processors.<sup class="reference" id="cite_ref-clrs_7-1">[7]</sup><sup class="reference nowrap"><span title="Page / location: 801–802">: 801–802 </span></sup>
+</p><p><b>Note:</b> The routine is not stable: if equal items are separated by splitting <span class="texhtml mvar" style="font-style:italic;">A</span> and <span class="texhtml mvar" style="font-style:italic;">B</span>, they will become interleaved in <span class="texhtml mvar" style="font-style:italic;">C</span>; also swapping <span class="texhtml mvar" style="font-style:italic;">A</span> and <span class="texhtml mvar" style="font-style:italic;">B</span> will destroy the order, if equal items are spread among both input arrays. As a result, when used for sorting, this algorithm produces a sort that is not stable.
+</p>
+<h2><span class="mw-headline" id="Parallel_merge_of_two_lists">Parallel merge of two lists</span><span class="mw-editsection"></span></h2>
+<p>There are also algorithms that introduce parallelism within a single instance of merging of two sorted lists. These can be used in field-programmable gate arrays (FPGAs), specialized sorting circuits, as well as in modern processors with single-instruction multiple-data (SIMD) instructions. 
+</p><p>Existing parallel algorithms are based on modifications of the merge part of either the bitonic sorter or odd-even mergesort.<sup class="reference" id="cite_ref-flimsj_9-0">[9]</sup> In 2018, Saitoh M. et al. introduced MMS <sup class="reference" id="cite_ref-10">[10]</sup> for FPGAs, which focused on removing a multi-cycle feedback datapath that prevented efficient pipelining in hardware. Also in 2018, Papaphilippou P. et al. introduced FLiMS <sup class="reference" id="cite_ref-flimsj_9-1">[9]</sup> that improved the hardware utilization and performance by only requiring <span class="mwe-math-element"><span class="mwe-math-mathml-inline mwe-math-mathml-a11y" style="display: none;"><math alttext="{\displaystyle \log _{2}(P)+1}" xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<mrow class="MJX-TeXAtom-ORD">
+<mstyle displaystyle="true" scriptlevel="0">
+<msub>
+<mi>log</mi>
+<mrow class="MJX-TeXAtom-ORD">
+<mn>2</mn>
+</mrow>
+</msub>
+<mo>⁡<!-- ⁡ --></mo>
+<mo stretchy="false">(</mo>
+<mi>P</mi>
+<mo stretchy="false">)</mo>
+<mo>+</mo>
+<mn>1</mn>
+</mstyle>
+</mrow>
+<annotation encoding="application/x-tex">{\displaystyle \log _{2}(P)+1}</annotation>
+</semantics>
+</math></span><img alt="{\displaystyle \log _{2}(P)+1}" aria-hidden="true" class="mwe-math-fallback-image-inline" src="https://wikimedia.org/api/rest_v1/media/math/render/svg/1a4cd0052e0b87fb5a7d81eeb4663fc7b8a711df" style="vertical-align: -0.838ex; width:11.584ex; height:2.843ex;"/></span> pipeline stages of <span class="texhtml"><i>P/2</i></span> compare-and-swap units to merge with a parallelism of <span class="texhtml"><i>P</i></span> elements per FPGA cycle.
+</p>
+<h2><span class="mw-headline" id="Language_support">Language support</span><span class="mw-editsection"></span></h2>
+<p>Some computer languages provide built-in or library support for merging sorted collections.
+</p>
+<h3><span id="C.2B.2B"></span><span class="mw-headline" id="C++">C++</span><span class="mw-editsection"></span></h3>
+<p>The  C++'s Standard Template Library has the function <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">std::merge</span>, which merges two sorted ranges of iterators, and <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">std::inplace_merge</span>, which merges two consecutive sorted ranges <i>in-place</i>. In addition, the <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">std::list</span> (linked list) class has its own <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">merge</span> method which merges another list into itself. The type of the elements merged must support the less-than (<link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">&lt;</span>) operator, or it must be provided with a custom comparator.
+</p><p>C++17 allows for differing execution policies, namely sequential, parallel, and parallel-unsequenced.<sup class="reference" id="cite_ref-11">[11]</sup>
+</p>
+<h3><span class="mw-headline" id="Python">Python</span><span class="mw-editsection"></span></h3>
+<p>Python's standard library (since 2.6) also has a <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">merge</span> function in the <link href="mw-data:TemplateStyles:r886049734" rel="mw-deduplicated-inline-style"/><span class="monospaced">heapq</span> module, that takes multiple sorted iterables, and merges them into a single iterator.<sup class="reference" id="cite_ref-12">[12]</sup>
+</p>
+<h2><span class="mw-headline" id="See_also">See also</span><span class="mw-editsection"></span></h2>
+<ul><li>Merge (revision control)</li>
+<li>Join (relational algebra)</li>
+<li>Join (SQL)</li>
+<li>Join (Unix)</li></ul>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="Further_reading">Further reading</span><span class="mw-editsection"></span></h2>
+<ul><li>Donald Knuth. <i>The Art of Computer Programming</i>, Volume 3: <i>Sorting and Searching</i>, Third Edition. Addison-Wesley, 1997. <link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/>ISBN 0-201-89685-0. Pages 158–160 of section 5.2.4: Sorting by Merging. Section 5.3.2: Minimum-Comparison Merging, pp. 197–207.</li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<ul><li>High Performance Implementation of Parallel and Serial Merge in C# with source in GitHub and in C++ GitHub</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2310
+Cached time: 20221221022906
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.346 seconds
+Real time usage: 0.483 seconds
+Preprocessor visited node count: 5485/1000000
+Post‐expand include size: 50494/2097152 bytes
+Template argument size: 3691/2097152 bytes
+Highest expansion depth: 16/100
+Expensive parser function count: 1/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 45804/5000000 bytes
+Lua time usage: 0.164/10.000 seconds
+Lua memory usage: 7424425/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  378.639      1 -total
+ 35.59%  134.740      1 Template:Reflist
+ 19.03%   72.044      3 Template:Cite_book
+ 13.85%   52.429      1 Template:Short_description
+ 10.80%   40.883      1 Template:Sorting
+ 10.54%   39.912     12 Template:R/superscript
+ 10.33%   39.107      1 Template:Navbox
+  8.81%   33.369      7 Template:R
+  8.02%   30.359      5 Template:Rp
+  7.20%   27.276      7 Template:R/ref
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:20362-0!canonical and timestamp 20221221022906 and revision id 1115001860.
+ -->
+</div></body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>adjacency-list_representation</title>
+</head>
+<body>
+<div class="mw-parser-output">
+
+<p>In graph theory and computer science, an <b>adjacency list</b> is a collection of unordered lists used to represent a finite graph. Each unordered list within an adjacency list describes the set of neighbors of a particular vertex in the graph. This is one of several commonly used representations of graphs for use in computer programs.
+</p>
+
+<h2><span class="mw-headline" id="Implementation_details">Implementation details</span><span class="mw-editsection"></span></h2>
+<table align="right" class="wikitable" style="width:18em;">
+<tbody><tr>
+<td colspan="3">The graph pictured above has this adjacency list representation:
+</td></tr>
+<tr>
+<td>a</td>
+<td>adjacent to</td>
+<td>b,c
+</td></tr>
+<tr>
+<td>b</td>
+<td>adjacent to</td>
+<td>a,c
+</td></tr>
+<tr>
+<td>c</td>
+<td>adjacent to</td>
+<td>a,b
+</td></tr></tbody></table>
+<p>An adjacency list representation for a graph associates each vertex in the graph with the collection of its neighbouring vertices or edges. There are many variations of this basic idea, differing in the details of how they implement the association between vertices and collections, in how they implement the collections, in whether they include both vertices and edges or only vertices as first class objects, and in what kinds of objects are used to represent the vertices and edges.
+</p>
+<ul><li>An implementation suggested by Guido van Rossum uses a hash table to associate each vertex in a graph with an array of adjacent vertices. In this representation, a vertex may be represented by any hashable object. There is no explicit representation of edges as objects.<sup class="reference" id="cite_ref-1">[1]</sup></li>
+<li>Cormen et al. suggest an implementation in which the vertices are represented by index numbers.<sup class="reference" id="cite_ref-2">[2]</sup> Their representation uses an array indexed by vertex number, in which the array cell for each vertex points to a singly linked list of the neighboring vertices of that vertex. In this representation, the nodes of the singly linked list may be interpreted as edge objects; however, they do not store the full information about each edge (they only store one of the two endpoints of the edge) and in undirected graphs there will be two different linked list nodes for each edge (one within the lists for each of the two endpoints of the edge).</li>
+<li>The object oriented incidence list structure suggested by Goodrich and Tamassia has special classes of vertex objects and edge objects. Each vertex object has an instance variable pointing to a collection object that lists the neighboring edge objects. In turn, each edge object points to the two vertex objects at its endpoints.<sup class="reference" id="cite_ref-A_3-0">[3]</sup> This version of the adjacency list uses more memory than the version in which adjacent vertices are listed directly, but the existence of explicit edge objects allows it extra flexibility in storing additional information about edges.</li></ul>
+<h2><span class="mw-headline" id="Operations">Operations</span><span class="mw-editsection"></span></h2>
+<p>The main operation performed by the adjacency list data structure is to report a list of the neighbors of a given vertex. Using any of the implementations detailed above, this can be performed in constant time per neighbor. In other words, the total time to report all of the neighbors of a vertex <i>v</i> is proportional to the degree of <i>v</i>
+</p><p>It is also possible, but not as efficient, to use adjacency lists to test whether an edge exists or does not exist between two specified vertices.  In an adjacency list in which the neighbors of each vertex are unsorted, testing for the existence of an edge may be performed in time proportional to the minimum degree of the two given vertices, by using a sequential search through the neighbors of this vertex. If the neighbors are represented as a sorted array, binary search may be used instead, taking time proportional to the logarithm of the degree.
+</p>
+<h2><span class="mw-headline" id="Trade-offs">Trade-offs</span><span class="mw-editsection"></span></h2>
+<p>The main alternative to the adjacency list is the adjacency matrix, a matrix whose rows and columns are indexed by vertices and whose cells contain a Boolean value that indicates whether an edge is present between the vertices corresponding to the row and column of the cell. For a sparse graph (one in which most pairs of vertices are not connected by edges) an adjacency list is significantly more space-efficient than an adjacency matrix (stored as a two-dimensional array): the space usage of the adjacency list is proportional to the number of edges and vertices in the graph, while for an adjacency matrix stored in this way the space is proportional to the square of the number of vertices. However, it is possible to store adjacency matrices more space-efficiently, matching the linear space usage of an adjacency list, by using a hash table indexed by pairs of vertices rather than an array.
+</p><p>The other significant difference between adjacency lists and adjacency matrices is in the efficiency of the operations they perform. In an adjacency list, the neighbors of each vertex may be listed efficiently, in time proportional to the degree of the vertex. In an adjacency matrix, this operation takes time proportional to the number of vertices in the graph, which may be significantly higher than the degree. On the other hand, the adjacency matrix allows testing whether two vertices are adjacent to each other in constant time; the adjacency list is slower to support this operation.
+</p>
+<h2><span class="mw-headline" id="Data_structures">Data structures</span><span class="mw-editsection"></span></h2>
+<p>For use as a data structure, the main alternative to the adjacency list is the adjacency matrix. Because each entry in the adjacency matrix requires only one bit, it can be represented in a very compact way, occupying only <span class="texhtml">|<span class="nowrap" style="padding-left:0.1em; padding-right:0.1em;"><i>V</i></span>|<sup>2</sup>/8</span> bytes of contiguous space, where <span class="texhtml">|<span class="nowrap" style="padding-left:0.1em; padding-right:0.1em;"><i>V</i></span>|</span> is the number of vertices of the graph. Besides avoiding wasted space, this compactness encourages locality of reference.
+</p><p>However, for a sparse graph, adjacency lists require less space, because they do not waste any space to represent edges that are not present. Using a naïve array implementation on a 32-bit computer, an adjacency list for an undirected graph requires about <span class="texhtml">2⋅(32/8)|<span class="nowrap" style="padding-left:0.1em; padding-right:0.1em;"><i>E</i></span>| = 8|<span class="nowrap" style="padding-left:0.1em; padding-right:0.1em;"><i>E</i></span>|</span> bytes of space, where <span class="texhtml">|<span class="nowrap" style="padding-left:0.1em; padding-right:0.1em;"><i>E</i></span>|</span> is the number of edges of the graph.
+</p><p>Noting that an undirected simple graph can have at most <span class="texhtml">(|<span class="nowrap" style="padding-left:0.1em; padding-right:0.1em;"><i>V</i></span>|<sup>2</sup>−|<span class="nowrap" style="padding-left:0.1em; padding-right:0.1em;"><i>V</i></span>|)/2 ≈ <i>V</i><sup> 2</sup></span> edges, allowing loops, we can let <span class="texhtml"><i>d</i> = |<span class="nowrap" style="padding-left:0.1em; padding-right:0.1em;"><i>E</i></span>|/|<span class="nowrap" style="padding-left:0.1em; padding-right:0.1em;"><i>V</i></span>|<sup>2</sup></span> denote the density of the graph. Then, <span class="texhtml">8|<span class="nowrap" style="padding-left:0.1em; padding-right:0.1em;"><i>E</i></span>| &gt; |<span class="nowrap" style="padding-left:0.1em; padding-right:0.1em;"><i>V</i></span>|<sup>2</sup>/8</span> when <span class="texhtml">|<span class="nowrap" style="padding-left:0.1em; padding-right:0.1em;"><i>E</i></span>|/|<span class="nowrap" style="padding-left:0.1em; padding-right:0.1em;"><i>V</i></span>|<sup>2</sup> &gt; 1/64</span>, that is the adjacency list representation occupies more space than the adjacency matrix representation when <span class="texhtml"><i>d</i> &gt; 1/64</span>. Thus a graph must be sparse enough to justify an adjacency list representation.
+</p><p>Besides the space trade-off, the different data structures also facilitate different operations. Finding all vertices adjacent to a given vertex in an adjacency list is as simple as reading the list. With an adjacency matrix, an entire row must instead be scanned, which takes <span class="texhtml"><i>O</i>(|<span class="nowrap" style="padding-left:0.1em; padding-right:0.1em;"><i>V</i></span>|)</span> time. Whether there is an edge between two given vertices can be determined at once with an adjacency matrix, while requiring time proportional to the minimum degree of the two vertices with the adjacency list.
+</p>
+<h2><span class="mw-headline" id="References">References</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1011085734">.mw-parser-output .reflist{font-size:90%;margin-bottom:0.5em;list-style-type:decimal}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}</style>
+<h2><span class="mw-headline" id="Further_reading">Further reading</span><span class="mw-editsection"></span></h2>
+<ul><li><link href="mw-data:TemplateStyles:r1067248974" rel="mw-deduplicated-inline-style"/><cite class="citation web cs1" id="CITEREFEppstein1996">Eppstein, David (1996). "ICS 161 Lecture Notes: Graph Algorithms".</cite><span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.genre=unknown&amp;rft.btitle=ICS+161+Lecture+Notes%3A+Graph+Algorithms&amp;rft.date=1996&amp;rft.aulast=Eppstein&amp;rft.aufirst=David&amp;rft_id=http%3A%2F%2Fwww.ics.uci.edu%2F~eppstein%2F161%2F960201.html&amp;rfr_id=info%3Asid%2Fen.wikipedia.org%3AAdjacency+list"></span></li></ul>
+<h2><span class="mw-headline" id="External_links">External links</span><span class="mw-editsection"></span></h2>
+<style data-mw-deduplicate="TemplateStyles:r1097025294">.mw-parser-output .side-box{margin:4px 0;box-sizing:border-box;border:1px solid #aaa;font-size:88%;line-height:1.25em;background-color:#f9f9f9}.mw-parser-output .side-box-abovebelow,.mw-parser-output .side-box-text{padding:0.25em 0.9em}.mw-parser-output .side-box-image{padding:2px 0 2px 0.9em;text-align:center}.mw-parser-output .side-box-imageright{padding:2px 0.9em 2px 0;text-align:center}@media(min-width:500px){.mw-parser-output .side-box-flex{display:flex;align-items:center}.mw-parser-output .side-box-text{flex:1}}@media(min-width:720px){.mw-parser-output .side-box{width:238px}.mw-parser-output .side-box-right{clear:right;float:right;margin-left:1em}.mw-parser-output .side-box-left{margin-right:1em}}</style>
+<ul><li>The Boost Graph Library implements an efficient adjacency list</li>
+<li>Open Data Structures, Section 12.2, AdjacencyList: A Graph as a Collection of Lists, Pat Morin</li></ul>
+
+<!-- 
+NewPP limit report
+Parsed by mw2273
+Cached time: 20221223232238
+Cache expiry: 1814400
+Reduced expiry: false
+Complications: [vary‐revision‐sha1, show‐toc]
+CPU time usage: 0.230 seconds
+Real time usage: 0.314 seconds
+Preprocessor visited node count: 1189/1000000
+Post‐expand include size: 22701/2097152 bytes
+Template argument size: 3038/2097152 bytes
+Highest expansion depth: 13/100
+Expensive parser function count: 0/500
+Unstrip recursion depth: 1/20
+Unstrip post‐expand size: 15355/5000000 bytes
+Lua time usage: 0.136/10.000 seconds
+Lua memory usage: 4059712/52428800 bytes
+Number of Wikibase entities loaded: 0/400
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  278.162      1 -total
+ 35.62%   99.069      1 Template:Reflist
+ 26.04%   72.427      2 Template:Cite_web
+ 23.56%   65.546      1 Template:Short_description
+ 16.65%   46.306      1 Template:Graph_representations
+ 15.72%   43.723      1 Template:Navbox
+ 14.47%   40.237      1 Template:Commons_category
+ 13.65%   37.971      1 Template:Sister_project
+ 12.88%   35.828      1 Template:Side_box
+ 11.90%   33.104      2 Template:Pagetype
+-->
+<!-- Saved in parser cache with key enwiki:pcache:idhash:392431-0!canonical and timestamp 20221223232238 and revision id 1102846197.
+ -->
+</div></body>
+</html>
