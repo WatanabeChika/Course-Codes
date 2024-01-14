@@ -1,9 +1,8 @@
 ## 关于此库
 
-记录学习期间写的代码  
-第一学期学习了Python，其他以C++为主，按课程名将代码进行归类  
+记录学习期间写的代码，按课程名将代码进行归类。  
 
-**仅做记录用，勿吐槽代码质量**
+**仅做记录用，勿吐槽代码质量。**
 
 ---
 
@@ -22,14 +21,14 @@ minimatrix 大作业
 
 ## CS1604 程序设计原理与方法
 
-Assignment 1-Assignment 5 是各个阶段的小作业  
+Assignment 1-Assignment 5 小作业  
 > Assignment 1: C++基本语法  
 > Assignment 2: 函数与库  
 > Assignment 3: 字符串  
 > Assignment 4: 抽象数据类型(ADT)  
 > Assignment 5: 设计ADT
 
-Final Project 是大作业  
+Final Project 大作业  
 > Battlefield ~~丐版文明6~~
 
 cs1604_lib 是课程用到的库
@@ -60,9 +59,9 @@ myclasses 是自建数据结构，包括：
 > bsearchtree: 二叉查找树  
 > sort: 排序函数  
 
-奇怪的地方：main是空的、random1是 ~~打随机肉鸽用的~~ 随机整数生成器
+奇怪的地方：main是空的、random1是 ~~打随机肉鸽用的~~ 随机整数生成器。
 
-homework 是5次作业，题目详见 ***que_intro.md***
+homework 是5次作业，题目详见 ***que_intro.md***。
 
 ---
 
@@ -78,6 +77,19 @@ homework 是5次作业，题目详见 ***que_intro.md***
 
 ---
 
+## AI3603-02 人工智能理论及应用
+HW 1-HW 3 小作业
+> HW 1: A*搜索算法  
+> HW 2: 强化学习（算法/DNN）    
+> HW 3: 优化图像分割模型（小组为单位）  
+
+Final Project 大作业
+> 五子棋对战AI（MCTS/AlphaZero/DNN）
+
+总体来说，除了HW 1，其他需要完成的部分相对简单且局限（如调参）。
+
+---
+
 ## CS1108-01 数据科学引论——Python之道
 
 **选修课**
@@ -87,4 +99,4 @@ homework 是5次作业，题目详见 ***que_intro.md***
 > 3. HTML页面较简陋，主要是作为用echarts进行数据可视化的载体。 ~~但是这真的很酷~~  
 > 4. 分职业页面仅仅改了后端数据，前端的可视化是一致的。  
 
-希望这份明日方舟页面在今后能够被逐渐完善 ~~但是应该不可能了，悲~~
+希望这份明日方舟页面在今后能够被逐渐完善。 ~~但是应该不可能了，悲~~
