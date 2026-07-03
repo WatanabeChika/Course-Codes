@@ -121,3 +121,8 @@ Lab 的提交结果以```tar.gz```形式存放在文件夹里。
 
 只有期末大作业需要编程。
 > 调用 API 和开源项目库，实现了文生图任务和 Deepfake 任务的批量处理。
+
+## NIS8027 空间信息网络与安全前沿技术 
+
+只有期末大作业需要编程。
+> 利用论文《LEOCraft: Towards Designing Performant LEO Networks》的框架对其实验进行验证评估。
